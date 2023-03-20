@@ -38,3 +38,4 @@ using namespace std::literals;
 namespace fsys = std::filesystem;
 
 #include "utils/utils.hpp"
+#include "general/defs.hpp"
