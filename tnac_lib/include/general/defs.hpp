@@ -18,8 +18,7 @@
 *     decimal-int-num
 * 
 *   decimal-int-num:
-*     non-zero-digit
-*     digit-sequence
+*     non-zero-digit digit-sequence
 * 
 *   digit-sequence
 *     digit

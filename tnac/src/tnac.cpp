@@ -1,5 +1,23 @@
 #include "parser/lex.hpp"
 
+void print(const tnac::token& tok) noexcept
+{
+  static constexpr std::array kinds{
+    "Invalid token"sv,
+    "Eol"sv,
+    "IntDec"sv,
+    "Float"sv,
+    "Plus"sv,
+    "Minus"sv,
+    "Asterisk"sv,
+    "Slash"sv
+  };
+
+  using idx_t = decltype(kinds)::size_type;
+
+  std::cout << kinds[static_cast<idx_t>(tok.m_kind)] << ": '" << tok.m_value << "'\n";
+}
+
 bool parse_line(tnac::buf_t input) noexcept
 {
   static std::forward_list<tnac::buf_t> lineBuf;
@@ -16,10 +34,10 @@ bool parse_line(tnac::buf_t input) noexcept
     if (tok.is_eol())
     {
       std::cout << "End of input\n\n";
-      return false;
+      break;
     }
 
-
+    print(tok);
   }
 
   return true;

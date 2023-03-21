@@ -17,14 +17,14 @@ namespace tnac
       Eol,
       
       // Numeric tokens
-      Int,
+      IntDec,
       Float,
 
       // Operators
       Plus,
       Minus,
-      Mul,
-      Div
+      Asterisk,
+      Slash
     };
 
     using enum kind;
@@ -42,7 +42,7 @@ namespace tnac
 
     constexpr auto is_operator() const noexcept
     {
-      return is_any(Plus, Minus, Mul, Div);
+      return is_any(Plus, Minus, Asterisk, Slash);
     }
 
     constexpr auto is_eol() const noexcept
@@ -53,6 +53,8 @@ namespace tnac
     string_t m_value;
     kind m_kind{ Error };
   };
+
+  using tok_kind = token::kind;
 
   //
   // Lexer for the input parser
@@ -89,9 +91,60 @@ namespace tnac
 
   private:
     //
+    // Consumes the current character sequence between from an to iterators,
+    // and advances the from iterator to the next non-blank character
+    //
+    token consume(tok_kind kind) noexcept;
+
+    //
+    // Moves forward until a separator is encountered
+    //
+    void ffwd() noexcept;
+
+    //
+    // Tries to parse a number
+    //
+    token number() noexcept;
+
+    //
+    // Tries to parse an operator
+    //
+    token op() noexcept;
+
+    //
+    // Previews the next character
+    //
+    char_t peek_char() const noexcept;
+
+    //
+    // Advances the iterator one character forward
+    //
+    void advance() noexcept;
+
+    //
     // Checks whether the buffer is at an end
     //
     bool good() const noexcept;
+
+    //
+    // Checks whether the given character is a digit
+    //
+    bool is_digit(char_t c) const noexcept;
+
+    //
+    // Checks whether the given character belongs to an operator
+    //
+    bool is_operator(char_t c) const noexcept;
+
+    //
+    // Checks whether the given character is a non-blank separator
+    //
+    bool is_separator(char_t c) const noexcept;
+
+    //
+    // Checks whether the given character is blank
+    //
+    bool is_blank(char_t c) const noexcept;
 
   private:    
     value_type m_buf;
