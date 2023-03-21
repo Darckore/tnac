@@ -4,17 +4,17 @@ namespace tnac
 {
   // Special members
 
-  lex::lex(buf_t buf) noexcept
+  lex::lex(string_t buf) noexcept
   {
-    feed(std::move(buf));
+    feed(buf);
   }
 
 
   // Public members
 
-  void lex::feed(buf_t buf) noexcept
+  void lex::feed(string_t buf) noexcept
   {
-    m_buf = std::move(buf);
+    m_buf = buf;
     m_from = m_buf.begin();
     m_to   = m_from;
   }
@@ -22,7 +22,7 @@ namespace tnac
   token lex::next() noexcept
   {
     if (!good())
-      return { .m_pos{}, .m_kind{ token::Eol } };
+      return { .m_value{}, .m_kind{ token::Eol } };
 
     return {};
   }

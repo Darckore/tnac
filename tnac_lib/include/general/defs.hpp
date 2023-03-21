@@ -12,20 +12,18 @@
 *     float-num
 * 
 *   float-num
-*     [-]
 *     digit-sequence [.] digit-sequence
 * 
 *   int-num:
 *     decimal-int-num
 * 
 *   decimal-int-num:
-*     [-]
 *     non-zero-digit
 *     digit-sequence
 * 
 *   digit-sequence
 *     digit
-*     digit-sequence
+*     digit-sequence digit
 * 
 *   operator: one of
 *     + - * /
@@ -43,6 +41,6 @@ namespace tnac
   using string_t = std::string_view;
   using char_t   = string_t::value_type;
 
-  using int_type   = utils::detail::max_int_t;
-  using float_type = utils::detail::max_real_t;
+  using int_type   = std::intmax_t;
+  using float_type = double;
 }

@@ -11,7 +11,7 @@ namespace tnac
   //
   struct token
   {
-    enum class kind
+    enum class kind : std::uint8_t
     {
       Error,
       Eol,
@@ -45,7 +45,12 @@ namespace tnac
       return is_any(Plus, Minus, Mul, Div);
     }
 
-    string_t m_pos;
+    constexpr auto is_eol() const noexcept
+    {
+      return is(Eol);
+    }
+
+    string_t m_value;
     kind m_kind{ Error };
   };
 
@@ -55,19 +60,27 @@ namespace tnac
   class lex
   {
   public:
+    using value_type = string_t;
+    using buf_iterator = string_t::iterator;
+
+  public:
     CLASS_SPECIALS_NONE_CUSTOM(lex);
 
     ~lex() noexcept = default;
     lex() = default;
 
-    explicit lex(buf_t buf) noexcept;
+    //
+    // Non-owning string is passed here
+    // Lifetime must be maintained outside
+    //
+    explicit lex(string_t buf) noexcept;
 
   public:
     //
     // Feeds an input string to the lexer
     // replacing the currently held buffer
     //
-    void feed(buf_t buf) noexcept;
+    void feed(string_t buf) noexcept;
 
     //
     // Obtains the next token from the input
@@ -80,11 +93,9 @@ namespace tnac
     //
     bool good() const noexcept;
 
-  private:
-    using buf_it = buf_t::iterator;
-    
-    buf_t m_buf;
-    buf_it m_from{};
-    buf_it m_to{};
+  private:    
+    value_type m_buf;
+    buf_iterator m_from{};
+    buf_iterator m_to{};
   };
 }

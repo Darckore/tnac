@@ -2,8 +2,25 @@
 
 bool parse_line(tnac::buf_t input) noexcept
 {
+  static std::forward_list<tnac::buf_t> lineBuf;
   static tnac::lex lex;
-  lex.feed(std::move(input));
+
+  std::cout << "Input: '" << input << "'\n\nTokens:\n";
+
+  lineBuf.emplace_front(std::move(input));
+  lex.feed(lineBuf.front());
+
+  for (;;)
+  {
+    auto tok = lex.next();
+    if (tok.is_eol())
+    {
+      std::cout << "End of input\n\n";
+      return false;
+    }
+
+
+  }
 
   return true;
 }
@@ -23,6 +40,8 @@ int main()
 
     if (!parse_line(std::move(input)))
       break;
+
+    input = {};
   }
 
   return 0;
