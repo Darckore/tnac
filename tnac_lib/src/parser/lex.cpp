@@ -2,14 +2,6 @@
 
 namespace tnac
 {
-  // Special members
-
-  lex::lex(string_t buf) noexcept
-  {
-    feed(buf);
-  }
-
-
   // Public members
 
   void lex::feed(string_t buf) noexcept

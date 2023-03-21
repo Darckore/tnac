@@ -71,12 +71,6 @@ namespace tnac
     ~lex() noexcept = default;
     lex() = default;
 
-    //
-    // Non-owning string is passed here
-    // Lifetime must be maintained outside
-    //
-    explicit lex(string_t buf) noexcept;
-
   public:
     //
     // Feeds an input string to the lexer

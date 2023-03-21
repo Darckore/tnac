@@ -1,4 +1,4 @@
-#include "parser/lex.hpp"
+#include "parser/parser.hpp"
 
 void print(const tnac::token& tok) noexcept
 {
@@ -22,6 +22,7 @@ bool parse_line(tnac::buf_t input) noexcept
 {
   static std::forward_list<tnac::buf_t> lineBuf;
   static tnac::lex lex;
+  static tnac::parser parser;
 
   std::cout << "Input: '" << input << "'\n\nTokens:\n";
 
@@ -38,6 +39,13 @@ bool parse_line(tnac::buf_t input) noexcept
     }
 
     print(tok);
+  }
+
+  auto ast = parser.parse(lineBuf.front());
+  if (!ast)
+  {
+    std::cout << "Failed to generate AST\n\n";
+    return true;
   }
 
   return true;
