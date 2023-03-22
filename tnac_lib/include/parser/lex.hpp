@@ -101,6 +101,14 @@ namespace tnac
     token number() noexcept;
 
     //
+    // Checks whether the is a sequence of digits following the current position
+    // Moves the to iterator past the last digit
+    // 
+    // Fails if the digit sequence doesn't end with a separator or a '.'
+    //
+    bool digit_seq() noexcept;
+
+    //
     // Tries to parse an operator
     //
     token op() noexcept;
@@ -119,26 +127,6 @@ namespace tnac
     // Checks whether the buffer is at an end
     //
     bool good() const noexcept;
-
-    //
-    // Checks whether the given character is a digit
-    //
-    bool is_digit(char_t c) const noexcept;
-
-    //
-    // Checks whether the given character belongs to an operator
-    //
-    bool is_operator(char_t c) const noexcept;
-
-    //
-    // Checks whether the given character is a non-blank separator
-    //
-    bool is_separator(char_t c) const noexcept;
-
-    //
-    // Checks whether the given character is blank
-    //
-    bool is_blank(char_t c) const noexcept;
 
   private:    
     value_type m_buf;

@@ -2,6 +2,60 @@
 
 namespace tnac
 {
+  namespace detail
+  {
+    namespace
+    {
+      template <std::size_t Size>
+      constexpr auto is_in_range(char_t c, const std::array<char_t, Size>& arr) noexcept
+      {
+        auto beg = arr.begin();
+        auto end = arr.end();
+        return std::find(beg, end, c) != end;
+      }
+
+      constexpr auto is_digit(char_t c) noexcept
+      {
+        constexpr std::array digits{
+          '0', '1', '2', '3', '4', '5', '6', '7', '8', '9'
+        };
+
+        return is_in_range(c, digits);
+      }
+      constexpr auto is_operator(char_t c) noexcept
+      {
+        constexpr std::array ops{
+          '+', '-', '*', '/'
+        };
+
+        return is_in_range(c, ops);
+      }
+      constexpr auto is_blank(char_t c) noexcept
+      {
+        constexpr std::array blanks{
+          ' ', '\n', '\t', '\f', '\v', '\r'
+        };
+
+        return is_in_range(c, blanks);
+      }
+      constexpr auto is_separator(char_t c) noexcept
+      {
+        return is_blank(c) ||
+               is_operator(c);
+      }
+
+      constexpr auto is_dot(char_t c) noexcept
+      {
+        return c == '.';
+      }
+      constexpr auto is_nonzero_digit(char_t c) noexcept
+      {
+        return c != '0' && is_digit(c);
+      }
+    }
+  }
+
+
   // Public members
 
   void lex::feed(string_t buf) noexcept
@@ -18,12 +72,12 @@ namespace tnac
 
     const auto next = peek_char();
 
-    if (is_digit(next))
+    if (detail::is_digit(next))
     {
       return number();
     }
 
-    if (is_operator(next))
+    if (detail::is_operator(next))
     {
       return op();
     }
@@ -44,7 +98,7 @@ namespace tnac
     while (good())
     {
       const auto c = peek_char();
-      if (is_blank(c))
+      if (detail::is_blank(c))
       {
         advance();
         continue;
@@ -62,7 +116,7 @@ namespace tnac
     while (good())
     {
       const auto next = peek_char();
-      if (is_separator(next))
+      if (detail::is_separator(next))
         break;
         
       advance();
@@ -73,48 +127,42 @@ namespace tnac
   {
     using enum tok_kind;
 
-    auto resKind = Eol;
-    auto hasDot = false;
+    if (!digit_seq())
+      return consume(Error);
+
+    if (detail::is_dot(peek_char()))
+    {
+      advance();
+      if (digit_seq() && detail::is_separator(peek_char()))
+        return consume(Float);
+
+      return consume(Error);
+    }
+
+    return consume(IntDec);
+  }
+
+  bool lex::digit_seq() noexcept
+  {
+    bool ok = false;
     while (good())
     {
       const auto next = peek_char();
-
-      if (next == '.')
+      if (detail::is_digit(next))
       {
-        if (!hasDot)
-        {
-          hasDot = true;
-          advance();
-          continue;
-        }
-        else
-        {
-          resKind = Error;
-          break;
-        }
+        ok = true;
+        advance();
+        continue;
       }
 
-      if (is_separator(next))
+      if (detail::is_dot(next) || detail::is_separator(next))
         break;
 
-      if (!is_digit(next))
-      {
-        resKind = Error;
-        break;
-      }
-
-      advance();
+      ok = false;
+      break;
     }
 
-    if (resKind != Error)
-    {
-      if (hasDot)
-        resKind = Float;
-      else
-        resKind = IntDec;
-    }
-
-    return consume(resKind);
+    return ok;
   }
 
   token lex::op() noexcept
@@ -163,30 +211,6 @@ namespace tnac
   bool lex::good() const noexcept
   {
     return m_to != m_buf.end();
-  }
-
-  bool lex::is_digit(char_t c) const noexcept
-  {
-    return std::isdigit(c);
-  }
-  bool lex::is_operator(char_t c) const noexcept
-  {
-    static constexpr std::array ops{
-      '+', '-', '*', '/'
-    };
-
-    static constexpr auto beg = ops.begin();
-    static constexpr auto end = ops.end();
-    return std::find(beg, end, c) != end;
-  }
-  bool lex::is_separator(char_t c) const noexcept
-  {
-    return is_blank(c) ||
-           is_operator(c);
-  }
-  bool lex::is_blank(char_t c) const noexcept
-  {
-    return utils::eq_any(c, ' ', '\n', '\t', '\f', '\v', '\r');
   }
 
 }
