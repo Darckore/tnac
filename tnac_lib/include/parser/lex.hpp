@@ -17,7 +17,10 @@ namespace tnac
       Eol,
       
       // Numeric tokens
+      IntBin,
+      IntOct,
       IntDec,
+      IntHex,
       Float,
 
       // Operators
@@ -101,12 +104,32 @@ namespace tnac
     token number() noexcept;
 
     //
+    // Tries to parse a binary integer
+    //
+    token bin_number() noexcept;
+
+    //
+    // Tries to parse a hex integer
+    //
+    token hex_number() noexcept;
+
+    //
+    // Implementation for bin and hex
+    //
+    token hex_bin_impl(bool isHex) noexcept;
+
+    //
+    // Tries to parse a float or decimal int
+    //
+    token decimal_number(bool leadingZero) noexcept;
+
+    //
     // Checks whether the is a sequence of digits following the current position
     // Moves the to iterator past the last digit
     // 
     // Fails if the digit sequence doesn't end with a separator or a '.'
     //
-    bool digit_seq() noexcept;
+    bool digit_seq(unsigned base) noexcept;
 
     //
     // Tries to parse an operator

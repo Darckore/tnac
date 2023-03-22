@@ -6,21 +6,29 @@ namespace tnac
   {
     namespace
     {
-      template <std::size_t Size>
-      constexpr auto is_in_range(char_t c, const std::array<char_t, Size>& arr) noexcept
+      template <typename It>
+      constexpr auto is_in_range(char_t c, It beg, It end) noexcept
       {
-        auto beg = arr.begin();
-        auto end = arr.end();
         return std::find(beg, end, c) != end;
       }
 
-      constexpr auto is_digit(char_t c) noexcept
+      constexpr auto to_lower(char_t c) noexcept
       {
+        return utils::in_range(c, 'A', 'Z') ? char_t{ c + ('a' - 'A') } : c;
+      }
+      constexpr auto is_digit(char_t c, unsigned base = 10u) noexcept
+      {
+        constexpr auto maxBase = 16u;
+        if (base > maxBase)
+          return false;
+
         constexpr std::array digits{
-          '0', '1', '2', '3', '4', '5', '6', '7', '8', '9'
+          '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f'
         };
 
-        return is_in_range(c, digits);
+        auto beg = digits.begin();
+        auto end = beg + base;
+        return is_in_range(to_lower(c), beg, end);
       }
       constexpr auto is_operator(char_t c) noexcept
       {
@@ -28,15 +36,15 @@ namespace tnac
           '+', '-', '*', '/'
         };
 
-        return is_in_range(c, ops);
+        return is_in_range(c, ops.begin(), ops.end());
       }
       constexpr auto is_blank(char_t c) noexcept
       {
         constexpr std::array blanks{
-          ' ', '\n', '\t', '\f', '\v', '\r'
+          ' ', '\n', '\t', '\f', '\v', '\r', '\0'
         };
 
-        return is_in_range(c, blanks);
+        return is_in_range(c, blanks.begin(), blanks.end());
       }
       constexpr auto is_separator(char_t c) noexcept
       {
@@ -48,9 +56,22 @@ namespace tnac
       {
         return c == '.';
       }
+      constexpr auto is_zero_digit(char_t c) noexcept
+      {
+        return c == '0';
+      }
       constexpr auto is_nonzero_digit(char_t c) noexcept
       {
-        return c != '0' && is_digit(c);
+        return !is_zero_digit(c) && is_digit(c);
+      }
+
+      constexpr auto is_bin_prefix(char_t c) noexcept
+      {
+        return to_lower(c) == 'b';
+      }
+      constexpr auto is_hex_prefix(char_t c) noexcept
+      {
+        return to_lower(c) == 'x';
       }
     }
   }
@@ -127,28 +148,82 @@ namespace tnac
   {
     using enum tok_kind;
 
-    if (!digit_seq())
-      return consume(Error);
-
-    if (detail::is_dot(peek_char()))
+    auto leadingZero = detail::is_zero_digit(peek_char());
+    if (leadingZero)
     {
       advance();
-      if (digit_seq() && detail::is_separator(peek_char()))
-        return consume(Float);
+      const auto next = peek_char();
 
-      return consume(Error);
+      if (detail::is_separator(next))
+        return consume(IntDec); // literal 0 is decimal
+      
+      if (detail::is_bin_prefix(next))
+        return bin_number();
+
+      if (detail::is_hex_prefix(next))
+        return hex_number();
+
+      if (constexpr auto oct = 8u; detail::is_digit(next, oct) && digit_seq(oct))
+      {
+        if (detail::is_separator(peek_char()))
+          return consume(IntOct);
+      }
     }
 
-    return consume(IntDec);
+    return decimal_number(leadingZero);
+  }
+  token lex::bin_number() noexcept
+  {
+    return hex_bin_impl(false);
+  }
+  token lex::hex_number() noexcept
+  {
+    return hex_bin_impl(true);
+  }
+  token lex::hex_bin_impl(bool isHex) noexcept
+  {
+    using enum tok_kind;
+    advance();
+
+    const auto base = isHex ? 16u : 2u;
+    const auto kind = isHex ? IntHex : IntBin;
+
+    if (!digit_seq(base))
+      return consume(Error);
+
+    return detail::is_separator(peek_char()) ? consume(kind) : consume(Error);
   }
 
-  bool lex::digit_seq() noexcept
+  token lex::decimal_number(bool leadingZero) noexcept
+  {
+    using enum tok_kind;
+    constexpr auto dec = 10u;
+    auto result = Error;
+
+    if (!digit_seq(dec) && !detail::is_dot(peek_char()))
+      return consume(Error);
+
+    if (const auto next = peek_char(); detail::is_separator(next))
+    {
+      result = leadingZero ? Error : IntDec;
+    }
+    else if (detail::is_dot(next))
+    {
+      advance();
+      if (digit_seq(dec) && detail::is_separator(peek_char()))
+        result = Float;
+    }
+
+    return consume(result);
+  }
+
+  bool lex::digit_seq(unsigned base) noexcept
   {
     bool ok = false;
     while (good())
     {
       const auto next = peek_char();
-      if (detail::is_digit(next))
+      if (detail::is_digit(next, base))
       {
         ok = true;
         advance();
