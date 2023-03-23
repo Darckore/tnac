@@ -84,12 +84,23 @@ namespace tnac
     m_buf = utils::ltrim(buf);
     m_from = m_buf.begin();
     m_to   = m_from;
+    clear_preview();
   }
 
   token lex::next() noexcept
   {
+    auto tok = peek();
+    clear_preview();
+    return tok;
+  }
+
+  const token& lex::peek() noexcept
+  {
+    if (m_preview)
+      return *m_preview;
+
     if (!good())
-      return { .m_value{}, .m_kind{ token::Eol } };
+      return consume(tok_kind::Eol);
 
     const auto next = peek_char();
 
@@ -109,12 +120,13 @@ namespace tnac
 
   // Private members
 
-  token lex::consume(tok_kind kind) noexcept
+  const token& lex::consume(tok_kind kind) noexcept
   {
     if (kind == tok_kind::Error)
       ffwd();
 
-    token res{ .m_value{ m_from, m_to }, .m_kind{ kind } };
+    auto tokVal = (kind != tok_kind::Eol) ? string_t{ m_from, m_to } : string_t{};
+    token res{ .m_value{ tokVal }, .m_kind{ kind } };
 
     while (good())
     {
@@ -129,7 +141,8 @@ namespace tnac
     }
 
     m_from = m_to;
-    return res;
+    m_preview = res;
+    return *m_preview;
   }
 
   void lex::ffwd() noexcept
@@ -144,7 +157,7 @@ namespace tnac
     }
   }
 
-  token lex::number() noexcept
+  const token& lex::number() noexcept
   {
     using enum tok_kind;
 
@@ -172,15 +185,15 @@ namespace tnac
 
     return decimal_number(leadingZero);
   }
-  token lex::bin_number() noexcept
+  const token& lex::bin_number() noexcept
   {
     return hex_bin_impl(false);
   }
-  token lex::hex_number() noexcept
+  const token& lex::hex_number() noexcept
   {
     return hex_bin_impl(true);
   }
-  token lex::hex_bin_impl(bool isHex) noexcept
+  const token& lex::hex_bin_impl(bool isHex) noexcept
   {
     using enum tok_kind;
     advance();
@@ -194,7 +207,7 @@ namespace tnac
     return detail::is_separator(peek_char()) ? consume(kind) : consume(Error);
   }
 
-  token lex::decimal_number(bool leadingZero) noexcept
+  const token& lex::decimal_number(bool leadingZero) noexcept
   {
     using enum tok_kind;
     constexpr auto dec = 10u;
@@ -240,7 +253,7 @@ namespace tnac
     return ok;
   }
 
-  token lex::op() noexcept
+  const token& lex::op() noexcept
   {
     using enum tok_kind;
     const auto next = peek_char();
@@ -287,6 +300,11 @@ namespace tnac
   bool lex::good() const noexcept
   {
     return m_to != m_buf.end();
+  }
+
+  void lex::clear_preview() noexcept
+  {
+    m_preview.reset();
   }
 
 }

@@ -53,4 +53,20 @@ namespace tnac_tests
     using enum tnac::tok_kind;
     EXPECT_TRUE(detail::all_same(failures, Error));
   }
+
+  TEST(lexer, t_peek)
+  {
+    constexpr auto input = "42 69"sv;
+    tnac::lex lex;
+    lex.feed(input);
+
+    auto tok = lex.peek();
+    EXPECT_EQ(tok, lex.peek());
+    EXPECT_EQ(tok, lex.peek());
+    EXPECT_EQ(tok, lex.next());
+    EXPECT_NE(tok, lex.peek());
+    
+    utils::unused(lex.next());
+    EXPECT_TRUE(lex.next().is_eol());
+  }
 }

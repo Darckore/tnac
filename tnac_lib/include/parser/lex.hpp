@@ -53,6 +53,8 @@ namespace tnac
       return is(Eol);
     }
 
+    bool operator==(const token&) const noexcept = default;
+
     string_t m_value;
     kind m_kind{ Error };
   };
@@ -67,6 +69,8 @@ namespace tnac
   public:
     using value_type = string_t;
     using buf_iterator = string_t::iterator;
+
+    using token_opt = std::optional<token>;
 
   public:
     CLASS_SPECIALS_NONE_CUSTOM(lex);
@@ -86,12 +90,17 @@ namespace tnac
     //
     token next() noexcept;
 
+    //
+    // Previews the next token
+    //
+    const token& peek() noexcept;
+
   private:
     //
     // Consumes the current character sequence between from an to iterators,
     // and advances the from iterator to the next non-blank character
     //
-    token consume(tok_kind kind) noexcept;
+    const token& consume(tok_kind kind) noexcept;
 
     //
     // Moves forward until a separator is encountered
@@ -101,27 +110,27 @@ namespace tnac
     //
     // Tries to parse a number
     //
-    token number() noexcept;
+    const token& number() noexcept;
 
     //
     // Tries to parse a binary integer
     //
-    token bin_number() noexcept;
+    const token& bin_number() noexcept;
 
     //
     // Tries to parse a hex integer
     //
-    token hex_number() noexcept;
+    const token& hex_number() noexcept;
 
     //
     // Implementation for bin and hex
     //
-    token hex_bin_impl(bool isHex) noexcept;
+    const token& hex_bin_impl(bool isHex) noexcept;
 
     //
     // Tries to parse a float or decimal int
     //
-    token decimal_number(bool leadingZero) noexcept;
+    const token& decimal_number(bool leadingZero) noexcept;
 
     //
     // Checks whether the is a sequence of digits following the current position
@@ -134,7 +143,7 @@ namespace tnac
     //
     // Tries to parse an operator
     //
-    token op() noexcept;
+    const token& op() noexcept;
 
     //
     // Previews the next character
@@ -151,9 +160,15 @@ namespace tnac
     //
     bool good() const noexcept;
 
-  private:    
+    //
+    // Clears the preview token
+    //
+    void clear_preview() noexcept;
+
+  private:
     value_type m_buf;
     buf_iterator m_from{};
     buf_iterator m_to{};
+    token_opt m_preview{};
   };
 }
