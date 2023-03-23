@@ -4,7 +4,7 @@ namespace tnac
 {
   // Public members
 
-  ast_node* parser::parse(string_t str) noexcept
+  ast::node* parser::parse(string_t str) noexcept
   {
     utils::unused(str);
     return nullptr;

@@ -4,12 +4,12 @@
 
 #pragma once
 
-namespace tnac
+namespace tnac::ast
 {
   //
   // Kinds of ast nodes
   //
-  enum class ast_kind : std::uint16_t
+  enum class node_kind : std::uint16_t
   {
 #include "general/ast_kinds.inl"
   };
@@ -17,37 +17,37 @@ namespace tnac
   //
   // Base class for all AST nodes
   //
-  class ast_node
+  class node
   {
   public:
-    using kind = ast_kind;
+    using kind = node_kind;
     using enum kind;
 
-    friend class ast_builder;
+    friend class builder;
 
   public:
-    CLASS_SPECIALS_NONE(ast_node);
+    CLASS_SPECIALS_NONE(node);
 
-    virtual ~ast_node() noexcept = default;
+    virtual ~node() noexcept = default;
 
   protected:
-    ast_node(ast_node* parent, kind k) noexcept :
+    node(node* parent, kind k) noexcept :
       m_parent{ parent },
       m_kind{ k }
     {}
 
   public:
-    const ast_node* parent() const noexcept
+    const node* parent() const noexcept
     {
       return m_parent;
     }
-    ast_node* parent() noexcept
+    node* parent() noexcept
     {
       return utils::mutate(std::as_const(*this).parent());
     }
 
   private:
-    ast_node* m_parent{};
+    node* m_parent{};
     kind m_kind{ Error };
   };
 }

@@ -4,6 +4,7 @@
 
 #pragma once
 #include "parser/lex.hpp"
+#include "ast/ast_builder.hpp"
 #include "ast/ast.hpp"
 
 namespace tnac
@@ -20,9 +21,10 @@ namespace tnac
     parser() = default;
 
   public:
-    ast_node* parse(string_t str) noexcept;
+    ast::node* parse(string_t str) noexcept;
 
   private:
     lex m_lex;
+    ast::builder m_builder;
   };
 }
