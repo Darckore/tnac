@@ -10,11 +10,11 @@ namespace tnac
     return nullptr;
   }
 
-  parser::const_pointer parser::root() const noexcept
+  parser::const_root_ptr parser::root() const noexcept
   {
     return m_root;
   }
-  parser::pointer parser::root() noexcept
+  parser::root_ptr parser::root() noexcept
   {
     return utils::mutate(std::as_const(*this).root());
   }

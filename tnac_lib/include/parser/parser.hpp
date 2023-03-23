@@ -5,7 +5,7 @@
 #pragma once
 #include "parser/lex.hpp"
 #include "ast/ast_builder.hpp"
-#include "ast/ast.hpp"
+#include "ast/ast_nodes.hpp"
 
 namespace tnac
 {
@@ -18,6 +18,9 @@ namespace tnac
     using value_type = ast::node;
     using pointer = value_type*;
     using const_pointer = const value_type*;
+    using root_type = ast::node;
+    using root_ptr = root_type*;
+    using const_root_ptr = const root_type*;
 
   public:
     CLASS_SPECIALS_NONE_CUSTOM(parser);
@@ -37,17 +40,17 @@ namespace tnac
     // 
     // const version
     //
-    const_pointer root() const noexcept;
+    const_root_ptr root() const noexcept;
 
     //
     // Returns the root node of the entire AST, which is,
     // potentially, built over multiple parse calls
     //
-    pointer root() noexcept;
+    root_ptr root() noexcept;
 
   private:
     lex m_lex;
     ast::builder m_builder;
-    pointer m_root{};
+    root_ptr m_root{};
   };
 }
