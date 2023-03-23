@@ -7,29 +7,19 @@
 namespace tnac
 {
   //
+  // Different kinds of tokens
+  //
+  enum class tok_kind : std::uint8_t
+  {
+#include "general/token_kinds.inl"
+  };
+
+  //
   // Token used to represent lexemes
   //
   struct token
   {
-    enum class kind : std::uint8_t
-    {
-      Error,
-      Eol,
-      
-      // Numeric tokens
-      IntBin,
-      IntOct,
-      IntDec,
-      IntHex,
-      Float,
-
-      // Operators
-      Plus,
-      Minus,
-      Asterisk,
-      Slash
-    };
-
+    using kind = tok_kind;
     using enum kind;
 
     constexpr auto is(kind k) const noexcept
@@ -58,8 +48,6 @@ namespace tnac
     string_t m_value;
     kind m_kind{ Error };
   };
-
-  using tok_kind = token::kind;
 
   //
   // Lexer for the input parser
