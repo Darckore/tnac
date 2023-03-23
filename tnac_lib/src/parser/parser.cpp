@@ -4,9 +4,18 @@ namespace tnac
 {
   // Public members
 
-  ast::node* parser::parse(string_t str) noexcept
+  parser::pointer parser::parse(string_t str) noexcept
   {
-    utils::unused(str);
+    m_lex.feed(str);
     return nullptr;
+  }
+
+  parser::const_pointer parser::root() const noexcept
+  {
+    return m_root;
+  }
+  parser::pointer parser::root() noexcept
+  {
+    return utils::mutate(std::as_const(*this).root());
   }
 }
