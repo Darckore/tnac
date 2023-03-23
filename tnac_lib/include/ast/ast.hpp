@@ -23,31 +23,52 @@ namespace tnac::ast
     using kind = node_kind;
     using enum kind;
 
+  private:
     friend class builder;
 
   public:
     CLASS_SPECIALS_NONE(node);
 
-    virtual ~node() noexcept = default;
+    virtual ~node() noexcept;
 
   protected:
-    node(node* parent, kind k) noexcept :
-      m_parent{ parent },
-      m_kind{ k }
-    {}
+    node(node* parent, kind k) noexcept;
 
   public:
-    const node* parent() const noexcept
-    {
-      return m_parent;
-    }
-    node* parent() noexcept
-    {
-      return utils::mutate(std::as_const(*this).parent());
-    }
+    const node* parent() const noexcept;
+    node* parent() noexcept;
 
   private:
     node* m_parent{};
     kind m_kind{ Error };
+  };
+
+  class expr;
+
+  //
+  // A special root node. Contains a list of all expressions in the current scope
+  //
+  class scope : public node
+  {
+  public:
+    using element = expr;
+    using pointer = element*;
+    using const_pointer = const element*;
+
+    using elem_list = std::vector<pointer>;
+
+  private:
+    friend class bulder;
+
+  public:
+    CLASS_SPECIALS_NONE(scope);
+
+    virtual ~scope() noexcept;
+
+  protected:
+    explicit scope(node* parent) noexcept;
+
+  private:
+    elem_list m_children;
   };
 }

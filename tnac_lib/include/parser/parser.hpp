@@ -18,7 +18,7 @@ namespace tnac
     using value_type = ast::node;
     using pointer = value_type*;
     using const_pointer = const value_type*;
-    using root_type = ast::node;
+    using root_type = ast::scope;
     using root_ptr = root_type*;
     using const_root_ptr = const root_type*;
 
