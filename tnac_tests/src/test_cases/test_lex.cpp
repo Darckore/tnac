@@ -36,12 +36,14 @@ namespace tnac_tests
     constexpr auto octInts = "01 001 042 067 0227 0666 0256"sv;
     constexpr auto decInts = "0 1 42 69 228 666 256"sv;
     constexpr auto hexInts = "0x0 0x1 0x1234567890AbCDeF 0x69 0x228a 0x666 0xfF"sv;
+    constexpr auto floats  = "0.0 0.00000 0.1 0023.3450 13456.0"sv;
 
     using enum tnac::tok_kind;
     EXPECT_TRUE(detail::all_same(binInts, IntBin));
     EXPECT_TRUE(detail::all_same(octInts, IntOct));
     EXPECT_TRUE(detail::all_same(decInts, IntDec));
     EXPECT_TRUE(detail::all_same(hexInts, IntHex));
+    EXPECT_TRUE(detail::all_same(floats, Float));
   }
 
   TEST(lexer, t_nums_bad)

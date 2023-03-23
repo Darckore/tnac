@@ -81,7 +81,7 @@ namespace tnac
 
   void lex::feed(string_t buf) noexcept
   {
-    m_buf = buf;
+    m_buf = utils::ltrim(buf);
     m_from = m_buf.begin();
     m_to   = m_from;
   }
@@ -280,7 +280,8 @@ namespace tnac
 
   void lex::advance() noexcept
   {
-    ++m_to;
+    if(good())
+      ++m_to;
   }
 
   bool lex::good() const noexcept
