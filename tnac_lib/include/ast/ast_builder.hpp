@@ -42,6 +42,11 @@ namespace tnac::ast
     //
     scope* make_scope(node* parent, scope::elem_list children) noexcept;
 
+    //
+    // Creates a literal expression
+    //
+    expr* make_literal(node* parent, const token& tok) noexcept;
+
   private:
     owner_store m_store;
   };

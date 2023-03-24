@@ -67,6 +67,11 @@ namespace tnac
     //
     ast::expr* expr() noexcept;
 
+    //
+    // Parses a primary expr
+    //
+    ast::expr* primary_expr() noexcept;
+
   private:
     lex m_lex;
     ast::builder m_builder;

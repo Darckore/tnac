@@ -3,6 +3,7 @@
 //
 
 #pragma once
+#include "parser/token.hpp"
 
 namespace tnac::ast
 {
@@ -25,6 +26,7 @@ namespace tnac::ast
 
   private:
     friend class builder;
+    friend class scope;
 
   public:
     CLASS_SPECIALS_NONE(node);
@@ -37,6 +39,11 @@ namespace tnac::ast
   public:
     const node* parent() const noexcept;
     node* parent() noexcept;
+
+    node* to_base() noexcept;
+
+  protected:
+    void make_child_of(node* parent) noexcept;
 
   private:
     node* m_parent{};
@@ -67,6 +74,9 @@ namespace tnac::ast
 
   protected:
     scope(node* parent, elem_list children) noexcept;
+
+  private:
+    void assume_ancestry() noexcept;
 
   private:
     elem_list m_children;

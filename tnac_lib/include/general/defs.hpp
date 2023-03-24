@@ -14,6 +14,15 @@
 *     expr
 *     expr-list : expr
 * 
+*   expr:
+*     primary-expr
+* 
+*   primary-expr:
+*     literal-expr
+* 
+*   literal-expr:
+*     number
+* 
 *   number:
 *     int-num
 *     float-num

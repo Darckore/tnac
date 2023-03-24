@@ -14,6 +14,11 @@ namespace tnac::ast
     return make<scope>(parent, std::move(children));
   }
 
+  expr* builder::make_literal(node* parent, const token& tok) noexcept
+  {
+    return make<lit_expr>(parent, tok);
+  }
+
   // Private members
 
 

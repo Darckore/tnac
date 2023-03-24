@@ -46,6 +46,17 @@ namespace tnac
 
   ast::expr* parser::expr() noexcept
   {
+    return primary_expr();
+  }
+
+  ast::expr* parser::primary_expr() noexcept
+  {
+    auto&& tok = m_lex.peek();
+    if (tok.is_literal())
+    {
+      return m_builder.make_literal({}, m_lex.next());
+    }
+
     return {};
   }
 }
