@@ -20,14 +20,14 @@ namespace tnac::ast
     return utils::mutate(std::as_const(*this).parent());
   }
 
-  node* node::to_base() noexcept
-  {
-    return this;
-  }
-
   void node::make_child_of(node* parent) noexcept
   {
     m_parent = parent;
+  }
+
+  void node::assume_ancestry(node* child) noexcept
+  {
+    child->make_child_of(this);
   }
 
   // Scope
@@ -35,17 +35,18 @@ namespace tnac::ast
   scope::~scope() noexcept = default;
 
   scope::scope(node* parent, elem_list children) noexcept :
-    node{ parent, node::Scope },
-    m_children{ std::move(children) }
+    node{ parent, node::Scope }
   {
-    assume_ancestry();
+    adopt(std::move(children));
   }
 
-  void scope::assume_ancestry() noexcept
+  void scope::adopt(elem_list children) noexcept
   {
-    for (auto child : m_children)
+    for (auto child : children)
     {
-      child->to_base()->make_child_of(this);
+      node::assume_ancestry(child);
     }
+
+    m_children.insert(m_children.end(), children.begin(), children.end());
   }
 }

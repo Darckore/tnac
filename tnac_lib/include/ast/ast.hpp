@@ -26,7 +26,6 @@ namespace tnac::ast
 
   private:
     friend class builder;
-    friend class scope;
 
   public:
     CLASS_SPECIALS_NONE(node);
@@ -40,10 +39,10 @@ namespace tnac::ast
     const node* parent() const noexcept;
     node* parent() noexcept;
 
-    node* to_base() noexcept;
-
   protected:
     void make_child_of(node* parent) noexcept;
+
+    void assume_ancestry(node* child) noexcept;
 
   private:
     node* m_parent{};
@@ -75,8 +74,8 @@ namespace tnac::ast
   protected:
     scope(node* parent, elem_list children) noexcept;
 
-  private:
-    void assume_ancestry() noexcept;
+  public:
+    void adopt(elem_list children) noexcept;
 
   private:
     elem_list m_children;

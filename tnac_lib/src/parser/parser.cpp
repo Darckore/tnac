@@ -17,6 +17,10 @@ namespace tnac
     {
       m_root = m_builder.make_scope({}, std::move(eList));
     }
+    else
+    {
+      m_root->adopt(std::move(eList));
+    }
 
     return res;
   }
