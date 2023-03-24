@@ -11,9 +11,7 @@ namespace tnac::ast
   {}
 
 
-  //
   // Literal expr
-  //
 
   lit_expr::~lit_expr() noexcept = default;
 
