@@ -6,8 +6,8 @@ namespace tnac::ast
 
   expr::~expr() noexcept = default;
 
-  expr::expr(node* parent, kind k) noexcept :
-    node{ parent, k }
+  expr::expr(kind k) noexcept :
+    node{ k }
   {}
 
 
@@ -17,8 +17,8 @@ namespace tnac::ast
 
   lit_expr::~lit_expr() noexcept = default;
 
-  lit_expr::lit_expr(node* parent, const token& tok) noexcept :
-    expr{ parent, kind::Literal },
+  lit_expr::lit_expr(const token& tok) noexcept :
+    expr{ kind::Literal },
     m_value{ tok }
   {
   }

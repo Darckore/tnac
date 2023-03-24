@@ -40,12 +40,12 @@ namespace tnac::ast
     //
     // Creates a scope
     //
-    scope* make_scope(node* parent, scope::elem_list children) noexcept;
+    scope* make_scope(scope::elem_list children) noexcept;
 
     //
     // Creates a literal expression
     //
-    expr* make_literal(node* parent, const token& tok) noexcept;
+    expr* make_literal(const token& tok) noexcept;
 
   private:
     owner_store m_store;

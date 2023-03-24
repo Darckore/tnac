@@ -6,8 +6,7 @@ namespace tnac::ast
 
   node::~node() noexcept = default;
 
-  node::node(node* parent, kind k) noexcept :
-    m_parent{ parent },
+  node::node(kind k) noexcept :
     m_kind{ k }
   {}
 
@@ -34,8 +33,8 @@ namespace tnac::ast
 
   scope::~scope() noexcept = default;
 
-  scope::scope(node* parent, elem_list children) noexcept :
-    node{ parent, node::Scope }
+  scope::scope(elem_list children) noexcept :
+    node{ node::Scope }
   {
     adopt(std::move(children));
   }

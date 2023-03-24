@@ -15,7 +15,7 @@ namespace tnac
     auto res = eList.back();
     if (!m_root)
     {
-      m_root = m_builder.make_scope({}, std::move(eList));
+      m_root = m_builder.make_scope(std::move(eList));
     }
     else
     {
@@ -58,7 +58,7 @@ namespace tnac
     auto&& tok = m_lex.peek();
     if (tok.is_literal())
     {
-      return m_builder.make_literal({}, m_lex.next());
+      return m_builder.make_literal(m_lex.next());
     }
 
     return {};

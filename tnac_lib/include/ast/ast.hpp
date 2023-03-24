@@ -33,7 +33,7 @@ namespace tnac::ast
     virtual ~node() noexcept;
 
   protected:
-    node(node* parent, kind k) noexcept;
+    node(kind k) noexcept;
 
   public:
     const node* parent() const noexcept;
@@ -72,7 +72,7 @@ namespace tnac::ast
     virtual ~scope() noexcept;
 
   protected:
-    scope(node* parent, elem_list children) noexcept;
+    scope(elem_list children) noexcept;
 
   public:
     void adopt(elem_list children) noexcept;

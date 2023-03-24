@@ -9,14 +9,14 @@ namespace tnac::ast
 
   // Public members
 
-  scope* builder::make_scope(node* parent, scope::elem_list children) noexcept
+  scope* builder::make_scope(scope::elem_list children) noexcept
   {
-    return make<scope>(parent, std::move(children));
+    return make<scope>(std::move(children));
   }
 
-  expr* builder::make_literal(node* parent, const token& tok) noexcept
+  expr* builder::make_literal(const token& tok) noexcept
   {
-    return make<lit_expr>(parent, tok);
+    return make<lit_expr>(tok);
   }
 
   // Private members

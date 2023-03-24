@@ -21,7 +21,7 @@ namespace tnac::ast
     virtual ~expr() noexcept;
 
   protected:
-    expr(node* parent, kind k) noexcept;
+    expr(kind k) noexcept;
   };
 
 
@@ -39,7 +39,7 @@ namespace tnac::ast
     virtual ~lit_expr() noexcept;
 
   protected:
-    lit_expr(node* parent, const token& tok) noexcept;
+    lit_expr(const token& tok) noexcept;
 
   private:
     token m_value{};
