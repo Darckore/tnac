@@ -16,6 +16,10 @@ namespace tnac
       {
         return utils::in_range(c, 'A', 'Z') ? char_t{ c + ('a' - 'A') } : c;
       }
+      constexpr auto is_expr_separator(char_t c) noexcept
+      {
+        return c == ':';
+      }
       constexpr auto is_digit(char_t c, unsigned base = 10u) noexcept
       {
         constexpr auto maxBase = 16u;
@@ -48,7 +52,8 @@ namespace tnac
       }
       constexpr auto is_separator(char_t c) noexcept
       {
-        return is_blank(c) ||
+        return is_expr_separator(c) ||
+               is_blank(c) ||
                is_operator(c);
       }
 
@@ -96,6 +101,8 @@ namespace tnac
 
   const token& lex::peek() noexcept
   {
+    using enum tok_kind;
+
     if (m_preview)
       return *m_preview;
 
@@ -114,7 +121,13 @@ namespace tnac
       return op();
     }
 
-    return consume(tok_kind::Error);
+    if (detail::is_expr_separator(next))
+    {
+      advance();
+      return consume(ExprSep);
+    }
+
+    return consume(Error);
   }
 
 

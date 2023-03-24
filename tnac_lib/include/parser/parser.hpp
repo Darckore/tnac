@@ -18,9 +18,11 @@ namespace tnac
     using value_type = ast::node;
     using pointer = value_type*;
     using const_pointer = const value_type*;
+
     using root_type = ast::scope;
     using root_ptr = root_type*;
     using const_root_ptr = const root_type*;
+    using expr_list = root_type::elem_list;
 
   public:
     CLASS_SPECIALS_NONE_CUSTOM(parser);
@@ -31,6 +33,12 @@ namespace tnac
   public:
     //
     // Parses the input string and produces an AST
+    // Will return the last parsed expression in the list separated by ':'
+    // 
+    // The result is supposed to be used in immediate mode where expressions
+    // are meant to be processed one by one
+    // 
+    // Call root to the get the entire AST
     //
     pointer parse(string_t str) noexcept;
 
@@ -47,6 +55,17 @@ namespace tnac
     // potentially, built over multiple parse calls
     //
     root_ptr root() noexcept;
+
+  private:
+    //
+    // Parses a list of expressions
+    //
+    expr_list expression_list() noexcept;
+
+    //
+    // Parses an expression
+    //
+    ast::expr* expr() noexcept;
 
   private:
     lex m_lex;

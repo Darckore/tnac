@@ -58,7 +58,7 @@ namespace tnac::ast
     using elem_list = std::vector<pointer>;
 
   private:
-    friend class bulder;
+    friend class builder;
 
   public:
     CLASS_SPECIALS_NONE(scope);
@@ -66,9 +66,15 @@ namespace tnac::ast
     virtual ~scope() noexcept;
 
   protected:
-    explicit scope(node* parent) noexcept;
+    scope(node* parent, elem_list children) noexcept;
 
   private:
     elem_list m_children;
   };
+
+  //
+  // Checks whether the target class inherits from
+  //
+  template <typename D>
+  concept ast_node = std::is_base_of_v<ast::node, D>;
 }

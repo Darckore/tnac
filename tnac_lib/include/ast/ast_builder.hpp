@@ -25,7 +25,22 @@ namespace tnac::ast
     ~builder() noexcept;
 
   public:
+    //
+    // Generic function to create a node of the given type
+    // T must inherit from ast::node
+    //
+    template <ast_node T, typename ...Args>
+    T* make(Args&& ...args) noexcept
+    {
+      auto res = new (std::nothrow) T{ std::forward<Args>(args)... };
+      m_store.emplace_back(res);
+      return res;
+    }
 
+    //
+    // Creates a scope
+    //
+    scope* make_scope(node* parent, scope::elem_list children) noexcept;
 
   private:
     owner_store m_store;

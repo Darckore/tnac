@@ -5,6 +5,7 @@ void print(const tnac::token& tok) noexcept
   static constexpr std::array kinds{
     "Invalid token"sv,
     "Eol"sv,
+    "ExprSep"sv,
     "IntBin"sv,
     "IntOct"sv,
     "IntDec"sv,

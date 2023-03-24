@@ -25,7 +25,8 @@ namespace tnac::ast
 
   scope::~scope() noexcept = default;
 
-  scope::scope(node* parent) noexcept :
-    node{ parent, node::Scope }
+  scope::scope(node* parent, elem_list children) noexcept :
+    node{ parent, node::Scope },
+    m_children{ std::move(children) }
   {}
 }

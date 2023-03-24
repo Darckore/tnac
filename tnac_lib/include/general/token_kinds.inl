@@ -1,6 +1,9 @@
 Error,
 Eol,
 
+// Expr separator
+ExprSep,
+
 // Numeric tokens
 IntBin,
 IntOct,
@@ -12,4 +15,4 @@ Float,
 Plus,
 Minus,
 Asterisk,
-Slash
+Slash,

@@ -7,7 +7,18 @@ namespace tnac
   parser::pointer parser::parse(string_t str) noexcept
   {
     m_lex.feed(str);
-    return nullptr;
+
+    auto eList = expression_list();
+    if (eList.empty())
+      return {};
+
+    auto res = eList.back();
+    if (!m_root)
+    {
+      m_root = m_builder.make_scope({}, std::move(eList));
+    }
+
+    return res;
   }
 
   parser::const_root_ptr parser::root() const noexcept
@@ -17,5 +28,24 @@ namespace tnac
   parser::root_ptr parser::root() noexcept
   {
     return utils::mutate(std::as_const(*this).root());
+  }
+
+  // Private members
+
+  parser::expr_list parser::expression_list() noexcept
+  {
+    expr_list res;
+
+    while (auto e = expr())
+    {
+      res.push_back(e);
+    }
+
+    return res;
+  }
+
+  ast::expr* parser::expr() noexcept
+  {
+    return {};
   }
 }

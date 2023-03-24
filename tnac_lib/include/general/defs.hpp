@@ -7,6 +7,13 @@
 /*
 * Grammar
 * 
+*   scope:
+*     expr-list
+* 
+*   expr-list:
+*     expr
+*     expr-list : expr
+* 
 *   number:
 *     int-num
 *     float-num
