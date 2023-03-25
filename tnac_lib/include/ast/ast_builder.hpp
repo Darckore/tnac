@@ -24,7 +24,7 @@ namespace tnac::ast
     builder() noexcept;
     ~builder() noexcept;
 
-  public:
+  private:
     //
     // Generic function to create a node of the given type
     // T must inherit from ast::node
@@ -37,6 +37,7 @@ namespace tnac::ast
       return res;
     }
 
+  public:
     //
     // Creates a scope
     //
@@ -46,6 +47,11 @@ namespace tnac::ast
     // Creates a literal expression
     //
     expr* make_literal(const token& tok) noexcept;
+
+    //
+    // Creates a unary expression
+    //
+    unary_expr* make_unary(expr& e, const token& op) noexcept;
 
   private:
     owner_store m_store;

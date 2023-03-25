@@ -68,6 +68,11 @@ namespace tnac
     ast::expr* expr() noexcept;
 
     //
+    // Parses a unary expr
+    //
+    ast::expr* unary_expr() noexcept;
+
+    //
     // Parses a primary expr
     //
     ast::expr* primary_expr() noexcept;

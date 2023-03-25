@@ -19,8 +19,11 @@ namespace tnac::ast
     return make<lit_expr>(tok);
   }
 
+  unary_expr* builder::make_unary(expr& e, const token& op) noexcept
+  {
+    return make<unary_expr>(e, op);
+  }
+
   // Private members
-
-
 
 }

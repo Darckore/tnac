@@ -15,7 +15,15 @@
 *     expr-list : expr
 * 
 *   expr:
+*     multiplicative-expr
+* 
+*   multiplicative-expr:
+*     unary-expr
+*     unary-expr multiplicative-operator expr
+* 
+*   unary-expr:
 *     primary-expr
+*     unary-operator primary-expr
 * 
 *   primary-expr:
 *     literal-expr
@@ -63,6 +71,15 @@
 *   hex-digit-sequence
 *     hex-digit
 *     hex-digit-sequence hex-digit
+* 
+*   multiplicative-operator: one of
+*     * /
+* 
+*   additive-operator: one of
+*     + -
+* 
+*   unary-operator: one of
+*     + -
 * 
 *   operator: one of
 *     + - * /

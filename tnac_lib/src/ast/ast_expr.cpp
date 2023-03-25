@@ -20,4 +20,17 @@ namespace tnac::ast
     m_value{ tok }
   {
   }
+
+
+  // Unary expr
+
+  unary_expr::~unary_expr() noexcept = default;
+
+  unary_expr::unary_expr(expr& e, const token& op) noexcept :
+    expr{ kind::Unary },
+    m_expr{ &e },
+    m_op{ op }
+  {
+    assume_ancestry(m_expr);
+  }
 }

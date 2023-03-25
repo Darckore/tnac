@@ -44,4 +44,26 @@ namespace tnac::ast
   private:
     token m_value{};
   };
+
+
+  //
+  // Unary expr
+  //
+  class unary_expr : public expr
+  {
+  private:
+    friend class builder;
+
+  public:
+    CLASS_SPECIALS_NONE(unary_expr);
+
+    virtual ~unary_expr() noexcept;
+
+  protected:
+    unary_expr(expr& e, const token& op) noexcept;
+
+  private:
+    expr* m_expr{};
+    token m_op{};
+  };
 }

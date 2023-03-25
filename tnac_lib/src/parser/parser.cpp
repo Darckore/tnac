@@ -50,7 +50,22 @@ namespace tnac
 
   ast::expr* parser::expr() noexcept
   {
-    return primary_expr();
+    return unary_expr();
+  }
+
+  ast::expr* parser::unary_expr() noexcept
+  {
+    auto&& tok = m_lex.peek();
+    if(!tok.is_any(token::Plus, token::Minus))
+      return primary_expr();
+
+    auto op = m_lex.next();
+    if (auto exp = primary_expr())
+    {
+      return m_builder.make_unary(*exp, op);
+    }
+
+    return {};
   }
 
   ast::expr* parser::primary_expr() noexcept
