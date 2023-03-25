@@ -91,6 +91,36 @@ namespace tnac
       {
         return to_lower(c) == 'x';
       }
+
+      constexpr auto is_alpha(char_t c) noexcept
+      {
+        return utils::in_range(to_lower(c), 'a', 'z');
+      }
+      constexpr auto is_underscore(char_t c) noexcept
+      {
+        return c == '_';
+      }
+      constexpr auto is_id_start(char_t c) noexcept
+      {
+        return is_alpha(c);
+      }
+      constexpr auto is_id_char(char_t c) noexcept
+      {
+        return is_underscore(c) ||
+               is_id_start(c) ||
+               is_digit(c, 10);
+      }
+      constexpr auto is_command_start(char_t c) noexcept
+      {
+        return c == '#';
+      }
+      
+      constexpr auto is_any_name_start(char_t c) noexcept
+      {
+        return is_id_start(c) ||
+               is_underscore(c) ||
+               is_command_start(c);
+      }
     }
   }
 
@@ -124,6 +154,11 @@ namespace tnac
 
     const auto next = peek_char();
 
+    if (detail::is_any_name_start(next))
+    {
+      return identifier();
+    }
+
     if (detail::is_digit(next))
     {
       return number();
@@ -149,6 +184,9 @@ namespace tnac
   {
     if (kind == tok_kind::Error)
       ffwd();
+
+    if (kind == tok_kind::Command)
+      ++m_from; // Skipping the leading '#'
 
     auto tokVal = (kind != tok_kind::Eol) ? string_t{ m_from, m_to } : string_t{};
     token res{ .m_value{ tokVal }, .m_kind{ kind } };
@@ -269,6 +307,59 @@ namespace tnac
       }
 
       if (detail::is_dot(next) || detail::is_separator(next))
+        break;
+
+      ok = false;
+      break;
+    }
+
+    return ok;
+  }
+
+  const token& lex::keyword() noexcept
+  {
+    return consume(tok_kind::KwTemporary);
+  }
+
+  const token& lex::identifier() noexcept
+  {
+    using enum tok_kind;
+    const auto first = peek_char();
+
+    if (!detail::is_id_start(first))
+    {
+      advance();
+    }
+
+    if (!id_seq())
+      return consume(Error);
+
+    if (detail::is_underscore(first))
+    {
+      return keyword();
+    }
+    else if (detail::is_command_start(first))
+    {
+      return consume(Command);
+    }
+
+    return consume(Identifier);
+  }
+
+  bool lex::id_seq() noexcept
+  {
+    bool ok = false;
+    while (good())
+    {
+      const auto next = peek_char();
+      if (detail::is_id_char(next))
+      {
+        ok = true;
+        advance();
+        continue;
+      }
+
+      if (detail::is_separator(next))
         break;
 
       ok = false;

@@ -79,12 +79,31 @@ namespace tnac
     const token& decimal_number(bool leadingZero) noexcept;
 
     //
-    // Checks whether the is a sequence of digits following the current position
+    // Checks whether there is a sequence of digits following the current position
     // Moves the to iterator past the last digit
     // 
     // Fails if the digit sequence doesn't end with a separator or a '.'
     //
     bool digit_seq(unsigned base) noexcept;
+
+    //
+    // Tries to parse a keyword
+    // Fails if the keyword name is unknown
+    //
+    const token& keyword() noexcept;
+
+    //
+    // Tries to parse an identifier
+    //
+    const token& identifier() noexcept;
+
+    //
+    // Checks whether there is a sequence of id chars following the current position
+    // Moves the to iterator past the last character
+    // 
+    // Fails is the sequence doesn't end with a separator
+    //
+    bool id_seq() noexcept;
 
     //
     // Tries to parse an operator

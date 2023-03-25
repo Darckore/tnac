@@ -20,3 +20,8 @@ Slash,
 // Punctuation
 ParenOpen,
 ParenClose,
+
+// Identifiers
+Identifier,
+Command,
+KwTemporary,

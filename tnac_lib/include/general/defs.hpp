@@ -36,11 +36,20 @@
 *   literal-expr:
 *     number
 * 
+*   command:
+*     # identifier
+* 
+*   keyword:
+*     _ identifier
+* 
+*   identifier:
+*     identifier-start id-sequence
+* 
 *   number:
 *     int-num
 *     float-num
 * 
-*   float-num
+*   float-num:
 *     digit-sequence [.] digit-sequence
 * 
 *   int-num:
@@ -49,31 +58,31 @@
 *     decimal-int-num
 *     hex-int-num
 * 
-*   binary-int-num
+*   binary-int-num:
 *     '0b' binary-digit-sequence
 *
-*   oct-int-num
+*   oct-int-num:
 *     oct-digit-sequence
 * 
 *   decimal-int-num:
 *     non-zero-digit digit-sequence
 * 
-*   hex-int-num
+*   hex-int-num:
 *     '0x' hex-digit-sequence
 * 
-*   binary-digit-sequence
+*   binary-digit-sequence:
 *     binary-digit
 *     binary-digit-sequence binary-digit
 * 
-*   oct-digit-sequence
+*   oct-digit-sequence:
 *     oct-digit
 *     oct-digit-sequence oct-digit
 * 
-*   digit-sequence
+*   digit-sequence:
 *     digit
 *     digit-sequence digit
 * 
-*   hex-digit-sequence
+*   hex-digit-sequence:
 *     hex-digit
 *     hex-digit-sequence hex-digit
 * 
@@ -88,6 +97,19 @@
 * 
 *   operator: one of
 *     + - * /
+* 
+*   id-sequence:
+*     identifier-char
+*     id-sequence identifier-char
+* 
+*   identifier-start: one of
+*     a b c d e f g h i j k l m n o p q r s t u v w x y z
+*     A B C D E F G H I J K L M N O P Q R S T U V W X Y Z
+* 
+*   identifier-char: one of
+*     a b c d e f g h i j k l m n o p q r s t u v w x y z
+*     A B C D E F G H I J K L M N O P Q R S T U V W X Y Z
+*     _ 1 2 3 4 5 6 7 8 9 0
 * 
 *   binary-digit: one of
 *     0 1

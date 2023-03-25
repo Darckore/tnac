@@ -1,5 +1,5 @@
 #include "parser/parser.hpp"
-#define PRINT_TOKENS 0
+#define PRINT_TOKENS 1
 
 void print_token(const tnac::token& tok) noexcept
 {
@@ -18,6 +18,9 @@ void print_token(const tnac::token& tok) noexcept
     "Slash"sv,
     "ParenOpen"sv,
     "ParenClose"sv,
+    "Identifier"sv,
+    "Command"sv,
+    "keyword"sv,
   };
 
   using idx_t = decltype(kinds)::size_type;
@@ -110,10 +113,11 @@ bool parse_line(tnac::buf_t input) noexcept
   static std::forward_list<tnac::buf_t> lineBuf;
   static tnac::lex lex;
   static tnac::parser parser;
+  std::cout << "Input: '" << input;
   lineBuf.emplace_front(std::move(input));
 
 #if PRINT_TOKENS
-  std::cout << "Input: '" << input << "'\n\nTokens:\n";
+  std::cout << "'\n\nTokens:\n";
   lex.feed(lineBuf.front());
   for (;;)
   {
