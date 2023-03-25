@@ -1,5 +1,5 @@
 #include "parser/parser.hpp"
-#define PRINT_TOKENS 1
+#define PRINT_TOKENS 0
 
 void print_token(const tnac::token& tok) noexcept
 {
@@ -40,6 +40,14 @@ void print_ast(tnac::ast::node& node, int depth = 0) noexcept
   switch (node.what())
   {
   case Scope:
+  {
+    auto&& scope = static_cast<ast::scope&>(node);
+    std::cout << "<scope>\n";
+    for (auto node : scope.children())
+    {
+      print_ast(*node, depth);
+    }
+  }
     break;
 
   case Literal:

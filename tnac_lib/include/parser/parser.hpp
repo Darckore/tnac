@@ -69,7 +69,7 @@ namespace tnac
     void to_expr_end() noexcept;
 
     //
-    // Produces an invalid expression for error recovery (todo)
+    // Produces an invalid expression for error recovery
     //
     ast::expr* error_expr(string_t msg) noexcept;
 
