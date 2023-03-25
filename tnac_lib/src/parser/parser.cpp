@@ -88,7 +88,7 @@ namespace tnac
     if (lhs && detail::is_add_op(peek_next()))
     {
       auto op = m_lex.next();
-      if (auto rhs = multiplicative_expr())
+      if (auto rhs = additive_expr())
         return m_builder.make_binary(*lhs, *rhs, op);
     }
 
@@ -101,7 +101,7 @@ namespace tnac
     if (lhs && detail::is_mul_op(peek_next()))
     {
       auto op = m_lex.next();
-      if (auto rhs = unary_expr())
+      if (auto rhs = multiplicative_expr())
         return m_builder.make_binary(*lhs, *rhs, op);
     }
 

@@ -19,6 +19,11 @@ namespace tnac::ast
     return utils::mutate(std::as_const(*this).parent());
   }
 
+  node::kind node::what() const noexcept
+  {
+    return m_kind;
+  }
+
   void node::make_child_of(node* parent) noexcept
   {
     m_parent = parent;
@@ -47,5 +52,14 @@ namespace tnac::ast
     }
 
     m_children.insert(m_children.end(), children.begin(), children.end());
+  }
+
+  const scope::elem_list& scope::children() const noexcept
+  {
+    return m_children;
+  }
+  scope::elem_list& scope::children() noexcept
+  {
+    return utils::mutate(std::as_const(*this).children());
   }
 }

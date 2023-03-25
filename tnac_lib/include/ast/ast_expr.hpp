@@ -41,6 +41,9 @@ namespace tnac::ast
   protected:
     lit_expr(const token& tok) noexcept;
 
+  public:
+    const token& value() const noexcept;
+
   private:
     token m_value{};
   };
@@ -61,6 +64,12 @@ namespace tnac::ast
 
   protected:
     unary_expr(expr& e, const token& op) noexcept;
+
+  public:
+    const token& op() const noexcept;
+
+    const expr& operand() const noexcept;
+    expr& operand() noexcept;
 
   private:
     expr* m_expr{};
@@ -83,6 +92,15 @@ namespace tnac::ast
 
   protected:
     binary_expr(expr& left, expr& right, const token& op) noexcept;
+
+  public:
+    const token& op() const noexcept;
+
+    const expr& left() const noexcept;
+    expr& left() noexcept;
+
+    const expr& right() const noexcept;
+    expr& right() noexcept;
 
   private:
     expr* m_left{};

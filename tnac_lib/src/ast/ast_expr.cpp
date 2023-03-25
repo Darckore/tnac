@@ -21,6 +21,10 @@ namespace tnac::ast
   {
   }
 
+  const token& lit_expr::value() const noexcept
+  {
+    return m_value;
+  }
 
   // Unary expr
 
@@ -32,6 +36,20 @@ namespace tnac::ast
     m_op{ op }
   {
     assume_ancestry(m_expr);
+  }
+
+  const token& unary_expr::op() const noexcept
+  {
+    return m_op;
+  }
+
+  const expr& unary_expr::operand() const noexcept
+  {
+    return *m_expr;
+  }
+  expr& unary_expr::operand() noexcept
+  {
+    return utils::mutate(std::as_const(*this).operand());
   }
 
 
@@ -47,5 +65,28 @@ namespace tnac::ast
   {
     assume_ancestry(m_left);
     assume_ancestry(m_right);
+  }
+
+  const token& binary_expr::op() const noexcept
+  {
+    return m_op;
+  }
+
+  const expr& binary_expr::left() const noexcept
+  {
+    return *m_left;
+  }
+  expr& binary_expr::left() noexcept
+  {
+    return utils::mutate(std::as_const(*this).left());
+  }
+
+  const expr& binary_expr::right() const noexcept
+  {
+    return *m_right;
+  }
+  expr& binary_expr::right() noexcept
+  {
+    return utils::mutate(std::as_const(*this).right());
   }
 }

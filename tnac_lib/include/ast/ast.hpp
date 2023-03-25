@@ -39,6 +39,8 @@ namespace tnac::ast
     const node* parent() const noexcept;
     node* parent() noexcept;
 
+    kind what() const noexcept;
+
   protected:
     void make_child_of(node* parent) noexcept;
 
@@ -76,6 +78,9 @@ namespace tnac::ast
 
   public:
     void adopt(elem_list children) noexcept;
+
+    const elem_list& children() const noexcept;
+    elem_list& children() noexcept;
 
   private:
     elem_list m_children;
