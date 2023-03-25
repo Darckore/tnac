@@ -31,7 +31,11 @@
 * 
 *   primary-expr:
 *     literal-expr
+*     id-expr
 *     (expr)
+* 
+*   id-expr:
+*     identifier
 * 
 *   literal-expr:
 *     number

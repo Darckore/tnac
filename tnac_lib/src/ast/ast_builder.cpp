@@ -19,9 +19,14 @@ namespace tnac::ast
     return make<error_expr>(pos, msg);
   }
 
-  expr* builder::make_literal(const token& tok) noexcept
+  lit_expr* builder::make_literal(const token& tok) noexcept
   {
     return make<lit_expr>(tok);
+  }
+
+  id_expr* builder::make_id(const token& tok) noexcept
+  {
+    return make<id_expr>(tok);
   }
 
   paren_expr* builder::make_paren(expr& e) noexcept

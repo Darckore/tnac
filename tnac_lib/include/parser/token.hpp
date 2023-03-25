@@ -48,6 +48,11 @@ namespace tnac
       return is_any(IntBin, IntOct, IntDec, IntHex, Float);
     }
 
+    constexpr auto is_identifier() const noexcept
+    {
+      return is(Identifier);
+    }
+
     bool operator==(const token&) const noexcept = default;
 
     string_t m_value;

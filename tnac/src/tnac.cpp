@@ -51,6 +51,14 @@ void print_ast(tnac::ast::node& node, int depth = 0) noexcept
   }
     break;
 
+  case Identifier:
+  {
+    auto&& id = static_cast<ast::id_expr&>(node);
+    auto name = id.name();
+    std::cout << "Id expression: " << name << '\n';
+  }
+    break;
+
   case Unary:
   {
     auto&& unary = static_cast<ast::unary_expr&>(node);
@@ -103,7 +111,7 @@ void print_ast(tnac::ast::node& node, int depth = 0) noexcept
     break;
 
   default:
-    std::cout << "Invalid or unknown node";
+    std::cout << "Invalid or unknown node\n";
     break;
   }
 }

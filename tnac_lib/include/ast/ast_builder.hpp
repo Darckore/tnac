@@ -51,7 +51,12 @@ namespace tnac::ast
     //
     // Creates a literal expression
     //
-    expr* make_literal(const token& tok) noexcept;
+    lit_expr* make_literal(const token& tok) noexcept;
+
+    //
+    // Creates an id expression
+    //
+    id_expr* make_id(const token& tok) noexcept;
 
     //
     // Creates a paren expression

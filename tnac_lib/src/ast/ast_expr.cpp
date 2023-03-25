@@ -47,6 +47,27 @@ namespace tnac::ast
     return m_value;
   }
 
+
+  // Id expr
+
+  id_expr::~id_expr() noexcept = default;
+
+  id_expr::id_expr(const token& tok) noexcept :
+    expr{ kind::Identifier },
+    m_id{ tok }
+  {}
+
+  string_t id_expr::name() const noexcept
+  {
+    return pos().m_value;
+  }
+
+  const token& id_expr::pos() const noexcept
+  {
+    return m_id;
+  }
+
+
   // Unary expr
 
   unary_expr::~unary_expr() noexcept = default;

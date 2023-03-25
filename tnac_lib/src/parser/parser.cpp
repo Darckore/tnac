@@ -181,9 +181,15 @@ namespace tnac
 
   ast::expr* parser::primary_expr() noexcept
   {
-    if (peek_next().is_literal())
+    auto&& next = peek_next();
+    if (next.is_literal())
     {
       return m_builder.make_literal(m_lex.next());
+    }
+
+    if (next.is_identifier())
+    {
+      return m_builder.make_id(m_lex.next());
     }
 
     return paren_expr();

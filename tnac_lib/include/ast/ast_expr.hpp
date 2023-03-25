@@ -77,6 +77,32 @@ namespace tnac::ast
 
 
   //
+  // Id expr
+  //
+  class id_expr : public expr
+  {
+  private:
+    friend class builder;
+
+  public:
+    CLASS_SPECIALS_NONE(id_expr);
+
+    virtual ~id_expr() noexcept;
+
+  protected:
+    id_expr(const token& tok) noexcept;
+
+  public:
+    string_t name() const noexcept;
+
+    const token& pos() const noexcept;
+
+  private:
+    token m_id{};
+  };
+
+
+  //
   // Unary expr
   //
   class unary_expr : public expr
