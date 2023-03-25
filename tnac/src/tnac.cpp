@@ -1,4 +1,5 @@
 #include "parser/parser.hpp"
+#define PRINT_TOKENS 0
 
 void print_token(const tnac::token& tok) noexcept
 {
@@ -14,7 +15,9 @@ void print_token(const tnac::token& tok) noexcept
     "Plus"sv,
     "Minus"sv,
     "Asterisk"sv,
-    "Slash"sv
+    "Slash"sv,
+    "ParenOpen"sv,
+    "ParenClose"sv,
   };
 
   using idx_t = decltype(kinds)::size_type;
@@ -29,6 +32,7 @@ void print_ast(tnac::ast::node& node, int depth = 0) noexcept
     std::cout << ' ';
   std::cout << '|';
 
+  depth += 2;
   using enum tnac::ast::node_kind;
   switch (node.what())
   {
@@ -51,7 +55,7 @@ void print_ast(tnac::ast::node& node, int depth = 0) noexcept
     auto&& operand = unary.operand();
     std::cout << "Unary expression: ";
     print_token(op);
-    print_ast(operand, depth + 2);
+    print_ast(operand, depth);
   }
     break;
 
@@ -71,8 +75,17 @@ void print_ast(tnac::ast::node& node, int depth = 0) noexcept
       std::cout << "Binary expression: ";
     
     print_token(op);
-    print_ast(left, depth + 2);
-    print_ast(right, depth + 2);
+    print_ast(left, depth);
+    print_ast(right, depth);
+  }
+    break;
+
+  case Paren:
+  {
+    auto&& paren = static_cast<ast::paren_expr&>(node);
+    auto&& intExpr = paren.internal_expr();
+    std::cout << "Paren expr\n";
+    print_ast(intExpr, depth);
   }
     break;
 
@@ -87,12 +100,11 @@ bool parse_line(tnac::buf_t input) noexcept
   static std::forward_list<tnac::buf_t> lineBuf;
   static tnac::lex lex;
   static tnac::parser parser;
-
-  std::cout << "Input: '" << input << "'\n\nTokens:\n";
-
   lineBuf.emplace_front(std::move(input));
-  lex.feed(lineBuf.front());
 
+#if PRINT_TOKENS
+  std::cout << "Input: '" << input << "'\n\nTokens:\n";
+  lex.feed(lineBuf.front());
   for (;;)
   {
     auto tok = lex.next();
@@ -104,6 +116,7 @@ bool parse_line(tnac::buf_t input) noexcept
 
     print_token(tok);
   }
+#endif
 
   auto ast = parser.parse(lineBuf.front());
   if (!ast)

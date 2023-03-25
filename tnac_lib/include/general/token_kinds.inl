@@ -16,3 +16,7 @@ Plus,
 Minus,
 Asterisk,
 Slash,
+
+// Punctuation
+ParenOpen,
+ParenClose,

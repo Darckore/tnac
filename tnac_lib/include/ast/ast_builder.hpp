@@ -49,6 +49,11 @@ namespace tnac::ast
     expr* make_literal(const token& tok) noexcept;
 
     //
+    // Creates a paren expression
+    //
+    paren_expr* make_paren(expr& e) noexcept;
+
+    //
     // Creates a unary expression
     //
     unary_expr* make_unary(expr& e, const token& op) noexcept;

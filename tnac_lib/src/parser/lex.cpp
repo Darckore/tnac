@@ -50,9 +50,22 @@ namespace tnac
 
         return is_in_range(c, blanks.begin(), blanks.end());
       }
+      constexpr auto is_paren_open(char_t c) noexcept
+      {
+        return c == '(';
+      }
+      constexpr auto is_paren_close(char_t c) noexcept
+      {
+        return c == ')';
+      }
+      constexpr auto is_paren(char_t c) noexcept
+      {
+        return is_paren_open(c) || is_paren_close(c);
+      }
       constexpr auto is_separator(char_t c) noexcept
       {
         return is_expr_separator(c) ||
+               is_paren(c) ||
                is_blank(c) ||
                is_operator(c);
       }
@@ -121,10 +134,9 @@ namespace tnac
       return op();
     }
 
-    if (detail::is_expr_separator(next))
+    if (detail::is_separator(next))
     {
-      advance();
-      return consume(ExprSep);
+      return punct();
     }
 
     return consume(Error);
@@ -289,6 +301,35 @@ namespace tnac
 
     case '/':
       resKind = Slash;
+      break;
+
+    default:
+      resKind = Error;
+      break;
+    }
+
+    return consume(resKind);
+  }
+
+  const token& lex::punct() noexcept
+  {
+    using enum tok_kind;
+    const auto next = peek_char();
+    advance();
+
+    auto resKind = Eol;
+    switch (next)
+    {
+    case ':':
+      resKind = ExprSep;
+      break;
+
+    case '(':
+      resKind = ParenOpen;
+      break;
+
+    case ')':
+      resKind = ParenClose;
       break;
 
     default:

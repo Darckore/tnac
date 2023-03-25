@@ -93,6 +93,11 @@ namespace tnac
     ast::expr* unary_expr() noexcept;
 
     //
+    // Parses a paren expr
+    //
+    ast::expr* paren_expr() noexcept;
+
+    //
     // Parses a primary expr
     //
     ast::expr* primary_expr() noexcept;

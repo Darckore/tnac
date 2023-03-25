@@ -107,4 +107,29 @@ namespace tnac::ast
     expr* m_right{};
     token m_op{};
   };
+
+
+  //
+  // Paren expr
+  //
+  class paren_expr : public expr
+  {
+  private:
+    friend class builder;
+
+  public:
+    CLASS_SPECIALS_NONE(paren_expr);
+
+    virtual ~paren_expr() noexcept;
+
+  protected:
+    paren_expr(expr& e) noexcept;
+
+  public:
+    const expr& internal_expr() const noexcept;
+    expr& internal_expr() noexcept;
+
+  private:
+    expr* m_expr{};
+  };
 }

@@ -89,4 +89,25 @@ namespace tnac::ast
   {
     return utils::mutate(std::as_const(*this).right());
   }
+
+
+  // Paren expr
+
+  paren_expr::~paren_expr() noexcept = default;
+
+  paren_expr::paren_expr(expr& e) noexcept :
+    expr{ kind::Paren },
+    m_expr{ &e }
+  {
+    assume_ancestry(m_expr);
+  }
+
+  const expr& paren_expr::internal_expr() const noexcept
+  {
+    return *m_expr;
+  }
+  expr& paren_expr::internal_expr() noexcept
+  {
+    return utils::mutate(std::as_const(*this).internal_expr());
+  }
 }

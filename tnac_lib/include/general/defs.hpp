@@ -31,6 +31,7 @@
 * 
 *   primary-expr:
 *     literal-expr
+*     (expr)
 * 
 *   literal-expr:
 *     number

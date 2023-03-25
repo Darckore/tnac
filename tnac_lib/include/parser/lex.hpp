@@ -92,6 +92,11 @@ namespace tnac
     const token& op() noexcept;
 
     //
+    // Tries to parse punctuation
+    //
+    const token& punct() noexcept;
+
+    //
     // Previews the next character
     //
     char_t peek_char() const noexcept;

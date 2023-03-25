@@ -19,6 +19,11 @@ namespace tnac::ast
     return make<lit_expr>(tok);
   }
 
+  paren_expr* builder::make_paren(expr& e) noexcept
+  {
+    return make<paren_expr>(e);
+  }
+
   unary_expr* builder::make_unary(expr& e, const token& op) noexcept
   {
     return make<unary_expr>(e, op);

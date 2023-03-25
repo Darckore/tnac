@@ -18,6 +18,15 @@ namespace tnac
       {
         return tok.is_any(token::Asterisk, token::Slash);
       }
+
+      constexpr auto is_open_paren(const token& tok) noexcept
+      {
+        return tok.is(token::ParenOpen);
+      }
+      constexpr auto is_close_paren(const token& tok) noexcept
+      {
+        return tok.is(token::ParenClose);
+      }
     }
   }
 
@@ -122,6 +131,21 @@ namespace tnac
     return error_expr();
   }
 
+  ast::expr* parser::paren_expr() noexcept
+  {
+    if (!detail::is_open_paren(peek_next()))
+      return error_expr();
+
+    m_lex.next();
+
+    auto intExpr = expr();
+    if (!intExpr || !detail::is_close_paren(peek_next()))
+      return error_expr();
+
+    m_lex.next();
+    return m_builder.make_paren(*intExpr);
+  }
+
   ast::expr* parser::primary_expr() noexcept
   {
     if (peek_next().is_literal())
@@ -129,6 +153,6 @@ namespace tnac
       return m_builder.make_literal(m_lex.next());
     }
 
-    return error_expr();
+    return paren_expr();
   }
 }
