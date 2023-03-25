@@ -1,5 +1,5 @@
 #include "parser/parser.hpp"
-#define PRINT_TOKENS 0
+#include "ast/ast_visitor.hpp"
 
 void print_token(const tnac::token& tok) noexcept
 {
@@ -25,66 +25,34 @@ void print_token(const tnac::token& tok) noexcept
 
   using idx_t = decltype(kinds)::size_type;
 
-  std::cout << kinds[static_cast<idx_t>(tok.m_kind)] << ": '" << tok.m_value  << "'\n";
+  std::cout << kinds[static_cast<idx_t>(tok.m_kind)] << ": '" << tok.m_value << "'\n";
 }
 
-void print_ast(tnac::ast::node& node, int depth = 0) noexcept
+class printing_visitor : public tnac::ast::visitor<printing_visitor, const tnac::ast::node>
 {
-  namespace ast = tnac::ast;
-  for (auto i = 1; i < depth; ++i)
-    std::cout << ' ';
-  std::cout << '|';
+public:
+  using base = tnac::ast::visitor<printing_visitor, const tnac::ast::node>;
+  using value_type = const tnac::ast::node;
+  using ptr_type = value_type*;
 
-  depth += 2;
-  using enum tnac::ast::node_kind;
-  switch (node.what())
+  CLASS_SPECIALS_NONE(printing_visitor);
+
+  printing_visitor(ptr_type root) :
+    base{ root }
+  {}
+
+public:
+  void visit(const tnac::ast::scope* scope) noexcept
   {
-  case Scope:
-  {
-    auto&& scope = static_cast<ast::scope&>(node);
+    indent(scope);
     std::cout << "<scope>\n";
-    for (auto child : scope.children())
-    {
-      print_ast(*child, depth);
-    }
   }
-    break;
 
-  case Literal:
+  void visit(const tnac::ast::binary_expr* expr) noexcept
   {
-    auto&& lit = static_cast<ast::lit_expr&>(node);
-    auto&& val = lit.value();
-    std::cout << "Literal expression: ";
-    print_token(val);
-  }
-    break;
+    indent(expr);
+    auto&& op = expr->op();
 
-  case Identifier:
-  {
-    auto&& id = static_cast<ast::id_expr&>(node);
-    auto name = id.name();
-    std::cout << "Id expression: " << name << '\n';
-  }
-    break;
-
-  case Unary:
-  {
-    auto&& unary = static_cast<ast::unary_expr&>(node);
-    auto&& op = unary.op();
-    auto&& operand = unary.operand();
-    std::cout << "Unary expression: ";
-    print_token(op);
-    print_ast(operand, depth);
-  }
-    break;
-
-  case Binary:
-  {
-    auto&& binary = static_cast<ast::binary_expr&>(node);
-    auto&& op = binary.op();
-    auto&& left = binary.left();
-    auto&& right = binary.right();
-    
     using tnac::token;
     if (op.is_any(token::Plus, token::Minus))
       std::cout << "Additive expression: ";
@@ -92,43 +60,72 @@ void print_ast(tnac::ast::node& node, int depth = 0) noexcept
       std::cout << "Multiplicative expression: ";
     else
       std::cout << "Binary expression: ";
-    
+
     print_token(op);
-    print_ast(left, depth);
-    print_ast(right, depth);
   }
-    break;
 
-  case Paren:
+  void visit(const tnac::ast::unary_expr* expr) noexcept
   {
-    auto&& paren = static_cast<ast::paren_expr&>(node);
-    auto&& intExpr = paren.internal_expr();
+    indent(expr);
+    auto&& op = expr->op();
+    std::cout << "Unary expression: ";
+    print_token(op);
+  }
+
+  void visit(const tnac::ast::paren_expr* expr) noexcept
+  {
+    indent(expr);
     std::cout << "Paren expr\n";
-    print_ast(intExpr, depth);
   }
-    break;
 
-  case Error:
+  void visit(const tnac::ast::lit_expr* expr) noexcept
   {
-    auto&& err = static_cast<ast::error_expr&>(node);
-    auto&& at = err.at();
-    auto msg = err.message();
+    indent(expr);
+    auto&& val = expr->value();
+    std::cout << "Literal expression: ";
+    print_token(val);
+  }
+
+  void visit(const tnac::ast::id_expr* expr) noexcept
+  {
+    indent(expr);
+    std::cout << "Id expression: " << expr->name() << '\n';
+  }
+
+  void visit(const tnac::ast::error_expr* expr) noexcept
+  {
+    indent(expr);
+    auto&& at = expr->at();
+    auto msg = expr->message();
     std::cout << "Error '" << msg << "' at ";
     print_token(at);
   }
-    break;
 
-  default:
-    std::cout << "Invalid or unknown node\n";
-    break;
+private:
+  void indent(ptr_type cur) const
+  {
+    auto depth = 0;
+    while (auto parent = cur->parent())
+    {
+      cur = parent;
+      depth += 2;
+    }
+
+    for (auto i = 1; i < depth; ++i)
+      std::cout << ' ';
+    std::cout << '|';
   }
-}
+};
+
+
+#define PRINT_TOKENS 0
 
 bool parse_line(tnac::buf_t input) noexcept
 {
   static std::forward_list<tnac::buf_t> lineBuf;
   static tnac::lex lex;
   static tnac::parser parser;
+
   std::cout << "Input: '" << input << "'\n\n";
   lineBuf.emplace_front(std::move(input));
 
@@ -148,14 +145,15 @@ bool parse_line(tnac::buf_t input) noexcept
   }
 #endif
 
-  auto ast = parser.parse(lineBuf.front());
-  if (!ast)
+  if (auto ast = parser.parse(lineBuf.front()))
+  {
+    printing_visitor pv{ ast };
+  }
+  else
   {
     std::cout << "Failed to generate AST\n\n";
-    return true;
   }
 
-  print_ast(*ast);
   return true;
 }
 
