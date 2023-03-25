@@ -44,6 +44,11 @@ namespace tnac::ast
     scope* make_scope(scope::elem_list children) noexcept;
 
     //
+    // Creates an error expression
+    //
+    error_expr* make_error(const token& pos, string_t msg) noexcept;
+
+    //
     // Creates a literal expression
     //
     expr* make_literal(const token& tok) noexcept;

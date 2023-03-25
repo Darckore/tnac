@@ -89,6 +89,16 @@ void print_ast(tnac::ast::node& node, int depth = 0) noexcept
   }
     break;
 
+  case Error:
+  {
+    auto&& err = static_cast<ast::error_expr&>(node);
+    auto&& at = err.at();
+    auto msg = err.message();
+    std::cout << "Error '" << msg << "' at ";
+    print_token(at);
+  }
+    break;
+
   default:
     std::cout << "Invalid or unknown node";
     break;
@@ -136,7 +146,7 @@ int main()
   {
     std::cout << ">> ";
     std::getline(std::cin, input);
-    if (input.empty())
+    if (utils::ltrim(input).empty())
     {
       std::cout << "Enter an expression\n";
       continue;

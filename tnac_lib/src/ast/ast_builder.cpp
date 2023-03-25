@@ -14,6 +14,11 @@ namespace tnac::ast
     return make<scope>(std::move(children));
   }
 
+  error_expr* builder::make_error(const token& pos, string_t msg) noexcept
+  {
+    return make<error_expr>(pos, msg);
+  }
+
   expr* builder::make_literal(const token& tok) noexcept
   {
     return make<lit_expr>(tok);

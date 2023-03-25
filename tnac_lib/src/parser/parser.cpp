@@ -27,6 +27,11 @@ namespace tnac
       {
         return tok.is(token::ParenClose);
       }
+
+      constexpr auto is_expression_separator(const token& tok) noexcept
+      {
+        return tok.is(token::ExprSep);
+      }
     }
   }
 
@@ -69,9 +74,21 @@ namespace tnac
     return m_lex.peek();
   }
 
-  ast::expr* parser::error_expr() noexcept
+  void parser::to_expr_end() noexcept
   {
-    return {};
+    for (;;)
+    {
+      auto next = m_lex.next();
+      if (next.is_eol() || detail::is_expression_separator(next))
+        break;
+    }
+  }
+
+  ast::expr* parser::error_expr(string_t msg) noexcept
+  {
+    auto pos = m_lex.next();
+    to_expr_end();
+    return m_builder.make_error(pos, msg);
   }
 
   parser::expr_list parser::expression_list() noexcept
@@ -81,6 +98,19 @@ namespace tnac
     while (auto e = expr())
     {
       res.push_back(e);
+      
+      auto&& next = peek_next();
+      if (next.is_eol())
+        break;
+
+      if (detail::is_expression_separator(next))
+      {
+        m_lex.next();
+        continue;
+      }
+
+      res.push_back(error_expr("Expected ':' or EOL"));
+      break;
     }
 
     return res;
@@ -101,7 +131,7 @@ namespace tnac
         return m_builder.make_binary(*lhs, *rhs, op);
     }
 
-    return lhs ? lhs : error_expr();
+    return lhs;
   }
 
   ast::expr* parser::multiplicative_expr() noexcept
@@ -114,7 +144,7 @@ namespace tnac
         return m_builder.make_binary(*lhs, *rhs, op);
     }
 
-    return lhs ? lhs : error_expr();
+    return lhs;
   }
 
   ast::expr* parser::unary_expr() noexcept
@@ -128,19 +158,22 @@ namespace tnac
       return m_builder.make_unary(*exp, op);
     }
 
-    return error_expr();
+    return error_expr("Expected expression"sv);
   }
 
   ast::expr* parser::paren_expr() noexcept
   {
     if (!detail::is_open_paren(peek_next()))
-      return error_expr();
+      return error_expr("Unexpected token"sv);
 
     m_lex.next();
 
     auto intExpr = expr();
-    if (!intExpr || !detail::is_close_paren(peek_next()))
-      return error_expr();
+    if (!intExpr)
+      return error_expr("Expected expression"sv);
+
+    if (!detail::is_close_paren(peek_next()))
+      return error_expr("Expected ')'"sv);
 
     m_lex.next();
     return m_builder.make_paren(*intExpr);

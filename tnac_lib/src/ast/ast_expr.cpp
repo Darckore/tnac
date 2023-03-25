@@ -11,6 +11,27 @@ namespace tnac::ast
   {}
 
 
+  // Error expr
+
+  error_expr::~error_expr() noexcept = default;
+
+  error_expr::error_expr(const token& tok, string_t msg) noexcept :
+    expr{ kind::Error },
+    m_errMsg{ msg },
+    m_pos{ tok }
+  {}
+
+  const token& error_expr::at() const noexcept
+  {
+    return m_pos;
+  }
+
+  string_t error_expr::message() const noexcept
+  {
+    return m_errMsg;
+  }
+
+
   // Literal expr
 
   lit_expr::~lit_expr() noexcept = default;
