@@ -43,9 +43,9 @@ void print_ast(tnac::ast::node& node, int depth = 0) noexcept
   {
     auto&& scope = static_cast<ast::scope&>(node);
     std::cout << "<scope>\n";
-    for (auto node : scope.children())
+    for (auto child : scope.children())
     {
-      print_ast(*node, depth);
+      print_ast(*child, depth);
     }
   }
     break;
@@ -129,11 +129,11 @@ bool parse_line(tnac::buf_t input) noexcept
   static std::forward_list<tnac::buf_t> lineBuf;
   static tnac::lex lex;
   static tnac::parser parser;
-  std::cout << "Input: '" << input;
+  std::cout << "Input: '" << input << "'\n\n";
   lineBuf.emplace_front(std::move(input));
 
 #if PRINT_TOKENS
-  std::cout << "'\n\nTokens:\n";
+  std::cout << "Tokens:\n";
   lex.feed(lineBuf.front());
   for (;;)
   {

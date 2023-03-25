@@ -78,9 +78,11 @@ namespace tnac
   {
     for (;;)
     {
-      auto next = m_lex.next();
+      auto next = peek_next();
       if (next.is_eol() || detail::is_expression_separator(next))
         break;
+
+      m_lex.next();
     }
   }
 
@@ -110,7 +112,6 @@ namespace tnac
       }
 
       res.push_back(error_expr("Expected ':' or EOL"));
-      break;
     }
 
     return res;
