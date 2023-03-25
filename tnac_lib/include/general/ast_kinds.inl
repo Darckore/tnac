@@ -4,3 +4,4 @@ Scope,
 // Expressions
 Literal,
 Unary,
+Binary,

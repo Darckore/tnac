@@ -2,6 +2,25 @@
 
 namespace tnac
 {
+  namespace detail
+  {
+    namespace
+    {
+      constexpr auto is_unary_op(const token& tok) noexcept
+      {
+        return tok.is_any(token::Plus, token::Minus);
+      }
+      constexpr auto is_add_op(const token& tok) noexcept
+      {
+        return tok.is_any(token::Plus, token::Minus);
+      }
+      constexpr auto is_mul_op(const token& tok) noexcept
+      {
+        return tok.is_any(token::Asterisk, token::Slash);
+      }
+    }
+  }
+
   // Public members
 
   parser::pointer parser::parse(string_t str) noexcept
@@ -36,6 +55,16 @@ namespace tnac
 
   // Private members
 
+  const token& parser::peek_next() noexcept
+  {
+    return m_lex.peek();
+  }
+
+  ast::expr* parser::error_expr() noexcept
+  {
+    return {};
+  }
+
   parser::expr_list parser::expression_list() noexcept
   {
     expr_list res;
@@ -50,13 +79,38 @@ namespace tnac
 
   ast::expr* parser::expr() noexcept
   {
-    return unary_expr();
+    return additive_expr();
+  }
+
+  ast::expr* parser::additive_expr() noexcept
+  {
+    auto lhs = multiplicative_expr();
+    if (lhs && detail::is_add_op(peek_next()))
+    {
+      auto op = m_lex.next();
+      if (auto rhs = multiplicative_expr())
+        return m_builder.make_binary(*lhs, *rhs, op);
+    }
+
+    return lhs ? lhs : error_expr();
+  }
+
+  ast::expr* parser::multiplicative_expr() noexcept
+  {
+    auto lhs = unary_expr();
+    if (lhs && detail::is_mul_op(peek_next()))
+    {
+      auto op = m_lex.next();
+      if (auto rhs = unary_expr())
+        return m_builder.make_binary(*lhs, *rhs, op);
+    }
+
+    return lhs ? lhs : error_expr();
   }
 
   ast::expr* parser::unary_expr() noexcept
   {
-    auto&& tok = m_lex.peek();
-    if(!tok.is_any(token::Plus, token::Minus))
+    if (!detail::is_unary_op(peek_next()))
       return primary_expr();
 
     auto op = m_lex.next();
@@ -65,17 +119,16 @@ namespace tnac
       return m_builder.make_unary(*exp, op);
     }
 
-    return {};
+    return error_expr();
   }
 
   ast::expr* parser::primary_expr() noexcept
   {
-    auto&& tok = m_lex.peek();
-    if (tok.is_literal())
+    if (peek_next().is_literal())
     {
       return m_builder.make_literal(m_lex.next());
     }
 
-    return {};
+    return error_expr();
   }
 }

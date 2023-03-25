@@ -33,4 +33,19 @@ namespace tnac::ast
   {
     assume_ancestry(m_expr);
   }
+
+
+  // Binary expr
+
+  binary_expr::~binary_expr() noexcept = default;
+
+  binary_expr::binary_expr(expr& left, expr& right, const token& op) noexcept :
+    expr{ kind::Binary },
+    m_left{ &left },
+    m_right{ &right },
+    m_op{ op }
+  {
+    assume_ancestry(m_left);
+    assume_ancestry(m_right);
+  }
 }

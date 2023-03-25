@@ -15,11 +15,15 @@
 *     expr-list : expr
 * 
 *   expr:
+*     additive-expr
+* 
+*   additive-expr:
 *     multiplicative-expr
+*     additive-expr additive-operator multiplicative-expr
 * 
 *   multiplicative-expr:
 *     unary-expr
-*     unary-expr multiplicative-operator expr
+*     multiplicative-expr multiplicative-operator unary-expr
 * 
 *   unary-expr:
 *     primary-expr

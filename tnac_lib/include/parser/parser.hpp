@@ -58,6 +58,16 @@ namespace tnac
 
   private:
     //
+    // Previews the next token from the lexer
+    //
+    const token& peek_next() noexcept;
+
+    //
+    // Produces an invalid expression for error recovery (todo)
+    //
+    ast::expr* error_expr() noexcept;
+
+    //
     // Parses a list of expressions
     //
     expr_list expression_list() noexcept;
@@ -66,6 +76,16 @@ namespace tnac
     // Parses an expression
     //
     ast::expr* expr() noexcept;
+
+    //
+    // Parses an additive expr
+    //
+    ast::expr* additive_expr() noexcept;
+
+    //
+    // Parses a multiplicative expr
+    //
+    ast::expr* multiplicative_expr() noexcept;
 
     //
     // Parses a unary expr

@@ -53,6 +53,11 @@ namespace tnac::ast
     //
     unary_expr* make_unary(expr& e, const token& op) noexcept;
 
+    //
+    // Creates a binary expression
+    //
+    binary_expr* make_binary(expr& left, expr& right, const token& op) noexcept;
+
   private:
     owner_store m_store;
   };

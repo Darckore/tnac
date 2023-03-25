@@ -66,4 +66,27 @@ namespace tnac::ast
     expr* m_expr{};
     token m_op{};
   };
+
+
+  //
+  // Binary expr
+  //
+  class binary_expr : public expr
+  {
+  private:
+    friend class builder;
+
+  public:
+    CLASS_SPECIALS_NONE(binary_expr);
+
+    virtual ~binary_expr() noexcept;
+
+  protected:
+    binary_expr(expr& left, expr& right, const token& op) noexcept;
+
+  private:
+    expr* m_left{};
+    expr* m_right{};
+    token m_op{};
+  };
 }

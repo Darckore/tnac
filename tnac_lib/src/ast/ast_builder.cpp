@@ -24,6 +24,11 @@ namespace tnac::ast
     return make<unary_expr>(e, op);
   }
 
+  binary_expr* builder::make_binary(expr& left, expr& right, const token& op) noexcept
+  {
+    return make<binary_expr>(left, right, op);
+  }
+
   // Private members
 
 }
