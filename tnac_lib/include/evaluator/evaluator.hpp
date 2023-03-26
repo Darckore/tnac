@@ -32,7 +32,12 @@ namespace tnac
     //
     // Reads an integer from string
     //
-    eval::value eval_int(string_t src) noexcept;
+    eval::value eval_int(string_t src, int base) noexcept;
+
+    //
+    // Reads a float from string
+    //
+    eval::value eval_float(string_t src) noexcept;
 
   private:
     eval::registry& m_registry;

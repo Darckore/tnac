@@ -12,7 +12,11 @@ namespace tnac::eval
 
   registry::value_type registry::register_int(int_type val) noexcept
   {
-    auto&& v = register_val(val, m_ints);
-    return { &v, type_id::Int };
+    return { &register_val(val, m_ints), type_id::Int };
+  }
+
+  registry::value_type registry::register_float(float_type val) noexcept
+  {
+    return { &register_val(val, m_floats), type_id::Float };
   }
 }

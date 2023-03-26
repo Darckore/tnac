@@ -43,6 +43,11 @@ namespace tnac::eval
     //
     value_type register_int(int_type val) noexcept;
 
+    //
+    // Registers a float
+    //
+    value_type register_float(float_type val) noexcept;
+
   private:
     typed_store<int_type> m_ints;
     typed_store<float_type> m_floats;
