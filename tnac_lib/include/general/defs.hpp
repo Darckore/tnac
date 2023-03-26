@@ -140,4 +140,21 @@ namespace tnac
 
   using int_type   = std::intmax_t;
   using float_type = double;
+
+  template <typename T1, typename T2>
+  struct is_same_noquals
+  {
+    using t1 = std::remove_cvref_t<T1>;
+    using t2 = std::remove_cvref_t<T2>;
+    static constexpr auto value = std::is_same_v<t1, t2>;
+  };
+
+  template <typename First, typename ...Others>
+  struct is_any
+  {
+    static constexpr auto value = std::disjunction_v<is_same_noquals<First, Others>...>;
+  };
+
+  template <typename First, typename ...Others>
+  constexpr auto is_any_v = is_any<First, Others...>::value;
 }

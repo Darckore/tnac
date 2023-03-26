@@ -4,6 +4,7 @@
 
 #pragma once
 #include "ast/ast.hpp"
+#include "evaluator/value.hpp"
 
 namespace tnac::ast
 {
