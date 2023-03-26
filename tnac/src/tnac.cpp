@@ -9,7 +9,8 @@ bool parse_line(tnac::buf_t input) noexcept
 {
   static std::forward_list<tnac::buf_t> lineBuf;
   static tnac::lex lex;
-  static tnac::parser parser;
+  static tnac::ast::builder builder;
+  static tnac::parser parser{ builder };
 
   std::cout << "Input: '" << input << "'\n\n";
   lineBuf.emplace_front(std::move(input));

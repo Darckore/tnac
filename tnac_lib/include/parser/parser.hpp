@@ -26,10 +26,11 @@ namespace tnac
     using expr_list = root_type::elem_list;
 
   public:
-    CLASS_SPECIALS_NONE_CUSTOM(parser);
+    CLASS_SPECIALS_NONE(parser);
 
-    ~parser() noexcept = default;
-    parser() = default;
+    ~parser() noexcept;
+
+    explicit parser(ast::builder& builder) noexcept;
 
   public:
     //
@@ -111,7 +112,7 @@ namespace tnac
 
   private:
     lex m_lex;
-    ast::builder m_builder;
+    ast::builder& m_builder;
     root_ptr m_root{};
   };
 }

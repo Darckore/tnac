@@ -35,6 +35,15 @@ namespace tnac
     }
   }
 
+  // Special members
+
+  parser::~parser() noexcept = default;
+
+  parser::parser(ast::builder& builder) noexcept :
+    m_builder{ builder }
+  {}
+
+
   // Public members
 
   parser::pointer parser::parse(string_t str) noexcept
