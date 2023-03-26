@@ -1,3 +1,5 @@
+#include <iomanip>
+
 #include "app/printer.hpp"
 #include "parser/parser.hpp"
 #include "evaluator/value.hpp"
@@ -11,7 +13,8 @@ bool parse_line(tnac::buf_t input) noexcept
   static tnac::lex lex;
   static tnac::ast::builder builder;
   static tnac::parser parser{ builder };
-  static tnac::evaluator evaluator;
+  static tnac::eval::registry registry;
+  static tnac::evaluator evaluator{ registry };
 
   std::cout << "Input: '" << input << "'\n\n";
   lineBuf.emplace_front(std::move(input));

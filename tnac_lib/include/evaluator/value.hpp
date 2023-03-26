@@ -81,6 +81,8 @@ namespace tnac::eval
 
     value(input_ptr val, type_id id) noexcept;
 
+    explicit operator bool() const noexcept;
+
   public:
     type_id id() const noexcept;
     value_type raw_value() const noexcept;

@@ -68,6 +68,11 @@ namespace tnac::eval
     m_val{ make(val, id) }
   {}
 
+  value::operator bool() const noexcept
+  {
+    return id() != type_id::Invalid;
+  }
+
 
   // Public members
 

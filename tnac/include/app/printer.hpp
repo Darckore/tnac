@@ -34,7 +34,7 @@ namespace tnac
   {
     using enum tnac::eval::type_id;
 
-    auto print = [](auto&& val) noexcept
+    auto print = [](auto&& val, std::uintptr_t addr = 0) noexcept
     {
       if (!val)
       {
@@ -42,17 +42,18 @@ namespace tnac
         return;
       }
 
-      std::cout << *val;
+      std::cout << "0x" << std::hex << addr;
+      std::cout << std::dec << ": " << *val;
     };
 
     switch (v.id())
     {
     case Int:
-      print(v.try_get<tnac::int_type>());
+      print(v.try_get<tnac::int_type>(), v.raw_value());
       break;
 
     case Float:
-      print(v.try_get<tnac::float_type>());
+      print(v.try_get<tnac::float_type>(), v.raw_value());
       break;
 
     default:
