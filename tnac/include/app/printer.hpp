@@ -46,6 +46,8 @@ namespace tnac
       std::cout << std::dec << ": " << *val;
     };
 
+    std::cout << "( ";
+
     switch (v.id())
     {
     case Int:
@@ -60,6 +62,8 @@ namespace tnac
       print(std::optional<int>{ std::nullopt });
       break;
     }
+
+    std::cout << "), ";
   }
 
   template <typename Derived>
@@ -90,32 +94,32 @@ namespace tnac
       else
         std::cout << "Binary expression: ";
 
+      print_value(expr->value());
       print_token(op);
     }
 
     void visit(const ast::unary_expr* expr) noexcept
     {
       indent(expr);
-      auto&& op = expr->op();
       std::cout << "Unary expression: ";
-      print_token(op);
+      print_value(expr->value());
+      print_token(expr->op());
     }
 
     void visit(const ast::paren_expr* expr) noexcept
     {
       indent(expr);
-      std::cout << "Paren expr\n";
+      std::cout << "Paren expr";
+      print_value(expr->value());
+      std::cout << '\n';
     }
 
     void visit(const ast::lit_expr* expr) noexcept
     {
       indent(expr);
-      auto&& pos = expr->pos();
-      auto val = expr->value();
-      std::cout << "Literal expression: (";
-      print_value(val);
-      std::cout << "), ";
-      print_token(pos);
+      std::cout << "Literal expression: ";
+      print_value(expr->value());
+      print_token(expr->pos());
     }
 
     void visit(const ast::id_expr* expr) noexcept

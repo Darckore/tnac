@@ -21,9 +21,16 @@ namespace tnac
   public:
     void visit(ast::unary_expr* unary) noexcept;
 
+    void visit(ast::paren_expr* paren) noexcept;
+
     void visit(ast::lit_expr* lit) noexcept;
 
   private:
+    //
+    // Negates a value (applies a unary -)
+    //
+    eval::value negate(eval::value val) noexcept;
+
     //
     // Evaluates a literal and returns its value
     //

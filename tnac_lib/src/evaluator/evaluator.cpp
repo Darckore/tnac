@@ -14,7 +14,18 @@ namespace tnac
 
   void evaluator::visit(ast::unary_expr* unary) noexcept
   {
-    utils::unused(unary);
+    auto&& operand = unary->operand();
+    auto val = operand.value();
+    if (unary->op().is(token::Minus))
+    {
+      val = negate(val);
+    }
+    unary->eval_result(val);
+  }
+
+  void evaluator::visit(ast::paren_expr* paren) noexcept
+  {
+    paren->eval_result(paren->internal_expr().value());
   }
 
   void evaluator::visit(ast::lit_expr* lit) noexcept
@@ -25,6 +36,26 @@ namespace tnac
 
 
   // Private members
+
+  eval::value evaluator::negate(eval::value val) noexcept
+  {
+    if (!val)
+      return val;
+
+    using enum eval::type_id;
+
+    switch (val.id())
+    {
+    case Int:
+      return m_registry.register_int(-val.get<int_type>());
+
+    case Float:
+      return m_registry.register_float(-val.get<float_type>());
+
+    default:
+      return {};
+    }
+  }
 
   eval::value evaluator::eval_token(const token& tok) noexcept
   {

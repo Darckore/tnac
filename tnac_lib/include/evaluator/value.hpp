@@ -88,13 +88,25 @@ namespace tnac::eval
     value_type raw_value() const noexcept;
 
     template <detail::expr_result T>
+    T get() const noexcept
+    {
+      return *reinterpret_cast<T*>(raw_value());
+    }
+
+    template <type_id TI>
+    auto get() const noexcept
+    {
+      return get<type_from_id<TI>>();
+    }
+
+    template <detail::expr_result T>
     value_opt<T> try_get() const noexcept
     {
       auto tv = split(m_val);
       if (!tv.val || tv.id != id_from_type<T>)
         return {};
 
-      return *reinterpret_cast<T*>(tv.val);
+      return get<T>();
     }
 
     template <type_id TI>
@@ -102,6 +114,7 @@ namespace tnac::eval
     {
       return try_get<type_from_id<TI>>();
     }
+
 
   private:
     value_type m_val{};
