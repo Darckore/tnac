@@ -45,13 +45,14 @@ bool parse_line(tnac::buf_t input) noexcept
 int main()
 {
   using tnac::eval::value;
-  using vt = value::type_id;
+  using vt = tnac::eval::type_id;
 
   std::intmax_t x = 42;
   value vv{ &x, vt::Int };
   const auto id = vv.id();
   const auto val = vv.raw_value();
-  utils::unused(id, val);
+  auto retVal = vv.try_get<std::intmax_t>();
+  utils::unused(id, val, retVal);
 
   tnac::buf_t input;
   while (true)

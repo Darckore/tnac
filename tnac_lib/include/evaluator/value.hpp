@@ -10,14 +10,48 @@ namespace tnac::eval
   {
     template <typename T>
     concept expr_result = is_any_v<T, int_type, float_type>;
+  }
 
-    enum class type_id : std::uint8_t
+  enum class type_id : std::uint8_t
+  {
+    Invalid,
+    Int,
+    Float
+  };
+
+  namespace detail
+  {
+    template <typename T> struct id_from_type;
+    template <type_id ID> struct type_from_id;
+
+    template <>
+    struct id_from_type<int_type>
     {
-      Invalid,
-      Int,
-      Float
+      static constexpr auto value = type_id::Int;
+    };
+    template <>
+    struct type_from_id<type_id::Int>
+    {
+      using type = int_type;
+    };
+
+    template <>
+    struct id_from_type<float_type>
+    {
+      static constexpr auto value = type_id::Float;
+    };
+    template <>
+    struct type_from_id<type_id::Float>
+    {
+      using type = float_type;
     };
   }
+
+  template <detail::expr_result T>
+  constexpr auto id_from_type = detail::id_from_type<T>::value;
+
+  template <type_id TI>
+  using type_from_id = detail::type_from_id<TI>::type;
 
   //
   // Represents a value used for evaluation
@@ -26,7 +60,6 @@ namespace tnac::eval
   {
   public:
     using value_type = std::uintptr_t;
-    using type_id = detail::type_id;
     using input_ptr = const void*;
     
     template <detail::expr_result T>
@@ -51,6 +84,22 @@ namespace tnac::eval
   public:
     type_id id() const noexcept;
     value_type raw_value() const noexcept;
+
+    template <detail::expr_result T>
+    value_opt<T> try_get() const noexcept
+    {
+      auto tv = split(m_val);
+      if (!tv.val || tv.id != id_from_type<T>)
+        return {};
+
+      return *reinterpret_cast<T*>(tv.val);
+    }
+
+    template <type_id TI>
+    auto try_get() const noexcept
+    {
+      return try_get<type_from_id<TI>>();
+    }
 
   private:
     value_type m_val{};

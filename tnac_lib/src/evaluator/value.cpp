@@ -10,7 +10,6 @@ namespace tnac::eval
     {
       using val_t = value::value_type;
       using id_t  = std::uint8_t;
-      using type_id = value::type_id;
 
       static constexpr auto bitsInByte = std::size_t{ 8 };
       static constexpr auto byteSz = sizeof(id_t);
@@ -72,7 +71,7 @@ namespace tnac::eval
 
   // Public members
 
-  value::type_id value::id() const noexcept
+  type_id value::id() const noexcept
   {
     return split(m_val).id;
   }
