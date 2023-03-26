@@ -10,6 +10,15 @@ namespace tnac::ast
     node{ k }
   {}
 
+  eval::value expr::value() const noexcept
+  {
+    return m_val;
+  }
+
+  void expr::eval_result(eval::value val) noexcept
+  {
+    m_val = val;
+  }
 
   // Error expr
 
@@ -38,13 +47,13 @@ namespace tnac::ast
 
   lit_expr::lit_expr(const token& tok) noexcept :
     expr{ kind::Literal },
-    m_value{ tok }
+    m_tok{ tok }
   {
   }
 
-  const token& lit_expr::value() const noexcept
+  const token& lit_expr::pos() const noexcept
   {
-    return m_value;
+    return m_tok;
   }
 
 

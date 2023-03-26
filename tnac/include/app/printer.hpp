@@ -30,6 +30,37 @@ namespace tnac
     std::cout << kinds[static_cast<idx_t>(tok.m_kind)] << ": '" << tok.m_value << "'\n";
   }
 
+  void print_value(tnac::eval::value v) noexcept
+  {
+    using enum tnac::eval::type_id;
+
+    auto print = [](auto&& val) noexcept
+    {
+      if (!val)
+      {
+        std::cout << "<undef>";
+        return;
+      }
+
+      std::cout << *val;
+    };
+
+    switch (v.id())
+    {
+    case Int:
+      print(v.try_get<tnac::int_type>());
+      break;
+
+    case Float:
+      print(v.try_get<tnac::float_type>());
+      break;
+
+    default:
+      print(std::optional<int>{ std::nullopt });
+      break;
+    }
+  }
+
   template <typename Derived>
   using printer_base = ast::const_top_down_visitor<Derived>;
 
@@ -78,9 +109,12 @@ namespace tnac
     void visit(const ast::lit_expr* expr) noexcept
     {
       indent(expr);
-      auto&& val = expr->value();
-      std::cout << "Literal expression: ";
-      print_token(val);
+      auto&& pos = expr->pos();
+      auto val = expr->value();
+      std::cout << "Literal expression: (";
+      print_value(val);
+      std::cout << "), ";
+      print_token(pos);
     }
 
     void visit(const ast::id_expr* expr) noexcept

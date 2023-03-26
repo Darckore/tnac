@@ -1,6 +1,7 @@
 #include "app/printer.hpp"
 #include "parser/parser.hpp"
 #include "evaluator/value.hpp"
+#include "evaluator/evaluator.hpp"
 
 #define PRINT_TOKENS 0
 
@@ -31,6 +32,10 @@ bool parse_line(tnac::buf_t input) noexcept
 
   if (auto ast = parser.parse(lineBuf.front()))
   {
+    using tnac::evaluator;
+    evaluator ev;
+    ev(ast);
+
     using tnac::ast_printer;
     ast_printer{}(ast);
   }

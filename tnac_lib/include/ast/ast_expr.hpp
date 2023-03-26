@@ -21,8 +21,14 @@ namespace tnac::ast
 
     virtual ~expr() noexcept;
 
+    eval::value value() const noexcept;
+    void eval_result(eval::value val) noexcept;
+
   protected:
     expr(kind k) noexcept;
+
+  private:
+    eval::value m_val;
   };
 
 
@@ -70,10 +76,11 @@ namespace tnac::ast
     lit_expr(const token& tok) noexcept;
 
   public:
-    const token& value() const noexcept;
+    const token& pos() const noexcept;
 
   private:
-    token m_value{};
+    eval::value m_val;
+    token m_tok{};
   };
 
 
