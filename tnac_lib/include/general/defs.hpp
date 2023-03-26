@@ -149,6 +149,9 @@ namespace tnac
     static constexpr auto value = std::is_same_v<t1, t2>;
   };
 
+  template <typename T1, typename T2>
+  constexpr auto is_same_noquals_v = is_same_noquals<T1, T2>::value;
+
   template <typename First, typename ...Others>
   struct is_any
   {

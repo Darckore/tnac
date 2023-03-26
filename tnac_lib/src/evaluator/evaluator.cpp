@@ -12,6 +12,15 @@ namespace tnac
 
   // Public members
 
+  void evaluator::visit(ast::binary_expr* binary) noexcept
+  {
+    auto&& left = binary->left();
+    auto&& right = binary->right();
+    const auto op = binary->op().m_kind;
+    auto res = eval_binary(left.value(), right.value(), op);
+    binary->eval_result(res);
+  }
+
   void evaluator::visit(ast::unary_expr* unary) noexcept
   {
     auto&& operand = unary->operand();
@@ -36,6 +45,91 @@ namespace tnac
 
 
   // Private members
+
+  eval::type_id evaluator::common_type(eval::value v1, eval::value v2) noexcept
+  {
+    using enum eval::type_id;
+    auto resType = v1.id();
+    if (v2.id() == Float)
+      resType = Float;
+
+    return resType;
+  }
+
+  eval::value evaluator::cast(eval::value val, eval::type_id dest) noexcept
+  {
+    using enum eval::type_id;
+    const auto ti = val.id();
+    if (ti == dest)
+      return val;
+
+    if (ti == Int)
+    {
+      if (dest == Float)
+        return cast<int_type, float_type>(val);
+    }
+    else if (ti == Float)
+    {
+      if (dest == Int)
+        return cast<float_type, int_type>(val);
+    }
+
+    return val;
+  }
+
+  eval::value evaluator::add(eval::value lhs, eval::value rhs) noexcept
+  {
+    return binary_op(lhs, rhs, [](auto l, auto r)
+      {
+        return l + r;
+      });
+  }
+
+  eval::value evaluator::sub(eval::value lhs, eval::value rhs) noexcept
+  {
+    return binary_op(lhs, rhs, [](auto l, auto r)
+      {
+        return l - r;
+      });
+  }
+
+  eval::value evaluator::mul(eval::value lhs, eval::value rhs) noexcept
+  {
+    return binary_op(lhs, rhs, [](auto l, auto r)
+      {
+        return l * r;
+      });
+  }
+
+  eval::value evaluator::div(eval::value lhs, eval::value rhs) noexcept
+  {
+    return binary_op(lhs, rhs, [](auto l, auto r)
+      {
+        return l / r;
+      });
+  }
+
+  eval::value evaluator::eval_binary(eval::value lhs, eval::value rhs, token::kind op) noexcept
+  {
+    using enum tok_kind;
+    switch (op)
+    {
+    case Plus:
+      return add(lhs, rhs);
+
+    case Minus:
+      return sub(lhs, rhs);
+
+    case Asterisk:
+      return mul(lhs, rhs);
+
+    case Slash:
+      return div(lhs, rhs);
+
+    default:
+      return {};
+    }
+  }
 
   eval::value evaluator::negate(eval::value val) noexcept
   {
