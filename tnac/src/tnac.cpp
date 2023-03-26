@@ -11,6 +11,7 @@ bool parse_line(tnac::buf_t input) noexcept
   static tnac::lex lex;
   static tnac::ast::builder builder;
   static tnac::parser parser{ builder };
+  static tnac::evaluator evaluator;
 
   std::cout << "Input: '" << input << "'\n\n";
   lineBuf.emplace_front(std::move(input));
@@ -33,9 +34,7 @@ bool parse_line(tnac::buf_t input) noexcept
 
   if (auto ast = parser.parse(lineBuf.front()))
   {
-    using tnac::evaluator;
-    evaluator ev;
-    ev(ast);
+    evaluator(ast);
 
     using tnac::ast_printer;
     ast_printer{}(ast);
