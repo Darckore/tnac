@@ -21,7 +21,7 @@ bool parse_line(tnac::buf_t input) noexcept
 
 #if PRINT_TOKENS
   std::cout << "Tokens:\n";
-  lex.feed(lineBuf.front());
+  lex(lineBuf.front());
   for (;;)
   {
     auto tok = lex.next();
@@ -35,7 +35,7 @@ bool parse_line(tnac::buf_t input) noexcept
   }
 #endif
 
-  if (auto ast = parser.parse(lineBuf.front()))
+  if (auto ast = parser(lineBuf.front()))
   {
     evaluator(ast);
 

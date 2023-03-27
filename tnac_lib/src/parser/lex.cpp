@@ -127,7 +127,7 @@ namespace tnac
 
   // Public members
 
-  void lex::feed(string_t buf) noexcept
+  void lex::operator()(string_t buf) noexcept
   {
     m_buf = utils::ltrim(buf);
     m_from = m_buf.begin();

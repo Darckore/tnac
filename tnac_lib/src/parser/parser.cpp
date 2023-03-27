@@ -51,9 +51,9 @@ namespace tnac
 
   // Public members
 
-  parser::pointer parser::parse(string_t str) noexcept
+  parser::pointer parser::operator()(string_t str) noexcept
   {
-    m_lex.feed(str);
+    m_lex(str);
 
     auto eList = expression_list();
     if (eList.empty())

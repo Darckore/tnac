@@ -29,7 +29,7 @@ namespace tnac
     // Feeds an input string to the lexer
     // replacing the currently held buffer
     //
-    void feed(string_t buf) noexcept;
+    void operator()(string_t buf) noexcept;
 
     //
     // Obtains the next token from the input

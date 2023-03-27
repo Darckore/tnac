@@ -42,7 +42,7 @@ namespace tnac
     // 
     // Call root to the get the entire AST
     //
-    pointer parse(string_t str) noexcept;
+    pointer operator()(string_t str) noexcept;
 
     //
     // Returns the root node of the entire AST, which is,
