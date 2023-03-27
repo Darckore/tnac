@@ -19,7 +19,7 @@ namespace tnac_tests
     };
 
     template <node_kind kind, std::size_t N>
-    void check_primary_exprs(const std::array<string_t, N>& inputs)
+    void check_simple_exprs(const std::array<string_t, N>& inputs)
     {
       parse_helper p;
 
@@ -51,7 +51,7 @@ namespace tnac_tests
     };
 
     using tnac::ast::node_kind;
-    using detail::check_primary_exprs;
-    check_primary_exprs<node_kind::Literal>(inputArr);
+    using detail::check_simple_exprs;
+    check_simple_exprs<node_kind::Literal>(inputArr);
   }
 }
