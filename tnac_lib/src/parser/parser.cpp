@@ -187,7 +187,7 @@ namespace tnac
     if (!detail::is_open_paren(peek_next()))
       return error_expr("Unexpected token"sv);
 
-    m_lex.next();
+    auto op = m_lex.next();
 
     auto intExpr = expr();
     if (!intExpr)
@@ -197,7 +197,7 @@ namespace tnac
       return error_expr("Expected ')'"sv);
 
     m_lex.next();
-    return m_builder.make_paren(*intExpr);
+    return m_builder.make_paren(*intExpr, op);
   }
 
   ast::expr* parser::primary_expr() noexcept

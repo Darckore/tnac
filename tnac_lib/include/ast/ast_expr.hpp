@@ -23,12 +23,14 @@ namespace tnac::ast
 
     eval::value value() const noexcept;
     void eval_result(eval::value val) noexcept;
+    const token& pos() const noexcept;
 
   protected:
-    expr(kind k) noexcept;
+    expr(kind k, const token& tok) noexcept;
 
   private:
     eval::value m_val;
+    const token m_pos;
   };
 
 
@@ -55,7 +57,6 @@ namespace tnac::ast
 
   private:
     string_t m_errMsg;
-    token m_pos{};
   };
 
 
@@ -75,12 +76,8 @@ namespace tnac::ast
   protected:
     lit_expr(const token& tok) noexcept;
 
-  public:
-    const token& pos() const noexcept;
-
   private:
     eval::value m_val;
-    token m_tok{};
   };
 
 
@@ -102,11 +99,6 @@ namespace tnac::ast
 
   public:
     string_t name() const noexcept;
-
-    const token& pos() const noexcept;
-
-  private:
-    token m_id{};
   };
 
 
@@ -134,7 +126,6 @@ namespace tnac::ast
 
   private:
     expr* m_expr{};
-    token m_op{};
   };
 
 
@@ -184,7 +175,7 @@ namespace tnac::ast
     virtual ~paren_expr() noexcept;
 
   protected:
-    paren_expr(expr& e) noexcept;
+    paren_expr(expr& e, const token& op) noexcept;
 
   public:
     const expr& internal_expr() const noexcept;

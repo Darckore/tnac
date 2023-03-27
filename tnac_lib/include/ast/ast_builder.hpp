@@ -61,7 +61,7 @@ namespace tnac::ast
     //
     // Creates a paren expression
     //
-    paren_expr* make_paren(expr& e) noexcept;
+    paren_expr* make_paren(expr& e, const token& op) noexcept;
 
     //
     // Creates a unary expression

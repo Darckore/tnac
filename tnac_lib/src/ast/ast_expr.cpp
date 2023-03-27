@@ -6,8 +6,9 @@ namespace tnac::ast
 
   expr::~expr() noexcept = default;
 
-  expr::expr(kind k) noexcept :
-    node{ k }
+  expr::expr(kind k, const token& tok) noexcept :
+    node{ k },
+    m_pos{ tok }
   {}
 
   eval::value expr::value() const noexcept
@@ -20,19 +21,23 @@ namespace tnac::ast
     m_val = val;
   }
 
+  const token& expr::pos() const noexcept
+  {
+    return m_pos;
+  }
+
   // Error expr
 
   error_expr::~error_expr() noexcept = default;
 
   error_expr::error_expr(const token& tok, string_t msg) noexcept :
-    expr{ kind::Error },
-    m_errMsg{ msg },
-    m_pos{ tok }
+    expr{ kind::Error, tok },
+    m_errMsg{ msg }
   {}
 
   const token& error_expr::at() const noexcept
   {
-    return m_pos;
+    return pos();
   }
 
   string_t error_expr::message() const noexcept
@@ -46,14 +51,8 @@ namespace tnac::ast
   lit_expr::~lit_expr() noexcept = default;
 
   lit_expr::lit_expr(const token& tok) noexcept :
-    expr{ kind::Literal },
-    m_tok{ tok }
+    expr{ kind::Literal, tok }
   {
-  }
-
-  const token& lit_expr::pos() const noexcept
-  {
-    return m_tok;
   }
 
 
@@ -62,18 +61,12 @@ namespace tnac::ast
   id_expr::~id_expr() noexcept = default;
 
   id_expr::id_expr(const token& tok) noexcept :
-    expr{ kind::Identifier },
-    m_id{ tok }
+    expr{ kind::Identifier, tok }
   {}
 
   string_t id_expr::name() const noexcept
   {
     return pos().m_value;
-  }
-
-  const token& id_expr::pos() const noexcept
-  {
-    return m_id;
   }
 
 
@@ -82,16 +75,15 @@ namespace tnac::ast
   unary_expr::~unary_expr() noexcept = default;
 
   unary_expr::unary_expr(expr& e, const token& op) noexcept :
-    expr{ kind::Unary },
-    m_expr{ &e },
-    m_op{ op }
+    expr{ kind::Unary, op },
+    m_expr{ &e }
   {
     assume_ancestry(m_expr);
   }
 
   const token& unary_expr::op() const noexcept
   {
-    return m_op;
+    return pos();
   }
 
   const expr& unary_expr::operand() const noexcept
@@ -109,7 +101,7 @@ namespace tnac::ast
   binary_expr::~binary_expr() noexcept = default;
 
   binary_expr::binary_expr(expr& left, expr& right, const token& op) noexcept :
-    expr{ kind::Binary },
+    expr{ kind::Binary, left.pos() },
     m_left{ &left },
     m_right{ &right },
     m_op{ op }
@@ -146,8 +138,8 @@ namespace tnac::ast
 
   paren_expr::~paren_expr() noexcept = default;
 
-  paren_expr::paren_expr(expr& e) noexcept :
-    expr{ kind::Paren },
+  paren_expr::paren_expr(expr& e, const token& op) noexcept :
+    expr{ kind::Paren, op },
     m_expr{ &e }
   {
     assume_ancestry(m_expr);
