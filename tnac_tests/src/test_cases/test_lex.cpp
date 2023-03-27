@@ -7,42 +7,32 @@ namespace tnac_tests
     using tnac::string_t;
     using tnac::tok_kind;
 
-    bool all_same(string_t input, tok_kind kind)
+    void all_same(string_t input, tok_kind kind)
     {
       tnac::lex lex;
-      lex.feed(input);
+      lex(input);
 
-      bool ok = true;
       for (;;)
       {
         auto tok = lex.next();
         if (tok.is_eol())
           break;
-
-        if (!tok.is(kind))
-        {
-          ok = false;
-          EXPECT_TRUE(ok) << "Failed token: '" << tok.m_value << "' ";
-        }
+        
+        EXPECT_TRUE(tok.is(kind)) << "Failed token: " << tok.m_value;
       }
-
-      return ok;
     }
 
     template <std::size_t N>
-    bool check_tokens(string_t input, const std::array<tok_kind, N>& tokArr) noexcept
+    void check_tokens(string_t input, const std::array<tok_kind, N>& tokArr) noexcept
     {
       tnac::lex lex;
-      lex.feed(input);
+      lex(input);
 
-      bool ok = false;
       for (auto tk : tokArr)
       {
         auto tok = lex.next();
-        ok = tok.is(tk);
-        EXPECT_TRUE(ok) << "Failed token: '" << tok.m_value << "' ";
+        EXPECT_TRUE(tok.is(tk)) << "Failed token: " << tok.m_value;
       }
-      return ok;
     }
   }
 
@@ -58,7 +48,7 @@ namespace tnac_tests
     };
 
     using detail::check_tokens;
-    EXPECT_TRUE(check_tokens(input, testArr));
+    check_tokens(input, testArr);
   }
 
   TEST(lexer, t_token_list_dense)
@@ -71,7 +61,7 @@ namespace tnac_tests
     };
 
     using detail::check_tokens;
-    EXPECT_TRUE(check_tokens(input, testArr));
+    check_tokens(input, testArr);
   }
 
   TEST(lexer, t_nums_good)
@@ -84,11 +74,11 @@ namespace tnac_tests
 
     using enum tnac::tok_kind;
     using detail::all_same;
-    EXPECT_TRUE(all_same(binInts, IntBin));
-    EXPECT_TRUE(all_same(octInts, IntOct));
-    EXPECT_TRUE(all_same(decInts, IntDec));
-    EXPECT_TRUE(all_same(hexInts, IntHex));
-    EXPECT_TRUE(all_same(floats, Float));
+    all_same(binInts, IntBin);
+    all_same(octInts, IntOct);
+    all_same(decInts, IntDec);
+    all_same(hexInts, IntHex);
+    all_same(floats, Float);
   }
 
   TEST(lexer, t_nums_bad)
@@ -97,14 +87,14 @@ namespace tnac_tests
 
     using enum tnac::tok_kind;
     using detail::all_same;
-    EXPECT_TRUE(all_same(failures, Error));
+    all_same(failures, Error);
   }
 
   TEST(lexer, t_peek)
   {
     constexpr auto input = "42 69"sv;
     tnac::lex lex;
-    lex.feed(input);
+    lex(input);
 
     auto tok = lex.peek();
     EXPECT_EQ(tok, lex.peek());
