@@ -28,6 +28,50 @@ namespace tnac_tests
 
       return ok;
     }
+
+    template <std::size_t N>
+    bool check_tokens(string_t input, const std::array<tok_kind, N>& tokArr) noexcept
+    {
+      tnac::lex lex;
+      lex.feed(input);
+
+      bool ok = false;
+      for (auto tk : tokArr)
+      {
+        auto tok = lex.next();
+        ok = tok.is(tk);
+        EXPECT_TRUE(ok) << "Failed token: '" << tok.m_value << "' ";
+      }
+      return ok;
+    }
+  }
+
+  TEST(lexer, t_token_list)
+  {
+    constexpr auto input = "+ - * / : ( ) 1 01 0b1 0x1 1.0 id #cmd"sv;
+
+    using enum tnac::tok_kind;
+    constexpr std::array testArr{
+      Plus, Minus, Asterisk, Slash, ExprSep, ParenOpen, ParenClose,
+      IntDec, IntOct, IntBin, IntHex, Float, Identifier, Command,
+      Eol, Eol, Eol
+    };
+
+    using detail::check_tokens;
+    EXPECT_TRUE(check_tokens(input, testArr));
+  }
+
+  TEST(lexer, t_token_list_dense)
+  {
+    constexpr auto input = "+-*/:()0.1"sv;
+
+    using enum tnac::tok_kind;
+    constexpr std::array testArr{
+      Plus, Minus, Asterisk, Slash, ExprSep, ParenOpen, ParenClose, Float
+    };
+
+    using detail::check_tokens;
+    EXPECT_TRUE(check_tokens(input, testArr));
   }
 
   TEST(lexer, t_nums_good)
@@ -39,11 +83,12 @@ namespace tnac_tests
     constexpr auto floats  = "0.0 0.00000 0.1 0023.3450 13456.0"sv;
 
     using enum tnac::tok_kind;
-    EXPECT_TRUE(detail::all_same(binInts, IntBin));
-    EXPECT_TRUE(detail::all_same(octInts, IntOct));
-    EXPECT_TRUE(detail::all_same(decInts, IntDec));
-    EXPECT_TRUE(detail::all_same(hexInts, IntHex));
-    EXPECT_TRUE(detail::all_same(floats, Float));
+    using detail::all_same;
+    EXPECT_TRUE(all_same(binInts, IntBin));
+    EXPECT_TRUE(all_same(octInts, IntOct));
+    EXPECT_TRUE(all_same(decInts, IntDec));
+    EXPECT_TRUE(all_same(hexInts, IntHex));
+    EXPECT_TRUE(all_same(floats, Float));
   }
 
   TEST(lexer, t_nums_bad)
@@ -51,7 +96,8 @@ namespace tnac_tests
     constexpr auto failures = "0. .1 08 1.2.3 0xabcdr 0xab.c 0b111.1 0b 0x 0b2 256a"sv;
 
     using enum tnac::tok_kind;
-    EXPECT_TRUE(detail::all_same(failures, Error));
+    using detail::all_same;
+    EXPECT_TRUE(all_same(failures, Error));
   }
 
   TEST(lexer, t_peek)
