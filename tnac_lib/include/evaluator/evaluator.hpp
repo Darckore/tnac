@@ -4,6 +4,7 @@
 
 #pragma once
 #include "ast/ast_visitor.hpp"
+#include "evaluator/value_visitor.hpp"
 #include "evaluator/value_registry.hpp"
 
 namespace tnac
@@ -125,26 +126,12 @@ namespace tnac
     eval::value eval_binary(eval::value lhs, eval::value rhs, token::kind op) noexcept;
 
     //
-    // Negates a value (applies a unary -)
-    //
-    eval::value negate(eval::value val) noexcept;
-
-    //
     // Evaluates a literal and returns its value
     //
     eval::value eval_token(const token& tok) noexcept;
 
-    //
-    // Reads an integer from string
-    //
-    eval::value eval_int(string_t src, int base) noexcept;
-
-    //
-    // Reads a float from string
-    //
-    eval::value eval_float(string_t src) noexcept;
-
   private:
     eval::registry& m_registry;
+    eval::value_visitor m_visitor;
   };
 }
