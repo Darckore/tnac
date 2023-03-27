@@ -98,7 +98,6 @@ namespace tnac
   ast::expr* parser::error_expr(string_t msg) noexcept
   {
     auto pos = m_lex.next();
-    to_expr_end();
     return m_builder.make_error(pos, msg);
   }
 
@@ -106,8 +105,9 @@ namespace tnac
   {
     expr_list res;
 
-    while (auto e = expr())
+    while (!peek_next().is_eol())
     {
+      auto e = expr();
       res.push_back(e);
       
       auto&& next = peek_next();
@@ -121,6 +121,7 @@ namespace tnac
       }
 
       res.push_back(error_expr("Expected ':' or EOL"));
+      to_expr_end();
     }
 
     return res;
