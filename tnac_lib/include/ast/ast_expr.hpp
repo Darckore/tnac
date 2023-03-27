@@ -30,7 +30,7 @@ namespace tnac::ast
 
   private:
     eval::value m_val;
-    const token m_pos;
+    token m_pos;
   };
 
 
