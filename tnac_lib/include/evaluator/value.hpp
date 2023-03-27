@@ -90,7 +90,7 @@ namespace tnac::eval
     template <detail::expr_result T>
     T get() const noexcept
     {
-      return *reinterpret_cast<T*>(raw_value());
+      return *std::bit_cast<T*>(raw_value());
     }
 
     template <type_id TI>
