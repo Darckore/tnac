@@ -61,9 +61,9 @@ namespace tnac::eval
     }
 
     template <detail::expr_result T>
-    value visit_negation(T val) noexcept
+    value visit_unary(T val, val_ops op) noexcept
     {
-      auto result = -val;
+      auto result = (op == UnaryNegation) ? -val : +val;
       return reg_value<T>(result);
     }
 
@@ -93,13 +93,12 @@ namespace tnac::eval
     //
     value visit_unary(value val, val_ops op) noexcept
     {
-      if (!val || op != UnaryNegation)
+      if (!val || utils::eq_none(op, UnaryNegation, UnaryPlus))
         return val;
 
-      
-      return visit_value(val, [this](auto v)
+      return visit_value(val, [this, op](auto v)
         {
-          return visit_negation(v);
+          return visit_unary(v, op);
         });
     }
 
