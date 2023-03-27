@@ -32,6 +32,11 @@ namespace tnac
       {
         return tok.is(token::ExprSep);
       }
+
+      auto is_error_expr(ast::expr* expr) noexcept
+      {
+        return expr->what() == ast::node_kind::Error;
+      }
     }
   }
 
@@ -190,7 +195,7 @@ namespace tnac
     auto op = m_lex.next();
 
     auto intExpr = expr();
-    if (!intExpr)
+    if (detail::is_error_expr(intExpr))
       return error_expr("Expected expression"sv);
 
     if (!detail::is_close_paren(peek_next()))

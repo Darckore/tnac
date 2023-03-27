@@ -111,6 +111,9 @@ namespace tnac
 
   eval::value evaluator::eval_binary(eval::value lhs, eval::value rhs, token::kind op) noexcept
   {
+    if (!lhs || !rhs)
+      return {};
+
     using enum tok_kind;
     switch (op)
     {
