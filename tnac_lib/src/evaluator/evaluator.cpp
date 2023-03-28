@@ -9,9 +9,18 @@ namespace tnac
     {
       constexpr auto conv_unary(tok_kind tk) noexcept
       {
-        return tk == tok_kind::Minus ?
-          eval::val_ops::UnaryNegation :
-          eval::val_ops::UnaryPlus;
+        using enum tok_kind;
+        switch (tk)
+        {
+        case Plus:
+          return eval::val_ops::UnaryPlus;
+
+        case Minus:
+          return eval::val_ops::UnaryNegation;
+          
+        default:
+          return eval::val_ops::InvalidOp;
+        }
       }
     }
   }

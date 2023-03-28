@@ -12,6 +12,7 @@ namespace tnac::eval
   //
   enum class val_ops : std::uint8_t
   {
+    InvalidOp,
     Addition,
     Subtraction,
     Multiplication,
@@ -88,7 +89,7 @@ namespace tnac::eval
     value visit_unary(value val, val_ops op) noexcept
     {
       if (!val || utils::eq_none(op, UnaryNegation, UnaryPlus))
-        return val;
+        return {};
 
       return visit_value(val, [this, op](auto v) noexcept
         {
