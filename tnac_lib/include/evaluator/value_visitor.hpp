@@ -23,6 +23,12 @@ namespace tnac::eval
 
   namespace detail
   {
+    template <typename F, typename T>
+    concept unary_function = std::is_nothrow_invocable_v<F, T>;
+
+    template <typename F, typename T1, typename T2>
+    concept binary_function = std::is_nothrow_invocable_v<F, T1, T2>;
+
     constexpr auto is_unary(val_ops op) noexcept
     {
       using enum val_ops;
@@ -76,17 +82,34 @@ namespace tnac::eval
       return m_registry.register_float(val);
     }
 
-    template <detail::expr_result T>
-    value visit_unary(T val, val_ops op) noexcept
-    {
-      auto result = (op == UnaryNegation) ? -val : +val;
-      return reg_value<T>(result);
-    }
-
     value visit_unary(invalid_val_t, val_ops) noexcept
     {
       return {};
     }
+
+    template <detail::expr_result T, detail::unary_function<T> F>
+    value visit_unary(T val, F&& op) noexcept
+    {
+      return reg_value(op(val));
+    }
+
+    template <detail::expr_result T>
+    value visit_unary(T val, val_ops op) noexcept
+    {
+      using enum val_ops;
+      switch (op)
+      {
+      case UnaryNegation:
+        return visit_unary(val, [](auto v) noexcept { return -v; });
+
+      case UnaryPlus:
+        return visit_unary(val, [](auto v) noexcept { return +v; });
+
+      default:
+        return {};
+      }
+    }
+
 
     value visit_binary(invalid_val_t, invalid_val_t, val_ops) noexcept
     {
@@ -103,11 +126,10 @@ namespace tnac::eval
       return visit_binary(invalid_val_t{}, invalid_val_t{}, val_ops{});
     }
 
-    template <detail::expr_result L, detail::expr_result R, typename F>
+    template <detail::expr_result L, detail::expr_result R, detail::binary_function<L, R> F>
     value visit_binary(L lhs, R rhs, F&& op) noexcept
     {
-      auto result = op(lhs, rhs);
-      return reg_value(result);
+      return reg_value(op(lhs, rhs));
     }
 
     template <detail::expr_result L, detail::expr_result R>
@@ -117,20 +139,21 @@ namespace tnac::eval
       switch (op)
       {
       case Addition:
-        return visit_binary(lhs, rhs, [](auto l, auto r) { return l + r; });
+        return visit_binary(lhs, rhs, [](auto l, auto r) noexcept { return l + r; });
 
       case Subtraction:
-        return visit_binary(lhs, rhs, [](auto l, auto r) { return l - r; });
+        return visit_binary(lhs, rhs, [](auto l, auto r) noexcept { return l - r; });
 
       case Multiplication:
-        return visit_binary(lhs, rhs, [](auto l, auto r) { return l * r; });
+        return visit_binary(lhs, rhs, [](auto l, auto r) noexcept { return l * r; });
 
       case Division:
         // Corner case, we don't want integral division, so, let's convert lhs to float
         if constexpr (is_same_noquals_v<decltype(lhs), int_type>)
-          return visit_binary(static_cast<float_type>(lhs), rhs, [](auto l, auto r) { return l / r; });
+          return visit_binary(static_cast<float_type>(lhs), rhs, [](auto l, auto r) noexcept 
+            { return l / r; });
         else
-          return visit_binary(lhs, rhs, [](auto l, auto r) { return l / r; });
+          return visit_binary(lhs, rhs, [](auto l, auto r) noexcept { return l / r; });
 
       default:
         return {};
@@ -140,7 +163,7 @@ namespace tnac::eval
     template <detail::expr_result L>
     value visit_binary(L lhs, value rhs, val_ops op) noexcept
     {
-      return visit_value(rhs, [this, lhs, op](auto rhs)
+      return visit_value(rhs, [this, lhs, op](auto rhs) noexcept
         {
           return visit_binary(lhs, rhs, op);
         });
@@ -155,7 +178,7 @@ namespace tnac::eval
       if (!lhs || !rhs || !detail::is_binary(op))
         return {};
 
-      return visit_value(lhs, [this, rhs, op](auto lhs)
+      return visit_value(lhs, [this, rhs, op](auto lhs) noexcept
         {
           return visit_binary(lhs, rhs, op);
         });
