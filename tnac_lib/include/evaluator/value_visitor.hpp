@@ -28,6 +28,12 @@ namespace tnac::eval
 
     template <typename F, typename T1, typename T2>
     concept binary_func = std::is_nothrow_invocable_v<F, T1, T2>;
+
+    constexpr auto is_unary(val_ops op) noexcept
+    {
+      using enum val_ops;
+      return utils::eq_any(op, UnaryPlus, UnaryNegation);
+    }
   }
 
   //
@@ -88,7 +94,7 @@ namespace tnac::eval
     //
     value visit_unary(value val, val_ops op) noexcept
     {
-      if (!val || utils::eq_none(op, UnaryNegation, UnaryPlus))
+      if (!val || !detail::is_unary(op))
         return {};
 
       return visit_value(val, [this, op](auto v) noexcept
