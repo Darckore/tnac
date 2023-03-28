@@ -15,8 +15,6 @@ bool parse_line(tnac::buf_t input) noexcept
   static tnac::parser parser{ builder };
   static tnac::eval::registry registry;
   static tnac::evaluator evaluator{ registry };
-
-  std::cout << "Input: '" << input << "'\n\n";
   lineBuf.emplace_front(std::move(input));
 
 #if PRINT_TOKENS
@@ -37,10 +35,15 @@ bool parse_line(tnac::buf_t input) noexcept
 
   if (auto ast = parser(lineBuf.front()))
   {
-    evaluator(ast);
+    using printer::ast_printer;
+    using printer::print_newline;
 
-    using tnac::ast_printer;
+    print_newline();
+
+    evaluator(ast);
     ast_printer{}(ast);
+    
+    print_newline();
   }
   else
   {

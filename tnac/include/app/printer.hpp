@@ -2,8 +2,10 @@
 #include "ast/ast_visitor.hpp"
 #include "evaluator/value.hpp"
 
-namespace tnac
+namespace printer
 {
+  using namespace tnac;
+
   inline std::ostream& operator<<(std::ostream& out, eval::invalid_val_t) noexcept
   {
     out << "<undef>";
@@ -43,6 +45,11 @@ namespace tnac
       {
         std::cout << "(0x" << std::hex << addr << std::dec << ": " << val << "), ";
       });
+  }
+
+  void print_newline() noexcept
+  {
+    std::cout << '\n';
   }
 
   template <typename Derived>
