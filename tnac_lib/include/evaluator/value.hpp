@@ -6,6 +6,8 @@
 
 namespace tnac::eval
 {
+  struct invalid_val_t {};
+
   namespace detail
   {
     template <typename T>
@@ -52,6 +54,7 @@ namespace tnac::eval
 
   template <type_id TI>
   using type_from_id = detail::type_from_id<TI>::type;
+
 
   //
   // Represents a value used for evaluation
@@ -119,4 +122,21 @@ namespace tnac::eval
   private:
     value_type m_val{};
   };
+
+  template <typename F>
+  auto on_value(value val, F&& func) noexcept
+  {
+    using enum type_id;
+    switch (val.id())
+    {
+    case Int:
+      return func(val.get<int_type>());
+
+    case Float:
+      return func(val.get<float_type>());
+
+    default:
+      return func(invalid_val_t{});
+    }
+  }
 }

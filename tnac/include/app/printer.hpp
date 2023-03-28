@@ -1,8 +1,15 @@
 #pragma once
 #include "ast/ast_visitor.hpp"
+#include "evaluator/value.hpp"
 
 namespace tnac
 {
+  inline std::ostream& operator<<(std::ostream& out, eval::invalid_val_t) noexcept
+  {
+    out << "<undef>";
+    return out;
+  }
+
   void print_token(const tnac::token& tok) noexcept
   {
     static constexpr std::array kinds{
@@ -32,38 +39,10 @@ namespace tnac
 
   void print_value(tnac::eval::value v) noexcept
   {
-    using enum tnac::eval::type_id;
-
-    auto print = [](auto&& val, std::uintptr_t addr = 0) noexcept
-    {
-      if (!val)
+    eval::on_value(v, [addr = v.raw_value()](auto val)
       {
-        std::cout << "<undef>";
-        return;
-      }
-
-      std::cout << "0x" << std::hex << addr;
-      std::cout << std::dec << ": " << *val;
-    };
-
-    std::cout << "( ";
-
-    switch (v.id())
-    {
-    case Int:
-      print(v.try_get<tnac::int_type>(), v.raw_value());
-      break;
-
-    case Float:
-      print(v.try_get<tnac::float_type>(), v.raw_value());
-      break;
-
-    default:
-      print(std::optional<int>{ std::nullopt });
-      break;
-    }
-
-    std::cout << "), ";
+        std::cout << "(0x" << std::hex << addr << std::dec << ": " << val << "), ";
+      });
   }
 
   template <typename Derived>

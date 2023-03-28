@@ -23,10 +23,10 @@ namespace tnac::eval
   namespace detail
   {
     template <typename F, typename T>
-    concept unary_func = std::is_invocable_v<F, T>;
+    concept unary_func = std::is_nothrow_invocable_v<F, T>;
 
     template <typename F, typename T1, typename T2>
-    concept binary_func = std::is_invocable_v<F, T1, T2>;
+    concept binary_func = std::is_nothrow_invocable_v<F, T1, T2>;
   }
 
   //
@@ -67,24 +67,18 @@ namespace tnac::eval
       return reg_value<T>(result);
     }
 
+    value visit_unary(invalid_val_t, val_ops) noexcept
+    {
+      return {};
+    }
+
     //
     // Extracts type from value and calls the specified function
     //
     template <typename F>
     value visit_value(value val, F&& func) noexcept
     {
-      using enum type_id;
-      switch (val.id())
-      {
-      case Int:
-        return func(val.get<int_type>());
-
-      case Float:
-        return func(val.get<float_type>());
-
-      default:
-        return val;
-      }
+      return on_value(val, std::forward<F>(func));
     }
 
   public:
@@ -96,7 +90,7 @@ namespace tnac::eval
       if (!val || utils::eq_none(op, UnaryNegation, UnaryPlus))
         return val;
 
-      return visit_value(val, [this, op](auto v)
+      return visit_value(val, [this, op](auto v) noexcept
         {
           return visit_unary(v, op);
         });
