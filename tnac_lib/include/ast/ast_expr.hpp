@@ -117,6 +117,7 @@ namespace tnac::ast
     virtual ~binary_expr() noexcept;
 
   protected:
+    binary_expr(kind k, expr& left, expr& right, const token& op) noexcept;
     binary_expr(expr& left, expr& right, const token& op) noexcept;
 
   public:
@@ -132,6 +133,24 @@ namespace tnac::ast
     expr* m_left{};
     expr* m_right{};
     token m_op{};
+  };
+
+
+  //
+  // Assign expression
+  //
+  class assign_expr : public binary_expr
+  {
+  private:
+    friend class builder;
+
+  public:
+    CLASS_SPECIALS_NONE(assign_expr);
+
+    virtual ~assign_expr() noexcept;
+
+  protected:
+    assign_expr(expr& assignee, expr& assigned, const token& op) noexcept;
   };
 
 
@@ -158,4 +177,5 @@ namespace tnac::ast
   private:
     expr* m_expr{};
   };
+
 }

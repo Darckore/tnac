@@ -16,6 +16,7 @@ Plus,
 Minus,
 Asterisk,
 Slash,
+Assign,
 
 // Punctuation
 ParenOpen,

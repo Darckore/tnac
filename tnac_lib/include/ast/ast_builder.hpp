@@ -73,6 +73,11 @@ namespace tnac::ast
     //
     binary_expr* make_binary(expr& left, expr& right, const token& op) noexcept;
 
+    //
+    // Creates an assign expression
+    //
+    assign_expr* make_assign(expr& left, expr& right, const token& op) noexcept;
+
   private:
     owner_store m_store;
   };

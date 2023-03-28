@@ -27,6 +27,7 @@ namespace printer
       "Minus"sv,
       "Asterisk"sv,
       "Slash"sv,
+      "Assign"sv,
       "ParenOpen"sv,
       "ParenClose"sv,
       "Identifier"sv,
@@ -65,6 +66,14 @@ namespace printer
     {
       indent(scope);
       std::cout << "<scope>\n";
+    }
+
+    void visit(const ast::assign_expr* expr) noexcept
+    {
+      indent(expr);
+      std::cout << "Assign expression: ";
+      print_value(expr->value());
+      print_token(expr->op());
     }
 
     void visit(const ast::binary_expr* expr) noexcept
@@ -111,7 +120,9 @@ namespace printer
     void visit(const ast::id_expr* expr) noexcept
     {
       indent(expr);
-      std::cout << "Id expression: " << expr->name() << '\n';
+      std::cout << "Id expression: ";
+      print_value(expr->value());
+      std::cout << expr->name() << '\n';
     }
 
     void visit(const ast::error_expr* expr) noexcept

@@ -41,6 +41,14 @@ namespace tnac::ast
 
     kind what() const noexcept;
 
+    bool is(kind k) const noexcept;
+
+    template <typename... KINDS> requires(utils::detail::all_same<kind, KINDS...>)
+    auto is_any(KINDS... kinds) const noexcept
+    {
+      return ((is(kinds)) || ...);
+    }
+
   protected:
     void make_child_of(node* parent) noexcept;
 

@@ -1,0 +1,5 @@
+//
+// Symbol
+//
+
+#pragma once

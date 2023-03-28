@@ -18,6 +18,10 @@ namespace tnac
       {
         return tok.is_any(token::Asterisk, token::Slash);
       }
+      constexpr auto is_assign(const token& tok) noexcept
+      {
+        return tok.is_any(token::Assign);
+      }
 
       constexpr auto is_open_paren(const token& tok) noexcept
       {
@@ -134,7 +138,24 @@ namespace tnac
 
   ast::expr* parser::expr() noexcept
   {
-    return additive_expr();
+    return assign();
+  }
+
+  ast::expr* parser::assign() noexcept
+  {
+    auto lhs = additive_expr();
+    
+    if (!lhs->is(ast::node::Identifier))
+    {
+      if (!detail::is_assign(peek_next()))
+        return lhs;
+
+      return m_builder.make_error(lhs->pos(), "Expected a single identifier");
+    }
+
+    auto op = m_lex.next();
+    auto rhs = assign();
+    return m_builder.make_assign(*lhs, *rhs, op);
   }
 
   ast::expr* parser::additive_expr() noexcept

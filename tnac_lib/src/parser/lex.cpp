@@ -37,7 +37,7 @@ namespace tnac
       constexpr auto is_operator(char_t c) noexcept
       {
         constexpr std::array ops{
-          '+', '-', '*', '/'
+          '+', '-', '*', '/', '='
         };
 
         return is_in_range(c, ops.begin(), ops.end());
@@ -392,6 +392,10 @@ namespace tnac
 
     case '/':
       resKind = Slash;
+      break;
+
+    case '=':
+      resKind = Assign;
       break;
 
     default:

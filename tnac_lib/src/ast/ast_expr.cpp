@@ -81,14 +81,19 @@ namespace tnac::ast
 
   binary_expr::~binary_expr() noexcept = default;
 
-  binary_expr::binary_expr(expr& left, expr& right, const token& op) noexcept :
-    expr{ kind::Binary, left.pos() },
+  binary_expr::binary_expr(kind k, expr& left, expr& right, const token& op) noexcept :
+    expr{ k, left.pos() },
     m_left{ &left },
     m_right{ &right },
     m_op{ op }
   {
     assume_ancestry(m_left);
     assume_ancestry(m_right);
+  }
+
+  binary_expr::binary_expr(expr& left, expr& right, const token& op) noexcept :
+    binary_expr{ kind::Binary, left, right, op }
+  {
   }
 
   const token& binary_expr::op() const noexcept
@@ -113,6 +118,15 @@ namespace tnac::ast
   {
     return utils::mutate(std::as_const(*this).right());
   }
+
+
+  // Assign expression
+
+  assign_expr::~assign_expr() noexcept = default;
+
+  assign_expr::assign_expr(expr& assignee, expr& assigned, const token& op) noexcept :
+    binary_expr{ kind::Assign, assignee, assigned, op }
+  {}
 
 
   // Paren expr

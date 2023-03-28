@@ -44,6 +44,11 @@ namespace tnac::ast
     return make<binary_expr>(left, right, op);
   }
 
+  assign_expr* builder::make_assign(expr& left, expr& right, const token& op) noexcept
+  {
+    return make<assign_expr>(left, right, op);
+  }
+
   // Private members
 
 }

@@ -24,6 +24,11 @@ namespace tnac::ast
     return m_kind;
   }
 
+  bool node::is(kind k) const noexcept
+  {
+    return what() == k;
+  }
+
   void node::make_child_of(node* parent) noexcept
   {
     m_parent = parent;

@@ -15,7 +15,15 @@
 *     expr-list : expr
 * 
 *   expr:
-*     additive-expr
+*     decl-expr
+* 
+*   decl-expr:
+*     assign-expr
+*     declarator '=' additive-expr
+* 
+*   assign-expr:
+*     additive_expr
+*     id-expr assign-operator assign-expr
 * 
 *   additive-expr:
 *     multiplicative-expr
@@ -33,6 +41,9 @@
 *     literal-expr
 *     id-expr
 *     (expr)
+* 
+*   declarator:
+*     identifier
 * 
 *   id-expr:
 *     identifier
@@ -90,6 +101,9 @@
 *     hex-digit
 *     hex-digit-sequence hex-digit
 * 
+*   assign-operator: one of
+*     =
+* 
 *   multiplicative-operator: one of
 *     * /
 * 
@@ -100,7 +114,7 @@
 *     + -
 * 
 *   operator: one of
-*     + - * /
+*     + - * / =
 * 
 *   id-sequence:
 *     identifier-char

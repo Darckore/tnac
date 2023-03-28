@@ -38,11 +38,11 @@ namespace tnac_tests
 
   TEST(lexer, t_token_list)
   {
-    constexpr auto input = "+ - * / : ( ) 1 01 0b1 0x1 1.0 id #cmd"sv;
+    constexpr auto input = "+ - * / = : ( ) 1 01 0b1 0x1 1.0 id #cmd"sv;
 
     using enum tnac::tok_kind;
     constexpr std::array testArr{
-      Plus, Minus, Asterisk, Slash, ExprSep, ParenOpen, ParenClose,
+      Plus, Minus, Asterisk, Slash, Assign, ExprSep, ParenOpen, ParenClose,
       IntDec, IntOct, IntBin, IntHex, Float, Identifier, Command,
       Eol, Eol, Eol
     };
@@ -53,11 +53,11 @@ namespace tnac_tests
 
   TEST(lexer, t_token_list_dense)
   {
-    constexpr auto input = "+-*/:()0.1"sv;
+    constexpr auto input = "+-*/=:()0.1"sv;
 
     using enum tnac::tok_kind;
     constexpr std::array testArr{
-      Plus, Minus, Asterisk, Slash, ExprSep, ParenOpen, ParenClose, Float
+      Plus, Minus, Asterisk, Slash, Assign, ExprSep, ParenOpen, ParenClose, Float
     };
 
     using detail::check_tokens;

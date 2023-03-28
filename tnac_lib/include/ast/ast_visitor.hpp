@@ -118,6 +118,18 @@ namespace tnac::ast
         visit(s);
     }
 
+    void visit_impl(dest<assign_expr> assign) noexcept
+    {
+      if constexpr (is_top_down())
+        visit(assign);
+
+      visit_root(&assign->left());
+      visit_root(&assign->right());
+
+      if constexpr (is_bottom_up())
+        visit(assign);
+    }
+
     void visit_impl(dest<binary_expr> binary) noexcept
     {
       if constexpr (is_top_down())
@@ -192,6 +204,10 @@ namespace tnac::ast
 
       case Binary:
         visit_impl(cast<node_t, binary_expr>(cur));
+        break;
+
+      case Assign:
+        visit_impl(cast<node_t, assign_expr>(cur));
         break;
 
       case Paren:
