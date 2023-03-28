@@ -150,7 +150,9 @@ namespace tnac
       if (!detail::is_assign(peek_next()))
         return lhs;
 
-      return m_builder.make_error(lhs->pos(), "Expected a single identifier");
+      auto err = m_builder.make_error(lhs->pos(), "Expected a single identifier");
+      to_expr_end();
+      return err;
     }
 
     auto op = m_lex.next();
