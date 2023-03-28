@@ -116,7 +116,7 @@ namespace tnac::eval
       if (convRes.ec != std::errc{ 0 })
         return {};
 
-      return m_registry.register_int(result);
+      return reg_value(result);
     }
 
     //
@@ -132,7 +132,7 @@ namespace tnac::eval
       if (convRes.ec != std::errc{ 0 })
         return {};
 
-      return m_registry.register_float(result);
+      return reg_value(result);
     }
 
   private:
