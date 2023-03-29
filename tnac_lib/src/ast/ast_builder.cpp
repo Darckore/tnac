@@ -9,6 +9,8 @@ namespace tnac::ast
 
   // Public members
 
+  // General
+
   scope* builder::make_scope(scope::elem_list children) noexcept
   {
     return make<scope>(std::move(children));
@@ -18,6 +20,8 @@ namespace tnac::ast
   {
     return make<error_expr>(pos, msg);
   }
+
+  // Expressions
 
   lit_expr* builder::make_literal(const token& tok) noexcept
   {
@@ -47,6 +51,13 @@ namespace tnac::ast
   assign_expr* builder::make_assign(expr& left, expr& right, const token& op) noexcept
   {
     return make<assign_expr>(left, right, op);
+  }
+
+  // Declarators
+
+  var_decl* builder::make_var_decl(id_expr& var, expr& initialiser) noexcept
+  {
+    return make<var_decl>(var, initialiser);
   }
 
   // Private members

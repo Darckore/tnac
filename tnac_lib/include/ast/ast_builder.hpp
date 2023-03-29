@@ -37,7 +37,7 @@ namespace tnac::ast
       return res;
     }
 
-  public:
+  public: // General
     //
     // Creates a scope
     //
@@ -48,6 +48,8 @@ namespace tnac::ast
     //
     error_expr* make_error(const token& pos, string_t msg) noexcept;
 
+
+  public: // Expressions
     //
     // Creates a literal expression
     //
@@ -77,6 +79,13 @@ namespace tnac::ast
     // Creates an assign expression
     //
     assign_expr* make_assign(expr& left, expr& right, const token& op) noexcept;
+
+
+  public: // Declarators
+    //
+    // Makes a variable declarator
+    //
+    var_decl* make_var_decl(id_expr& var, expr& initialiser) noexcept;
 
   private:
     owner_store m_store;

@@ -6,10 +6,10 @@ namespace tnac::ast
 
   decl::~decl() noexcept = default;
 
-  decl::decl(kind k, id_expr* id, expr* def) noexcept :
+  decl::decl(kind k, id_expr& id, expr& def) noexcept :
     node{ k },
-    m_id{ id },
-    m_def{ def }
+    m_id{ &id },
+    m_def{ &def }
   {
     assume_ancestry(m_id);
     assume_ancestry(m_def);
@@ -28,4 +28,13 @@ namespace tnac::ast
   {
     return FROM_CONST(definition);
   }
+
+
+  // Variable decl
+
+  var_decl::~var_decl() noexcept = default;
+
+  var_decl::var_decl(id_expr& var, expr& initialiser) noexcept :
+    decl{ kind::VarDecl, var, initialiser }
+  {}
 }
