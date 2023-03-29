@@ -82,7 +82,7 @@ namespace tnac
   }
   parser::root_ptr parser::root() noexcept
   {
-    return utils::mutate(std::as_const(*this).root());
+    return FROM_CONST(root);
   }
 
   // Private members

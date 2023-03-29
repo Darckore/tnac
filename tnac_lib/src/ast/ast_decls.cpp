@@ -26,6 +26,6 @@ namespace tnac::ast
   }
   expr* decl::definition() noexcept
   {
-    return utils::mutate(std::as_const(*this).definition());
+    return FROM_CONST(definition);
   }
 }

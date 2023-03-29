@@ -146,6 +146,8 @@
 * 
 */
 
+#define FROM_CONST(func, ...) utils::mutate(std::as_const(*this).func(__VA_ARGS__))
+
 namespace tnac
 {
   using buf_t    = std::string;

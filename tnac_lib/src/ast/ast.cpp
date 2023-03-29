@@ -16,7 +16,7 @@ namespace tnac::ast
   }
   node* node::parent() noexcept
   {
-    return utils::mutate(std::as_const(*this).parent());
+    return FROM_CONST(parent);
   }
 
   node::kind node::what() const noexcept
@@ -65,6 +65,6 @@ namespace tnac::ast
   }
   scope::elem_list& scope::children() noexcept
   {
-    return utils::mutate(std::as_const(*this).children());
+    return FROM_CONST(children);
   }
 }

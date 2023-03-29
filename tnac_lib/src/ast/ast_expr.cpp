@@ -73,7 +73,7 @@ namespace tnac::ast
   }
   expr& unary_expr::operand() noexcept
   {
-    return utils::mutate(std::as_const(*this).operand());
+    return FROM_CONST(operand);
   }
 
 
@@ -107,7 +107,7 @@ namespace tnac::ast
   }
   expr& binary_expr::left() noexcept
   {
-    return utils::mutate(std::as_const(*this).left());
+    return FROM_CONST(left);
   }
 
   const expr& binary_expr::right() const noexcept
@@ -116,7 +116,7 @@ namespace tnac::ast
   }
   expr& binary_expr::right() noexcept
   {
-    return utils::mutate(std::as_const(*this).right());
+    return FROM_CONST(right);
   }
 
 
@@ -146,6 +146,6 @@ namespace tnac::ast
   }
   expr& paren_expr::internal_expr() noexcept
   {
-    return utils::mutate(std::as_const(*this).internal_expr());
+    return FROM_CONST(internal_expr);
   }
 }
