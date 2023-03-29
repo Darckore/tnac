@@ -14,6 +14,11 @@ namespace tnac_tests
         builder{}, parser{ builder }
       {}
 
+      auto operator()(string_t input) noexcept
+      {
+        return parser(input);
+      }
+
       tnac::ast::builder builder;
       tnac::parser parser;
     };
@@ -25,7 +30,7 @@ namespace tnac_tests
 
       for (auto input : inputs)
       {
-        auto ast = p.parser(input);
+        auto ast = p(input);
         EXPECT_NE(ast, nullptr) << "Null AST for input: " << input;
 
         if (ast)
