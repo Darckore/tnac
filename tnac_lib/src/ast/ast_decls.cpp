@@ -14,6 +14,11 @@ namespace tnac::ast
     assume_ancestry(m_def);
   }
 
+  void decl::attach_symbol(const sema::symbol& sym) noexcept
+  {
+    m_symbol = &sym;
+  }
+
   string_t decl::name() const noexcept
   {
     return m_id.m_value;
@@ -31,6 +36,11 @@ namespace tnac::ast
   const token& decl::pos() const noexcept
   {
     return m_id;
+  }
+
+  const sema::symbol& decl::symbol() const noexcept
+  {
+    return *m_symbol;
   }
 
 

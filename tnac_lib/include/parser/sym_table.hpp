@@ -4,3 +4,8 @@
 
 #pragma once
 #include "parser/symbol.hpp"
+
+namespace tnac::sema
+{
+
+}
