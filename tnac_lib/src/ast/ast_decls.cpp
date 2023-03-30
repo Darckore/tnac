@@ -6,18 +6,17 @@ namespace tnac::ast
 
   decl::~decl() noexcept = default;
 
-  decl::decl(kind k, id_expr& id, expr& def) noexcept :
+  decl::decl(kind k, const token& id, expr& def) noexcept :
     node{ k },
-    m_id{ &id },
+    m_id{ id },
     m_def{ &def }
   {
-    assume_ancestry(m_id);
     assume_ancestry(m_def);
   }
 
   string_t decl::name() const noexcept
   {
-    return m_id->name();
+    return m_id.m_value;
   }
 
   const expr* decl::definition() const noexcept
@@ -29,12 +28,36 @@ namespace tnac::ast
     return FROM_CONST(definition);
   }
 
+  const token& decl::pos() const noexcept
+  {
+    return m_id;
+  }
+
+
+  // Decl Expression
+
+  decl_expr::~decl_expr() noexcept = default;
+
+  decl_expr::decl_expr(decl& d) noexcept :
+    expr{ kind::Decl, d.pos() },
+    m_decl{ &d }
+  {}
+
+  const decl& decl_expr::declarator() const noexcept
+  {
+    return *m_decl;
+  }
+  decl& decl_expr::declarator() noexcept
+  {
+    return FROM_CONST(declarator);
+  }
+
 
   // Variable decl
 
   var_decl::~var_decl() noexcept = default;
 
-  var_decl::var_decl(id_expr& var, expr& initialiser) noexcept :
+  var_decl::var_decl(const token& var, expr& initialiser) noexcept :
     decl{ kind::VarDecl, var, initialiser }
   {}
 }

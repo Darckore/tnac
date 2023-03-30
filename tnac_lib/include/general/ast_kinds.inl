@@ -8,6 +8,7 @@ Unary,
 Binary,
 Assign,
 Paren,
+Decl,
 
 // Decls,
 VarDecl,

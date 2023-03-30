@@ -81,11 +81,16 @@ namespace tnac::ast
     assign_expr* make_assign(expr& left, expr& right, const token& op) noexcept;
 
 
-  public: // Declarators
+  public: // Declarations
+    //
+    // Makes a decl expression
+    //
+    decl_expr* make_decl_expr(decl& d) noexcept;
+
     //
     // Makes a variable declarator
     //
-    var_decl* make_var_decl(id_expr& var, expr& initialiser) noexcept;
+    var_decl* make_var_decl(const token& var, expr& initialiser) noexcept;
 
   private:
     owner_store m_store;

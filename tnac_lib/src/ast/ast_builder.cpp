@@ -55,7 +55,12 @@ namespace tnac::ast
 
   // Declarators
 
-  var_decl* builder::make_var_decl(id_expr& var, expr& initialiser) noexcept
+  decl_expr* builder::make_decl_expr(decl& d) noexcept
+  {
+    return make<decl_expr>(d);
+  }
+
+  var_decl* builder::make_var_decl(const token& var, expr& initialiser) noexcept
   {
     return make<var_decl>(var, initialiser);
   }
