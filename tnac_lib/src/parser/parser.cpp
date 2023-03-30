@@ -138,10 +138,16 @@ namespace tnac
 
   ast::expr* parser::expr() noexcept
   {
-    return assign();
+    return decl_expr();
   }
 
-  ast::expr* parser::assign() noexcept
+  ast::expr* parser::decl_expr() noexcept
+  {
+    // todo: symbol table
+    return assign_expr();
+  }
+
+  ast::expr* parser::assign_expr() noexcept
   {
     auto lhs = additive_expr();
     
@@ -156,7 +162,7 @@ namespace tnac
     }
 
     auto op = m_lex.next();
-    auto rhs = assign();
+    auto rhs = assign_expr();
     return m_builder.make_assign(*lhs, *rhs, op);
   }
 

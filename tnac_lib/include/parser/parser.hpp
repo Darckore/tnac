@@ -86,9 +86,14 @@ namespace tnac
     ast::expr* expr() noexcept;
 
     //
+    // Parses a decl expr
+    //
+    ast::expr* decl_expr() noexcept;
+
+    //
     // Parses an assign expr
     //
-    ast::expr* assign() noexcept;
+    ast::expr* assign_expr() noexcept;
 
     //
     // Parses an additive expr
