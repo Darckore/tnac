@@ -48,7 +48,7 @@ namespace tnac::eval
 
   value::value_type value::make(input_ptr ptr, type_id id) noexcept
   {
-    auto res_val = std::bit_cast<value_type>(ptr);
+    auto res_val = reinterpret_cast<value_type>(ptr);
     const auto conv_id = static_cast<std::underlying_type_t<type_id>>(id);
     static_assert(sizeof(conv_id) == 1, "Type id is too large. Expected 1 byte");
     return detail::val_maker::add_id(res_val, conv_id);
