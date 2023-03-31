@@ -68,18 +68,9 @@ namespace tnac::eval
 
 
     template <detail::expr_result T>
-    value reg_value(T) noexcept;
-
-    template <>
-    value reg_value<int_type>(int_type val) noexcept
+    value reg_literal(T val) noexcept
     {
-      return m_registry.register_int(val);
-    }
-
-    template <>
-    value reg_value<float_type>(float_type val) noexcept
-    {
-      return m_registry.register_float(val);
+      return m_registry.register_literal(val);
     }
 
     value visit_unary(invalid_val_t, val_ops) noexcept
@@ -90,7 +81,7 @@ namespace tnac::eval
     template <detail::expr_result T, detail::unary_function<T> F>
     value visit_unary(T val, F&& op) noexcept
     {
-      return reg_value(op(val));
+      return reg_literal(op(val));
     }
 
     template <detail::expr_result T>
@@ -129,7 +120,7 @@ namespace tnac::eval
     template <detail::expr_result L, detail::expr_result R, detail::binary_function<L, R> F>
     value visit_binary(L lhs, R rhs, F&& op) noexcept
     {
-      return reg_value(op(lhs, rhs));
+      return reg_literal(op(lhs, rhs));
     }
 
     template <detail::expr_result L, detail::expr_result R>
@@ -217,7 +208,7 @@ namespace tnac::eval
       if (convRes.ec != std::errc{ 0 })
         return {};
 
-      return reg_value(result);
+      return reg_literal(result);
     }
 
     //
@@ -233,7 +224,7 @@ namespace tnac::eval
       if (convRes.ec != std::errc{ 0 })
         return {};
 
-      return reg_value(result);
+      return reg_literal(result);
     }
 
   private:

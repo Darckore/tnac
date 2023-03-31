@@ -10,12 +10,12 @@ namespace tnac::eval
 
   // Public members
 
-  registry::value_type registry::register_int(int_type val) noexcept
+  registry::value_type registry::register_literal(int_type val) noexcept
   {
     return { &register_val(val, m_ints), type_id::Int };
   }
 
-  registry::value_type registry::register_float(float_type val) noexcept
+  registry::value_type registry::register_literal(float_type val) noexcept
   {
     return { &register_val(val, m_floats), type_id::Float };
   }
