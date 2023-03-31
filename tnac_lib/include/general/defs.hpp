@@ -176,4 +176,40 @@ namespace tnac
 
   template <typename First, typename ...Others>
   constexpr auto is_any_v = is_any<First, Others...>::value;
+
+  //
+  // Takes a reference to a variable and (possibly) a new value
+  // Resets the old value on scope exit
+  //
+  template <typename T>
+  class value_guard
+  {
+  public:
+    using value_type = T;
+    using reference = value_type&;
+
+  public:
+    CLASS_SPECIALS_NONE(value_guard);
+
+    value_guard(reference var) noexcept :
+      m_ref{ var },
+      m_old{ var }
+    {}
+
+    value_guard(reference var, value_type newVal) noexcept :
+      m_ref{ var },
+      m_old{ std::move(var) }
+    {
+      var = std::move(newVal);
+    }
+
+    ~value_guard() noexcept
+    {
+      m_ref = std::move(m_old);
+    }
+
+  private:
+    reference m_ref;
+    value_type m_old;
+  };
 }
