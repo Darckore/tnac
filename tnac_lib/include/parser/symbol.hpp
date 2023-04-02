@@ -4,6 +4,7 @@
 
 #pragma once
 #include "evaluator/value.hpp"
+#include "ast/ast.hpp"
 #include "ast/ast_decls.hpp"
 
 namespace tnac::sema
@@ -13,9 +14,19 @@ namespace tnac::sema
   //
   enum class sym_kind : std::uint8_t
   {
-    Empty,
-
     Variable
+  };
+
+  //
+  // A structure representing a scope
+  // Even though tnac has no scopes in the classical sence,
+  // we need to keep track of where symbols are declared to disambiguate
+  // between entities having the same name
+  //
+  struct scope
+  {
+    const scope* m_enclosing{};
+    const ast::scope* m_node{};
   };
 
   //
