@@ -11,7 +11,7 @@ namespace tnac::semantics
 
   // Public members
 
-  scope& sym_table::add_scope(const ast::scope* node, const scope* parent) noexcept
+  const scope& sym_table::add_scope(const ast::scope* node, const scope* parent) noexcept
   {
     auto&& insertedScope = m_scopes.emplace_back(std::make_unique<scope>(parent, node));
     return *insertedScope.get();

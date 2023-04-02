@@ -24,11 +24,11 @@ namespace tnac::ast
     return m_id.m_value;
   }
 
-  const expr* decl::definition() const noexcept
+  const expr& decl::definition() const noexcept
   {
-    return m_def;
+    return *m_def;
   }
-  expr* decl::definition() noexcept
+  expr& decl::definition() noexcept
   {
     return FROM_CONST(definition);
   }
@@ -51,7 +51,9 @@ namespace tnac::ast
   decl_expr::decl_expr(decl& d) noexcept :
     expr{ kind::Decl, d.pos() },
     m_decl{ &d }
-  {}
+  {
+    assume_ancestry(m_decl);
+  }
 
   const decl& decl_expr::declarator() const noexcept
   {

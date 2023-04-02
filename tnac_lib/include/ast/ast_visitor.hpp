@@ -118,6 +118,28 @@ namespace tnac::ast
         visit(s);
     }
 
+    void visit_impl(dest<decl_expr> declExpr) noexcept
+    {
+      if constexpr (is_top_down())
+        visit(declExpr);
+
+      visit_root(&declExpr->declarator());
+
+      if constexpr (is_bottom_up())
+        visit(declExpr);
+    }
+
+    void visit_impl(dest<var_decl> varDecl) noexcept
+    {
+      if constexpr (is_top_down())
+        visit(varDecl);
+
+      visit_root(&varDecl->definition());
+
+      if constexpr (is_bottom_up())
+        visit(varDecl);
+    }
+
     void visit_impl(dest<assign_expr> assign) noexcept
     {
       if constexpr (is_top_down())
@@ -208,6 +230,14 @@ namespace tnac::ast
 
       case Assign:
         visit_impl(cast<node_t, assign_expr>(cur));
+        break;
+
+      case Decl:
+        visit_impl(cast<node_t, decl_expr>(cur));
+        break;
+
+      case VarDecl:
+        visit_impl(cast<node_t, var_decl>(cur));
         break;
 
       case Paren:

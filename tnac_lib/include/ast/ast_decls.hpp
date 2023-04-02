@@ -35,8 +35,8 @@ namespace tnac::ast
   public:
     string_t name() const noexcept;
 
-    const expr* definition() const noexcept;
-    expr* definition() noexcept;
+    const expr& definition() const noexcept;
+    expr& definition() noexcept;
 
     const token& pos() const noexcept;
 

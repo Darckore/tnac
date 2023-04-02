@@ -18,8 +18,8 @@
 *     decl-expr
 * 
 *   decl-expr:
+*     declarator '=' expr
 *     assign-expr
-*     declarator '=' additive-expr
 * 
 *   assign-expr:
 *     additive_expr
@@ -43,10 +43,13 @@
 *     (expr)
 * 
 *   declarator:
-*     identifier
+*     var-decl
+* 
+*   var-decl:
+*     identifier (previously not declared)
 * 
 *   id-expr:
-*     identifier
+*     identifier (previously declared)
 * 
 *   literal-expr:
 *     number

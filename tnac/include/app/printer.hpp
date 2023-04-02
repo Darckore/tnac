@@ -76,6 +76,18 @@ namespace printer
       print_token(expr->op());
     }
 
+    void visit(const ast::decl_expr* expr) noexcept
+    {
+      indent(expr);
+      std::cout << "Declaration: ";
+      print_value(expr->value());
+    }
+
+    void visit(const ast::var_decl* decl) noexcept
+    {
+      std::cout << "<VarName: " << decl->name() << ">\n";
+    }
+
     void visit(const ast::binary_expr* expr) noexcept
     {
       indent(expr);

@@ -41,9 +41,8 @@ namespace tnac::semantics
     using sym_ptr   = const symbol*;
     using sym_owner = owning_ptr<symbol>;
     using sym_store = entity_list<sym_owner>;
-    using sym_list  = entity_list<sym_ptr>;
 
-    using scope_map = table<scope_ptr, sym_list>;
+    using scope_map = table<scope_ptr, sym_ptr>;
     using name_map  = table<string_t, scope_map>;
 
   public:
@@ -56,7 +55,7 @@ namespace tnac::semantics
     //
     // Inserts a new scope inside the one specified as the parent
     //
-    scope& add_scope(const ast::scope* node, const scope* parent) noexcept;
+    const scope& add_scope(const ast::scope* node, const scope* parent) noexcept;
 
   private:
     name_map m_names;

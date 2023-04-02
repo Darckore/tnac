@@ -1,4 +1,6 @@
 #include "parser/parser.hpp"
+#include "sema/sema.hpp"
+#include "sema/symbol.hpp"
 
 namespace tnac
 {
@@ -21,6 +23,10 @@ namespace tnac
       constexpr auto is_assign(const token& tok) noexcept
       {
         return tok.is_any(token::Assign);
+      }
+      constexpr auto is_init(const token& tok) noexcept
+      {
+        return tok.is(token::Assign);
       }
 
       constexpr auto is_open_paren(const token& tok) noexcept
@@ -67,6 +73,8 @@ namespace tnac
       res = m_root;
     }
 
+    new_scope(m_root);
+
     auto eList = expression_list();
     if (!eList.empty())
     {
@@ -86,7 +94,22 @@ namespace tnac
     return FROM_CONST(root);
   }
 
+
+
   // Private members
+
+  /// Semantics
+
+  void parser::new_scope(root_ptr node) noexcept
+  {
+    m_sema.open_scope(*node);
+  }
+  void parser::end_scope() noexcept
+  {
+    m_sema.close_scope();
+  }
+
+  /// Parsing
 
   const token& parser::peek_next() noexcept
   {
@@ -144,8 +167,45 @@ namespace tnac
 
   ast::expr* parser::decl_expr() noexcept
   {
-    // todo: symbol table
-    return assign_expr();
+    auto decl = declarator();
+    if(!decl)
+      return assign_expr();
+
+    return m_builder.make_decl_expr(*decl);
+  }
+
+  ast::decl* parser::declarator() noexcept
+  {
+    auto&& next = peek_next();
+    if (!next.is_identifier())
+      return {};
+
+    if (m_sema.find(next.m_value))
+      return {};
+
+    auto res = var_decl();
+    m_sema.visit_decl(*res);
+    return res;
+  }
+
+  ast::decl* parser::var_decl() noexcept
+  {
+    auto name = m_lex.next();
+    auto op   = peek_next();
+
+    ast::expr* init{};
+    if (!detail::is_init(op))
+    {
+      init = m_builder.make_error(op, "Expected initialisation");
+      to_expr_end();
+    }
+    else
+    {
+      m_lex.next();
+      init = expr();
+    }
+
+    return m_builder.make_var_decl(name, *init);
   }
 
   ast::expr* parser::assign_expr() noexcept

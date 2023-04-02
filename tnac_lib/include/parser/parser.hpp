@@ -62,7 +62,18 @@ namespace tnac
     //
     root_ptr root() noexcept;
 
-  private:
+  private: // semantics
+    //
+    // Instructs sema to open a new scope
+    //
+    void new_scope(root_ptr node) noexcept;
+
+    //
+    // Instructs sema to return to the previous scope
+    //
+    void end_scope() noexcept;
+
+  private: // parsing
     //
     // Previews the next token from the lexer
     //
@@ -93,6 +104,16 @@ namespace tnac
     // Parses a decl expr
     //
     ast::expr* decl_expr() noexcept;
+
+    //
+    // Parses a declarator
+    //
+    ast::decl* declarator() noexcept;
+
+    //
+    // Parses a variable declarator
+    //
+    ast::decl* var_decl() noexcept;
 
     //
     // Parses an assign expr
