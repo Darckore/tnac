@@ -60,20 +60,20 @@ namespace tnac
   {
     m_lex(str);
 
-    auto eList = expression_list();
-    if (eList.empty())
-      return {};
-
-    auto res = eList.back();
+    pointer res{};
     if (!m_root)
     {
-      m_root = m_builder.make_scope(std::move(eList));
-    }
-    else
-    {
-      m_root->adopt(std::move(eList));
+      m_root = m_builder.make_scope({});
+      res = m_root;
     }
 
+    auto eList = expression_list();
+    if (!eList.empty())
+    {
+      res = eList.back();
+    }
+
+    m_root->adopt(std::move(eList));
     return res;
   }
 

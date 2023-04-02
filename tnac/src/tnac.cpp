@@ -1,10 +1,7 @@
 #include <iomanip>
 
 #include "app/printer.hpp"
-#include "parser/parser.hpp"
-#include "evaluator/value.hpp"
-#include "evaluator/evaluator.hpp"
-#include "sema/sema.hpp"
+#include "tnac/driver.hpp"
 
 #define PRINT_TOKENS 0
 
@@ -57,15 +54,7 @@ bool parse_line(tnac::buf_t input) noexcept
 
 int main()
 {
-  using tnac::eval::value;
-  using vt = tnac::eval::type_id;
-
-  std::intmax_t x = 42;
-  value vv{ &x, vt::Int };
-  const auto id = vv.id();
-  const auto val = vv.raw_value();
-  auto retVal = vv.try_get<std::intmax_t>();
-  utils::unused(id, val, retVal);
+  //tnac::driver driver{ std::cout, std::cin };
 
   tnac::buf_t input;
   while (true)

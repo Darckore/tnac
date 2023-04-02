@@ -32,7 +32,7 @@ namespace tnac::ast
     template <ast_node T, typename ...Args>
     T* make(Args&& ...args) noexcept
     {
-      auto res = new (std::nothrow) T{ std::forward<Args>(args)... };
+      auto res = new T{ std::forward<Args>(args)... };
       m_store.emplace_back(res);
       return res;
     }
