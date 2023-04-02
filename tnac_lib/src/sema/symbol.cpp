@@ -1,6 +1,8 @@
 #include "sema/symbol.hpp"
+#include "ast/ast.hpp"
+#include "ast/ast_decls.hpp"
 
-namespace tnac::sema
+namespace tnac::semantics
 {
   // Base symbol
 

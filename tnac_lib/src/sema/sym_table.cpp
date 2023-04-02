@@ -1,6 +1,7 @@
 #include "sema/sym_table.hpp"
+#include "sema/symbol.hpp"
 
-namespace tnac::sema
+namespace tnac::semantics
 {
   // Special members
 

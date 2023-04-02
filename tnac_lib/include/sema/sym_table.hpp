@@ -3,9 +3,20 @@
 //
 
 #pragma once
-#include "sema/symbol.hpp"
 
-namespace tnac::sema
+namespace tnac::ast
+{
+  class scope;
+  class decl;
+}
+
+namespace tnac::semantics
+{
+  class symbol;
+  struct scope;
+}
+
+namespace tnac::semantics
 {
   //
   // Symbol table. Stores symbols associated to names in respect with their scopes

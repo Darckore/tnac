@@ -48,8 +48,9 @@ namespace tnac
 
   parser::~parser() noexcept = default;
 
-  parser::parser(ast::builder& builder) noexcept :
-    m_builder{ builder }
+  parser::parser(ast::builder& builder, sema& sema) noexcept :
+    m_builder{ builder },
+    m_sema{ sema }
   {}
 
 

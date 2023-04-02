@@ -6,7 +6,11 @@
 #include "parser/lex.hpp"
 #include "ast/ast_builder.hpp"
 #include "ast/ast_nodes.hpp"
-#include "ast/ast_visitor.hpp"
+
+namespace tnac
+{
+  class sema;
+}
 
 namespace tnac
 {
@@ -30,7 +34,7 @@ namespace tnac
 
     ~parser() noexcept;
 
-    explicit parser(ast::builder& builder) noexcept;
+    parser(ast::builder& builder, sema& sema) noexcept;
 
   public:
     //
@@ -133,6 +137,7 @@ namespace tnac
   private:
     lex m_lex;
     ast::builder& m_builder;
+    sema& m_sema;
     root_ptr m_root{};
   };
 }

@@ -1,4 +1,5 @@
 #include "parser/parser.hpp"
+#include "sema/sema.hpp"
 
 namespace tnac_tests
 {
@@ -11,7 +12,7 @@ namespace tnac_tests
     struct parse_helper
     {
       parse_helper() :
-        builder{}, parser{ builder }
+        parser{ builder, sema }
       {}
 
       auto operator()(string_t input) noexcept
@@ -20,6 +21,7 @@ namespace tnac_tests
       }
 
       tnac::ast::builder builder;
+      tnac::sema sema;
       tnac::parser parser;
     };
 

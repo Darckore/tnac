@@ -4,10 +4,14 @@
 
 #pragma once
 #include "evaluator/value.hpp"
-#include "ast/ast.hpp"
-#include "ast/ast_decls.hpp"
 
-namespace tnac::sema
+namespace tnac::ast
+{
+  class scope;
+  class decl;
+}
+
+namespace tnac::semantics
 {
   //
   // Symbol kinds
@@ -19,7 +23,7 @@ namespace tnac::sema
 
   //
   // A structure representing a scope
-  // Even though tnac has no scopes in the classical sence,
+  // Even though tnac has no scopes in the classical sense,
   // we need to keep track of where symbols are declared to disambiguate
   // between entities having the same name
   //

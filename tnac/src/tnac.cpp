@@ -4,6 +4,7 @@
 #include "parser/parser.hpp"
 #include "evaluator/value.hpp"
 #include "evaluator/evaluator.hpp"
+#include "sema/sema.hpp"
 
 #define PRINT_TOKENS 0
 
@@ -12,7 +13,8 @@ bool parse_line(tnac::buf_t input) noexcept
   static std::forward_list<tnac::buf_t> lineBuf;
   static tnac::lex lex;
   static tnac::ast::builder builder;
-  static tnac::parser parser{ builder };
+  static tnac::sema sema;
+  static tnac::parser parser{ builder, sema };
   static tnac::eval::registry registry;
   static tnac::evaluator evaluator{ registry };
   lineBuf.emplace_front(std::move(input));

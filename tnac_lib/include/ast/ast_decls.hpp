@@ -6,7 +6,7 @@
 #include "ast/ast.hpp"
 #include "ast/ast_expr.hpp"
 
-namespace tnac::sema
+namespace tnac::semantics
 {
   class symbol;
 }
@@ -20,7 +20,7 @@ namespace tnac::ast
   {
   private:
     friend class builder;
-    friend class sema::symbol;
+    friend class semantics::symbol;
 
   public:
     CLASS_SPECIALS_NONE(decl);
@@ -30,7 +30,7 @@ namespace tnac::ast
   protected:
     decl(kind k, const token& id, expr& def) noexcept;
 
-    void attach_symbol(const sema::symbol& sym) noexcept;
+    void attach_symbol(const semantics::symbol& sym) noexcept;
 
   public:
     string_t name() const noexcept;
@@ -40,11 +40,11 @@ namespace tnac::ast
 
     const token& pos() const noexcept;
 
-    const sema::symbol& symbol() const noexcept;
+    const semantics::symbol& symbol() const noexcept;
 
   private:
     expr* m_def{};
-    const sema::symbol* m_symbol{};
+    const semantics::symbol* m_symbol{};
     token m_id{};
   };
 
