@@ -1,4 +1,4 @@
-#include "parser/symbol.hpp"
+#include "sema/symbol.hpp"
 
 namespace tnac::sema
 {

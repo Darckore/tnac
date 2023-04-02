@@ -1,4 +1,4 @@
-#include "parser/sym_table.hpp"
+#include "sema/sym_table.hpp"
 
 namespace tnac::sema
 {
