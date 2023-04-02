@@ -40,7 +40,7 @@ namespace tnac_tests
           if (nodeKind == kind)
           {
             auto&& tok = static_cast<tree::expr&>(*ast).pos();
-            EXPECT_EQ(tok.m_value, input);
+            EXPECT_TRUE(input.starts_with(tok.m_value));
           }
         }
       }
@@ -49,14 +49,34 @@ namespace tnac_tests
 
   TEST(parser, t_literals)
   {
-    detail::parse_helper p;
-
     constexpr std::array inputArr{
-      "0"sv, "42"sv, "042"sv, "0b1101"sv, "0xfF2"sv
+      "0"sv, "42"sv, "042"sv, "0b1101"sv, "0xfF2"sv, "42.69"sv
     };
 
     using tnac::ast::node_kind;
     using detail::check_simple_exprs;
     check_simple_exprs<node_kind::Literal>(inputArr);
+  }
+
+  TEST(parser, t_unaries)
+  {
+    constexpr std::array inputArr{
+      "+0"sv, "-42"sv, "+042"sv, "+0b1101"sv, "-0xfF2"sv, "-42.69"sv
+    };
+
+    using tnac::ast::node_kind;
+    using detail::check_simple_exprs;
+    check_simple_exprs<node_kind::Unary>(inputArr);
+  }
+
+  TEST(parser, t_binaries)
+  {
+    constexpr std::array inputArr{
+      "+0 - 1"sv, "-42 + 0xff"sv, "042 * 2"sv, "0b1101 + -0.5"sv, "0*0xfF2"sv, "-42.69 / 0.0 / 2"sv
+    };
+
+    using tnac::ast::node_kind;
+    using detail::check_simple_exprs;
+    check_simple_exprs<node_kind::Binary>(inputArr);
   }
 }
