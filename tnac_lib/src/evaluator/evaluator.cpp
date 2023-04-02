@@ -60,14 +60,14 @@ namespace tnac
     auto left = binary->left().value();
     auto right = binary->right().value();
     const auto opCode = detail::conv_binary(binary->op().m_kind);
-    binary->eval_result(m_visitor.visit_binary(left, right, opCode));
+    binary->eval_result(m_visitor.visit_binary(binary, left, right, opCode));
   }
 
   void evaluator::visit(ast::unary_expr* unary) noexcept
   {
     const auto opCode = detail::conv_unary(unary->op().m_kind);
     auto val = unary->operand().value();
-    unary->eval_result(m_visitor.visit_unary(val, opCode));
+    unary->eval_result(m_visitor.visit_unary(unary, val, opCode));
   }
 
   void evaluator::visit(ast::paren_expr* paren) noexcept

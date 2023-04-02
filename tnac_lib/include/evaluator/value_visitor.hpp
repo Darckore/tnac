@@ -29,6 +29,26 @@ namespace tnac::eval
     template <typename F, typename T1, typename T2>
     concept binary_function = std::is_nothrow_invocable_v<F, T1, T2>;
 
+    //
+    // Helper object to facilitate easy casts from pointers to entity ids
+    //
+    struct ent_id
+    {
+      CLASS_SPECIALS_ALL(ent_id);
+      using id_t = registry::entity_id;
+
+      ent_id(const void* ent) noexcept :
+        value{ reinterpret_cast<id_t>(ent) }
+      {}
+
+      auto operator* () const noexcept
+      {
+        return value;
+      }
+
+      id_t value;
+    };
+
     constexpr auto is_unary(val_ops op) noexcept
     {
       using enum val_ops;
@@ -41,6 +61,7 @@ namespace tnac::eval
     }
   }
 
+
   //
   // Value visitor used in expression evaluations
   //
@@ -48,6 +69,8 @@ namespace tnac::eval
   {
   public:
     using enum val_ops;
+    using id_param_t = detail::ent_id;
+    using entity_id  = id_param_t::id_t;
 
   public:
     CLASS_SPECIALS_NONE(value_visitor);
@@ -68,8 +91,11 @@ namespace tnac::eval
 
 
     template <detail::expr_result T>
-    value reg_literal(T val) noexcept
+    value reg_value(T val) noexcept
     {
+      if (m_curEntity)
+        return m_registry.register_entity(m_curEntity, val);
+
       return m_registry.register_literal(val);
     }
 
@@ -81,7 +107,7 @@ namespace tnac::eval
     template <detail::expr_result T, detail::unary_function<T> F>
     value visit_unary(T val, F&& op) noexcept
     {
-      return reg_literal(op(val));
+      return reg_value(op(val));
     }
 
     template <detail::expr_result T>
@@ -120,7 +146,7 @@ namespace tnac::eval
     template <detail::expr_result L, detail::expr_result R, detail::binary_function<L, R> F>
     value visit_binary(L lhs, R rhs, F&& op) noexcept
     {
-      return reg_literal(op(lhs, rhs));
+      return reg_value(op(lhs, rhs));
     }
 
     template <detail::expr_result L, detail::expr_result R>
@@ -164,10 +190,12 @@ namespace tnac::eval
     //
     // Returns a resulting value from a binary expr
     //
-    value visit_binary(value lhs, value rhs, val_ops op) noexcept
+    value visit_binary(id_param_t ent, value lhs, value rhs, val_ops op) noexcept
     {
       if (!lhs || !rhs || !detail::is_binary(op))
         return {};
+
+      value_guard _{ m_curEntity, *ent };
 
       return visit_value(lhs, [this, rhs, op](auto lhs) noexcept
         {
@@ -178,10 +206,12 @@ namespace tnac::eval
     //
     // Returns a resulting value from a unary expr
     //
-    value visit_unary(value val, val_ops op) noexcept
+    value visit_unary(id_param_t ent, value val, val_ops op) noexcept
     {
       if (!val || !detail::is_unary(op))
         return {};
+
+      value_guard _{ m_curEntity, *ent };
 
       return visit_value(val, [this, op](auto v) noexcept
         {
@@ -208,7 +238,7 @@ namespace tnac::eval
       if (convRes.ec != std::errc{ 0 })
         return {};
 
-      return reg_literal(result);
+      return reg_value(result);
     }
 
     //
@@ -224,10 +254,11 @@ namespace tnac::eval
       if (convRes.ec != std::errc{ 0 })
         return {};
 
-      return reg_literal(result);
+      return reg_value(result);
     }
 
   private:
+    entity_id m_curEntity{};
     registry& m_registry;
   };
 }
