@@ -58,7 +58,7 @@ namespace tnac::ast
     //
     // Creates an id expression
     //
-    id_expr* make_id(const token& tok) noexcept;
+    id_expr* make_id(const token& tok, semantics::symbol& sym) noexcept;
 
     //
     // Creates a paren expression

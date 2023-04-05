@@ -58,6 +58,27 @@ namespace tnac
 
   // Expressions
 
+  void evaluator::visit(ast::assign_expr* assign) noexcept
+  {
+    using enum ast::node::kind;
+    auto&& assignee = assign->left();
+    switch (assignee.what())
+    {
+    case Identifier:
+    {
+      auto&& lhs = static_cast<ast::id_expr*>(&assignee)->symbol();
+      eval_assign(lhs, assign->right().value());
+      assignee.eval_result(lhs.value());
+    }
+      break;
+
+    default:
+      break;
+    }
+
+    assign->eval_result(assignee.value());
+  }
+
   void evaluator::visit(ast::binary_expr* binary) noexcept
   {
     auto left = binary->left().value();
@@ -82,6 +103,11 @@ namespace tnac
   {
     auto value = eval_token(lit->pos());
     lit->eval_result(value);
+  }
+
+  void evaluator::visit(ast::id_expr* id) noexcept
+  {
+    id->eval_result(id->symbol().value());
   }
 
   // Decls

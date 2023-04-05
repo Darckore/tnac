@@ -6,6 +6,11 @@
 #include "ast/ast.hpp"
 #include "evaluator/value.hpp"
 
+namespace tnac::semantics
+{
+  class symbol;
+}
+
 namespace tnac::ast
 {
   //
@@ -69,10 +74,16 @@ namespace tnac::ast
     virtual ~id_expr() noexcept;
 
   protected:
-    id_expr(const token& tok) noexcept;
+    id_expr(const token& tok, semantics::symbol& sym) noexcept;
 
   public:
+    const semantics::symbol& symbol() const noexcept;
+    semantics::symbol& symbol() noexcept;
+
     string_t name() const noexcept;
+
+  private:
+    semantics::symbol* m_sym{};
   };
 
 

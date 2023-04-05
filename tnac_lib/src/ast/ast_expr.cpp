@@ -41,13 +41,23 @@ namespace tnac::ast
 
   id_expr::~id_expr() noexcept = default;
 
-  id_expr::id_expr(const token& tok) noexcept :
-    expr{ kind::Identifier, tok }
+  id_expr::id_expr(const token& tok, semantics::symbol& sym) noexcept :
+    expr{ kind::Identifier, tok },
+    m_sym{ &sym }
   {}
 
   string_t id_expr::name() const noexcept
   {
     return pos().m_value;
+  }
+
+  const semantics::symbol& id_expr::symbol() const noexcept
+  {
+    return *m_sym;
+  }
+  semantics::symbol& id_expr::symbol() noexcept
+  {
+    return FROM_CONST(symbol);
   }
 
 

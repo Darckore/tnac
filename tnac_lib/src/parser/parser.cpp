@@ -211,11 +211,11 @@ namespace tnac
   {
     auto lhs = additive_expr();
     
+    if (!detail::is_assign(peek_next()))
+      return lhs;
+
     if (!lhs->is(ast::node::Identifier))
     {
-      if (!detail::is_assign(peek_next()))
-        return lhs;
-
       auto err = m_builder.make_error(lhs->pos(), "Expected a single identifier");
       to_expr_end();
       return err;
@@ -304,9 +304,20 @@ namespace tnac
 
     if (next.is_identifier())
     {
-      return m_builder.make_id(m_lex.next());
+      return id_expr();
     }
 
     return paren_expr();
+  }
+
+  ast::expr* parser::id_expr() noexcept
+  {
+    auto&& next = peek_next();
+    auto sym = m_sema.find(next.m_value);
+    
+    if (!sym)
+      return error_expr("Undefined identifier");
+
+    return m_builder.make_id(m_lex.next(), *sym);
   }
 }

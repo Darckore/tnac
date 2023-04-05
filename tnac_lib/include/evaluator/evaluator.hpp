@@ -20,6 +20,8 @@ namespace tnac
     explicit evaluator(eval::registry& registry) noexcept;
 
   public: // expressions
+    void visit(ast::assign_expr* assign) noexcept;
+
     void visit(ast::binary_expr* binary) noexcept;
 
     void visit(ast::unary_expr* unary) noexcept;
@@ -27,6 +29,8 @@ namespace tnac
     void visit(ast::paren_expr* paren) noexcept;
 
     void visit(ast::lit_expr* lit) noexcept;
+
+    void visit(ast::id_expr* id) noexcept;
 
   public: // decls
     void visit(ast::decl_expr* expr) noexcept;

@@ -155,6 +155,11 @@ namespace tnac
     //
     ast::expr* primary_expr() noexcept;
 
+    //
+    // Parses an id expression
+    //
+    ast::expr* id_expr() noexcept;
+
   private:
     lex m_lex;
     ast::builder& m_builder;
