@@ -15,7 +15,7 @@ namespace tnac
   {
   public:
     using symbol = semantics::symbol;
-    using sym_ptr = const symbol*;
+    using sym_ptr = symbol*;
 
   public:
     CLASS_SPECIALS_NONE_CUSTOM(sema);

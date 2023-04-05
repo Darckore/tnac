@@ -30,7 +30,7 @@ namespace tnac::ast
   protected:
     decl(kind k, const token& id, expr& def) noexcept;
 
-    void attach_symbol(const semantics::symbol& sym) noexcept;
+    void attach_symbol(semantics::symbol& sym) noexcept;
 
   public:
     string_t name() const noexcept;
@@ -41,10 +41,11 @@ namespace tnac::ast
     const token& pos() const noexcept;
 
     const semantics::symbol& symbol() const noexcept;
+    semantics::symbol& symbol() noexcept;
 
   private:
     expr* m_def{};
-    const semantics::symbol* m_symbol{};
+    semantics::symbol* m_symbol{};
     token m_id{};
   };
 

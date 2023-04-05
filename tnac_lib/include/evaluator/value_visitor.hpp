@@ -99,6 +99,17 @@ namespace tnac::eval
       return m_registry.register_literal(val);
     }
 
+    value visit_assign(invalid_val_t) noexcept
+    {
+      return {};
+    }
+
+    template <detail::expr_result T>
+    value visit_assign(T rhs) noexcept
+    {
+      return reg_value(rhs);
+    }
+
     value visit_unary(invalid_val_t, val_ops) noexcept
     {
       return {};
@@ -216,6 +227,22 @@ namespace tnac::eval
       return visit_value(val, [this, op](auto v) noexcept
         {
           return visit_unary(v, op);
+        });
+    }
+
+    //
+    // Makes a value for an assigned-to entity
+    //
+    value visit_assign(id_param_t ent, value rhs) noexcept
+    {
+      if (!rhs)
+        return {};
+
+      value_guard _{ m_curEntity, *ent };
+
+      return visit_value(rhs, [this](auto v) noexcept
+        {
+          return visit_assign(v);
         });
     }
 

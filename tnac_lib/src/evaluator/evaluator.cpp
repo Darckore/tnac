@@ -1,5 +1,6 @@
 #include "evaluator/evaluator.hpp"
 #include "evaluator/value.hpp"
+#include "sema/symbol.hpp"
 
 namespace tnac
 {
@@ -55,6 +56,8 @@ namespace tnac
 
   // Public members
 
+  // Expressions
+
   void evaluator::visit(ast::binary_expr* binary) noexcept
   {
     auto left = binary->left().value();
@@ -81,6 +84,19 @@ namespace tnac
     lit->eval_result(value);
   }
 
+  // Decls
+
+  void evaluator::visit(ast::decl_expr* expr) noexcept
+  {
+    auto&& sym = expr->declarator().symbol();
+    expr->eval_result(sym.value());
+  }
+
+  void evaluator::visit(ast::var_decl* decl) noexcept
+  {
+    eval_assign(decl->symbol(), decl->definition().value());
+  }
+
 
   // Private members
 
@@ -103,5 +119,10 @@ namespace tnac
     default:
       return {};
     }
+  }
+
+  void evaluator::eval_assign(semantics::symbol& sym, eval::value rhs) noexcept
+  {
+    sym.eval_result(m_visitor.visit_assign(&sym, rhs));
   }
 }

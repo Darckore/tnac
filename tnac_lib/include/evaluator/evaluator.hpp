@@ -19,7 +19,7 @@ namespace tnac
 
     explicit evaluator(eval::registry& registry) noexcept;
 
-  public:
+  public: // expressions
     void visit(ast::binary_expr* binary) noexcept;
 
     void visit(ast::unary_expr* unary) noexcept;
@@ -28,11 +28,21 @@ namespace tnac
 
     void visit(ast::lit_expr* lit) noexcept;
 
+  public: // decls
+    void visit(ast::decl_expr* expr) noexcept;
+
+    void visit(ast::var_decl* decl) noexcept;
+
   private:
     //
     // Evaluates a literal and returns its value
     //
     eval::value eval_token(const token& tok) noexcept;
+
+    //
+    // Evaluates an assign expression and variable declarations 
+    //
+    void eval_assign(semantics::symbol& sym, eval::value rhs) noexcept;
 
   private:
     eval::value_visitor m_visitor;
