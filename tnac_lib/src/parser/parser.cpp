@@ -71,9 +71,8 @@ namespace tnac
     {
       m_root = m_builder.make_scope({});
       res = m_root;
+      new_scope(m_root);
     }
-
-    new_scope(m_root);
 
     auto eList = expression_list();
     if (!eList.empty())

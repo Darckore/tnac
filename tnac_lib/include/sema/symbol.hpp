@@ -51,7 +51,7 @@ namespace tnac::semantics
     virtual ~symbol() noexcept;
 
   protected:
-    symbol(kind k, ast::decl& decl, eval::value val) noexcept;
+    symbol(kind k, ast::decl& decl) noexcept;
 
   public:
     kind what() const noexcept;
@@ -62,6 +62,10 @@ namespace tnac::semantics
     ast::decl& declarator() noexcept;
 
     string_t name() const noexcept;
+
+    eval::value value() const noexcept;
+
+    void eval_result(eval::value val) noexcept;
 
   private:
     ast::decl* m_decl{};
@@ -84,6 +88,65 @@ namespace tnac::semantics
     virtual ~variable() noexcept;
 
   protected:
-    variable(ast::decl& decl, eval::value val) noexcept;
+    variable(ast::decl& decl) noexcept;
   };
+
+  namespace detail
+  {
+    template <typename T>
+    concept sym = std::is_base_of_v<symbol, T>;
+
+    template <sym S> struct kind_from_sym;
+    template <sym_kind K> struct sym_from_kind;
+
+    template <>
+    struct kind_from_sym<variable>
+    {
+      static constexpr auto value = sym_kind::Variable;
+    };
+    template <>
+    struct sym_from_kind<sym_kind::Variable>
+    {
+      using type = variable;
+    };
+
+    template <typename From, typename To> struct sym_caster;
+
+    template <sym From, sym To> requires (std::is_const_v<From>)
+    struct sym_caster<From, To>
+    {
+      using type = const To*;
+    };
+
+    template <sym From, sym To> requires (!std::is_const_v<From>)
+    struct sym_caster<From, To>
+    {
+      using type = To*;
+    };
+
+  }
+
+  template <detail::sym S>
+  static constexpr auto kind_from_sym = detail::kind_from_sym<S>::value;
+
+  template <sym_kind K>
+  using sym_from_kind = detail::sym_from_kind<K>::type;
+
+  template <detail::sym To>
+  auto sym_cast(const symbol* sym) noexcept
+  {
+    using res_t = detail::sym_caster<const symbol, To>::type;
+    static constexpr auto K = kind_from_sym<To>;
+    if (!sym || sym->what() != K)
+      return res_t{};
+
+    return static_cast<res_t>(sym);
+  }
+
+  template <detail::sym To>
+  auto sym_cast(symbol* sym) noexcept
+  {
+    auto castRes = sym_cast<To>(static_cast<const symbol*>(sym));
+    return const_cast<To*>(castRes);
+  }
 }

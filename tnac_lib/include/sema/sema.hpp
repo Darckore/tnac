@@ -38,7 +38,7 @@ namespace tnac
     // Checks whether the specified symbol has previously been defined
     // and returns it if it was
     //
-    sym_ptr find(string_t name) const noexcept;
+    sym_ptr find(string_t name) noexcept;
 
     //
     // Visits a newly created declarator and registers it in the symbol table

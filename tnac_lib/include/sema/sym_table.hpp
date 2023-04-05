@@ -3,17 +3,12 @@
 //
 
 #pragma once
+#include "sema/symbol.hpp"
 
 namespace tnac::ast
 {
   class scope;
   class decl;
-}
-
-namespace tnac::semantics
-{
-  class symbol;
-  struct scope;
 }
 
 namespace tnac::semantics
@@ -38,7 +33,7 @@ namespace tnac::semantics
     using scope_owner = owning_ptr<scope>;
     using scope_store = entity_list<scope_owner>;
 
-    using sym_ptr   = const symbol*;
+    using sym_ptr   = symbol*;
     using sym_owner = owning_ptr<symbol>;
     using sym_store = entity_list<sym_owner>;
 
@@ -55,7 +50,45 @@ namespace tnac::semantics
     //
     // Inserts a new scope inside the one specified as the parent
     //
-    const scope& add_scope(const ast::scope* node, const scope* parent) noexcept;
+    const scope& add_scope(const ast::scope* node, scope_ptr parent) noexcept;
+
+    //
+    // Inserts a variable
+    //
+    variable& add_variable(ast::decl& decl, scope_ptr parent) noexcept;
+
+    //
+    // Looks for a symbol starting from the specified scope
+    //
+    sym_ptr lookup(string_t name, scope_ptr parent) noexcept;
+
+  private:
+    scope_map* lookup(string_t name) noexcept;
+
+    sym_ptr lookup(scope_map* scopes, scope_ptr parent) noexcept;
+
+    scope_map& make_name(string_t name) noexcept;
+
+    sym_ptr& make_symbol(scope_map& scopes, scope_ptr parent) noexcept;
+
+    template <detail::sym S, typename ...Args>
+    auto alloc_sym(Args&& ...args) noexcept
+    {
+      auto&& res = m_symbols.emplace_back(new S{ std::forward<Args>(args)... });
+      return sym_cast<S>(res.get());
+    }
+
+    template <detail::sym S, typename ...Args>
+    auto make_symbol(string_t name, scope_ptr parent, Args&& ...args) noexcept
+    {
+      auto&& sym = make_symbol(make_name(name), parent);
+      if (sym)
+        return sym_cast<S>(sym);
+
+      auto res = alloc_sym<S>(std::forward<Args>(args)...);
+      sym = res;
+      return res;
+    }
 
   private:
     name_map m_names;

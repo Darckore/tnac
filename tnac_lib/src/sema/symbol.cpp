@@ -8,9 +8,8 @@ namespace tnac::semantics
 
   symbol::~symbol() noexcept = default;
 
-  symbol::symbol(kind k, ast::decl& decl, eval::value val) noexcept :
+  symbol::symbol(kind k, ast::decl& decl) noexcept :
     m_decl{ &decl },
-    m_value{ val },
     m_kind{ k }
   {
     decl.attach_symbol(*this);
@@ -40,13 +39,22 @@ namespace tnac::semantics
     return declarator().name();
   }
 
+  eval::value symbol::value() const noexcept
+  {
+    return m_value;
+  }
+
+  void symbol::eval_result(eval::value val) noexcept
+  {
+    m_value = val;
+  }
 
   // Variable symbol
 
   variable::~variable() noexcept = default;
 
-  variable::variable(ast::decl& decl, eval::value val) noexcept :
-    symbol{ kind::Variable, decl, val }
+  variable::variable(ast::decl& decl) noexcept :
+    symbol{ kind::Variable, decl }
   {}
 
 }

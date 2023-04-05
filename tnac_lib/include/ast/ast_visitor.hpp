@@ -20,7 +20,7 @@ namespace tnac::ast
       ast_node<N> &&
       std::is_same_v<std::remove_const_t<N>, node>;
 
-    template <typename From, typename To> struct ast_caster {};
+    template <typename From, typename To> struct ast_caster;
 
     template <ast_node From, ast_node To> requires (std::is_const_v<From>)
     struct ast_caster<From, To>

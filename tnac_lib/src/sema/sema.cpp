@@ -23,14 +23,22 @@ namespace tnac
       m_curScope = m_curScope->m_enclosing;
   }
 
-  sema::sym_ptr sema::find(string_t name) const noexcept
+  sema::sym_ptr sema::find(string_t name) noexcept
   {
-    utils::unused(name);
-    return {};
+    return m_symTab.lookup(name, m_curScope);
   }
 
   void sema::visit_decl(ast::decl& decl) noexcept
   {
-    utils::unused(decl);
+    using enum ast::node::kind;
+    switch (decl.what())
+    {
+    case VarDecl:
+      m_symTab.add_variable(decl, m_curScope);
+      break;
+
+    default:
+      break;
+    }
   }
 }
