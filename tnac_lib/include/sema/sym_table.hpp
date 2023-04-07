@@ -53,7 +53,7 @@ namespace tnac::semantics
     const scope& add_scope(const ast::scope* node, scope_ptr parent) noexcept;
 
     //
-    // Inserts a variable
+    // Inserts a variable to the specified scope
     //
     variable& add_variable(ast::decl& decl, scope_ptr parent) noexcept;
 
@@ -63,14 +63,38 @@ namespace tnac::semantics
     sym_ptr lookup(string_t name, scope_ptr parent) noexcept;
 
   private:
+    //
+    // Searches for the given name in the name map and returns a pointer to
+    // the table of scopes where at least one entity with such name is defined
+    // Returns nullptr if the name doesn't exist
+    //
     scope_map* lookup(string_t name) noexcept;
 
+    //
+    // Searches for the provided scope in the scope table. On failure, repeats the search
+    // by using the scope's parent and so on
+    // This continues until the first match, or if the topmost null scope is reached
+    // 
+    // If the scope is found, returns a pointer to the symbol defined in it
+    // Otherwise, returns nullptr
+    //
     sym_ptr lookup(scope_map* scopes, scope_ptr parent) noexcept;
 
+    //
+    // Adds the given name to the name map and returns an empty scope table
+    // If the name already exists, returns the scopes where
+    // an entities with such name exist
+    //
     scope_map& make_name(string_t name) noexcept;
 
+    //
+    // Adds a symbol to the scope table and returns a reference to it
+    //
     sym_ptr& make_symbol(scope_map& scopes, scope_ptr parent) noexcept;
 
+    //
+    // Allocates a new symbol of the specified type
+    //
     template <detail::sym S, typename ...Args>
     auto alloc_sym(Args&& ...args) noexcept
     {
@@ -78,6 +102,11 @@ namespace tnac::semantics
       return sym_cast<S>(res.get());
     }
 
+    //
+    // Tries to add a symbol to the given scope and returns a pointer to it
+    // If the scope already has a symbol of the same, returns a pointer to it
+    // If the existing symbol has a different type, returns nullptr
+    //
     template <detail::sym S, typename ...Args>
     auto make_symbol(string_t name, scope_ptr parent, Args&& ...args) noexcept
     {

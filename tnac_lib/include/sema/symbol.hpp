@@ -34,7 +34,7 @@ namespace tnac::semantics
   };
 
   //
-  // Base symbol information object. Holds a declarator and a value it refers to
+  // Base symbol information object. Holds a declarator of an entity
   //
   class symbol
   {
@@ -54,17 +54,37 @@ namespace tnac::semantics
     symbol(kind k, ast::decl& decl) noexcept;
 
   public:
+    //
+    // Returns the symbol kind
+    //
     kind what() const noexcept;
 
-    bool is_variable() const noexcept;
-
+    //
+    // Returns the declarator for which this symbol was created
+    // 
+    // const version
+    //
     const ast::decl& declarator() const noexcept;
+
+    //
+    // Returns the declarator for which this symbol was created
+    // 
     ast::decl& declarator() noexcept;
 
+    //
+    // Returns the entity name
+    //
     string_t name() const noexcept;
 
+    //
+    // Returns the value associated with the entity
+    //
     eval::value value() const noexcept;
 
+    //
+    // Assigns a value to the entity
+    // The evaluator sets this
+    //
     void eval_result(eval::value val) noexcept;
 
   private:

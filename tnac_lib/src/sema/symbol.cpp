@@ -20,11 +20,6 @@ namespace tnac::semantics
     return m_kind;
   }
 
-  bool symbol::is_variable() const noexcept
-  {
-    return what() == Variable;
-  }
-
   const ast::decl& symbol::declarator() const noexcept
   {
     return *m_decl;
