@@ -8,7 +8,7 @@
 namespace tnac::eval
 {
   //
-  // Stores instances of values
+  // Stores instances of values used in evaluations
   //
   class registry
   {
