@@ -14,7 +14,7 @@ namespace tnac::semantics
 namespace tnac::ast
 {
   //
-  // Base declarator
+  // Base declarator for all entities that can be defined
   //
   class decl : public node
   {
@@ -30,17 +30,47 @@ namespace tnac::ast
   protected:
     decl(kind k, const token& id, expr& def) noexcept;
 
+    //
+    // Attaches a symbol to this declarator. Called from the corresponding
+    // symbol object on its creation
+    //
     void attach_symbol(semantics::symbol& sym) noexcept;
 
   public:
+    //
+    // Returns the entity name
+    //
     string_t name() const noexcept;
 
+    //
+    // Returns the definition expression which is present at the right side
+    // of the assignment operator
+    // 
+    // const version
+    //
     const expr& definition() const noexcept;
+
+    //
+    // Returns the definition expression which is present at the right side
+    // of the assignment operator
+    // 
     expr& definition() noexcept;
 
+    //
+    // Returns the first token associated with this declarator
+    //
     const token& pos() const noexcept;
 
+    //
+    // Returns the attached symbol
+    // 
+    // const version
+    //
     const semantics::symbol& symbol() const noexcept;
+
+    //
+    // Returns the attached symbol
+    // 
     semantics::symbol& symbol() noexcept;
 
   private:
@@ -51,7 +81,7 @@ namespace tnac::ast
 
 
   //
-  // Decl Expression
+  // Decl expression. Holds the declarator corresponding to the declared entity
   //
   class decl_expr : public expr
   {
@@ -67,7 +97,16 @@ namespace tnac::ast
     decl_expr(decl& d) noexcept;
 
   public:
+    //
+    // Returns the declarator
+    // 
+    // const version
+    //
     const decl& declarator() const noexcept;
+
+    //
+    // Returns the declarator
+    // 
     decl& declarator() noexcept;
 
   private:
@@ -76,7 +115,7 @@ namespace tnac::ast
 
 
   //
-  // Variable decl
+  // Variable declarator
   //
   class var_decl : public decl
   {

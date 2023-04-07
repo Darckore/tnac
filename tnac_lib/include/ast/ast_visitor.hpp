@@ -9,31 +9,50 @@ namespace tnac::ast
 {
   namespace detail
   {
+    //
+    // Defines an ast visitable by the specified visitor
+    //
     template <typename Node, typename Visitor>
     concept visitable_node = requires(Visitor v, Node* n)
     {
       v.visit(n);
     };
 
+    //
+    // Defines a root node of ast which can be visited
+    //
     template <typename N>
     concept visitable_root =
       ast_node<N> &&
       std::is_same_v<std::remove_const_t<N>, node>;
 
+    //
+    // Unspecialised version of the cast helper
+    // Its job is to maintain const consistency when casting between ast node types
+    //
     template <typename From, typename To> struct ast_caster;
 
+    //
+    // Cast helper for const nodes
+    //
     template <ast_node From, ast_node To> requires (std::is_const_v<From>)
     struct ast_caster<From, To>
     {
       using type = const To*;
     };
 
+    //
+    // Cast helper for non-const nodes
+    //
     template <ast_node From, ast_node To> requires (!std::is_const_v<From>)
     struct ast_caster<From, To>
     {
       using type = To*;
     };
 
+    //
+    // Casts the given node to the specified type and maintains constness
+    //
     template <typename From, typename To>
     auto cast(From* src) noexcept
     {
@@ -64,16 +83,26 @@ namespace tnac::ast
     using node_ptr  = node_t*;
     using node_ref  = node_t&;
 
+    //
+    // Destination type for casts between various ast kinds
+    //
     template <typename T>
     using dest = detail::ast_caster<node_t, T>::type;
 
     static constexpr auto order = VO;
 
   private:
+    //
+    // Checks whether the target ast is visited top to bottom
+    //
     static consteval auto is_top_down() noexcept
     {
       return order == detail::visit_order::TopDown;
     }
+
+    //
+    // Checks whether the target ast is visited bottom to top
+    //
     static consteval auto is_bottom_up() noexcept
     {
       return order == detail::visit_order::BottomUp;
@@ -82,28 +111,46 @@ namespace tnac::ast
   public:
     CLASS_SPECIALS_ALL(visitor);
     
+    //
+    // Recursively visits the given node and its children
+    // according to the specified visit order
+    //
     void operator()(node_ptr root) noexcept
     {
       visit_root(root);
     }
 
   private:
+    //
+    // Calls the appropriate visit method of the derived visitor class
+    // if it is defined
+    //
     void visit(detail::visitable_node<derived_t> auto* cur) noexcept
     {
       auto&& self = static_cast<derived_t&>(*this);
       self.visit(cur);
     }
 
+    //
+    // Dumps the visit call for nodes for which the derived visitor class
+    // doesn't provide a suitable visit method
+    //
     template <typename Node>
     void visit(Node*)
     {
     }
 
+    //
+    // Visits an error expression
+    //
     void visit_impl(dest<error_expr> err) noexcept
     {
       visit(err);
     }
 
+    //
+    // Visits a scope
+    //
     void visit_impl(dest<scope> s) noexcept
     {
       if constexpr (is_top_down())
@@ -118,6 +165,9 @@ namespace tnac::ast
         visit(s);
     }
 
+    //
+    // Visits a declaration expression
+    //
     void visit_impl(dest<decl_expr> declExpr) noexcept
     {
       if constexpr (is_top_down())
@@ -129,6 +179,9 @@ namespace tnac::ast
         visit(declExpr);
     }
 
+    //
+    // Visits a variable declarator
+    //
     void visit_impl(dest<var_decl> varDecl) noexcept
     {
       if constexpr (is_top_down())
@@ -140,6 +193,9 @@ namespace tnac::ast
         visit(varDecl);
     }
 
+    //
+    // Visits an assign expression
+    //
     void visit_impl(dest<assign_expr> assign) noexcept
     {
       if constexpr (is_top_down())
@@ -152,6 +208,9 @@ namespace tnac::ast
         visit(assign);
     }
 
+    //
+    // Visits a binary expression
+    //
     void visit_impl(dest<binary_expr> binary) noexcept
     {
       if constexpr (is_top_down())
@@ -164,6 +223,9 @@ namespace tnac::ast
         visit(binary);
     }
 
+    //
+    // Visits a unary expression
+    //
     void visit_impl(dest<unary_expr> unary) noexcept
     {
       if constexpr (is_top_down())
@@ -175,6 +237,9 @@ namespace tnac::ast
         visit(unary);
     }
 
+    //
+    // Visits a parenthesis expression
+    //
     void visit_impl(dest<paren_expr> paren) noexcept
     {
       if constexpr (is_top_down())
@@ -186,17 +251,26 @@ namespace tnac::ast
         visit(paren);
     }
 
+    //
+    // Visits a variable reference expression
+    //
     void visit_impl(dest<id_expr> id) noexcept
     {
       visit(id);
     }
 
+    //
+    // Visits a literal expression
+    //
     void visit_impl(dest<lit_expr> lit) noexcept
     {
       visit(lit);
     }
 
 
+    //
+    // Dispatches visit calls according to the node type
+    //
     void visit_root(node_ptr cur) noexcept
     {
       using detail::cast;
@@ -263,15 +337,27 @@ namespace tnac::ast
     using const_visitor = ast::visitor<Derived, const ast::node, VO>;
   }
 
+  //
+  // Base type for any top-down visitors of non-const ast nodes
+  //
   template <typename Derived>
   using top_down_visitor = detail::visitor<Derived, detail::visit_order::TopDown>;
 
+  //
+  // Base type for any top-down visitors of const ast nodes
+  //
   template <typename Derived>
   using const_top_down_visitor = detail::const_visitor<Derived, detail::visit_order::TopDown>;
 
+  //
+  // Base type for any bottom-up visitors of non-const ast nodes
+  //
   template <typename Derived>
   using bottom_up_visitor = detail::visitor<Derived, detail::visit_order::BottomUp>;
 
+  //
+  // Base type for any bottom-up visitors of const ast nodes
+  //
   template <typename Derived>
   using const_bottom_up_visitor = detail::const_visitor<Derived, detail::visit_order::BottomUp>;
 }

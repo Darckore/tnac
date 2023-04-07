@@ -36,13 +36,31 @@ namespace tnac::ast
     node(kind k) noexcept;
 
   public:
+    //
+    // Returns the parent node if one exists
+    // 
+    // const version
+    //
     const node* parent() const noexcept;
+
+    //
+    // Returns the parent node if one exists
+    // 
     node* parent() noexcept;
 
+    //
+    // Returns the node's kind
+    //
     kind what() const noexcept;
 
+    //
+    // Checks whether the node has the specified kind
+    //
     bool is(kind k) const noexcept;
 
+    //
+    // Checks whether the node is of one of the specified kinds
+    //
     template <typename... KINDS> requires(utils::detail::all_same<kind, KINDS...>)
     auto is_any(KINDS... kinds) const noexcept
     {
@@ -50,8 +68,15 @@ namespace tnac::ast
     }
 
   protected:
+    //
+    // Assigns a parent. Called from non-terminal nodes which
+    // can have children
+    //
     void make_child_of(node* parent) noexcept;
 
+    //
+    // Sets itself as the parent of the given child node
+    //
     void assume_ancestry(node* child) noexcept;
 
   private:
@@ -85,9 +110,21 @@ namespace tnac::ast
     scope(elem_list children) noexcept;
 
   public:
+    //
+    // Merges the given list of child nodes with the list it currently holds
+    //
     void adopt(elem_list children) noexcept;
 
+    //
+    // Returns the current list of children
+    // 
+    // const version
+    //
     const elem_list& children() const noexcept;
+
+    //
+    // Returns the current list of children
+    // 
     elem_list& children() noexcept;
 
   private:
@@ -95,7 +132,7 @@ namespace tnac::ast
   };
 
   //
-  // Checks whether the target class inherits from
+  // Checks whether the target class inherits from ast::node
   //
   template <typename D>
   concept ast_node = std::is_base_of_v<ast::node, D>;

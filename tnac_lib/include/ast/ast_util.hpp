@@ -8,7 +8,8 @@
 namespace tnac::ast
 {
   //
-  // Error expr
+  // Error expression
+  // Built instead of other expressions in cases where syntax errors arise
   //
   class error_expr : public expr
   {
@@ -24,8 +25,14 @@ namespace tnac::ast
     error_expr(const token& tok, string_t msg) noexcept;
 
   public:
+    //
+    // Returns the token resulted in a syntax error
+    //
     const token& at() const noexcept;
 
+    //
+    // Returns the syntax error message
+    //
     string_t message() const noexcept;
 
   private:

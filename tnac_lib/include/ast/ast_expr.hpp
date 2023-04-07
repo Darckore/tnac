@@ -14,7 +14,7 @@ namespace tnac::semantics
 namespace tnac::ast
 {
   //
-  // Base expression class
+  // Base expression
   //
   class expr : public node
   {
@@ -26,8 +26,21 @@ namespace tnac::ast
 
     virtual ~expr() noexcept;
 
+  public:
+    //
+    // Returns the value associated with this expression
+    //
     eval::value value() const noexcept;
+
+    //
+    // Assigns a value to this expression
+    // The evaluator sets this
+    //
     void eval_result(eval::value val) noexcept;
+
+    //
+    // Returns the first token associated with this expression
+    //
     const token& pos() const noexcept;
 
   protected:
@@ -40,7 +53,8 @@ namespace tnac::ast
 
 
   //
-  // Literal expr
+  // Literal expression
+  // Corresponds to any value literals of supported types
   //
   class lit_expr : public expr
   {
@@ -61,7 +75,8 @@ namespace tnac::ast
 
 
   //
-  // Id expr
+  // Id expression
+  // Corresponds to references to any previously declared entities
   //
   class id_expr : public expr
   {
@@ -77,9 +92,21 @@ namespace tnac::ast
     id_expr(const token& tok, semantics::symbol& sym) noexcept;
 
   public:
+    //
+    // Returns the attached symbol
+    // 
+    // const version
+    //
     const semantics::symbol& symbol() const noexcept;
+
+    //
+    // Returns the attached symbol
+    //
     semantics::symbol& symbol() noexcept;
 
+    //
+    // Returns the referenced entity name
+    //
     string_t name() const noexcept;
 
   private:
@@ -88,7 +115,8 @@ namespace tnac::ast
 
 
   //
-  // Unary expr
+  // Unary expression
+  // Provides info on the corresponding unary operator and its operand expression
   //
   class unary_expr : public expr
   {
@@ -104,9 +132,21 @@ namespace tnac::ast
     unary_expr(expr& e, const token& op) noexcept;
 
   public:
+    //
+    // Returns the operator token
+    //
     const token& op() const noexcept;
 
+    //
+    // Returns the operand
+    // 
+    // const version
+    //
     const expr& operand() const noexcept;
+
+    //
+    // Returns the operand
+    // 
     expr& operand() noexcept;
 
   private:
@@ -115,7 +155,8 @@ namespace tnac::ast
 
 
   //
-  // Binary expr
+  // Binary expression
+  // Provides info on the corresponding binary operator and both its operands
   //
   class binary_expr : public expr
   {
@@ -132,12 +173,33 @@ namespace tnac::ast
     binary_expr(expr& left, expr& right, const token& op) noexcept;
 
   public:
+    //
+    // Returns the operator token
+    //
     const token& op() const noexcept;
 
+    //
+    // Returns the left operand
+    // 
+    // const version
+    //
     const expr& left() const noexcept;
+
+    //
+    // Returns the left operand
+    //
     expr& left() noexcept;
 
+    //
+    // Returns the right operand
+    // 
+    // const version
+    //
     const expr& right() const noexcept;
+
+    //
+    // Returns the right operand
+    // 
     expr& right() noexcept;
 
   private:
@@ -149,6 +211,11 @@ namespace tnac::ast
 
   //
   // Assign expression
+  // Provides info on an assignment
+  // 
+  // Since it's a binary_expr, they share the interface
+  // left returns the assigned-to expr
+  // right returns the assigned-from expr
   //
   class assign_expr : public binary_expr
   {
@@ -166,7 +233,8 @@ namespace tnac::ast
 
 
   //
-  // Paren expr
+  // Paren expression
+  // Represents any expression enclosed in parentheses
   //
   class paren_expr : public expr
   {
@@ -182,7 +250,16 @@ namespace tnac::ast
     paren_expr(expr& e, const token& op) noexcept;
 
   public:
+    //
+    // Returns the expression in parentheses
+    // 
+    // const version
+    //
     const expr& internal_expr() const noexcept;
+
+    //
+    // Returns the expression in parentheses
+    // 
     expr& internal_expr() noexcept;
 
   private:
