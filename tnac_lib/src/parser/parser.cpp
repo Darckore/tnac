@@ -133,6 +133,11 @@ namespace tnac
     return m_lex.peek();
   }
 
+  token parser::next_tok() noexcept
+  {
+    return m_lex.next();
+  }
+
   void parser::to_expr_end() noexcept
   {
     for (;;)
@@ -141,13 +146,15 @@ namespace tnac
       if (next.is_eol() || detail::is_expression_separator(next))
         break;
 
-      m_lex.next();
+      next_tok();
     }
   }
 
-  ast::expr* parser::error_expr(string_t msg) noexcept
+  ast::expr* parser::error_expr(token pos, string_t msg, bool skipRest /*= false*/) noexcept
   {
-    auto pos = m_lex.next();
+    if (skipRest)
+      to_expr_end();
+
     return m_builder.make_error(pos, msg);
   }
 
@@ -166,12 +173,11 @@ namespace tnac
 
       if (detail::is_expression_separator(next))
       {
-        m_lex.next();
+        next_tok();
         continue;
       }
 
-      res.push_back(error_expr("Expected ':' or EOL"));
-      to_expr_end();
+      res.push_back(error_expr(next, "Expected ':' or EOL"sv, true));
     }
 
     return res;
@@ -207,18 +213,17 @@ namespace tnac
 
   ast::decl* parser::var_decl() noexcept
   {
-    auto name = m_lex.next();
+    auto name = next_tok();
     auto op   = peek_next();
 
     ast::expr* init{};
     if (!detail::is_init(op))
     {
-      init = m_builder.make_error(op, "Expected initialisation");
-      to_expr_end();
+      init = error_expr(op, "Expected initialisation"sv, true);
     }
     else
     {
-      m_lex.next();
+      next_tok();
       init = expr();
     }
 
@@ -234,12 +239,11 @@ namespace tnac
 
     if (!lhs->is(ast::node::Identifier))
     {
-      auto err = m_builder.make_error(lhs->pos(), "Expected a single identifier");
-      to_expr_end();
+      auto err = error_expr(lhs->pos(), "Expected a single identifier"sv, true);
       return err;
     }
 
-    auto op = m_lex.next();
+    auto op = next_tok();
     auto rhs = assign_expr();
     return m_builder.make_assign(*lhs, *rhs, op);
   }
@@ -254,7 +258,7 @@ namespace tnac
       if (!detail::match(pr, peek_next()))
         break;
 
-      auto op = m_lex.next();
+      auto op = next_tok();
       auto rhs = expr_by_prec(precedence);
       res = m_builder.make_binary(*res, *rhs, op);
     }
@@ -277,30 +281,28 @@ namespace tnac
     if (!detail::is_unary_op(peek_next()))
       return primary_expr();
 
-    auto op = m_lex.next();
+    auto op = next_tok();
+    auto exprFirst = peek_next();
     if (auto exp = primary_expr())
     {
       return m_builder.make_unary(*exp, op);
     }
 
-    return error_expr("Expected expression"sv);
+    return error_expr(exprFirst, "Expected expression"sv);
   }
 
   ast::expr* parser::paren_expr() noexcept
   {
     if (!detail::is_open_paren(peek_next()))
-      return error_expr("Unexpected token"sv);
+      return error_expr(next_tok(), "Unexpected token"sv);
 
-    auto op = m_lex.next();
-
+    auto op = next_tok();
     auto intExpr = expr();
-    if (detail::is_error_expr(intExpr))
-      return error_expr("Expected expression"sv);
 
     if (!detail::is_close_paren(peek_next()))
-      return error_expr("Expected ')'"sv);
+      return error_expr(next_tok(), "Expected ')'"sv);
 
-    m_lex.next();
+    next_tok();
     return m_builder.make_paren(*intExpr, op);
   }
 
@@ -309,7 +311,7 @@ namespace tnac
     auto&& next = peek_next();
     if (next.is_literal())
     {
-      return m_builder.make_literal(m_lex.next());
+      return m_builder.make_literal(next_tok());
     }
 
     if (next.is_identifier())
@@ -326,8 +328,8 @@ namespace tnac
     auto sym = m_sema.find(next.m_value);
     
     if (!sym)
-      return error_expr("Undefined identifier");
+      return error_expr(next_tok(), "Undefined identifier"sv);
 
-    return m_builder.make_id(m_lex.next(), *sym);
+    return m_builder.make_id(next_tok(), *sym);
   }
 }

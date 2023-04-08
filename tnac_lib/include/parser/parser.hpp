@@ -128,6 +128,11 @@ namespace tnac
     const token& peek_next() noexcept;
 
     //
+    // Consumes and returns the next token
+    //
+    token next_tok() noexcept;
+
+    //
     // Skips to either the expression separator ':', or EOL
     // Used to produce errors
     //
@@ -136,7 +141,7 @@ namespace tnac
     //
     // Produces an invalid expression for error recovery
     //
-    ast::expr* error_expr(string_t msg) noexcept;
+    ast::expr* error_expr(token pos, string_t msg, bool skipRest = false) noexcept;
 
     //
     // Parses a list of expressions
