@@ -1,5 +1,5 @@
 #include "app/printer.hpp"
-#include "app/driver.hpp"
+#include "driver/driver.hpp"
 
 #define APP_VERSION 1
 
@@ -7,6 +7,9 @@
 
 int main()
 {
+  tnac_rt::driver driver;
+  driver.run_interactive();
+
   return 0;
 }
 
