@@ -29,6 +29,25 @@ namespace tnac
         return tok.is(token::Assign);
       }
 
+      constexpr auto match(op_precedence prec, const token& tok) noexcept
+      {
+        using enum op_precedence::prec;
+        switch (*prec)
+        {
+        case Additive:
+          return is_add_op(tok);
+
+        case Multiplicative:
+          return is_mul_op(tok);
+
+        case Unary:
+          return is_unary_op(tok);
+
+        default:
+          return false;
+        }
+      }
+
       constexpr auto is_open_paren(const token& tok) noexcept
       {
         return tok.is(token::ParenOpen);
@@ -92,7 +111,6 @@ namespace tnac
   {
     return FROM_CONST(root);
   }
-
 
 
   // Private members
@@ -209,7 +227,7 @@ namespace tnac
 
   ast::expr* parser::assign_expr() noexcept
   {
-    auto lhs = additive_expr();
+    auto lhs = binary_expr(prec::Additive);
     
     if (!detail::is_assign(peek_next()))
       return lhs;
@@ -226,38 +244,32 @@ namespace tnac
     return m_builder.make_assign(*lhs, *rhs, op);
   }
 
-  ast::expr* parser::additive_expr() noexcept
+  ast::expr* parser::binary_expr(prec precedence) noexcept
   {
-    auto res = multiplicative_expr();
-    
+    detail::op_precedence pr{ precedence };
+    auto res = expr_by_prec(precedence);
+
     for (;;)
     {
-      if (!detail::is_add_op(peek_next()))
+      if (!detail::match(pr, peek_next()))
         break;
 
-      auto op  = m_lex.next();
-      auto rhs = multiplicative_expr();
+      auto op = m_lex.next();
+      auto rhs = expr_by_prec(precedence);
       res = m_builder.make_binary(*res, *rhs, op);
     }
 
     return res;
   }
 
-  ast::expr* parser::multiplicative_expr() noexcept
+  ast::expr* parser::expr_by_prec(prec precedence) noexcept
   {
-    auto res = unary_expr();
+    precedence = precedence.next();
 
-    for (;;)
-    {
-      if (!detail::is_mul_op(peek_next()))
-        break;
+    if (precedence == prec::Unary)
+      return unary_expr();
 
-      auto op = m_lex.next();
-      auto rhs = unary_expr();
-      res = m_builder.make_binary(*res, *rhs, op);
-    }
-
-    return res;
+    return binary_expr(precedence);
   }
 
   ast::expr* parser::unary_expr() noexcept

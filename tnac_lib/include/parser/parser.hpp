@@ -14,6 +14,52 @@ namespace tnac
 
 namespace tnac
 {
+  namespace detail
+  {
+    class op_precedence
+    {
+    public:
+      enum class prec : std::uint8_t
+      {
+        Additive,
+        Multiplicative,
+        Unary
+      };
+      using enum prec;
+
+    private:
+      inline static constexpr std::array precOrder{
+        Multiplicative,
+        Unary
+      };
+
+
+    public:
+      CLASS_SPECIALS_ALL(op_precedence);
+
+      constexpr op_precedence(prec cur) noexcept :
+        m_cur{ cur }
+      {}
+
+      constexpr bool operator==(const op_precedence&) const noexcept = default;
+
+      constexpr prec next() noexcept
+      {
+        using idx_t = decltype(precOrder)::size_type;
+        const auto idx = static_cast<idx_t>(m_cur);
+        return precOrder[idx];
+      }
+
+      constexpr auto operator*() const noexcept
+      {
+        return m_cur;
+      }
+
+    private:
+      prec m_cur{ Additive };
+    };
+  }
+
   //
   // Parser for the input
   //
@@ -28,6 +74,8 @@ namespace tnac
     using root_ptr = root_type*;
     using const_root_ptr = const root_type*;
     using expr_list = root_type::elem_list;
+
+    using prec = detail::op_precedence;
 
   public:
     CLASS_SPECIALS_NONE(parser);
@@ -121,14 +169,14 @@ namespace tnac
     ast::expr* assign_expr() noexcept;
 
     //
-    // Parses an additive expr
+    // Parses a binary expression according to operation precedence
     //
-    ast::expr* additive_expr() noexcept;
+    ast::expr* binary_expr(prec precedence) noexcept;
 
     //
-    // Parses a multiplicative expr
+    // Dispatches parse calls according to operation precedence
     //
-    ast::expr* multiplicative_expr() noexcept;
+    ast::expr* expr_by_prec(prec precedence) noexcept;
 
     //
     // Parses a unary expr
