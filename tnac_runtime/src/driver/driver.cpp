@@ -1,4 +1,5 @@
 #include "driver/driver.hpp"
+#include "output/printer.hpp"
 
 namespace tnac_rt
 {
@@ -66,8 +67,11 @@ namespace tnac_rt
 
   void driver::parse(tnac::buf_t input) noexcept
   {
-    tnac::string_t inputView = m_input[m_inputIdx] = std::move(input);
-    auto ast = m_parser(inputView);
-    utils::unused(ast);
+    auto&& inputData = m_input[m_inputIdx] = { std::move(input) };
+    auto ast = m_parser(inputData.m_buf);
+    inputData.m_node = ast;
+    
+
+    ++m_inputIdx;
   }
 }

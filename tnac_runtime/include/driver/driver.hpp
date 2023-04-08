@@ -46,7 +46,14 @@ namespace tnac_rt
     using in_stream  = std::istream;
     using out_stream = std::ostream;
 
-    using input_storage = std::unordered_map<std::uint32_t, tnac::buf_t>;
+  private:
+    struct stored_input
+    {
+      tnac::buf_t m_buf;
+      tnac::ast::node* m_node{};
+    };
+
+    using input_storage = std::unordered_map<std::uint32_t, stored_input>;
 
   public:
     CLASS_SPECIALS_NONE_CUSTOM(driver);
