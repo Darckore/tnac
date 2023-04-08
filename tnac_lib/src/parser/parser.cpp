@@ -228,38 +228,36 @@ namespace tnac
 
   ast::expr* parser::additive_expr() noexcept
   {
-    auto lhs = multiplicative_expr();
-    return additive_rhs(lhs);
-  }
+    auto res = multiplicative_expr();
+    
+    for (;;)
+    {
+      if (!detail::is_add_op(peek_next()))
+        break;
 
-  ast::expr* parser::additive_rhs(ast::expr* lhs) noexcept
-  {
-    if(!detail::is_add_op(peek_next()))
-      return lhs;
+      auto op  = m_lex.next();
+      auto rhs = multiplicative_expr();
+      res = m_builder.make_binary(*res, *rhs, op);
+    }
 
-    auto op = m_lex.next();
-    auto rhs = multiplicative_expr();
-    auto lhs_next = m_builder.make_binary(*lhs, *rhs, op);
-
-    return additive_rhs(lhs_next);
+    return res;
   }
 
   ast::expr* parser::multiplicative_expr() noexcept
   {
-    auto lhs = unary_expr();
-    return multiplicative_rhs(lhs);
-  }
+    auto res = unary_expr();
 
-  ast::expr* parser::multiplicative_rhs(ast::expr* lhs) noexcept
-  {
-    if (!detail::is_mul_op(peek_next()))
-      return lhs;
+    for (;;)
+    {
+      if (!detail::is_mul_op(peek_next()))
+        break;
 
-    auto op = m_lex.next();
-    auto rhs = unary_expr();
-    auto lhs_next = m_builder.make_binary(*lhs, *rhs, op);
+      auto op = m_lex.next();
+      auto rhs = unary_expr();
+      res = m_builder.make_binary(*res, *rhs, op);
+    }
 
-    return multiplicative_rhs(lhs_next);
+    return res;
   }
 
   ast::expr* parser::unary_expr() noexcept

@@ -126,19 +126,9 @@ namespace tnac
     ast::expr* additive_expr() noexcept;
 
     //
-    // Parses additive expr's rhs
-    //
-    ast::expr* additive_rhs(ast::expr* lhs) noexcept;
-
-    //
     // Parses a multiplicative expr
     //
     ast::expr* multiplicative_expr() noexcept;
-
-    //
-    // Parses multiplicative expr's rhs
-    //
-    ast::expr* multiplicative_rhs(ast::expr* lhs) noexcept;
 
     //
     // Parses a unary expr
