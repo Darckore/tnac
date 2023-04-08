@@ -1,7 +1,16 @@
-#include <iomanip>
-
 #include "app/printer.hpp"
-#include "tnac/driver.hpp"
+#include "app/driver.hpp"
+
+#define APP_VERSION 1
+
+#if APP_VERSION != 0
+
+int main()
+{
+  return 0;
+}
+
+#else
 
 #define PRINT_TOKENS 0
 
@@ -34,8 +43,8 @@ bool parse_line(tnac::buf_t input) noexcept
 
   if (auto ast = parser(lineBuf.front()))
   {
-    using printer::ast_printer;
-    using printer::print_newline;
+    using app::printer::ast_printer;
+    using app::printer::print_newline;
 
     print_newline();
 
@@ -54,8 +63,6 @@ bool parse_line(tnac::buf_t input) noexcept
 
 int main()
 {
-  //tnac::driver driver{ std::cout, std::cin };
-
   tnac::buf_t input;
   while (true)
   {
@@ -75,3 +82,5 @@ int main()
 
   return 0;
 }
+
+#endif

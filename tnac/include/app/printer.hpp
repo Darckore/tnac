@@ -2,7 +2,7 @@
 #include "ast/ast_visitor.hpp"
 #include "evaluator/value.hpp"
 
-namespace printer
+namespace app::printer
 {
   using namespace tnac;
 
