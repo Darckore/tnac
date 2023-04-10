@@ -29,12 +29,12 @@ namespace tnac_rt
     //
     // Sets the output stream for the driver
     //
-    friend std::ostream& operator<<(std::ostream& stream, driver& drv) noexcept;
+    friend out_stream& operator<<(out_stream& stream, driver& drv) noexcept;
 
     //
     // Sets the input stream for the driver
     //
-    friend std::istream& operator>>(std::istream& stream, driver& drv) noexcept;
+    friend in_stream& operator>>(in_stream& stream, driver& drv) noexcept;
 
   public:
     using ast_builder = tnac::ast::builder;
@@ -42,9 +42,6 @@ namespace tnac_rt
     using parser      = tnac::parser;
     using val_reg     = tnac::eval::registry;
     using eval        = tnac::evaluator;
-
-    using in_stream  = std::istream;
-    using out_stream = std::ostream;
 
   private:
     struct stored_input
@@ -78,6 +75,21 @@ namespace tnac_rt
     driver& set_ostream(out_stream& stream) noexcept;
 
   private:
+    //
+    // Returns a reference to the in stream
+    //
+    in_stream& in() noexcept;
+
+    //
+    // Returns a reference to the out stream
+    //
+    out_stream& out() noexcept;
+
+    //
+    // Returns a reference to the err stream
+    //
+    out_stream& err() noexcept;
+
     //
     // Parses input and executes commands
     //

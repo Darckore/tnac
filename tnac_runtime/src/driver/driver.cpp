@@ -15,17 +15,15 @@ namespace tnac_rt
   void driver::run_interactive() noexcept
   {
     tnac::buf_t input;
-    auto&& in  = *m_in;
-    auto&& out = *m_out;
     m_running = true;
 
     while(m_running)
     {
-      out << ">> ";
-      std::getline(in, input);
+      out() << ">> ";
+      std::getline(in(), input);
       if (utils::ltrim(input).empty())
       {
-        out << "Enter an expression\n";
+        out() << "Enter an expression\n";
         continue;
       }
 
@@ -50,13 +48,13 @@ namespace tnac_rt
 
   // Friends
 
-  std::ostream& operator<<(std::ostream& stream, driver& drv) noexcept
+  out_stream& operator<<(out_stream& stream, driver& drv) noexcept
   {
     drv.set_ostream(stream);
     return stream;
   }
 
-  std::istream& operator>>(std::istream& stream, driver& drv) noexcept
+  in_stream& operator>>(in_stream& stream, driver& drv) noexcept
   {
     drv.set_istream(stream);
     return stream;
@@ -65,12 +63,32 @@ namespace tnac_rt
 
   // Private members
 
+  in_stream& driver::in() noexcept
+  {
+    return *m_in;
+  }
+  out_stream& driver::out() noexcept
+  {
+    return *m_out;
+  }
+  out_stream& driver::err() noexcept
+  {
+    return *m_err;
+  }
+
   void driver::parse(tnac::buf_t input) noexcept
   {
     auto&& inputData = m_input[m_inputIdx] = { std::move(input) };
     auto ast = m_parser(inputData.m_buf);
     inputData.m_node = ast;
     
+    eval ev{ m_registry };
+    ev(ast);
+
+    out() << '\n';
+    out::ast_printer pr;
+    pr(ast, *m_out);
+    out() << '\n';
 
     ++m_inputIdx;
   }
