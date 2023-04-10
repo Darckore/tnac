@@ -22,13 +22,13 @@ namespace tnac_rt::out
   class ast_printer : public printer_base<ast_printer>
   {
   public:
-    using base = printer_base<ast_printer>;
-    using indent_t = unsigned;
-    using indent_guard = tnac::value_guard<indent_t>;
-
     CLASS_SPECIALS_ALL(ast_printer);
 
     void operator()(const ast::node* node, out_stream& os) noexcept;
+
+  private:
+    using base = printer_base<ast_printer>;
+    using indent_t = unsigned;
 
   private:
     void indent() noexcept;
