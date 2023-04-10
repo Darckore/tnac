@@ -34,8 +34,8 @@ namespace tnac_rt::out
     auto&& curIndent = m_indetations.top();
     m_curDepth = curIndent.m_depth;
 
-    for (auto i = indentStep; i < m_curDepth; ++i)
-      out() << ' ';
+    for (auto depth = m_curDepth; depth > indentStep; depth -= indentStep)
+      out() << "| ";
 
     if (!--curIndent.m_childIdx)
     {
