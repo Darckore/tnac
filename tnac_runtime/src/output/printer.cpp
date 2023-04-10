@@ -5,6 +5,12 @@ namespace tnac_rt::out
 {
   // AST printer
 
+  // Special members
+
+  ast_printer::~ast_printer() noexcept = default;
+
+  ast_printer::ast_printer() noexcept = default;
+
   // Public members
 
   void ast_printer::operator()(const ast::node* node, out_stream& os) noexcept
@@ -15,10 +21,33 @@ namespace tnac_rt::out
 
   // Private members
 
+  void ast_printer::push_parent(child_count childCount) noexcept
+  {
+    m_indetations.push({ .m_childIdx{ childCount }, .m_depth{ m_curDepth + indentStep } });
+  }
+
   void ast_printer::indent() noexcept
   {
-    for (auto i = indent_t{}; i < m_depth; ++i)
+    if (m_indetations.empty())
+      return;
+
+    auto&& curIndent = m_indetations.top();
+    m_curDepth = curIndent.m_depth;
+
+    for (auto i = indentStep; i < m_curDepth; ++i)
       out() << ' ';
+
+    if (!--curIndent.m_childIdx)
+    {
+      out() << '`';
+      m_indetations.pop();
+    }
+    else
+    {
+      out() << '|';
+    }
+
+    out() << '-';
   }
 
   void ast_printer::endl() noexcept
@@ -56,11 +85,12 @@ namespace tnac_rt::out
 
   // Public members
 
-  void ast_printer::visit(const ast::scope*) noexcept
+  void ast_printer::visit(const ast::scope* scope) noexcept
   {
     indent();
     out() << "<scope>";
     endl();
+    push_parent(scope->children().size());
   }
 
   void ast_printer::visit(const ast::assign_expr* expr) noexcept
@@ -70,6 +100,7 @@ namespace tnac_rt::out
     print_token(expr->op());
     print_value(expr->value());
     endl();
+    push_parent(2u);
   }
 
   void ast_printer::visit(const ast::decl_expr* expr) noexcept
@@ -77,6 +108,7 @@ namespace tnac_rt::out
     indent();
     out() << "Declaration ";
     print_value(expr->value());
+    push_parent(1u);
   }
 
   void ast_printer::visit(const ast::var_decl* decl) noexcept
@@ -94,6 +126,8 @@ namespace tnac_rt::out
     print_token(op);
     print_value(expr->value());
     endl();
+
+    push_parent(2u);
   }
 
   void ast_printer::visit(const ast::unary_expr* expr) noexcept
@@ -103,6 +137,7 @@ namespace tnac_rt::out
     print_token(expr->op());
     print_value(expr->value());
     endl();
+    push_parent(1u);
   }
 
   void ast_printer::visit(const ast::paren_expr* expr) noexcept
@@ -111,6 +146,7 @@ namespace tnac_rt::out
     out() << "Paren expression";
     print_value(expr->value());
     endl();
+    push_parent(1u);
   }
 
   void ast_printer::visit(const ast::lit_expr* expr) noexcept

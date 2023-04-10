@@ -22,15 +22,32 @@ namespace tnac_rt::out
   class ast_printer : public printer_base<ast_printer>
   {
   public:
-    CLASS_SPECIALS_ALL(ast_printer);
+    CLASS_SPECIALS_NONE_CUSTOM(ast_printer);
+
+    ~ast_printer() noexcept;
+
+    ast_printer() noexcept;
 
     void operator()(const ast::node* node, out_stream& os) noexcept;
 
   private:
     using base = printer_base<ast_printer>;
-    using indent_t = unsigned;
+    using indent_t  = unsigned;
+    using child_count = std::size_t;
+
+    struct indent_descr
+    {
+      child_count m_childIdx{};
+      indent_t    m_depth{};
+    };
+
+    using indent_stack = std::stack<indent_descr>;
+
+    static constexpr auto indentStep = 2u;
 
   private:
+    void push_parent(child_count childCount) noexcept;
+
     void indent() noexcept;
 
     void endl() noexcept;
@@ -63,7 +80,8 @@ namespace tnac_rt::out
     void visit(const ast::error_expr* expr) noexcept;
 
   private:
+    indent_stack m_indetations;
     out_stream* m_out{};
-    indent_t m_depth{};
+    indent_t m_curDepth{};
   };
 }

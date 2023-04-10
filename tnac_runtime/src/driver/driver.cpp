@@ -87,7 +87,7 @@ namespace tnac_rt
 
     out() << '\n';
     out::ast_printer pr;
-    pr(ast, *m_out);
+    pr(m_parser.root(), out());
     out() << '\n';
 
     ++m_inputIdx;
