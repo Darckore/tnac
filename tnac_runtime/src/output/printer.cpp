@@ -1,8 +1,53 @@
 #include "output/printer.hpp"
-#include "evaluator/value.hpp"
 
 namespace tnac_rt::out
 {
+  namespace
+  {
+    inline std::ostream& operator<<(std::ostream& out, eval::invalid_val_t) noexcept
+    {
+      out << "<undef>";
+      return out;
+    }
+  }
+
+  // Value priinter
+
+  // Special members
+
+  value_printer::~value_printer() noexcept = default;
+
+  value_printer::value_printer() noexcept = default;
+
+  // Public members
+
+  void value_printer::operator()(eval::value val, out_stream& os) noexcept
+  {
+    m_out = &os;
+    print_value(val);
+  }
+
+  void value_printer::operator()(eval::value val) noexcept
+  {
+    this->operator()(val, out());
+  }
+
+  // Private members
+
+  out_stream& value_printer::out() noexcept
+  {
+    return *m_out;
+  }
+
+  void value_printer::print_value(eval::value val) noexcept
+  {
+    eval::on_value(val, [this](auto val)
+      {
+        out() << val;
+      });
+  }
+
+
   // AST printer
 
   // Special members
@@ -27,7 +72,93 @@ namespace tnac_rt::out
 
   void ast_printer::operator()(const ast::node* node) noexcept
   {
-    this->operator()(node, *m_out);
+    this->operator()(node, out());
+  }
+
+  void ast_printer::visit(const ast::scope& scope) noexcept
+  {
+    indent();
+    out() << "<scope>";
+    endl();
+    push_parent(scope.children().size());
+  }
+
+  void ast_printer::visit(const ast::assign_expr& expr) noexcept
+  {
+    indent();
+    out() << "Assign expression";
+    print_token(expr.op());
+    endl();
+    push_parent(2u);
+  }
+
+  void ast_printer::visit(const ast::decl_expr&) noexcept
+  {
+    indent();
+    out() << "Declaration ";
+    push_parent(1u);
+  }
+
+  void ast_printer::visit(const ast::var_decl& decl) noexcept
+  {
+    out() << " <VarName: " << decl.name() << ">";
+    endl();
+  }
+
+  void ast_printer::visit(const ast::binary_expr& expr) noexcept
+  {
+    indent();
+    auto&& op = expr.op();
+    out() << "Binary expression";
+
+    print_token(op);
+    endl();
+
+    push_parent(2u);
+  }
+
+  void ast_printer::visit(const ast::unary_expr& expr) noexcept
+  {
+    indent();
+    out() << "Unary expression";
+    print_token(expr.op());
+    endl();
+    push_parent(1u);
+  }
+
+  void ast_printer::visit(const ast::paren_expr&) noexcept
+  {
+    indent();
+    out() << "Paren expression";
+    endl();
+    push_parent(1u);
+  }
+
+  void ast_printer::visit(const ast::lit_expr& expr) noexcept
+  {
+    indent();
+    out() << "Literal expression";
+    print_token(expr.pos());
+    print_value(expr.value());
+    endl();
+  }
+
+  void ast_printer::visit(const ast::id_expr& expr) noexcept
+  {
+    indent();
+    out() << "Id expression '";
+    out() << expr.name() << "' ";
+    endl();
+  }
+
+  void ast_printer::visit(const ast::error_expr& expr) noexcept
+  {
+    indent();
+    auto&& at = expr.at();
+    auto msg = expr.message();
+    out() << "Error '" << msg << "' at";
+    print_token(at);
+    endl();
   }
 
   // Private members
@@ -84,7 +215,7 @@ namespace tnac_rt::out
     if (m_indetations.empty())
       return;
 
-    for (auto&& last = last_indent(); auto&& cur : m_indetations)
+    for (auto&& last = last_indent(); auto && cur : m_indetations)
     {
       if (&cur != &last)
       {
@@ -111,115 +242,10 @@ namespace tnac_rt::out
     out() << " '" << tok.m_value << "' ";
   }
 
-  namespace
+  void ast_printer::print_value(eval::value v) noexcept
   {
-    inline std::ostream& operator<<(std::ostream& out, tnac::eval::invalid_val_t) noexcept
-    {
-      out << "<undef>";
-      return out;
-    }
-  }
-
-  void ast_printer::print_value(tnac::eval::value v) noexcept
-  {
-    tnac::eval::on_value(v, [this, addr = v.raw_value()](auto val)
-      {
-        out() << "(0x" << std::hex << addr << std::dec << ": " << val << ")";
-      });
-  }
-
-
-  // Public members
-
-  void ast_printer::visit(const ast::scope& scope) noexcept
-  {
-    indent();
-    out() << "<scope>";
-    endl();
-    push_parent(scope.children().size());
-  }
-
-  void ast_printer::visit(const ast::assign_expr& expr) noexcept
-  {
-    indent();
-    out() << "Assign expression";
-    print_token(expr.op());
-    print_value(expr.value());
-    endl();
-    push_parent(2u);
-  }
-
-  void ast_printer::visit(const ast::decl_expr& expr) noexcept
-  {
-    indent();
-    out() << "Declaration ";
-    print_value(expr.value());
-    push_parent(1u);
-  }
-
-  void ast_printer::visit(const ast::var_decl& decl) noexcept
-  {
-    out() << " <VarName: " << decl.name() << ">";
-    endl();
-  }
-
-  void ast_printer::visit(const ast::binary_expr& expr) noexcept
-  {
-    indent();
-    auto&& op = expr.op();
-    out() << "Binary expression";
-
-    print_token(op);
-    print_value(expr.value());
-    endl();
-
-    push_parent(2u);
-  }
-
-  void ast_printer::visit(const ast::unary_expr& expr) noexcept
-  {
-    indent();
-    out() << "Unary expression";
-    print_token(expr.op());
-    print_value(expr.value());
-    endl();
-    push_parent(1u);
-  }
-
-  void ast_printer::visit(const ast::paren_expr& expr) noexcept
-  {
-    indent();
-    out() << "Paren expression";
-    print_value(expr.value());
-    endl();
-    push_parent(1u);
-  }
-
-  void ast_printer::visit(const ast::lit_expr& expr) noexcept
-  {
-    indent();
-    out() << "Literal expression";
-    print_token(expr.pos());
-    print_value(expr.value());
-    endl();
-  }
-
-  void ast_printer::visit(const ast::id_expr& expr) noexcept
-  {
-    indent();
-    out() << "Id expression '";
-    out() << expr.name() << "' ";
-    print_value(expr.value());
-    endl();
-  }
-
-  void ast_printer::visit(const ast::error_expr& expr) noexcept
-  {
-    indent();
-    auto&& at = expr.at();
-    auto msg = expr.message();
-    out() << "Error '" << msg << "' at";
-    print_token(at);
-    endl();
+    out() << "<value: ";
+    value_printer{}(v, out());
+    out() << '>';
   }
 }

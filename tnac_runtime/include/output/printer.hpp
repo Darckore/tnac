@@ -4,10 +4,39 @@
 
 #pragma once
 #include "ast/ast_visitor.hpp"
+#include "evaluator/value.hpp"
 
 namespace tnac_rt::out
 {
-  namespace ast = tnac::ast;
+  namespace ast  = tnac::ast;
+  namespace eval = tnac::eval;
+
+  //
+  // Value printer
+  //
+  class value_printer
+  {
+  public:
+    CLASS_SPECIALS_NONE_CUSTOM(value_printer);
+
+    ~value_printer() noexcept;
+
+    value_printer() noexcept;
+
+  public:
+    void operator()(eval::value val, out_stream& os) noexcept;
+
+    void operator()(eval::value val) noexcept;
+
+  private:
+    out_stream& out() noexcept;
+
+    void print_value(eval::value val) noexcept;
+
+  private:
+    out_stream* m_out{ &std::cout };
+  };
+
 
   //
   // Printer base class
@@ -28,9 +57,31 @@ namespace tnac_rt::out
 
     ast_printer() noexcept;
 
+  public:
     void operator()(const ast::node* node, out_stream& os) noexcept;
     
     void operator()(const ast::node* node) noexcept;
+
+  public:
+    void visit(const ast::scope& scope) noexcept;
+
+    void visit(const ast::assign_expr& expr) noexcept;
+
+    void visit(const ast::decl_expr& expr) noexcept;
+
+    void visit(const ast::var_decl& decl) noexcept;
+
+    void visit(const ast::binary_expr& expr) noexcept;
+
+    void visit(const ast::unary_expr& expr) noexcept;
+
+    void visit(const ast::paren_expr& expr) noexcept;
+
+    void visit(const ast::lit_expr& expr) noexcept;
+
+    void visit(const ast::id_expr& expr) noexcept;
+
+    void visit(const ast::error_expr& expr) noexcept;
 
   private:
     using base = printer_base<ast_printer>;
@@ -56,28 +107,7 @@ namespace tnac_rt::out
 
     void print_token(const tnac::token& tok) noexcept;
 
-    void print_value(tnac::eval::value v) noexcept;
-
-  public:
-    void visit(const ast::scope& scope) noexcept;
-
-    void visit(const ast::assign_expr& expr) noexcept;
-
-    void visit(const ast::decl_expr& expr) noexcept;
-
-    void visit(const ast::var_decl& decl) noexcept;
-
-    void visit(const ast::binary_expr& expr) noexcept;
-
-    void visit(const ast::unary_expr& expr) noexcept;
-
-    void visit(const ast::paren_expr& expr) noexcept;
-
-    void visit(const ast::lit_expr& expr) noexcept;
-
-    void visit(const ast::id_expr& expr) noexcept;
-
-    void visit(const ast::error_expr& expr) noexcept;
+    void print_value(eval::value v) noexcept;
 
   private:
     child_tracker m_indetations;
