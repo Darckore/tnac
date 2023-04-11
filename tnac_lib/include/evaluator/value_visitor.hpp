@@ -101,7 +101,7 @@ namespace tnac::eval
 
     value visit_assign(invalid_val_t) noexcept
     {
-      return {};
+      return m_registry.reset_result();
     }
 
     template <detail::expr_result T>
@@ -112,7 +112,7 @@ namespace tnac::eval
 
     value visit_unary(invalid_val_t, val_ops) noexcept
     {
-      return {};
+      return m_registry.reset_result();
     }
 
     template <detail::expr_result T, detail::unary_function<T> F>
@@ -134,14 +134,14 @@ namespace tnac::eval
         return visit_unary(val, [](auto v) noexcept { return +v; });
 
       default:
-        return {};
+        return m_registry.reset_result();
       }
     }
 
 
     value visit_binary(invalid_val_t, invalid_val_t, val_ops) noexcept
     {
-      return {};
+      return m_registry.reset_result();
     }
     template <typename T>
     value visit_binary(invalid_val_t, T, val_ops) noexcept
@@ -184,7 +184,7 @@ namespace tnac::eval
           return visit_binary(lhs, rhs, [](auto l, auto r) noexcept { return l / r; });
 
       default:
-        return {};
+        return m_registry.reset_result();
       }
     }
 
@@ -204,7 +204,7 @@ namespace tnac::eval
     value visit_binary(id_param_t ent, value lhs, value rhs, val_ops op) noexcept
     {
       if (!lhs || !rhs || !detail::is_binary(op))
-        return {};
+        return m_registry.reset_result();
 
       value_guard _{ m_curEntity, *ent };
 
@@ -220,7 +220,7 @@ namespace tnac::eval
     value visit_unary(id_param_t ent, value val, val_ops op) noexcept
     {
       if (!val || !detail::is_unary(op))
-        return {};
+        return m_registry.reset_result();
 
       value_guard _{ m_curEntity, *ent };
 
@@ -236,7 +236,7 @@ namespace tnac::eval
     value visit_assign(id_param_t ent, value rhs) noexcept
     {
       if (!rhs)
-        return {};
+        return m_registry.reset_result();
 
       value_guard _{ m_curEntity, *ent };
 
@@ -263,7 +263,7 @@ namespace tnac::eval
       int_type result{};
       auto convRes = std::from_chars(begin, end, result, base);
       if (convRes.ec != std::errc{ 0 })
-        return {};
+        return m_registry.reset_result();
 
       return reg_value(result);
     }
@@ -279,7 +279,7 @@ namespace tnac::eval
       float_type result{};
       auto convRes = std::from_chars(begin, end, result);
       if (convRes.ec != std::errc{ 0 })
-        return {};
+        return m_registry.reset_result();
 
       return reg_value(result);
     }

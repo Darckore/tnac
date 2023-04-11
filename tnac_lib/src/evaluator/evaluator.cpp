@@ -107,7 +107,10 @@ namespace tnac
 
   void evaluator::visit(ast::id_expr& id) noexcept
   {
-    id.eval_result(id.symbol().value());
+    auto&& sym = id.symbol();
+    auto val = sym.value();
+    eval_assign(sym, val);
+    id.eval_result(sym.value());
   }
 
   // Decls

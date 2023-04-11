@@ -37,11 +37,22 @@ namespace tnac::eval
 
   private:
     //
+    // Updates the stored result value with the most recently registered one
+    //
+    template <detail::expr_result T>
+    void update_result(T value) noexcept
+    {
+      m_resultValue = value;
+      m_result = { &std::get<T>(m_resultValue), eval::id_from_type<T> };
+    }
+
+    //
     // Registers a value of the given type or returns an existing cached one
     //
     template <detail::expr_result T>
     const T& register_val(T value, typed_store<T>& store) noexcept
     {
+      update_result(value);
       return *(store.emplace(value).first);
     }
 
@@ -51,6 +62,7 @@ namespace tnac::eval
     template <detail::expr_result T>
     const T& register_val(entity_id id, T value) noexcept
     {
+      update_result(value);
       auto insertIt = m_entityValues.insert_or_assign(id, value).first;
       return std::get<T>(insertIt->second);
     }
@@ -76,7 +88,20 @@ namespace tnac::eval
     //
     value_type register_entity(entity_id id, float_type val) noexcept;
 
+    //
+    // Resets the stored result value
+    //
+    value_type reset_result() noexcept;
+
+    //
+    // Returns the last evaluated value
+    //
+    value_type evaluation_result() const noexcept;
+
   private:
+    value_type m_result;
+    stored_val_t m_resultValue;
+
     typed_store<int_type> m_ints;
     typed_store<float_type> m_floats;
 

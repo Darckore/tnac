@@ -95,6 +95,11 @@ namespace tnac_rt
     //
     void parse(tnac::buf_t input) noexcept;
 
+    //
+    // Prints evaluation result of the last operation
+    //
+    void print_result() noexcept;
+
   private:
     ast_builder m_builder;
     sema m_sema;

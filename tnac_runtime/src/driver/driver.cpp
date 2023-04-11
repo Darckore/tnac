@@ -60,7 +60,6 @@ namespace tnac_rt
     return stream;
   }
 
-
   // Private members
 
   in_stream& driver::in() noexcept
@@ -84,12 +83,17 @@ namespace tnac_rt
     
     eval ev{ m_registry };
     ev(ast);
-
-    out() << '\n';
-    out::ast_printer pr;
-    pr(m_parser.root(), out());
-    out() << '\n';
+    print_result();
 
     ++m_inputIdx;
+  }
+
+  void driver::print_result() noexcept
+  {
+    out() << '\n';
+    out() << "Result: ";
+    out::value_printer vp;
+    vp(m_registry.evaluation_result(), out());
+    out() << "\n\n";
   }
 }

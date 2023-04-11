@@ -29,4 +29,17 @@ namespace tnac::eval
   {
     return { &register_val(id, val), type_id::Float };
   }
+
+  registry::value_type registry::reset_result() noexcept
+  {
+    m_resultValue = {};
+    m_result = {};
+    return evaluation_result();
+  }
+
+  registry::value_type registry::evaluation_result() const noexcept
+  {
+    return m_result;
+  }
+
 }
