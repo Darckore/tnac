@@ -49,70 +49,69 @@ namespace tnac_tests
       {}
 
     public:
-      void visit(const tree::scope* scope) noexcept
+      void visit(const tree::scope& scope) noexcept
       {
         check_node(scope, "");
       }
 
-      void visit(const tree::assign_expr* expr) noexcept
+      void visit(const tree::assign_expr& expr) noexcept
       {
-        check_node(expr, expr->op().m_value);
+        check_node(expr, expr.op().m_value);
       }
 
-      void visit(const tree::decl_expr* expr) noexcept
+      void visit(const tree::decl_expr& expr) noexcept
       {
         check_node(expr, "");
       }
 
-      void visit(const tree::var_decl* decl) noexcept
+      void visit(const tree::var_decl& decl) noexcept
       {
-        check_node(decl, decl->name());
+        check_node(decl, decl.name());
       }
 
-      void visit(const tree::binary_expr* expr) noexcept
+      void visit(const tree::binary_expr& expr) noexcept
       {
-        check_node(expr, expr->op().m_value);
+        check_node(expr, expr.op().m_value);
       }
 
-      void visit(const tree::unary_expr* expr) noexcept
+      void visit(const tree::unary_expr& expr) noexcept
       {
-        check_node(expr, expr->op().m_value);
+        check_node(expr, expr.op().m_value);
       }
 
-      void visit(const tree::paren_expr* expr) noexcept
+      void visit(const tree::paren_expr& expr) noexcept
       {
         check_node(expr, "");
       }
 
-      void visit(const tree::lit_expr* expr) noexcept
+      void visit(const tree::lit_expr& expr) noexcept
       {
-        check_node(expr, expr->pos().m_value);
+        check_node(expr, expr.pos().m_value);
       }
 
-      void visit(const tree::id_expr* expr) noexcept
+      void visit(const tree::id_expr& expr) noexcept
       {
-        check_node(expr, expr->name());
+        check_node(expr, expr.name());
       }
 
-      void visit(const tree::error_expr* expr) noexcept
+      void visit(const tree::error_expr& expr) noexcept
       {
-        check_node(expr, expr->message());
+        check_node(expr, expr.message());
       }
 
     private:
-      void check_node(const tree::node* node, string_t nodeStr) noexcept
+      void check_node(const tree::node& node, string_t nodeStr) noexcept
       {
-        ASSERT_NE(node, nullptr) << "Null node detected";
         ASSERT_NE(m_iter, m_data.end()) << "Unexpected end of data";
         auto&& expected = *m_iter;
         ++m_iter;
 
         EXPECT_EQ(nodeStr, expected.data);
 
-        const auto expKind = node->what();
+        const auto expKind = node.what();
         EXPECT_EQ(expKind, expected.kind) << "Wrong kind at node " << nodeStr;
 
-        auto parent = node->parent();
+        auto parent = node.parent();
         if (!parent)
         {
           EXPECT_TRUE(expected.nullParent) << "Parent was null at node " << nodeStr;

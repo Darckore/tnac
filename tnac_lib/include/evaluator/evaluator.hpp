@@ -24,43 +24,43 @@ namespace tnac
     //
     // Visits an assignment expression
     //
-    void visit(ast::assign_expr* assign) noexcept;
+    void visit(ast::assign_expr& assign) noexcept;
 
     //
     // Visits a binary expression
     //
-    void visit(ast::binary_expr* binary) noexcept;
+    void visit(ast::binary_expr& binary) noexcept;
 
     //
     // Visits a unary expression
     //
-    void visit(ast::unary_expr* unary) noexcept;
+    void visit(ast::unary_expr& unary) noexcept;
 
     //
     // Visits a parenthesised expression
     //
-    void visit(ast::paren_expr* paren) noexcept;
+    void visit(ast::paren_expr& paren) noexcept;
 
     //
     // Visits a literal expression
     //
-    void visit(ast::lit_expr* lit) noexcept;
+    void visit(ast::lit_expr& lit) noexcept;
 
     //
     // Visits a variable reference expression
     //
-    void visit(ast::id_expr* id) noexcept;
+    void visit(ast::id_expr& id) noexcept;
 
   public: // decls
     //
     // Visits a declaration expression
     //
-    void visit(ast::decl_expr* expr) noexcept;
+    void visit(ast::decl_expr& expr) noexcept;
 
     //
     // Visits a variable declarator
     //
-    void visit(ast::var_decl* decl) noexcept;
+    void visit(ast::var_decl& decl) noexcept;
 
   private:
     //

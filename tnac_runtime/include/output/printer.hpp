@@ -59,25 +59,25 @@ namespace tnac_rt::out
     void print_value(tnac::eval::value v) noexcept;
 
   public:
-    void visit(const ast::scope* scope) noexcept;
+    void visit(const ast::scope& scope) noexcept;
 
-    void visit(const ast::assign_expr* expr) noexcept;
+    void visit(const ast::assign_expr& expr) noexcept;
 
-    void visit(const ast::decl_expr* expr) noexcept;
+    void visit(const ast::decl_expr& expr) noexcept;
 
-    void visit(const ast::var_decl* decl) noexcept;
+    void visit(const ast::var_decl& decl) noexcept;
 
-    void visit(const ast::binary_expr* expr) noexcept;
+    void visit(const ast::binary_expr& expr) noexcept;
 
-    void visit(const ast::unary_expr* expr) noexcept;
+    void visit(const ast::unary_expr& expr) noexcept;
 
-    void visit(const ast::paren_expr* expr) noexcept;
+    void visit(const ast::paren_expr& expr) noexcept;
 
-    void visit(const ast::lit_expr* expr) noexcept;
+    void visit(const ast::lit_expr& expr) noexcept;
 
-    void visit(const ast::id_expr* expr) noexcept;
+    void visit(const ast::id_expr& expr) noexcept;
 
-    void visit(const ast::error_expr* expr) noexcept;
+    void visit(const ast::error_expr& expr) noexcept;
 
   private:
     child_tracker m_indetations;

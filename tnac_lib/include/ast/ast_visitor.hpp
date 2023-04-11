@@ -15,7 +15,7 @@ namespace tnac::ast
     template <typename Node, typename Visitor>
     concept visitable_node = requires(Visitor v, Node* n)
     {
-      v.visit(n);
+      v.visit(*n);
     };
 
     //
@@ -128,7 +128,7 @@ namespace tnac::ast
     void visit(detail::visitable_node<derived_t> auto* cur) noexcept
     {
       auto&& self = static_cast<derived_t&>(*this);
-      self.visit(cur);
+      self.visit(*cur);
     }
 
     //

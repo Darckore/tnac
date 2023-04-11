@@ -58,16 +58,16 @@ namespace tnac
 
   // Expressions
 
-  void evaluator::visit(ast::assign_expr* assign) noexcept
+  void evaluator::visit(ast::assign_expr& assign) noexcept
   {
     using enum ast::node::kind;
-    auto&& assignee = assign->left();
+    auto&& assignee = assign.left();
     switch (assignee.what())
     {
     case Identifier:
     {
-      auto&& lhs = static_cast<ast::id_expr*>(&assignee)->symbol();
-      eval_assign(lhs, assign->right().value());
+      auto&& lhs = static_cast<ast::id_expr&>(assignee).symbol();
+      eval_assign(lhs, assign.right().value());
       assignee.eval_result(lhs.value());
     }
       break;
@@ -76,51 +76,51 @@ namespace tnac
       break;
     }
 
-    assign->eval_result(assignee.value());
+    assign.eval_result(assignee.value());
   }
 
-  void evaluator::visit(ast::binary_expr* binary) noexcept
+  void evaluator::visit(ast::binary_expr& binary) noexcept
   {
-    auto left = binary->left().value();
-    auto right = binary->right().value();
-    const auto opCode = detail::conv_binary(binary->op().m_kind);
-    binary->eval_result(m_visitor.visit_binary(binary, left, right, opCode));
+    auto left = binary.left().value();
+    auto right = binary.right().value();
+    const auto opCode = detail::conv_binary(binary.op().m_kind);
+    binary.eval_result(m_visitor.visit_binary(&binary, left, right, opCode));
   }
 
-  void evaluator::visit(ast::unary_expr* unary) noexcept
+  void evaluator::visit(ast::unary_expr& unary) noexcept
   {
-    const auto opCode = detail::conv_unary(unary->op().m_kind);
-    auto val = unary->operand().value();
-    unary->eval_result(m_visitor.visit_unary(unary, val, opCode));
+    const auto opCode = detail::conv_unary(unary.op().m_kind);
+    auto val = unary.operand().value();
+    unary.eval_result(m_visitor.visit_unary(&unary, val, opCode));
   }
 
-  void evaluator::visit(ast::paren_expr* paren) noexcept
+  void evaluator::visit(ast::paren_expr& paren) noexcept
   {
-    paren->eval_result(paren->internal_expr().value());
+    paren.eval_result(paren.internal_expr().value());
   }
 
-  void evaluator::visit(ast::lit_expr* lit) noexcept
+  void evaluator::visit(ast::lit_expr& lit) noexcept
   {
-    auto value = eval_token(lit->pos());
-    lit->eval_result(value);
+    auto value = eval_token(lit.pos());
+    lit.eval_result(value);
   }
 
-  void evaluator::visit(ast::id_expr* id) noexcept
+  void evaluator::visit(ast::id_expr& id) noexcept
   {
-    id->eval_result(id->symbol().value());
+    id.eval_result(id.symbol().value());
   }
 
   // Decls
 
-  void evaluator::visit(ast::decl_expr* expr) noexcept
+  void evaluator::visit(ast::decl_expr& expr) noexcept
   {
-    auto&& sym = expr->declarator().symbol();
-    expr->eval_result(sym.value());
+    auto&& sym = expr.declarator().symbol();
+    expr.eval_result(sym.value());
   }
 
-  void evaluator::visit(ast::var_decl* decl) noexcept
+  void evaluator::visit(ast::var_decl& decl) noexcept
   {
-    eval_assign(decl->symbol(), decl->definition().value());
+    eval_assign(decl.symbol(), decl.definition().value());
   }
 
 
