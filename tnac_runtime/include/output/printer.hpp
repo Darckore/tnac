@@ -29,24 +29,24 @@ namespace tnac_rt::out
     ast_printer() noexcept;
 
     void operator()(const ast::node* node, out_stream& os) noexcept;
+    
+    void operator()(const ast::node* node) noexcept;
 
   private:
     using base = printer_base<ast_printer>;
-    using indent_t  = unsigned;
     using child_count = std::size_t;
-
-    struct indent_descr
-    {
-      child_count m_childIdx{};
-      indent_t    m_depth{};
-    };
-
-    using indent_stack = std::stack<indent_descr>;
-
-    static constexpr auto indentStep = 2u;
+    using child_tracker = std::vector<child_count>;
 
   private:
     void push_parent(child_count childCount) noexcept;
+
+    void pop_empty() noexcept;
+
+    child_count& last_indent() noexcept;
+
+    void print_parent(child_count cur) noexcept;
+
+    void print_child(child_count cur) noexcept;
 
     void indent() noexcept;
 
@@ -80,8 +80,7 @@ namespace tnac_rt::out
     void visit(const ast::error_expr* expr) noexcept;
 
   private:
-    indent_stack m_indetations;
-    out_stream* m_out{};
-    indent_t m_curDepth{};
+    child_tracker m_indetations;
+    out_stream* m_out{ &std::cout };
   };
 }

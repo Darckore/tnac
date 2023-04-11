@@ -7,7 +7,12 @@ namespace tnac_rt::out
 
   // Special members
 
-  ast_printer::~ast_printer() noexcept = default;
+  ast_printer::~ast_printer() noexcept
+  {
+    using sz_t = child_tracker::size_type;
+    static constexpr auto initialSize = sz_t{ 16 };
+    m_indetations.reserve(initialSize);
+  }
 
   ast_printer::ast_printer() noexcept = default;
 
@@ -15,39 +20,80 @@ namespace tnac_rt::out
 
   void ast_printer::operator()(const ast::node* node, out_stream& os) noexcept
   {
+    m_indetations.clear();
     m_out = &os;
     base::operator()(node);
+  }
+
+  void ast_printer::operator()(const ast::node* node) noexcept
+  {
+    this->operator()(node, *m_out);
   }
 
   // Private members
 
   void ast_printer::push_parent(child_count childCount) noexcept
   {
-    m_indetations.push({ .m_childIdx{ childCount }, .m_depth{ m_curDepth + indentStep } });
+    m_indetations.push_back(childCount);
+  }
+
+  void ast_printer::pop_empty() noexcept
+  {
+    while (!m_indetations.empty())
+    {
+      if (m_indetations.back())
+        break;
+
+      m_indetations.pop_back();
+    }
+  }
+
+  ast_printer::child_count& ast_printer::last_indent() noexcept
+  {
+    auto&& last = m_indetations.back();
+    --last;
+    return last;
+  }
+
+  void ast_printer::print_parent(child_count cur) noexcept
+  {
+    static constexpr auto childIndent = "| "sv;
+    static constexpr auto blankIndent = "  "sv;
+
+    if (!cur)
+      out() << blankIndent;
+    else
+      out() << childIndent;
+  }
+
+  void ast_printer::print_child(child_count cur) noexcept
+  {
+    static constexpr auto prefix = "|-"sv;
+    static constexpr auto lastPrefix = "`-"sv;
+
+    if (!cur)
+      out() << lastPrefix;
+    else
+      out() << prefix;
   }
 
   void ast_printer::indent() noexcept
   {
+    pop_empty();
+
     if (m_indetations.empty())
       return;
 
-    auto&& curIndent = m_indetations.top();
-    m_curDepth = curIndent.m_depth;
-
-    for (auto depth = m_curDepth; depth > indentStep; depth -= indentStep)
-      out() << "| ";
-
-    if (!--curIndent.m_childIdx)
+    for (auto&& last = last_indent(); auto&& cur : m_indetations)
     {
-      out() << '`';
-      m_indetations.pop();
-    }
-    else
-    {
-      out() << '|';
-    }
+      if (&cur != &last)
+      {
+        print_parent(cur);
+        continue;
+      }
 
-    out() << '-';
+      print_child(last);
+    }
   }
 
   void ast_printer::endl() noexcept
