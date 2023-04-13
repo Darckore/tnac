@@ -109,8 +109,8 @@ namespace tnac
   {
     auto&& sym = id.symbol();
     auto val = sym.value();
-    eval_assign(sym, val);
-    id.eval_result(sym.value());
+    m_visitor.visit_assign(nullptr, val);
+    id.eval_result(val);
   }
 
   // Decls
