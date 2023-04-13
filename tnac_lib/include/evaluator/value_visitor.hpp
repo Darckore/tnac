@@ -37,8 +37,17 @@ namespace tnac::eval
       CLASS_SPECIALS_ALL(ent_id);
       using id_t = registry::entity_id;
 
+      static consteval auto invalid_id() noexcept
+      {
+        return ~id_t{};
+      }
+
       ent_id(const void* ent) noexcept :
         value{ reinterpret_cast<id_t>(ent) }
+      {}
+
+      ent_id(std::nullptr_t) noexcept :
+        value{}
       {}
 
       auto operator* () const noexcept
@@ -93,7 +102,7 @@ namespace tnac::eval
     template <detail::expr_result T>
     value reg_value(T val) noexcept
     {
-      if (m_curEntity)
+      if (m_curEntity != invalidEnt)
         return m_registry.register_entity(m_curEntity, val);
 
       return m_registry.register_literal(val);
@@ -285,7 +294,8 @@ namespace tnac::eval
     }
 
   private:
-    entity_id m_curEntity{};
+    static constexpr auto invalidEnt = detail::ent_id::invalid_id();
+    entity_id m_curEntity{ invalidEnt };
     registry& m_registry;
   };
 }
