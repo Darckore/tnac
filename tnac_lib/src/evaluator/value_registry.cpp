@@ -32,7 +32,6 @@ namespace tnac::eval
 
   registry::value_type registry::reset_result() noexcept
   {
-    m_resultValue = {};
     m_result = {};
     return evaluation_result();
   }

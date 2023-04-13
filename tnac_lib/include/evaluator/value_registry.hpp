@@ -42,8 +42,9 @@ namespace tnac::eval
     template <detail::expr_result T>
     void update_result(T value) noexcept
     {
-      m_resultValue = value;
-      m_result = { &std::get<T>(m_resultValue), eval::id_from_type<T> };
+      auto&& resStore = m_entityValues[entity_id{}];
+      resStore = value;
+      m_result = { &std::get<T>(resStore), eval::id_from_type<T> };
     }
 
     //
@@ -100,7 +101,6 @@ namespace tnac::eval
 
   private:
     value_type m_result;
-    stored_val_t m_resultValue;
 
     typed_store<int_type> m_ints;
     typed_store<float_type> m_floats;
