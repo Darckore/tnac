@@ -86,19 +86,12 @@ namespace tnac::eval
     }
 
     //
-    // Registers an int value for a specific entity (e.g., a binary expression)
+    // Registers a value for a specific entity (e.g., a binary expression)
     //
-    value_type register_entity(entity_id id, int_type val) noexcept
+    template <detail::expr_result T>
+    value_type register_entity(entity_id id, T val) noexcept
     {
-      return { &register_val(id, val), type_id::Int };
-    }
-
-    //
-    // Registers a float value for a specific entity (e.g., a binary expression)
-    //
-    value_type register_entity(entity_id id, float_type val) noexcept
-    {
-      return { &register_val(id, val), type_id::Float };
+      return { &register_val(id, val), eval::id_from_type<T> };
     }
 
     //
