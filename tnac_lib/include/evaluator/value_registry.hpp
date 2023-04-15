@@ -32,8 +32,8 @@ namespace tnac::eval
   public:
     CLASS_SPECIALS_NONE_CUSTOM(registry);
 
-    registry() noexcept;
-    ~registry() noexcept;
+    registry() noexcept = default;
+    ~registry() noexcept = default;
 
   private:
     //
@@ -51,7 +51,7 @@ namespace tnac::eval
     // Registers a value of the given type or returns an existing cached one
     //
     template <detail::expr_result T>
-    const T& register_val(T value, typed_store<T>& store) noexcept
+    const T& intern(T value, typed_store<T>& store) noexcept
     {
       update_result(value);
       return *(store.emplace(value).first);
@@ -72,32 +72,51 @@ namespace tnac::eval
     //
     // Registers an integer
     //
-    value_type register_literal(int_type val) noexcept;
+    value_type register_literal(int_type val) noexcept
+    {
+      return { &intern(val, m_ints), type_id::Int };
+    }
 
     //
     // Registers a float
     //
-    value_type register_literal(float_type val) noexcept;
+    value_type register_literal(float_type val) noexcept
+    {
+      return { &intern(val, m_floats), type_id::Float };
+    }
 
     //
     // Registers an int value for a specific entity (e.g., a binary expression)
     //
-    value_type register_entity(entity_id id, int_type val) noexcept;
+    value_type register_entity(entity_id id, int_type val) noexcept
+    {
+      return { &register_val(id, val), type_id::Int };
+    }
 
     //
     // Registers a float value for a specific entity (e.g., a binary expression)
     //
-    value_type register_entity(entity_id id, float_type val) noexcept;
+    value_type register_entity(entity_id id, float_type val) noexcept
+    {
+      return { &register_val(id, val), type_id::Float };
+    }
 
     //
     // Resets the stored result value
     //
-    value_type reset_result() noexcept;
+    value_type reset_result() noexcept
+    {
+      m_result = {};
+      return evaluation_result();
+    }
 
     //
     // Returns the last evaluated value
     //
-    value_type evaluation_result() const noexcept;
+    value_type evaluation_result() const noexcept
+    {
+      return m_result;
+    }
 
   private:
     value_type m_result;
