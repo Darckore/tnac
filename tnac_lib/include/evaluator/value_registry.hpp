@@ -84,11 +84,12 @@ namespace tnac::eval
     // Stores a value for the given entity and returns a reference to it
     //
     template <detail::expr_result T>
-    const T& register_val(entity_id id, T value) noexcept
+    value_type register_val(entity_id id, T value) noexcept
     {
       update_result(value);
-      auto insertIt = m_entityValues.insert_or_assign(id, value).first;
-      return std::get<T>(insertIt->second);
+      auto&& valStore = m_entityValues[id];
+      valStore = value;
+      return { &std::get<T>(valStore), eval::id_from_type<T> };
     }
 
   public:
@@ -107,7 +108,7 @@ namespace tnac::eval
     template <detail::expr_result T>
     value_type register_entity(entity_id id, T val) noexcept
     {
-      return { &register_val(id, val), eval::id_from_type<T> };
+      return register_val(id, val);
     }
 
     //
