@@ -36,6 +36,28 @@ namespace tnac::eval
     ~registry() noexcept = default;
 
   private:
+    template <detail::expr_result T>
+    typed_store<T>& store_for_type() noexcept;
+
+    //
+    // Gets the store for interned integers
+    //
+    template<>
+    typed_store<int_type>& store_for_type() noexcept
+    {
+      return m_ints;
+    }
+
+    //
+    // Gets the store for interned floats
+    //
+    template<>
+    typed_store<float_type>& store_for_type() noexcept
+    {
+      return m_floats;
+    }
+
+  private:
     //
     // Updates the stored result value with the most recently registered one
     //
@@ -51,10 +73,11 @@ namespace tnac::eval
     // Registers a value of the given type or returns an existing cached one
     //
     template <detail::expr_result T>
-    const T& intern(T value, typed_store<T>& store) noexcept
+    value_type intern(T value) noexcept
     {
       update_result(value);
-      return *(store.emplace(value).first);
+      auto&& store = store_for_type<T>();
+      return { &*(store.emplace(value).first), eval::id_from_type<T> };
     }
 
     //
@@ -70,19 +93,12 @@ namespace tnac::eval
 
   public:
     //
-    // Registers an integer
+    // Registers and interns a literal
     //
-    value_type register_literal(int_type val) noexcept
+    template <detail::expr_result T>
+    value_type register_literal(T val) noexcept
     {
-      return { &intern(val, m_ints), type_id::Int };
-    }
-
-    //
-    // Registers a float
-    //
-    value_type register_literal(float_type val) noexcept
-    {
-      return { &intern(val, m_floats), type_id::Float };
+      return intern(val);
     }
 
     //
