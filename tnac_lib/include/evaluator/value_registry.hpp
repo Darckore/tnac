@@ -64,9 +64,7 @@ namespace tnac::eval
     template <detail::expr_result T>
     void update_result(T value) noexcept
     {
-      auto&& resStore = m_entityValues[entity_id{}];
-      resStore = value;
-      m_result = { &std::get<T>(resStore), eval::id_from_type<T> };
+      m_result = register_val(entity_id{}, value);
     }
 
     //
@@ -86,7 +84,6 @@ namespace tnac::eval
     template <detail::expr_result T>
     value_type register_val(entity_id id, T value) noexcept
     {
-      update_result(value);
       auto&& valStore = m_entityValues[id];
       valStore = value;
       return { &std::get<T>(valStore), eval::id_from_type<T> };
@@ -108,7 +105,8 @@ namespace tnac::eval
     template <detail::expr_result T>
     value_type register_entity(entity_id id, T val) noexcept
     {
-      return register_val(id, val);
+      update_result(val);
+      return id != entity_id{} ? register_val(id, val) : evaluation_result();
     }
 
     //
