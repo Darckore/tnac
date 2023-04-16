@@ -288,19 +288,12 @@ namespace tnac
 
     auto op = next_tok();
     auto exprFirst = peek_next();
-    if (auto exp = primary_expr())
-    {
-      return m_builder.make_unary(*exp, op);
-    }
-
-    return error_expr(exprFirst, "Expected expression"sv);
+    auto exp = primary_expr();
+    return m_builder.make_unary(*exp, op);
   }
 
   ast::expr* parser::paren_expr() noexcept
   {
-    if (!detail::is_open_paren(peek_next()))
-      return error_expr(next_tok(), "Unexpected token"sv);
-
     auto op = next_tok();
     auto intExpr = expr();
 
@@ -324,7 +317,12 @@ namespace tnac
       return id_expr();
     }
 
-    return paren_expr();
+    if (detail::is_open_paren(peek_next()))
+    {
+      return paren_expr();
+    }
+
+    return error_expr(next, "Expected expression"sv, true);
   }
 
   ast::expr* parser::id_expr() noexcept
