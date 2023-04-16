@@ -76,6 +76,17 @@ namespace tnac_rt
 
   private:
     //
+    // Location of a token in input
+    // Contains a source line and offset
+    //
+    struct src_loc
+    {
+      tnac::string_t m_line{};
+      std::size_t    m_offset{};
+    };
+
+  private:
+    //
     // Returns a reference to the in stream
     //
     in_stream& in() noexcept;
@@ -91,6 +102,16 @@ namespace tnac_rt
     out_stream& err() noexcept;
 
     //
+    // Retrieves the currently parsed input string
+    //
+    tnac::string_t get_current_input() noexcept;
+
+    //
+    // Retrieves token position from input
+    //
+    src_loc token_pos(const tnac::token& tok) noexcept;
+
+    //
     // Parses input and executes commands
     //
     void parse(tnac::buf_t input) noexcept;
@@ -99,6 +120,11 @@ namespace tnac_rt
     // Prints evaluation result of the last operation
     //
     void print_result() noexcept;
+
+    //
+    // Handler for parse errors
+    //
+    void on_parse_error(const tnac::ast::error_expr& err) noexcept;
 
   private:
     ast_builder m_builder;

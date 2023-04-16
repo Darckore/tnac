@@ -58,6 +58,9 @@ namespace tnac
     private:
       prec m_cur{ Additive };
     };
+
+    template <typename F>
+    concept err_handler = std::is_nothrow_invocable_r_v<void, F, const ast::error_expr&>;
   }
 
   //
@@ -76,6 +79,8 @@ namespace tnac
     using expr_list = root_type::elem_list;
 
     using prec = detail::op_precedence;
+
+    using err_handler_t = std::function<void(const ast::error_expr&)>;
 
   public:
     CLASS_SPECIALS_NONE(parser);
@@ -109,6 +114,16 @@ namespace tnac
     // potentially, built over multiple parse calls
     //
     root_ptr root() noexcept;
+
+    //
+    // Attaches the error handler which gets called when the parser encounteres a
+    // syntax error and produces an error expression
+    //
+    template <detail::err_handler F>
+    void on_error(F&& handler) noexcept
+    {
+      m_errHandler = std::forward<F>(handler);
+    }
 
   private: // semantics
     //
@@ -208,5 +223,7 @@ namespace tnac
     ast::builder& m_builder;
     sema& m_sema;
     root_ptr m_root{};
+
+    err_handler_t m_errHandler{};
   };
 }

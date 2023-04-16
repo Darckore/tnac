@@ -155,7 +155,12 @@ namespace tnac
     if (skipRest)
       to_expr_end();
 
-    return m_builder.make_error(pos, msg);
+    auto errExpr = m_builder.make_error(pos, msg);
+
+    if (m_errHandler)
+      m_errHandler(*errExpr);
+
+    return errExpr;
   }
 
   parser::expr_list parser::expression_list() noexcept
