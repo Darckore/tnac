@@ -128,20 +128,24 @@ namespace tnac_rt
   void driver::print_result() noexcept
   {
     out() << '\n';
-    out() << "Result: ";
     out::value_printer vp;
     vp(m_registry.evaluation_result(), out());
     out() << "\n\n";
   }
 
-  void driver::on_parse_error(const tnac::ast::error_expr& error) noexcept
+  void driver::on_error(const tnac::token& tok, tnac::string_t msg) noexcept
   {
-    auto tokenPos = token_pos(error.at());
-    
+    auto tokenPos = token_pos(tok);
+
     err() << '\n' << tokenPos.m_line << '\n';
     for (auto off = std::size_t{ 1 }; off < tokenPos.m_offset; ++off)
       err() << ' ';
 
-    err() << "^~~ " << error.message() << '\n';
+    err() << "^~~ " << msg << '\n';
+  }
+
+  void driver::on_parse_error(const tnac::ast::error_expr& error) noexcept
+  {
+    on_error(error.at(), error.message());
   }
 }

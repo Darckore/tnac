@@ -122,6 +122,11 @@ namespace tnac_rt
     void print_result() noexcept;
 
     //
+    // Prints an error message by token pos
+    //
+    void on_error(const tnac::token& tok, tnac::string_t msg) noexcept;
+
+    //
     // Handler for parse errors
     //
     void on_parse_error(const tnac::ast::error_expr& err) noexcept;
