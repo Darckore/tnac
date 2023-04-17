@@ -6,155 +6,181 @@ namespace tnac_tests
 {
   namespace detail
   {
-    namespace tree = tnac::ast;
-    using tree::node_kind;
-    using tnac::string_t;
-
-    struct parse_helper
+    namespace
     {
-      parse_helper() :
-        parser{ builder, sema }
-      {}
+      namespace tree = tnac::ast;
+      using tree::node_kind;
+      using tnac::string_t;
 
-      auto operator()(string_t input) noexcept
+      struct parse_helper
       {
-        return parser(input);
-      }
+        parse_helper() :
+          parser{ builder, sema }
+        {}
 
-      tnac::ast::builder builder;
-      tnac::sema sema;
-      tnac::parser parser;
-    };
-
-    struct expected_node
-    {
-      string_t data{};
-      node_kind kind{};
-      node_kind parent{};
-      bool nullParent{};
-    };
-
-    class tree_checker : public tree::const_bottom_up_visitor<tree_checker>
-    {
-    public:
-      using test_data = std::span<expected_node>;
-      using data_iter = test_data::iterator;
-
-    public:
-      CLASS_SPECIALS_NODEFAULT(tree_checker);
-
-      tree_checker(test_data expected) noexcept :
-        m_data{ expected },
-        m_iter{ expected.begin() }
-      {}
-
-    public:
-      void visit(const tree::scope& scope) noexcept
-      {
-        check_node(scope, "");
-      }
-
-      void visit(const tree::assign_expr& expr) noexcept
-      {
-        check_node(expr, expr.op().m_value);
-      }
-
-      void visit(const tree::decl_expr& expr) noexcept
-      {
-        check_node(expr, "");
-      }
-
-      void visit(const tree::var_decl& decl) noexcept
-      {
-        check_node(decl, decl.name());
-      }
-
-      void visit(const tree::binary_expr& expr) noexcept
-      {
-        check_node(expr, expr.op().m_value);
-      }
-
-      void visit(const tree::unary_expr& expr) noexcept
-      {
-        check_node(expr, expr.op().m_value);
-      }
-
-      void visit(const tree::paren_expr& expr) noexcept
-      {
-        check_node(expr, "");
-      }
-
-      void visit(const tree::lit_expr& expr) noexcept
-      {
-        check_node(expr, expr.pos().m_value);
-      }
-
-      void visit(const tree::id_expr& expr) noexcept
-      {
-        check_node(expr, expr.name());
-      }
-
-      void visit(const tree::error_expr& expr) noexcept
-      {
-        check_node(expr, expr.message());
-      }
-
-    private:
-      void check_node(const tree::node& node, string_t nodeStr) noexcept
-      {
-        ASSERT_NE(m_iter, m_data.end()) << "Unexpected end of data";
-        auto&& expected = *m_iter;
-        ++m_iter;
-
-        EXPECT_EQ(nodeStr, expected.data);
-
-        const auto expKind = node.what();
-        EXPECT_EQ(expKind, expected.kind) << "Wrong kind at node " << nodeStr;
-
-        auto parent = node.parent();
-        if (!parent)
+        auto operator()(string_t input) noexcept
         {
-          EXPECT_TRUE(expected.nullParent) << "Parent was null at node " << nodeStr;
+          return parser(input);
         }
-        else
-        {
-          EXPECT_EQ(parent->what(), expected.parent) << "Wrong parent at node " << nodeStr;
-        }
-      }
 
-    private:
-      test_data m_data{};
-      data_iter m_iter{};
-    };
+        tnac::ast::builder builder;
+        tnac::sema sema;
+        tnac::parser parser;
+      };
 
-    template <node_kind kind, std::size_t N>
-    void check_simple_exprs(const std::array<string_t, N>& inputs)
-    {
-      parse_helper p;
-
-      for (auto input : inputs)
+      struct expected_node
       {
-        auto ast = p(input);
-        EXPECT_NE(ast, nullptr) << "Null AST for input: " << input;
+        string_t data{};
+        node_kind kind{};
+        node_kind parent{};
+        bool nullParent{};
+      };
 
-        if (ast)
+      class tree_checker : public tree::const_bottom_up_visitor<tree_checker>
+      {
+      public:
+        using test_data = std::span<expected_node>;
+        using data_iter = test_data::iterator;
+
+      public:
+        CLASS_SPECIALS_NODEFAULT(tree_checker);
+
+        tree_checker(test_data expected) noexcept :
+          m_data{ expected },
+          m_iter{ expected.begin() }
+        {}
+
+      public:
+        void visit(const tree::scope& scope) noexcept
         {
-          const auto nodeKind = ast->what();
-          EXPECT_EQ(nodeKind, kind) << "Bad kind for input: " << input;
-          if (nodeKind == kind)
+          check_node(scope, "");
+        }
+
+        void visit(const tree::assign_expr& expr) noexcept
+        {
+          check_node(expr, expr.op().m_value);
+        }
+
+        void visit(const tree::decl_expr& expr) noexcept
+        {
+          check_node(expr, "");
+        }
+
+        void visit(const tree::var_decl& decl) noexcept
+        {
+          check_node(decl, decl.name());
+        }
+
+        void visit(const tree::binary_expr& expr) noexcept
+        {
+          check_node(expr, expr.op().m_value);
+        }
+
+        void visit(const tree::unary_expr& expr) noexcept
+        {
+          check_node(expr, expr.op().m_value);
+        }
+
+        void visit(const tree::paren_expr& expr) noexcept
+        {
+          check_node(expr, "");
+        }
+
+        void visit(const tree::lit_expr& expr) noexcept
+        {
+          check_node(expr, expr.pos().m_value);
+        }
+
+        void visit(const tree::id_expr& expr) noexcept
+        {
+          check_node(expr, expr.name());
+        }
+
+        void visit(const tree::error_expr& expr) noexcept
+        {
+          check_node(expr, expr.message());
+        }
+
+      private:
+        void check_node(const tree::node& node, string_t nodeStr) noexcept
+        {
+          ASSERT_NE(m_iter, m_data.end()) << "Unexpected end of data";
+          auto&& expected = *m_iter;
+          ++m_iter;
+
+          EXPECT_EQ(nodeStr, expected.data);
+
+          const auto expKind = node.what();
+          EXPECT_EQ(expKind, expected.kind) << "Wrong kind at node " << nodeStr;
+
+          auto parent = node.parent();
+          if (!parent)
           {
-            auto&& tok = static_cast<tree::expr&>(*ast).pos();
-            EXPECT_TRUE(input.starts_with(tok.m_value));
+            EXPECT_TRUE(expected.nullParent) << "Parent was null at node " << nodeStr;
+          }
+          else
+          {
+            EXPECT_EQ(parent->what(), expected.parent) << "Wrong parent at node " << nodeStr;
+          }
+        }
+
+      private:
+        test_data m_data{};
+        data_iter m_iter{};
+      };
+
+      struct error_checker
+      {
+        error_checker(parse_helper& ph, tnac::string_t msg) noexcept :
+          expectedErr{ msg }
+        {
+          ph.parser.on_error([this](auto&& err) noexcept { on_error(err); });
+        }
+
+        void on_error(const tree::error_expr& err) noexcept
+        {
+          ASSERT_EQ(err.message(), expectedErr);
+        }
+
+        string_t expectedErr{};
+      };
+
+      template <node_kind kind, std::size_t N>
+      void check_simple_exprs(const std::array<string_t, N>& inputs)
+      {
+        parse_helper p;
+
+        for (auto input : inputs)
+        {
+          auto ast = p(input);
+          EXPECT_NE(ast, nullptr) << "Null AST for input: " << input;
+
+          if (ast)
+          {
+            const auto nodeKind = ast->what();
+            EXPECT_EQ(nodeKind, kind) << "Bad kind for input: " << input;
+            if (nodeKind == kind)
+            {
+              auto&& tok = static_cast<tree::expr&>(*ast).pos();
+              EXPECT_TRUE(input.starts_with(tok.m_value));
+            }
           }
         }
       }
-    }
 
-    void check_tree_structute(std::span<expected_node> exp, string_t input) noexcept
-    {
-      parse_helper p;
-      auto ast = p(input);
-      tree_checker{ exp }(ast);
+      void check_tree_structute(std::span<expected_node> exp, string_t input) noexcept
+      {
+        parse_helper p;
+        auto ast = p(input);
+        tree_checker{ exp }(ast);
+      }
+
+      void check_error(tnac::string_t input, tnac::string_t errMsg) noexcept
+      {
+        parse_helper p;
+        error_checker checker{ p, errMsg };
+        p.parser(input);
+      }
     }
   }
 
@@ -419,5 +445,18 @@ namespace tnac_tests
     };
 
     detail::check_tree_structute(exp, input);
+  }
+
+  TEST(parser, t_errors)
+  {
+    using detail::check_error;
+    check_error("2 + "sv, "Expected expression"sv);
+    check_error("--2"sv, "Expected expression"sv);
+    check_error("1 + 1 2"sv, "Expected ':' or EOL"sv);
+    check_error("a"sv, "Expected initialisation"sv);
+    check_error("a + 2"sv, "Expected initialisation"sv);
+    check_error("1 + 1 = 2"sv, "Expected a single identifier"sv);
+    check_error("1 + a"sv, "Undefined identifier"sv);
+    check_error("2*(1 + 2"sv, "Expected ')'"sv);
   }
 }

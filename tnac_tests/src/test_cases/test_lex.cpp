@@ -4,34 +4,37 @@ namespace tnac_tests
 {
   namespace detail
   {
-    using tnac::string_t;
-    using tnac::tok_kind;
-
-    void all_same(string_t input, tok_kind kind)
+    namespace
     {
-      tnac::lex lex;
-      lex(input);
+      using tnac::string_t;
+      using tnac::tok_kind;
 
-      for (;;)
+      void all_same(string_t input, tok_kind kind)
       {
-        auto tok = lex.next();
-        if (tok.is_eol())
-          break;
-        
-        EXPECT_TRUE(tok.is(kind)) << "Failed token: " << tok.m_value;
+        tnac::lex lex;
+        lex(input);
+
+        for (;;)
+        {
+          auto tok = lex.next();
+          if (tok.is_eol())
+            break;
+
+          EXPECT_TRUE(tok.is(kind)) << "Failed token: " << tok.m_value;
+        }
       }
-    }
 
-    template <std::size_t N>
-    void check_tokens(string_t input, const std::array<tok_kind, N>& tokArr) noexcept
-    {
-      tnac::lex lex;
-      lex(input);
-
-      for (auto tk : tokArr)
+      template <std::size_t N>
+      void check_tokens(string_t input, const std::array<tok_kind, N>& tokArr) noexcept
       {
-        auto tok = lex.next();
-        EXPECT_TRUE(tok.is(tk)) << "Failed token: " << tok.m_value;
+        tnac::lex lex;
+        lex(input);
+
+        for (auto tk : tokArr)
+        {
+          auto tok = lex.next();
+          EXPECT_TRUE(tok.is(tk)) << "Failed token: " << tok.m_value;
+        }
       }
     }
   }
