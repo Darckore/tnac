@@ -11,11 +11,11 @@ namespace tnac_tests
       void check_eval(string_t input, T expected) noexcept
       {
         parse_helper p;
-        auto ast = p.parser(input);
+        p.parser(input);
 
         tnac::eval::registry reg;
         tnac::evaluator ev{ reg };
-        ev(ast);
+        ev(p.parser.root());
 
         auto res = reg.evaluation_result();
         tnac::eval::on_value(res, [expected](auto val) noexcept
@@ -26,7 +26,8 @@ namespace tnac_tests
             }
             else
             {
-              ASSERT_EQ(expected, val);
+              using ct = std::common_type_t<decltype(val), decltype(expected)>;
+              ASSERT_TRUE(utils::eq(static_cast<ct>(expected), static_cast<ct>(val)));
             }
           });
       }
@@ -36,10 +37,40 @@ namespace tnac_tests
   TEST(evaluation, t_literal)
   {
     using detail::check_eval;
-    check_eval("2", 2ll);
-    check_eval("0b101", 5ll);
-    check_eval("010", 8ll);
-    check_eval("0xff", 255ll);
-    check_eval("42.69", 42.69);
+    check_eval("2"sv, 2ll);
+    check_eval("0b101"sv, 5ll);
+    check_eval("010"sv, 8ll);
+    check_eval("0xff"sv, 255ll);
+    check_eval("42.69"sv, 42.69);
+  }
+
+  TEST(evaluation, t_unary)
+  {
+    using detail::check_eval;
+    check_eval("-2"sv, -2ll);
+    check_eval("+42.69"sv, 42.69);
+    check_eval("-(2 + 3)"sv, -5ll);
+    check_eval("-(2/4)"sv, -0.5);
+    check_eval("a = 10 : -a"sv, -10ll);
+  }
+
+  TEST(evaluation, t_binary)
+  {
+    using detail::check_eval;
+    check_eval("2 * 2"sv, 4ll);
+    check_eval("1.5 + 2 * 3"sv, 7.5);
+    check_eval("128 - 127 - 1"sv, 0ll);
+    check_eval("1.5 * 2 + 6 / 3"sv, 5.0);
+    check_eval("-2--3"sv, 1ll);
+  }
+
+  TEST(evaluation, t_variable)
+  {
+    using detail::check_eval;
+    check_eval("a = 10 : a * 2"sv, 20ll);
+    check_eval("a = 10 : a = a * a + a"sv, 110ll);
+    check_eval("a = 2 : b = a + 2.5 : c = a + b"sv, 6.5);
+    check_eval("a = 2 * 3 + 4 + 5"sv, 15ll);
+    check_eval("var123 = 2.5 * 3.5 : var123"sv, 8.75);
   }
 }
