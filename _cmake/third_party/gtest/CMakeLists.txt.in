@@ -7,6 +7,7 @@ ExternalProject_Add(googletest
     GIT_TAG main
     SOURCE_DIR "${OPT_GTEST_DIR}"
     BINARY_DIR "${CMAKE_BINARY_DIR}/googletest-build"
+    UPDATE_DISCONNECTED 1
     CONFIGURE_COMMAND ""
     BUILD_COMMAND ""
     INSTALL_COMMAND ""
