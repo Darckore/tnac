@@ -1,5 +1,4 @@
-#include "parser/parser.hpp"
-#include "sema/sema.hpp"
+#include "test_cases/test_common.hpp"
 #include "ast/ast_visitor.hpp"
 
 namespace tnac_tests
@@ -8,26 +7,6 @@ namespace tnac_tests
   {
     namespace
     {
-      namespace tree = tnac::ast;
-      using tree::node_kind;
-      using tnac::string_t;
-
-      struct parse_helper
-      {
-        parse_helper() :
-          parser{ builder, sema }
-        {}
-
-        auto operator()(string_t input) noexcept
-        {
-          return parser(input);
-        }
-
-        tnac::ast::builder builder;
-        tnac::sema sema;
-        tnac::parser parser;
-      };
-
       struct expected_node
       {
         string_t data{};
