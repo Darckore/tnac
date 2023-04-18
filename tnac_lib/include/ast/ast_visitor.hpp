@@ -267,6 +267,14 @@ namespace tnac::ast
       visit(lit);
     }
 
+    //
+    // Visits a result expression
+    //
+    void visit_impl(dest<result_expr> res) noexcept
+    {
+      visit(res);
+    }
+
 
     //
     // Dispatches visit calls according to the node type
@@ -284,6 +292,10 @@ namespace tnac::ast
       {
       case Scope:
         visit_impl(cast<node_t, scope>(cur));
+        break;
+
+      case Result:
+        visit_impl(cast<node_t, result_expr>(cur));
         break;
 
       case Literal:

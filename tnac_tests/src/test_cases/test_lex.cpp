@@ -93,6 +93,27 @@ namespace tnac_tests
     all_same(failures, Error);
   }
 
+  TEST(lexer, t_ids)
+  {
+    constexpr auto ids = "a var_001 x____111__v long_identifier_name_of_doom"sv;
+    using enum tnac::tok_kind;
+    using detail::all_same;
+    all_same(ids, Identifier);
+  }
+
+  TEST(lexer, t_keywords)
+  {
+    constexpr auto input = "_result"sv;
+
+    using enum tnac::tok_kind;
+    constexpr std::array testArr{
+      KwResult
+    };
+
+    using detail::check_tokens;
+    check_tokens(input, testArr);
+  }
+
   TEST(lexer, t_peek)
   {
     constexpr auto input = "42 69"sv;

@@ -113,6 +113,11 @@ namespace tnac
     id.eval_result(val);
   }
 
+  void evaluator::visit(ast::result_expr& res) noexcept
+  {
+    res.eval_result(m_visitor.last_result(&res));
+  }
+
   // Decls
 
   void evaluator::visit(ast::decl_expr& expr) noexcept

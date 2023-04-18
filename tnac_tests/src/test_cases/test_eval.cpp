@@ -73,4 +73,14 @@ namespace tnac_tests
     check_eval("a = 2 * 3 + 4 + 5"sv, 15ll);
     check_eval("var123 = 2.5 * 3.5 : var123"sv, 8.75);
   }
+
+  TEST(evaluation, t_result)
+  {
+    using detail::check_eval;
+    check_eval("2 + 2 : _result"sv, 4ll);
+    check_eval("2 + 2 : -_result"sv, -4ll);
+    check_eval("2 + 2 : _result + 3 : _result"sv, 7ll);
+    check_eval("5 * _result"sv, 25ll);
+    check_eval("10 : _result * (_result + 2)"sv, 120ll);
+  }
 }

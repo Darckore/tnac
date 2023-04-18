@@ -51,6 +51,11 @@ namespace tnac
     //
     void visit(ast::id_expr& id) noexcept;
 
+    //
+    // Visits a result expression
+    //
+    void visit(ast::result_expr& res) noexcept;
+
   public: // decls
     //
     // Visits a declaration expression

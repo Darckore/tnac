@@ -49,6 +49,11 @@ namespace tnac
     const token& consume(tok_kind kind) noexcept;
 
     //
+    // Retrieves the string of characters between the from and to iterators
+    //
+    string_t read_str() const noexcept;
+
+    //
     // Moves forward until a separator is encountered
     //
     void ffwd() noexcept;

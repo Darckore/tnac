@@ -25,4 +25,6 @@ ParenClose,
 // Identifiers
 Identifier,
 Command,
-KwTemporary,
+
+// Keywords
+KwResult,

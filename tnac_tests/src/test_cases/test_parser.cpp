@@ -75,6 +75,11 @@ namespace tnac_tests
           check_node(expr, expr.name());
         }
 
+        void visit(const tree::result_expr& expr) noexcept
+        {
+          check_node(expr, expr.pos().m_value);
+        }
+
         void visit(const tree::error_expr& expr) noexcept
         {
           check_node(expr, expr.message());
@@ -261,6 +266,47 @@ namespace tnac_tests
       expected_node{ "42", Literal, Binary },
       expected_node{  "2", Literal, Unary },
       expected_node{  "-", Unary,   Binary },
+      expected_node{  "+", Binary,  Scope }
+    };
+
+    detail::check_tree_structute(exp, input);
+  }
+
+  TEST(parser, t_struct_result_unary)
+  {
+    using detail::expected_node;
+    using enum detail::node_kind;
+    constexpr auto input = "-_result"sv;
+
+    /*
+             -'-'
+            |
+        _result
+    */
+
+    std::array exp{
+      expected_node{ "_result", Result, Unary },
+      expected_node{  "-", Unary,  Scope }
+    };
+
+    detail::check_tree_structute(exp, input);
+  }
+
+  TEST(parser, t_struct_result_bin)
+  {
+    using detail::expected_node;
+    using enum detail::node_kind;
+    constexpr auto input = "_result + 1"sv;
+
+    /*
+             -'+'---
+            |       |
+        _result     1
+    */
+
+    std::array exp{
+      expected_node{ "_result", Result, Binary },
+      expected_node{  "1", Literal, Binary },
       expected_node{  "+", Binary,  Scope }
     };
 

@@ -122,12 +122,17 @@ namespace tnac_rt
     ev(ast);
     print_result();
 
+#if 0
+    out::ast_printer pr;
+    pr(m_parser.root(), out());
+    out() << '\n';
+#endif
+
     ++m_inputIdx;
   }
 
   void driver::print_result() noexcept
   {
-    out() << '\n';
     out::value_printer vp;
     vp(m_registry.evaluation_result(), out());
     out() << "\n\n";

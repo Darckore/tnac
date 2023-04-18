@@ -151,6 +151,14 @@ namespace tnac_rt::out
     endl();
   }
 
+  void ast_printer::visit(const ast::result_expr& expr) noexcept
+  {
+    indent();
+    out() << "Last eval result";
+    print_value(expr.value());
+    endl();
+  }
+
   void ast_printer::visit(const ast::error_expr& expr) noexcept
   {
     indent();

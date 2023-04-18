@@ -53,6 +53,26 @@ namespace tnac::ast
 
 
   //
+  // Result expression
+  // Corresponds to the _result keyword
+  // Holds the last evaluated value
+  //
+  class result_expr : public expr
+  {
+  private:
+    friend class builder;
+
+  public:
+    CLASS_SPECIALS_NONE(result_expr);
+
+    virtual ~result_expr() noexcept;
+
+  protected:
+    result_expr(const token& tok) noexcept;
+  };
+
+
+  //
   // Literal expression
   // Corresponds to any value literals of supported types
   //
@@ -68,9 +88,6 @@ namespace tnac::ast
 
   protected:
     lit_expr(const token& tok) noexcept;
-
-  private:
-    eval::value m_val;
   };
 
 

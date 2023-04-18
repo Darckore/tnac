@@ -293,6 +293,15 @@ namespace tnac::eval
       return reg_value(result);
     }
 
+    //
+    // Retrieves the last evaluation result
+    //
+    value last_result(id_param_t ent) noexcept
+    {
+      auto ret = visit_assign(ent, m_registry.evaluation_result());
+      return ret;
+    }
+
   private:
     static constexpr auto invalidEnt = detail::ent_id::invalid_id();
     entity_id m_curEntity{ invalidEnt };

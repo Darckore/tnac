@@ -27,6 +27,15 @@ namespace tnac::ast
   }
 
 
+  // Result expr
+
+  result_expr::~result_expr() noexcept = default;
+
+  result_expr::result_expr(const token& tok) noexcept :
+    expr{ kind::Result, tok }
+  {}
+
+
   // Literal expr
 
   lit_expr::~lit_expr() noexcept = default;

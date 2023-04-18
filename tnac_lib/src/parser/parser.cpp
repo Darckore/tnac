@@ -312,6 +312,11 @@ namespace tnac
       return m_builder.make_literal(next_tok());
     }
 
+    if (next.is(token::KwResult))
+    {
+      return m_builder.make_result(next_tok());
+    }
+
     if (next.is_identifier())
     {
       return id_expr();

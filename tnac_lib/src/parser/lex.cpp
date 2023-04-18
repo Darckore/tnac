@@ -121,6 +121,25 @@ namespace tnac
                is_underscore(c) ||
                is_command_start(c);
       }
+
+      auto lookup_keyword(string_t name) noexcept
+      {
+        using kw_map = std::unordered_map<string_t, tok_kind>;
+
+        static const kw_map keywords{
+          { "result", tok_kind::KwResult }
+        };
+
+        constexpr auto err = tok_kind::Error;
+        if (name.empty() || !is_underscore(name.front()))
+          return err;
+
+        name.remove_prefix(1);
+        if (auto foundIt = keywords.find(name); foundIt != keywords.end())
+          return foundIt->second;
+
+        return err;
+      }
     }
   }
 
@@ -188,7 +207,7 @@ namespace tnac
     if (kind == tok_kind::Command)
       ++m_from; // Skipping the leading '#'
 
-    auto tokVal = (kind != tok_kind::Eol) ? string_t{ m_from, m_to } : string_t{};
+    auto tokVal = (kind != tok_kind::Eol) ? read_str() : string_t{};
     token res{ .m_value{ tokVal }, .m_kind{ kind } };
 
     while (good())
@@ -206,6 +225,11 @@ namespace tnac
     m_from = m_to;
     m_preview = res;
     return *m_preview;
+  }
+
+  string_t lex::read_str() const noexcept
+  {
+    return { m_from, m_to };
   }
 
   void lex::ffwd() noexcept
@@ -318,7 +342,8 @@ namespace tnac
 
   const token& lex::keyword() noexcept
   {
-    return consume(tok_kind::KwTemporary);
+    const auto kw = detail::lookup_keyword(read_str());
+    return consume(kw);
   }
 
   const token& lex::identifier() noexcept

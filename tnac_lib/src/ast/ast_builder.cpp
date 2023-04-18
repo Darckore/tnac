@@ -23,6 +23,11 @@ namespace tnac::ast
 
   // Expressions
 
+  result_expr* builder::make_result(const token& tok) noexcept
+  {
+    return make<result_expr>(tok);
+  }
+
   lit_expr* builder::make_literal(const token& tok) noexcept
   {
     return make<lit_expr>(tok);

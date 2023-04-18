@@ -38,6 +38,7 @@
 *     unary-operator primary-expr
 * 
 *   primary-expr:
+*     result-expr
 *     literal-expr
 *     id-expr
 *     (expr)
@@ -47,6 +48,9 @@
 * 
 *   var-decl:
 *     identifier (previously not declared)
+* 
+*   result-expr:
+*     _result
 * 
 *   id-expr:
 *     identifier (previously declared)

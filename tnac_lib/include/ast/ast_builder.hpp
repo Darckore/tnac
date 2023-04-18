@@ -51,6 +51,11 @@ namespace tnac::ast
 
   public: // Expressions
     //
+    // Creates a result expression
+    //
+    result_expr* make_result(const token& tok) noexcept;
+
+    //
     // Creates a literal expression
     //
     lit_expr* make_literal(const token& tok) noexcept;
