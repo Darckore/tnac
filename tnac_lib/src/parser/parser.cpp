@@ -62,6 +62,11 @@ namespace tnac
         return tok.is(token::ExprSep);
       }
 
+      constexpr auto is_command_name(const token& tok) noexcept
+      {
+        return tok.is(token::Command);
+      }
+
       auto is_error_expr(ast::expr* expr) noexcept
       {
         return expr->what() == ast::node_kind::Error;
@@ -126,6 +131,42 @@ namespace tnac
     m_sema.close_scope();
   }
 
+  /// Commands
+
+  void parser::command() noexcept
+  {
+    auto cmdName = peek_next();
+    if (!detail::is_command_name(cmdName))
+      return;
+
+    if (!m_cmdHandler)
+    {
+      to_expr_end();
+      return;
+    }
+
+    next_tok();
+    auto paramList = command_params();
+    ast::command cmd{ cmdName, std::move(paramList) };
+    m_cmdHandler(std::move(cmd));
+  }
+
+  ast::command::param_list parser::command_params() noexcept
+  {
+    ast::command::param_list res{};
+
+    for (;;)
+    {
+      auto&& next = peek_next();
+      if (next.is_eol() || detail::is_expression_separator(next))
+        break;
+
+      res.push_back(next_tok());
+    }
+
+    return res;
+  }
+
   /// Parsing
 
   const token& parser::peek_next() noexcept
@@ -169,9 +210,10 @@ namespace tnac
 
     while (!peek_next().is_eol())
     {
+      command();
       auto e = expr();
       res.push_back(e);
-      
+
       auto&& next = peek_next();
       if (next.is_eol())
         break;

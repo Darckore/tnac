@@ -150,6 +150,20 @@ namespace tnac
     //
     void end_scope() noexcept;
 
+  private: // commands
+    //
+    // Parses a command along with its parameters and calls the current command handler
+    // If no command handler is set, skips to the end of input, or the
+    // nearest expression separator (if one exists)
+    //
+    void command() noexcept;
+
+    //
+    // Parses command parameters until the end of input, or an expression separator
+    // is encountered
+    //
+    ast::command::param_list command_params() noexcept;
+
   private: // parsing
     //
     // Previews the next token from the lexer

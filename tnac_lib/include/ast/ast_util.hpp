@@ -57,6 +57,7 @@ namespace tnac::ast
   private:
     friend class tnac::parser;
 
+  public:
     using param_list = std::vector<token>;
     using iterator = param_list::const_iterator;
     using size_type = param_list::size_type;
