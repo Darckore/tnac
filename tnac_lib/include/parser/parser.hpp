@@ -61,6 +61,9 @@ namespace tnac
 
     template <typename F>
     concept err_handler = std::is_nothrow_invocable_r_v<void, F, const ast::error_expr&>;
+
+    template <typename F>
+    concept cmd_handler = std::is_nothrow_invocable_r_v<void, F, const ast::command>;
   }
 
   //
@@ -81,6 +84,8 @@ namespace tnac
     using prec = detail::op_precedence;
 
     using err_handler_t = std::function<void(const ast::error_expr&)>;
+
+    using cmd_handler_t = std::function<void(ast::command)>;
 
   public:
     CLASS_SPECIALS_NONE(parser);
@@ -123,6 +128,15 @@ namespace tnac
     void on_error(F&& handler) noexcept
     {
       m_errHandler = std::forward<F>(handler);
+    }
+
+    //
+    // Attaches the command handler which gets called when a command is encountered
+    //
+    template <detail::cmd_handler F>
+    void on_command(F&& handler) noexcept
+    {
+      m_cmdHandler = std::forward<F>(handler);
     }
 
   private: // semantics
@@ -225,5 +239,6 @@ namespace tnac
     root_ptr m_root{};
 
     err_handler_t m_errHandler{};
+    cmd_handler_t m_cmdHandler{};
   };
 }
