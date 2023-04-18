@@ -26,7 +26,7 @@ namespace tnac_tests
             }
             else
             {
-              using ct = std::common_type_t<decltype(val), decltype(expected)>;
+              using ct = tnac::common_type_t<decltype(val), decltype(expected)>;
               ASSERT_TRUE(utils::eq(static_cast<ct>(expected), static_cast<ct>(val)));
             }
           });

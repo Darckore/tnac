@@ -164,25 +164,38 @@ namespace tnac
   using int_type   = std::intmax_t;
   using float_type = double;
 
-  template <typename T1, typename T2>
-  struct is_same_noquals
+  namespace detail
   {
-    using t1 = std::remove_cvref_t<T1>;
-    using t2 = std::remove_cvref_t<T2>;
-    static constexpr auto value = std::is_same_v<t1, t2>;
-  };
+    template <typename T>
+    using nocvref = std::remove_cvref_t<T>;
+
+    template <typename T1, typename T2>
+    struct is_same_noquals
+    {
+      using t1 = nocvref<T1>;
+      using t2 = nocvref<T2>;
+      static constexpr auto value = std::is_same_v<t1, t2>;
+    };
+
+    template <typename First, typename ...Others>
+    struct is_any
+    {
+      static constexpr auto value = std::disjunction_v<is_same_noquals<First, Others>...>;
+    };
+
+    template <typename T1, typename T2>
+    struct common_type : std::common_type<nocvref<T1>, nocvref<T2>>
+    {};
+  }
 
   template <typename T1, typename T2>
-  constexpr auto is_same_noquals_v = is_same_noquals<T1, T2>::value;
+  constexpr auto is_same_noquals_v = detail::is_same_noquals<T1, T2>::value;
 
   template <typename First, typename ...Others>
-  struct is_any
-  {
-    static constexpr auto value = std::disjunction_v<is_same_noquals<First, Others>...>;
-  };
+  constexpr auto is_any_v = detail::is_any<First, Others...>::value;
 
-  template <typename First, typename ...Others>
-  constexpr auto is_any_v = is_any<First, Others...>::value;
+  template <typename T1, typename T2>
+  using common_type_t = detail::common_type<T1, T2>::type;
 
   //
   // Takes a reference to a variable and (possibly) a new value
