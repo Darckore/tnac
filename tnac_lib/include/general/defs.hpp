@@ -59,10 +59,10 @@
 *     number
 * 
 *   command:
-*     # identifier
+*     # id-sequence
 * 
 *   keyword:
-*     _ identifier
+*     _ id-sequence
 * 
 *   identifier:
 *     identifier-start id-sequence
