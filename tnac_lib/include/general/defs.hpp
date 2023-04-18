@@ -123,6 +123,9 @@
 *   operator: one of
 *     + - * / =
 * 
+*   string-literal:
+*     ' anything '
+* 
 *   id-sequence:
 *     identifier-char
 *     id-sequence identifier-char

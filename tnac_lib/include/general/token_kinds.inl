@@ -11,6 +11,9 @@ IntDec,
 IntHex,
 Float,
 
+// String literal
+String,
+
 // Operators
 Plus,
 Minus,

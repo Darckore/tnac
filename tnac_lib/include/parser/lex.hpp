@@ -59,6 +59,11 @@ namespace tnac
     void ffwd() noexcept;
 
     //
+    // Tries to parse a string
+    //
+    const token& string() noexcept;
+
+    //
     // Tries to parse a number
     //
     const token& number() noexcept;

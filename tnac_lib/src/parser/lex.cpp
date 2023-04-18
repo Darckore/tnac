@@ -115,6 +115,11 @@ namespace tnac
         return c == '#';
       }
       
+      constexpr auto is_single_quote(char_t c) noexcept
+      {
+        return c == '\'';
+      }
+
       constexpr auto is_any_name_start(char_t c) noexcept
       {
         return is_id_start(c) ||
@@ -173,6 +178,11 @@ namespace tnac
 
     const auto next = peek_char();
 
+    if (detail::is_single_quote(next))
+    {
+      return string();
+    }
+
     if (detail::is_any_name_start(next))
     {
       return identifier();
@@ -208,6 +218,14 @@ namespace tnac
       ++m_from; // Skipping the leading '#'
 
     auto tokVal = (kind != tok_kind::Eol) ? read_str() : string_t{};
+
+    // Removing leading and trailing ' of a string
+    if (kind == tok_kind::String)
+    {
+      tokVal.remove_prefix(1);
+      tokVal.remove_suffix(1);
+    }
+
     token res{ .m_value{ tokVal }, .m_kind{ kind } };
 
     while (good())
@@ -242,6 +260,24 @@ namespace tnac
         
       advance();
     }
+  }
+
+  const token& lex::string() noexcept
+  {
+    advance();
+    while (good())
+    {
+      const auto next = peek_char();
+      if (detail::is_single_quote(next))
+      {
+        advance();
+        return consume(tok_kind::String);
+      }
+
+      advance();
+    }
+
+    return consume(tok_kind::Error);
   }
 
   const token& lex::number() noexcept

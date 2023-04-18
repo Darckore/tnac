@@ -93,6 +93,24 @@ namespace tnac_tests
     all_same(failures, Error);
   }
 
+  TEST(lexer, t_strings_good)
+  {
+    constexpr auto input = "'one' 'and two  ' 'and 3 & 4 @$' '' '            '"sv;
+
+    using enum tnac::tok_kind;
+    using detail::all_same;
+    all_same(input, String);
+  }
+
+  TEST(lexer, t_strings_bad)
+  {
+    constexpr auto input = "'this string has no end"sv;
+
+    using enum tnac::tok_kind;
+    using detail::all_same;
+    all_same(input, Error);
+  }
+
   TEST(lexer, t_ids)
   {
     constexpr auto ids = "a var_001 x____111__v long_identifier_name_of_doom"sv;
