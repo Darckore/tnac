@@ -170,9 +170,11 @@ namespace tnac::eval
     }
 
     template <detail::expr_result L, detail::expr_result R>
-    value visit_binary(L lhs, R rhs, val_ops op) noexcept
+    value visit_binary(L l, R r, val_ops op) noexcept
     {
       using enum val_ops;
+      auto [lhs, rhs] = common_type_cast<decltype(l), decltype(r)>{}(l, r);
+
       switch (op)
       {
       case Addition:

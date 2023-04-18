@@ -21,6 +21,19 @@ namespace tnac::eval
   }
 
   //
+  // Used for binary expressions. Converts values to their common type
+  //
+  template <detail::expr_result T1, detail::expr_result T2>
+  struct common_type_cast : public tnac::detail::common_type<tnac::detail::nocvref<T1>, tnac::detail::nocvref<T2>>
+  {
+    constexpr auto operator()(T1 v1, T2 v2) noexcept
+    {
+      using res_type = common_type_cast<T1, T2>::type;
+      return std::pair{ static_cast<res_type>(v1), static_cast<res_type>(v2) };
+    }
+  };
+
+  //
   // Type ids for every supported type
   //
   enum class type_id : std::uint8_t
