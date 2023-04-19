@@ -77,7 +77,7 @@ namespace tnac_rt
     //
     // Parses input and executes commands
     //
-    void parse(tnac::buf_t input) noexcept;
+    void parse(tnac::buf_t input, bool interactive) noexcept;
 
     //
     // Prints evaluation result of the last operation

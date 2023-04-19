@@ -1,5 +1,6 @@
 #include "driver/driver.hpp"
 #include "output/printer.hpp"
+#include "output/lister.hpp"
 
 namespace tnac_rt
 {
@@ -29,7 +30,7 @@ namespace tnac_rt
         continue;
       }
 
-      parse(std::move(input));
+      parse(std::move(input), true);
       input = {};
     }
   }
@@ -77,19 +78,26 @@ namespace tnac_rt
     return *m_err;
   }
 
-  void driver::parse(tnac::buf_t input) noexcept
+  void driver::parse(tnac::buf_t input, bool interactive) noexcept
   {
     auto&& inputData = m_srcMgr.input(std::move(input));
     auto ast = m_parser(inputData.m_buf);
     inputData.m_node = ast;
     
     eval ev{ m_registry };
+    if (!interactive)
+      ast = m_parser.root();
+
     ev(ast);
     print_result();
 
 #if 0
     out::ast_printer pr;
     pr(m_parser.root(), out());
+    out() << '\n';
+
+    out::lister ls;
+    ls(m_parser.root(), out());
     out() << '\n';
 #endif
   }
