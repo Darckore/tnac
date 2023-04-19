@@ -9,6 +9,7 @@
 #include "evaluator/value_registry.hpp"
 #include "sema/sema.hpp"
 #include "driver/source_manager.hpp"
+#include "driver/cmd_interpreter.hpp"
 
 namespace tnac_rt
 {
@@ -91,6 +92,7 @@ namespace tnac_rt
 
     parser m_parser;
     src_manager m_srcMgr;
+    cmd m_cmd;
 
     in_stream*  m_in { &std::cin };
     out_stream* m_out{ &std::cout };

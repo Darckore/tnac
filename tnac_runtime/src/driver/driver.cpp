@@ -9,7 +9,10 @@ namespace tnac_rt
   driver::driver() noexcept :
     m_parser{ m_builder, m_sema }
   {
+    m_cmd.on_error([this](auto&& tok, auto msg) noexcept { m_srcMgr.on_error(tok, msg); });
+
     m_parser.on_error([this](auto&& err) noexcept { m_srcMgr.on_parse_error(err); });
+    m_parser.on_command([this](auto command) noexcept { m_cmd.on_command(std::move(command)); });
   }
 
 
