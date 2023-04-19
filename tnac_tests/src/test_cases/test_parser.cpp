@@ -537,4 +537,33 @@ namespace tnac_tests
     check_command("#example 'Hai' 'this is a ' 1 0b11 42"sv, cmdName, params, { 5ull, TooMany });
     check_command("#example 'this is a ' 1 0b11 42"sv, cmdName, params, { 1ull, WrongKind });
   }
+
+  TEST(parser, t_cmd_skip)
+  {
+    using enum tnac::ast::node_kind;
+    detail::parse_helper ph;
+
+    auto ast = ph.parser("#command p1 p2"sv);
+    ASSERT_NE(ast, nullptr);
+    EXPECT_TRUE(ast->is(Scope));
+
+    ast = ph.parser("#command p1 p2 : 2 + 2"sv);
+    ASSERT_NE(ast, nullptr);
+    EXPECT_TRUE(ast->is(Binary));
+  }
+
+  TEST(parser, t_cmd_handle)
+  {
+    using enum tnac::ast::node_kind;
+    detail::parse_helper ph;
+    ph.parser.on_command([](tnac::ast::command) noexcept {});
+
+    auto ast = ph.parser("#command p1 p2"sv);
+    ASSERT_NE(ast, nullptr);
+    EXPECT_TRUE(ast->is(Scope));
+
+    ast = ph.parser("#command p1 p2 : 2 + 2"sv);
+    ASSERT_NE(ast, nullptr);
+    EXPECT_TRUE(ast->is(Binary));
+  }
 }
