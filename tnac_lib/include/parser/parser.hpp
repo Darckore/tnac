@@ -63,7 +63,7 @@ namespace tnac
     concept err_handler = std::is_nothrow_invocable_r_v<void, F, const ast::error_expr&>;
 
     template <typename F>
-    concept cmd_handler = std::is_nothrow_invocable_r_v<void, F, const ast::command>;
+    concept cmd_handler = std::is_nothrow_invocable_r_v<void, F, ast::command>;
   }
 
   //
