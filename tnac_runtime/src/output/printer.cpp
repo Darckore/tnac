@@ -2,54 +2,6 @@
 
 namespace tnac_rt::out
 {
-  namespace
-  {
-    inline std::ostream& operator<<(std::ostream& out, eval::invalid_val_t) noexcept
-    {
-      out << "<undef>";
-      return out;
-    }
-  }
-
-  // Value priinter
-
-  // Special members
-
-  value_printer::~value_printer() noexcept = default;
-
-  value_printer::value_printer() noexcept = default;
-
-  // Public members
-
-  void value_printer::operator()(eval::value val, out_stream& os) noexcept
-  {
-    m_out = &os;
-    print_value(val);
-  }
-
-  void value_printer::operator()(eval::value val) noexcept
-  {
-    this->operator()(val, out());
-  }
-
-  // Private members
-
-  out_stream& value_printer::out() noexcept
-  {
-    return *m_out;
-  }
-
-  void value_printer::print_value(eval::value val) noexcept
-  {
-    eval::on_value(val, [this](auto val)
-      {
-        out() << val;
-      });
-  }
-
-
-  // AST printer
-
   // Special members
 
   ast_printer::~ast_printer() noexcept
@@ -154,7 +106,7 @@ namespace tnac_rt::out
   void ast_printer::visit(const ast::result_expr& expr) noexcept
   {
     indent();
-    out() << "Last eval result";
+    out() << "Last eval result ";
     print_value(expr.value());
     endl();
   }
@@ -247,7 +199,7 @@ namespace tnac_rt::out
 
   void ast_printer::print_token(const tnac::token& tok) noexcept
   {
-    out() << " '" << tok.m_value << "' ";
+    out() << " '" << tok << "' ";
   }
 
   void ast_printer::print_value(eval::value v) noexcept

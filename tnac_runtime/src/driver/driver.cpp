@@ -122,7 +122,7 @@ namespace tnac_rt
     ev(ast);
     print_result();
 
-#if 0
+#if 1
     out::ast_printer pr;
     pr(m_parser.root(), out());
     out() << '\n';
