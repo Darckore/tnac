@@ -4,6 +4,7 @@
 
 #pragma once
 #include "ast/ast_util.hpp"
+#include "driver/cmd/commands.hpp"
 
 namespace tnac_rt
 {
