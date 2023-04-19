@@ -21,6 +21,9 @@ namespace tnac_rt
   {
   public:
     using err_handler_t = std::function<void(const tnac::token&, tnac::string_t)>;
+    using value_type = tnac::ast::command;
+    using cmd_ptr = const value_type*;
+    using cmd_ref = const value_type&;
 
   public:
     CLASS_SPECIALS_NONE_CUSTOM(cmd);
@@ -33,7 +36,7 @@ namespace tnac_rt
     //
     // Interprets a command
     //
-    void on_command(tnac::ast::command command) noexcept;
+    void on_command(value_type command) noexcept;
 
     //
     // Sets an error callback
@@ -45,6 +48,13 @@ namespace tnac_rt
     }
 
   private:
+    //
+    // Produces an error
+    //
+    void on_error(cmd_ref command) noexcept;
+
+  private:
+    commands::classifier m_classifier;
     err_handler_t m_errHandler{};
   };
 }

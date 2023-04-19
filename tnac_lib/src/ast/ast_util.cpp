@@ -36,9 +36,14 @@ namespace tnac::ast
     return m_params[idx];
   }
 
+  const token& command::pos() const noexcept
+  {
+    return m_cmd;
+  }
+
   string_t command::name() const noexcept
   {
-    return m_cmd.m_value;
+    return pos().m_value;
   }
 
   command::size_type command::param_count() const noexcept

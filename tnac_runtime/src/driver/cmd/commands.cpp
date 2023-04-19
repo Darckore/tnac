@@ -17,4 +17,9 @@ namespace tnac_rt::commands
     utils::unused(command);
     return cmd_id::Unknown;
   }
+
+  classifier::ver_info classifier::last_result() const noexcept
+  {
+    return m_res;
+  }
 }

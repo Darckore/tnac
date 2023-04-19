@@ -24,6 +24,7 @@ namespace tnac_rt::commands
     using value_type = const tnac::ast::command;
     using pointer    = value_type*;
     using reference  = value_type&;
+    using ver_info   = value_type::verification_result;
 
   public:
     CLASS_SPECIALS_NONE_CUSTOM(classifier);
@@ -38,5 +39,13 @@ namespace tnac_rt::commands
     // If the command doesn't pass verification, returns Unknown
     //
     cmd_id verify(reference command) noexcept;
+
+    //
+    // Returns the result of the lates command verification
+    //
+    ver_info last_result() const noexcept;
+
+  private:
+    ver_info m_res{};
   };
 }

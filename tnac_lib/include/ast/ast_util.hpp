@@ -109,6 +109,11 @@ namespace tnac::ast
     const token& operator[](size_type idx) const noexcept;
 
     //
+    // Returns the command's position token
+    //
+    const token& pos() const noexcept;
+
+    //
     // Returns the command name
     //
     string_t name() const noexcept;
