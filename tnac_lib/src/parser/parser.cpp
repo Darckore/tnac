@@ -90,21 +90,20 @@ namespace tnac
   {
     m_lex(str);
 
-    pointer res{};
     if (!m_root)
     {
       m_root = m_builder.make_scope({});
-      res = m_root;
       new_scope(m_root);
     }
 
+    pointer res = m_root;
     auto eList = expression_list();
     if (!eList.empty())
     {
       res = eList.back();
+      m_root->adopt(std::move(eList));
     }
 
-    m_root->adopt(std::move(eList));
     return res;
   }
 
@@ -142,6 +141,8 @@ namespace tnac
     if (!m_cmdHandler)
     {
       to_expr_end();
+      next_tok();
+
       return;
     }
 
@@ -158,8 +159,15 @@ namespace tnac
     for (;;)
     {
       auto&& next = peek_next();
-      if (next.is_eol() || detail::is_expression_separator(next))
+      
+      if (next.is_eol())
         break;
+
+      if (detail::is_expression_separator(next))
+      {
+        next_tok();
+        break;
+      }
 
       res.push_back(next_tok());
     }
@@ -211,6 +219,9 @@ namespace tnac
     while (!peek_next().is_eol())
     {
       command();
+      if (peek_next().is_eol())
+        break;
+
       auto e = expr();
       res.push_back(e);
 
