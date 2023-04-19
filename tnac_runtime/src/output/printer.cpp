@@ -4,14 +4,14 @@ namespace tnac_rt::out
 {
   // Special members
 
-  ast_printer::~ast_printer() noexcept
+  ast_printer::~ast_printer() noexcept = default;
+
+  ast_printer::ast_printer() noexcept
   {
     using sz_t = child_tracker::size_type;
     static constexpr auto initialSize = sz_t{ 16 };
     m_indetations.reserve(initialSize);
   }
-
-  ast_printer::ast_printer() noexcept = default;
 
   // Public members
 
@@ -24,7 +24,7 @@ namespace tnac_rt::out
 
   void ast_printer::operator()(const ast::node* node) noexcept
   {
-    this->operator()(node, out());
+    operator()(node, out());
   }
 
   void ast_printer::visit(const ast::scope& scope) noexcept
