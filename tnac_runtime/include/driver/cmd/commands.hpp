@@ -3,6 +3,7 @@
 //
 
 #pragma once
+#include "ast/ast_util.hpp"
 
 namespace tnac_rt::commands
 {
@@ -65,7 +66,6 @@ namespace tnac_rt::commands
       return m_cmdHandler;
     }
 
-
   private:
     param_list m_params;
     size_type m_reqCount{};
@@ -97,10 +97,10 @@ namespace tnac_rt::commands
     // Declares a command with the specified name and parameters
     // Subsequent additions overwrite the existing records
     //
-    template <detail::cmd_handler F, typename ...Args>
-    void declare(name_type name, F&& handler, Args&& ...args) noexcept
+    template <typename ...Args>
+    void declare(name_type name, Args&& ...args) noexcept
     {
-      m_cmds.insert_or_assign(name, cmd_descr{ std::forward<F>(handler), std::forward<Args>(args)... });
+      m_cmds.insert_or_assign(name, cmd_descr{ std::forward<Args>(args)... });
     }
 
     //

@@ -29,29 +29,15 @@ namespace tnac_rt
   public:
     CLASS_SPECIALS_NONE(cmd);
 
-    ~cmd() noexcept = default;
+    ~cmd() noexcept;
 
-    cmd(cmd_store& store) noexcept :
-      m_cmdStore{ store }
-    {}
+    cmd(cmd_store& store) noexcept;
 
   public:
     //
     // Interprets a command
     //
-    void on_command(value_type command) noexcept
-    {
-      using enum commands::verification;
-      auto descr = m_cmdStore.find(command.name());
-      if (!descr)
-      {
-        on_error(command, WrongName);
-        return;
-      }
-
-      // todo: verification
-      descr->handler()(std::move(command));
-    }
+    void on_command(value_type command) noexcept;
 
     //
     // Sets an error callback
@@ -66,13 +52,7 @@ namespace tnac_rt
     //
     // Produces an error
     //
-    void on_error(cmd_ref command, commands::verification reason) noexcept
-    {
-      if (!m_errHandler)
-        return;
-
-      utils::unused(command, reason);
-    }
+    void on_error(cmd_ref command, commands::verification reason) noexcept;
 
   private:
     err_handler_t m_errHandler{};
