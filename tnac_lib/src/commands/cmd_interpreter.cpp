@@ -1,6 +1,6 @@
-#include "driver/cmd_interpreter.hpp"
+#include "commands/cmd_interpreter.hpp"
 
-namespace tnac_rt
+namespace tnac
 {
   // Special members
 
@@ -74,8 +74,8 @@ namespace tnac_rt
       return;
 
     using enum commands::verification;
-    tnac::string_t msg{};
-    const tnac::token* pos{};
+    string_t msg{};
+    const token* pos{};
 
     switch (reason.m_res)
     {

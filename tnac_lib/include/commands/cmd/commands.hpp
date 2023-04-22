@@ -5,12 +5,15 @@
 #pragma once
 #include "ast/ast_util.hpp"
 
-namespace tnac_rt::commands
+namespace tnac::commands
 {
   namespace detail
   {
     template <typename F>
-    concept cmd_handler = std::is_nothrow_invocable_r_v<void, F, tnac::ast::command>;
+    concept cmd_handler = std::is_nothrow_invocable_r_v<void, F, ast::command>;
+
+    template <typename F>
+    concept err_handler = std::is_nothrow_invocable_r_v<void, F, const token&, string_t>;
   }
 
   //
@@ -30,7 +33,7 @@ namespace tnac_rt::commands
   //
   struct ver_result
   {
-    using size_type = tnac::ast::command::size_type;
+    using size_type = ast::command::size_type;
 
     explicit operator bool() const noexcept
     {
@@ -47,10 +50,10 @@ namespace tnac_rt::commands
   class descr
   {
   public:
-    using param_list = std::vector<tnac::tok_kind>;
+    using param_list = std::vector<tok_kind>;
     using size_type  = param_list::size_type;
 
-    using cmd_handler_t = std::function<void(tnac::ast::command)>;
+    using cmd_handler_t = std::function<void(ast::command)>;
 
   public:
     CLASS_SPECIALS_NODEFAULT_NOCOPY(descr);
@@ -77,7 +80,7 @@ namespace tnac_rt::commands
     {}
 
   public:
-    void operator()(tnac::ast::command cmd) const noexcept
+    void operator()(ast::command cmd) const noexcept
     {
       m_cmdHandler(std::move(cmd));
     }
@@ -111,7 +114,7 @@ namespace tnac_rt::commands
   class store
   {
   public:
-    using name_type  = tnac::string_t;
+    using name_type  = string_t;
     using cmd_descr  = descr;
     using descr_ptr  = const cmd_descr*;
     using storage    = std::unordered_map<name_type, cmd_descr>;
