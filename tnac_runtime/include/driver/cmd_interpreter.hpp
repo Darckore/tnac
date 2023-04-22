@@ -39,15 +39,18 @@ namespace tnac_rt
   public:
     CLASS_SPECIALS_NONE_CUSTOM(cmd);
 
-    ~cmd() noexcept;
+    ~cmd() noexcept = default;
 
-    cmd() noexcept;
+    cmd() noexcept = default;
 
   public:
     //
     // Interprets a command
     //
-    void on_command(value_type command) noexcept;
+    void on_command(value_type command) noexcept
+    {
+      utils::unused(command);
+    }
 
     //
     // Sets an error callback
@@ -62,7 +65,10 @@ namespace tnac_rt
     //
     // Produces an error
     //
-    void on_error(cmd_ref command) noexcept;
+    void on_error(cmd_ref command) noexcept
+    {
+      utils::unused(command);
+    }
 
   private:
     err_handler_t m_errHandler{};
