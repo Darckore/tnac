@@ -80,13 +80,32 @@ namespace tnac_rt
 
   void driver::print_result() noexcept
   {
+    out() << '\n';
     out::value_printer vp;
     vp(m_registry.evaluation_result(), out());
     out() << "\n\n";
   }
 
-  // Utility
+  void driver::list_code(command c) noexcept
+  {
+    utils::unused(c);
+    out() << '\n';
+    out::lister ls;
+    ls(m_parser.root(), out());
+    out() << '\n';
+  }
 
+  void driver::print_ast(command c) noexcept
+  {
+    utils::unused(c);
+    out() << '\n';
+    out::ast_printer pr;
+    pr(m_parser.root(), out());
+    out() << '\n';
+  }
+
+  // Utility
+  
   in_stream& driver::in() noexcept
   {
     return *m_in;
@@ -102,8 +121,10 @@ namespace tnac_rt
 
   void driver::init_commands() noexcept
   {
-    m_commands.declare("exit"sv,   [this](auto) noexcept { on_exit(); });
-    m_commands.declare("result"sv, [this](auto) noexcept { print_result(); });
+    m_commands.declare("exit"sv,   [this](auto  ) noexcept { on_exit(); });
+    m_commands.declare("result"sv, [this](auto  ) noexcept { print_result(); });
+    m_commands.declare("list"sv,   [this](auto c) noexcept { list_code(std::move(c)); });
+    m_commands.declare("ast"sv,    [this](auto c) noexcept { print_ast(std::move(c)); });
   }
 
   void driver::parse(tnac::buf_t input, bool interactive) noexcept
@@ -117,15 +138,5 @@ namespace tnac_rt
       ast = m_parser.root();
 
     ev(ast);
-
-#if 0
-    out::ast_printer pr;
-    pr(m_parser.root(), out());
-    out() << '\n';
-
-    out::lister ls;
-    ls(m_parser.root(), out());
-    out() << '\n';
-#endif
   }
 }

@@ -36,6 +36,7 @@ namespace tnac_rt
     using parser      = tnac::parser;
     using val_reg     = tnac::eval::registry;
     using eval        = tnac::evaluator;
+    using command     = tnac::ast::command;
 
   public:
     CLASS_SPECIALS_NONE_CUSTOM(driver);
@@ -69,6 +70,16 @@ namespace tnac_rt
     // Prints evaluation result of the last operation
     //
     void print_result() noexcept;
+
+    //
+    // Lists the entire source
+    //
+    void list_code(command c) noexcept;
+
+    //
+    // Prints a part of the ast
+    //
+    void print_ast(command c) noexcept;
 
   private: // Utility
     //

@@ -26,6 +26,22 @@ namespace tnac_rt::commands
   };
 
   //
+  // Verification result
+  //
+  struct ver_result
+  {
+    using size_type = tnac::ast::command::size_type;
+
+    explicit operator bool() const noexcept
+    {
+      return m_res == verification::Correct;
+    }
+
+    size_type m_diff{};
+    verification m_res{ verification::Correct };
+  };
+
+  //
   // Command descriptor
   //
   class descr
@@ -61,9 +77,24 @@ namespace tnac_rt::commands
     {}
 
   public:
-    const cmd_handler_t& handler() const noexcept
+    void operator()(tnac::ast::command cmd) const noexcept
     {
-      return m_cmdHandler;
+      m_cmdHandler(std::move(cmd));
+    }
+
+    auto size() const noexcept
+    {
+      return m_params.size();
+    }
+
+    auto required() const noexcept
+    {
+      return m_reqCount;
+    }
+
+    auto operator[](size_type idx) const noexcept
+    {
+      return m_params[idx];
     }
 
   private:
