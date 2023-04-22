@@ -61,6 +61,11 @@ namespace tnac_rt
     //
     void on_parse_error(const tnac::ast::error_expr& err) noexcept;
 
+    //
+    // Retrieves the last parsed ast
+    //
+    const tnac::ast::node* last_parsed() noexcept;
+
   private:
     //
     // Returns a reference to the err stream

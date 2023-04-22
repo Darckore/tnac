@@ -33,6 +33,18 @@ namespace tnac_rt
     on_error(error.at(), error.message());
   }
 
+  const tnac::ast::node* src_manager::last_parsed() noexcept
+  {
+    auto idx = m_prevIdx;
+    while (idx)
+    {
+      if (auto node = m_input[idx--].m_node; node && node->parent())
+        return node;
+    }
+
+    return m_input[idx].m_node;
+  }
+
   // Private members
 
   out_stream& src_manager::err() noexcept

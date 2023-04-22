@@ -33,10 +33,15 @@ namespace tnac_rt
   public:
     using ast_builder = tnac::ast::builder;
     using sema        = tnac::sema;
+    using symbol_ptr  = const tnac::semantics::symbol*;
+    using symbol_ref  = const tnac::semantics::symbol&;
+    using sym_collection = std::vector<symbol_ptr>;
+
     using parser      = tnac::parser;
     using val_reg     = tnac::eval::registry;
     using eval        = tnac::evaluator;
     using command     = tnac::ast::command;
+    using size_type   = command::size_type;
 
   public:
     CLASS_SPECIALS_NONE_CUSTOM(driver);
@@ -81,6 +86,11 @@ namespace tnac_rt
     //
     void print_ast(command c) noexcept;
 
+    //
+    // Prints all currently available variables with values
+    //
+    void print_vars(command c) noexcept;
+
   private: // Utility
     //
     // Returns a reference to the in stream
@@ -103,6 +113,11 @@ namespace tnac_rt
     void init_commands() noexcept;
 
     //
+    // Stores a variable
+    //
+    void store_var(symbol_ref var) noexcept;
+
+    //
     // Parses input and executes commands
     //
     void parse(tnac::buf_t input, bool interactive) noexcept;
@@ -121,6 +136,8 @@ namespace tnac_rt
     in_stream*  m_in { &std::cin };
     out_stream* m_out{ &std::cout };
     out_stream* m_err{ &std::cerr };
+
+    sym_collection m_vars;
 
     bool m_running{};
   };

@@ -10,6 +10,8 @@ namespace tnac_rt
     m_parser{ m_builder, m_sema },
     m_cmd{ m_commands }
   {
+    m_sema.on_variable([this](auto&& sym) noexcept { store_var(sym); });
+
     m_cmd.on_error([this](auto&& tok, auto msg) noexcept { m_srcMgr.on_error(tok, msg); });
 
     m_parser.on_error([this](auto&& err) noexcept { m_srcMgr.on_parse_error(err); });
@@ -97,10 +99,44 @@ namespace tnac_rt
 
   void driver::print_ast(command c) noexcept
   {
-    utils::unused(c);
+    auto toPrint = [this](const command& c) noexcept -> const tnac::ast::node*
+    {
+      constexpr auto maxParams = size_type{ 2 };
+      const auto paramCount = c.param_count();
+      
+      if (paramCount < maxParams)
+        return m_parser.root();
+
+      auto&& second = c[size_type{ 1 }];
+      if (second.m_value == "current"sv)
+        return m_srcMgr.last_parsed();
+
+      m_srcMgr.on_error(second, "Unknown parameter"sv);
+      return m_parser.root();
+    };
+
+    auto ast = toPrint(c);
+
     out() << '\n';
     out::ast_printer pr;
-    pr(m_parser.root(), out());
+    pr(ast, out());
+    out() << '\n';
+  }
+
+  void driver::print_vars(command c) noexcept
+  {
+    utils::unused(c);
+    out() << '\n';
+    if (m_vars.empty())
+      out() << "<none>";
+
+    out::value_printer vp;
+    for (auto var : m_vars)
+    {
+      out() << var->name() << " : ";
+      vp(var->value(), out());
+      out() << '\n';
+    }
     out() << '\n';
   }
 
@@ -131,8 +167,16 @@ namespace tnac_rt
     m_commands.declare("list"sv, params{ String }, size_type{},
                        [this](auto c) noexcept { list_code(std::move(c)); });
     
-    m_commands.declare("ast"sv, params{ String }, size_type{},
+    m_commands.declare("ast"sv, params{ String, Identifier }, size_type{},
                        [this](auto c) noexcept { print_ast(std::move(c)); });
+
+    m_commands.declare("vars"sv, params{ String }, size_type{},
+                       [this](auto c) noexcept { print_vars(std::move(c)); });
+  }
+
+  void driver::store_var(symbol_ref var) noexcept
+  {
+    m_vars.push_back(&var);
   }
 
   void driver::parse(tnac::buf_t input, bool interactive) noexcept

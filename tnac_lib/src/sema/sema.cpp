@@ -34,7 +34,11 @@ namespace tnac
     switch (decl.what())
     {
     case VarDecl:
-      m_symTab.add_variable(decl, m_curScope);
+    {
+      auto&& var = m_symTab.add_variable(decl, m_curScope);
+      if (m_varCallback)
+        m_varCallback(var);
+    }
       break;
 
     default:

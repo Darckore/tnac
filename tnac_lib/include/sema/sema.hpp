@@ -7,6 +7,12 @@
 
 namespace tnac
 {
+  namespace detail
+  {
+    template <typename F>
+    concept decl_handler = std::is_nothrow_invocable_r_v<void, F, const semantics::symbol&>;
+  }
+
   //
   // Semantic analyser. Constrols scope tracking and is responsible
   // for registering and looking up symbols
@@ -16,6 +22,7 @@ namespace tnac
   public:
     using symbol = semantics::symbol;
     using sym_ptr = symbol*;
+    using decl_handler_t = std::function<void(const symbol&)>;
 
   public:
     CLASS_SPECIALS_NONE_CUSTOM(sema);
@@ -24,6 +31,15 @@ namespace tnac
     sema() noexcept;
 
   public:
+    //
+    // Sets a callback invoked when a variable is declared
+    //
+    template <detail::decl_handler F>
+    void on_variable(F&& f) noexcept
+    {
+      m_varCallback = std::forward<F>(f);
+    }
+
     //
     // Opens a new scope
     //
@@ -48,5 +64,6 @@ namespace tnac
   private:
     semantics::sym_table m_symTab;
     const semantics::scope* m_curScope{};
+    decl_handler_t m_varCallback{};
   };
 }
