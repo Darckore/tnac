@@ -32,26 +32,39 @@ namespace tnac_rt
     auto verRes = m_classifier.last_result();
     using enum value_type::verification;
 
+    if (verRes.m_res == Correct)
+      return;
+
+    tnac::string_t msg{};
+    const tnac::token* pos{};
+
     switch (verRes.m_res)
     {
-    case Correct:
-      m_errHandler(command.pos(), "Unrecognised command"sv);
+    case WrongName:
+      pos = &command.pos();
+      msg = "Unrecognised command"sv;
       break;
 
     case TooFew:
-      m_errHandler(command.pos(), "Too few parameters"sv);
+      pos = !verRes.m_diff ? &command.pos() : &command[verRes.m_diff - 1];
+      msg = "Too few parameters"sv;
       break;
 
     case TooMany:
-      m_errHandler(command.pos(), "Too many parameters"sv);
+      pos = &command[verRes.m_diff - 1];
+      msg = "Too many parameters"sv;
       break;
 
     case WrongKind:
-      m_errHandler(command.pos(), "Wrong parameter type"sv);
+      pos = &command[verRes.m_diff];
+      msg = "Wrong parameter type"sv;
       break;
 
     default:
-      break;
+      UTILS_ASSERT(false);
+      return;
     }
+
+    m_errHandler(*pos, msg);
   }
 }

@@ -71,6 +71,7 @@ namespace tnac::ast
     enum class verification : std::uint8_t
     {
       Correct,
+      WrongName,
       TooFew,
       TooMany,
       WrongKind
@@ -79,7 +80,20 @@ namespace tnac::ast
     using enum verification;
 
     //
-    // Verification result.
+    // Command descriptor
+    // 
+    // Specifies the command name and parameter list
+    // Some parameters can be optional
+    //
+    struct descr
+    {
+      string_t m_name;
+      param_baseline m_params;
+      size_type m_reqCount{};
+    };
+
+    //
+    // Verification result
     // 
     // If verification equals WrongKind, m_diff contains the index of the
     // first parameter which failed the check
@@ -137,7 +151,7 @@ namespace tnac::ast
     // Verifies command structure (the number and kinds of params)
     // Returns a verification_result instance
     //
-    verification_result verify(param_baseline base) const noexcept;
+    verification_result verify(const descr& base) const noexcept;
 
   private:
     token m_cmd;

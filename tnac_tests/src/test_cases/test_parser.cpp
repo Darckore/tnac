@@ -131,11 +131,10 @@ namespace tnac_tests
 
       struct cmd_checker
       {
-        using params_t = std::span<const tnac::tok_kind>;
+        using params_t = tree::command::descr;
         using res_t = tree::command::verification_result;
 
-        cmd_checker(parse_helper& ph, tnac::string_t cmd, params_t params, res_t res) noexcept :
-          cmdName{ cmd },
+        cmd_checker(parse_helper& ph, const params_t& params, res_t res) noexcept :
           expParams{ params },
           expRes{ res }
         {
@@ -144,15 +143,12 @@ namespace tnac_tests
 
         void on_command(tree::command cmd) noexcept
         {
-          EXPECT_EQ(cmd.name(), cmdName);
-
           auto ver = cmd.verify(expParams);
           EXPECT_EQ(expRes.m_diff, ver.m_diff);
           EXPECT_EQ(expRes.m_res, ver.m_res);
         }
 
-        tnac::string_t cmdName;
-        params_t expParams;
+        const params_t& expParams;
         res_t expRes{};
       };
 
@@ -193,11 +189,11 @@ namespace tnac_tests
         p.parser(input);
       }
 
-      void check_command(tnac::string_t input, tnac::string_t name,
-                         cmd_checker::params_t params, cmd_checker::res_t res) noexcept
+      void check_command(tnac::string_t input, const cmd_checker::params_t& params,
+                         cmd_checker::res_t res) noexcept
       {
         parse_helper p;
-        cmd_checker checker{ p, name, params, res };
+        cmd_checker checker{ p, params, res };
         p.parser(input);
       }
     }
@@ -527,15 +523,22 @@ namespace tnac_tests
     using enum cmd::verification;
     using enum tnac::tok_kind;
     using param_list = std::vector<tnac::tok_kind>;
+    using descr = cmd::descr;
     using detail::check_command;
 
     param_list params{ String, String, IntDec, IntBin };
     static constexpr auto cmdName = "example"sv;
+
+    descr expected{
+      cmdName,
+      params,
+      params.size()
+    };
     
-    check_command("#example 'Hai' 'this is a ' 1 0b11"sv, cmdName, params, { 0ull, Correct });
-    check_command("#example 'Hai' 'this is a ' 1"sv, cmdName, params, { 3ull, TooFew });
-    check_command("#example 'Hai' 'this is a ' 1 0b11 42"sv, cmdName, params, { 5ull, TooMany });
-    check_command("#example 'this is a ' 1 0b11 42"sv, cmdName, params, { 1ull, WrongKind });
+    check_command("#example 'Hai' 'this is a ' 1 0b11"sv, expected, { 0ull, Correct });
+    check_command("#example 'Hai' 'this is a ' 1"sv, expected, { 3ull, TooFew });
+    check_command("#example 'Hai' 'this is a ' 1 0b11 42"sv, expected, { 5ull, TooMany });
+    check_command("#example 'this is a ' 1 0b11 42"sv, expected, { 1ull, WrongKind });
   }
 
   TEST(parser, t_cmd_skip)

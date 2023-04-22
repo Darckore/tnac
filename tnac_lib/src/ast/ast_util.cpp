@@ -61,16 +61,17 @@ namespace tnac::ast
     return m_params.end();
   }
 
-  command::verification_result command::verify(param_baseline base) const noexcept
+  command::verification_result command::verify(const descr& base) const noexcept
   {
     verification_result res;
 
     const auto paramSize = param_count();
-    const auto baseSize  = base.size();
 
-    if (paramSize > baseSize)
+    if (base.m_name != name())
+      res.m_res = WrongName;
+    else if (paramSize > base.m_params.size())
       res.m_res = TooMany;
-    else if (paramSize < baseSize)
+    else if (paramSize < base.m_reqCount)
       res.m_res = TooFew;
 
     if (res.m_res != Correct)
@@ -80,7 +81,7 @@ namespace tnac::ast
       auto idx = size_type{};
       for ( ; idx < paramSize; ++idx)
       {
-        if((*this)[idx].is(base[idx]))
+        if((*this)[idx].is(base.m_params[idx]))
           continue;
 
         res.m_res = WrongKind;
