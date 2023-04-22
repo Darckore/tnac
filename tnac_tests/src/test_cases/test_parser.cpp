@@ -129,29 +129,6 @@ namespace tnac_tests
         string_t expectedErr{};
       };
 
-      struct cmd_checker
-      {
-        using params_t = tree::command::descr;
-        using res_t = tree::command::verification_result;
-
-        cmd_checker(parse_helper& ph, const params_t& params, res_t res) noexcept :
-          expParams{ params },
-          expRes{ res }
-        {
-          ph.parser.on_command([this](auto cmd) noexcept { on_command(std::move(cmd)); });
-        }
-
-        void on_command(tree::command cmd) noexcept
-        {
-          auto ver = cmd.verify(expParams);
-          EXPECT_EQ(expRes.m_diff, ver.m_diff);
-          EXPECT_EQ(expRes.m_res, ver.m_res);
-        }
-
-        const params_t& expParams;
-        res_t expRes{};
-      };
-
       template <node_kind kind, std::size_t N>
       void check_simple_exprs(const std::array<string_t, N>& inputs)
       {
@@ -186,14 +163,6 @@ namespace tnac_tests
       {
         parse_helper p;
         error_checker checker{ p, errMsg };
-        p.parser(input);
-      }
-
-      void check_command(tnac::string_t input, const cmd_checker::params_t& params,
-                         cmd_checker::res_t res) noexcept
-      {
-        parse_helper p;
-        cmd_checker checker{ p, params, res };
         p.parser(input);
       }
     }
@@ -515,32 +484,7 @@ namespace tnac_tests
     check_error("1 + a"sv, "Undefined identifier"sv);
     check_error("2*(1 + 2"sv, "Expected ')'"sv);
   }
-
-  TEST(parser, t_commands)
-  {
-    using cmd = tnac::ast::command;
-    using ver = cmd::verification_result;
-    using enum cmd::verification;
-    using enum tnac::tok_kind;
-    using param_list = std::vector<tnac::tok_kind>;
-    using descr = cmd::descr;
-    using detail::check_command;
-
-    param_list params{ String, String, IntDec, IntBin };
-    static constexpr auto cmdName = "example"sv;
-
-    descr expected{
-      cmdName,
-      params,
-      params.size()
-    };
-    
-    check_command("#example 'Hai' 'this is a ' 1 0b11"sv, expected, { 0ull, Correct });
-    check_command("#example 'Hai' 'this is a ' 1"sv, expected, { 3ull, TooFew });
-    check_command("#example 'Hai' 'this is a ' 1 0b11 42"sv, expected, { 5ull, TooMany });
-    check_command("#example 'this is a ' 1 0b11 42"sv, expected, { 1ull, WrongKind });
-  }
-
+  
   TEST(parser, t_cmd_skip)
   {
     using enum tnac::ast::node_kind;

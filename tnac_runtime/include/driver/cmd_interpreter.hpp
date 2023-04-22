@@ -4,7 +4,6 @@
 
 #pragma once
 #include "ast/ast_util.hpp"
-#include "driver/cmd/commands.hpp"
 
 namespace tnac_rt
 {
@@ -13,6 +12,18 @@ namespace tnac_rt
     template <typename F>
     concept err_handler = std::is_nothrow_invocable_r_v<void, F, const tnac::token&, tnac::string_t>;
   }
+
+  //
+  // Indicates whether or not a command passes verification
+  //
+  enum class verification : std::uint8_t
+  {
+    Correct,
+    WrongName,
+    TooFew,
+    TooMany,
+    WrongKind
+  };
 
   //
   // Interprets commands and calls the specified callbacks subscribed to them
@@ -54,7 +65,6 @@ namespace tnac_rt
     void on_error(cmd_ref command) noexcept;
 
   private:
-    commands::classifier m_classifier;
     err_handler_t m_errHandler{};
   };
 }

@@ -65,49 +65,6 @@ namespace tnac::ast
     using param_baseline = std::span<const tok_kind>;
 
   public:
-    //
-    // Indicates whether or not this command passes verification
-    //
-    enum class verification : std::uint8_t
-    {
-      Correct,
-      WrongName,
-      TooFew,
-      TooMany,
-      WrongKind
-    };
-
-    using enum verification;
-
-    //
-    // Command descriptor
-    // 
-    // Specifies the command name and parameter list
-    // Some parameters can be optional
-    //
-    struct descr
-    {
-      string_t m_name;
-      param_baseline m_params;
-      size_type m_reqCount{};
-    };
-
-    //
-    // Verification result
-    // 
-    // If verification equals WrongKind, m_diff contains the index of the
-    // first parameter which failed the check
-    // 
-    // Otherwise, if verification equals TooFew or TooMany, m_diff
-    // contains the actual number of parameters
-    //
-    struct verification_result
-    {
-      size_type m_diff{};
-      verification m_res{};
-    };
-
-  public:
     CLASS_SPECIALS_NODEFAULT(command);
 
     ~command() noexcept;
@@ -146,12 +103,6 @@ namespace tnac::ast
     // End iterator to the param list
     //
     iterator end() const noexcept;
-
-    //
-    // Verifies command structure (the number and kinds of params)
-    // Returns a verification_result instance
-    //
-    verification_result verify(const descr& base) const noexcept;
 
   private:
     token m_cmd;

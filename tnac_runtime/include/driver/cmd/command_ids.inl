@@ -1,4 +1,0 @@
-Unknown,
-
-// Basic commands
-Exit,

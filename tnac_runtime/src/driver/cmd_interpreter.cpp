@@ -12,59 +12,89 @@ namespace tnac_rt
 
   void cmd::on_command(value_type command) noexcept
   {
-    using enum commands::cmd_id;
-    const auto cmdId = m_classifier.verify(command);
-    
-    if (cmdId == Unknown)
-    {
-      on_error(command);
-      return;
-    }
+    utils::unused(command);
   }
 
   // Private members
 
-  void cmd::on_error(cmd_ref command) noexcept
+  /*
+    Old code from command:
+
+  command::verification_result command::verify(const descr& base) const noexcept
   {
-    if (!m_errHandler)
-      return;
+    verification_result res;
 
-    auto verRes = m_classifier.last_result();
-    using enum value_type::verification;
+    const auto paramSize = param_count();
 
-    if (verRes.m_res == Correct)
-      return;
+    if (base.m_name != name())
+      res.m_res = WrongName;
+    else if (paramSize > base.m_params.size())
+      res.m_res = TooMany;
+    else if (paramSize < base.m_reqCount)
+      res.m_res = TooFew;
 
-    tnac::string_t msg{};
-    const tnac::token* pos{};
-
-    switch (verRes.m_res)
+    if (res.m_res != Correct)
+      res.m_diff = paramSize;
+    else
     {
-    case WrongName:
-      pos = &command.pos();
-      msg = "Unrecognised command"sv;
-      break;
+      auto idx = size_type{};
+      for ( ; idx < paramSize; ++idx)
+      {
+        if((*this)[idx].is(base.m_params[idx]))
+          continue;
 
-    case TooFew:
-      pos = !verRes.m_diff ? &command.pos() : &command[verRes.m_diff - 1];
-      msg = "Too few parameters"sv;
-      break;
-
-    case TooMany:
-      pos = &command[verRes.m_diff - 1];
-      msg = "Too many parameters"sv;
-      break;
-
-    case WrongKind:
-      pos = &command[verRes.m_diff];
-      msg = "Wrong parameter type"sv;
-      break;
-
-    default:
-      UTILS_ASSERT(false);
-      return;
+        res.m_res = WrongKind;
+        res.m_diff = idx;
+        break;
+      }
     }
 
-    m_errHandler(*pos, msg);
+    return res;
+  }
+  */
+
+  void cmd::on_error(cmd_ref command) noexcept
+  {
+    utils::unused(command);
+    //if (!m_errHandler)
+    //  return;
+
+    //auto verRes = m_classifier.last_result();
+    //using enum value_type::verification;
+
+    //if (verRes.m_res == Correct)
+    //  return;
+
+    //tnac::string_t msg{};
+    //const tnac::token* pos{};
+
+    //switch (verRes.m_res)
+    //{
+    //case WrongName:
+    //  pos = &command.pos();
+    //  msg = "Unrecognised command"sv;
+    //  break;
+
+    //case TooFew:
+    //  pos = !verRes.m_diff ? &command.pos() : &command[verRes.m_diff - 1];
+    //  msg = "Too few parameters"sv;
+    //  break;
+
+    //case TooMany:
+    //  pos = &command[verRes.m_diff - 1];
+    //  msg = "Too many parameters"sv;
+    //  break;
+
+    //case WrongKind:
+    //  pos = &command[verRes.m_diff];
+    //  msg = "Wrong parameter type"sv;
+    //  break;
+
+    //default:
+    //  UTILS_ASSERT(false);
+    //  return;
+    //}
+
+    //m_errHandler(*pos, msg);
   }
 }
