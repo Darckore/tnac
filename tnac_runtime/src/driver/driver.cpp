@@ -121,10 +121,18 @@ namespace tnac_rt
 
   void driver::init_commands() noexcept
   {
+    using enum tnac::tok_kind;
+    using params = tnac::commands::descr::param_list;
+    using size_type = params::size_type;
+
     m_commands.declare("exit"sv,   [this](auto  ) noexcept { on_exit(); });
     m_commands.declare("result"sv, [this](auto  ) noexcept { print_result(); });
-    m_commands.declare("list"sv,   [this](auto c) noexcept { list_code(std::move(c)); });
-    m_commands.declare("ast"sv,    [this](auto c) noexcept { print_ast(std::move(c)); });
+    
+    m_commands.declare("list"sv, params{ String }, size_type{},
+                       [this](auto c) noexcept { list_code(std::move(c)); });
+    
+    m_commands.declare("ast"sv, params{ String }, size_type{},
+                       [this](auto c) noexcept { print_ast(std::move(c)); });
   }
 
   void driver::parse(tnac::buf_t input, bool interactive) noexcept

@@ -61,22 +61,22 @@ namespace tnac::commands
     ~descr() noexcept = default;
 
     template <detail::cmd_handler F>
-    descr(F&& handler, param_list params, size_type req) noexcept :
+    descr(param_list params, size_type req, F&& handler) noexcept :
       m_params{ std::move(params) },
       m_reqCount{ req },
       m_cmdHandler{ std::forward<F>(handler) }
     {}
 
     template <detail::cmd_handler F>
-    descr(F&& handler, param_list params) noexcept :
-      descr{ std::forward<F>(handler), std::move(params), size_type{} }
+    descr(param_list params, F&& handler) noexcept :
+      descr{ std::move(params), size_type{}, std::forward<F>(handler) }
     {
       m_reqCount = m_params.size();
     }
 
     template <detail::cmd_handler F>
     descr(F&& handler) noexcept :
-      descr{ std::forward<F>(handler), param_list{}, size_type{} }
+      descr{ param_list{}, size_type{}, std::forward<F>(handler) }
     {}
 
   public:
