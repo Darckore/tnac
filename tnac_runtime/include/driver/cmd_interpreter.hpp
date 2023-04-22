@@ -17,7 +17,6 @@ namespace tnac_rt
   //
   // Interprets commands and calls the specified callbacks subscribed to them
   //
-  template <detail::command_id ID>
   class cmd
   {
   public:
@@ -25,7 +24,7 @@ namespace tnac_rt
     using value_type    = tnac::ast::command;
     using cmd_ptr       = const value_type*;
     using cmd_ref       = const value_type&;
-    using cmd_store     = commands::store<ID>;
+    using cmd_store     = commands::store;
 
   public:
     CLASS_SPECIALS_NONE(cmd);

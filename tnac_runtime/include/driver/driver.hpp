@@ -14,16 +14,6 @@
 namespace tnac_rt
 {
   //
-  // Command ids specified by this driver
-  //
-  enum class cmd_id : std::uint8_t
-  {
-    Exit,
-    Ast,
-    Result
-  };
-
-  //
   // System driver
   // Reads input and evaluates expressions
   //
@@ -46,9 +36,6 @@ namespace tnac_rt
     using parser      = tnac::parser;
     using val_reg     = tnac::eval::registry;
     using eval        = tnac::evaluator;
-    
-    using command_store = commands::store<cmd_id>;
-    using command_inerpreter = cmd<cmd_id>;
 
   public:
     CLASS_SPECIALS_NONE_CUSTOM(driver);
@@ -78,7 +65,12 @@ namespace tnac_rt
     //
     void on_exit() noexcept;
 
-  private:
+    //
+    // Prints evaluation result of the last operation
+    //
+    void print_result() noexcept;
+
+  private: // Utility
     //
     // Returns a reference to the in stream
     //
@@ -104,11 +96,6 @@ namespace tnac_rt
     //
     void parse(tnac::buf_t input, bool interactive) noexcept;
 
-    //
-    // Prints evaluation result of the last operation
-    //
-    void print_result() noexcept;
-
   private:
     ast_builder m_builder;
     sema m_sema;
@@ -117,8 +104,8 @@ namespace tnac_rt
     parser m_parser;
     src_manager m_srcMgr;
 
-    command_store m_commands;
-    command_inerpreter m_cmd;
+    commands::store m_commands;
+    cmd m_cmd;
 
     in_stream*  m_in { &std::cin };
     out_stream* m_out{ &std::cout };

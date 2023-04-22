@@ -78,6 +78,14 @@ namespace tnac_rt
     m_running = false;
   }
 
+  void driver::print_result() noexcept
+  {
+    out::value_printer vp;
+    vp(m_registry.evaluation_result(), out());
+    out() << "\n\n";
+  }
+
+  // Utility
 
   in_stream& driver::in() noexcept
   {
@@ -94,7 +102,8 @@ namespace tnac_rt
 
   void driver::init_commands() noexcept
   {
-    m_commands.declare("exit"sv, cmd_id::Exit, [this](auto) noexcept { on_exit(); });
+    m_commands.declare("exit"sv,   [this](auto) noexcept { on_exit(); });
+    m_commands.declare("result"sv, [this](auto) noexcept { print_result(); });
   }
 
   void driver::parse(tnac::buf_t input, bool interactive) noexcept
@@ -108,7 +117,6 @@ namespace tnac_rt
       ast = m_parser.root();
 
     ev(ast);
-    print_result();
 
 #if 0
     out::ast_printer pr;
@@ -119,12 +127,5 @@ namespace tnac_rt
     ls(m_parser.root(), out());
     out() << '\n';
 #endif
-  }
-
-  void driver::print_result() noexcept
-  {
-    out::value_printer vp;
-    vp(m_registry.evaluation_result(), out());
-    out() << "\n\n";
   }
 }
