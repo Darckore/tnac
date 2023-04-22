@@ -169,6 +169,9 @@ namespace tnac_rt
 
   void driver::try_redirect_output(const tnac::token& pathTok) noexcept
   {
+    if (pathTok.m_value.empty())
+      return;
+
     fsys::path outPath{ pathTok.m_value };
     m_outFile.open(outPath);
     if (!m_outFile)
