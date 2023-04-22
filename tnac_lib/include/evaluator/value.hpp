@@ -93,7 +93,7 @@ namespace tnac::eval
   // |  id  ||   address in memory     |
   // -------- --------------------------
   //
-  class value
+  class value final
   {
   public:
     using value_type = std::uintptr_t;

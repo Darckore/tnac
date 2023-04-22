@@ -16,7 +16,7 @@ namespace tnac::ast
   // Error expression
   // Built instead of other expressions in cases where syntax errors arise
   //
-  class error_expr : public expr
+  class error_expr final : public expr
   {
   private:
     friend class builder;

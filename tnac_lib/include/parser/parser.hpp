@@ -69,7 +69,7 @@ namespace tnac
   //
   // Parser for the input
   //
-  class parser
+  class parser final
   {
   public:
     using value_type = ast::node;

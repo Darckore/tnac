@@ -47,7 +47,7 @@ namespace tnac::commands
   //
   // Command descriptor
   //
-  class descr
+  class descr final
   {
   public:
     using param_list = std::vector<tok_kind>;
@@ -111,7 +111,7 @@ namespace tnac::commands
   // Storage for commands
   // This is initied by whoever is interested in defining a custom command set
   //
-  class store
+  class store final
   {
   public:
     using name_type  = string_t;

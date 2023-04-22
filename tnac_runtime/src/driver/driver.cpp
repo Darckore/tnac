@@ -208,7 +208,7 @@ namespace tnac_rt
                        [this](auto c) noexcept { print_vars(std::move(c)); });
   }
 
-  void driver::store_var(symbol_ref var) noexcept
+  void driver::store_var(variable_ref var) noexcept
   {
     m_vars.push_back(&var);
   }

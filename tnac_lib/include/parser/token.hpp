@@ -17,7 +17,7 @@ namespace tnac
   //
   // Token used to represent lexemes
   //
-  struct token
+  struct token final
   {
     using kind = tok_kind;
     using enum kind;

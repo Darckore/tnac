@@ -10,7 +10,7 @@ namespace tnac::eval
   //
   // Stores instances of values used in evaluations
   //
-  class registry
+  class registry final
   {
   public:
     using value_type = value;

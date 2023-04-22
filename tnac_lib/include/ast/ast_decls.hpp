@@ -83,7 +83,7 @@ namespace tnac::ast
   //
   // Decl expression. Holds the declarator corresponding to the declared entity
   //
-  class decl_expr : public expr
+  class decl_expr final : public expr
   {
   private:
     friend class builder;
@@ -117,7 +117,7 @@ namespace tnac::ast
   //
   // Variable declarator
   //
-  class var_decl : public decl
+  class var_decl final : public decl
   {
   private:
     friend class builder;

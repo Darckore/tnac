@@ -33,9 +33,10 @@ namespace tnac_rt
   public:
     using ast_builder = tnac::ast::builder;
     using sema        = tnac::sema;
-    using symbol_ptr  = const tnac::semantics::symbol*;
-    using symbol_ref  = const tnac::semantics::symbol&;
-    using sym_collection = std::vector<symbol_ptr>;
+    
+    using variable_ptr  = const tnac::semantics::variable*;
+    using variable_ref  = const tnac::semantics::variable&;
+    using var_collection = std::vector<variable_ptr>;
 
     using parser      = tnac::parser;
     using val_reg     = tnac::eval::registry;
@@ -128,7 +129,7 @@ namespace tnac_rt
     //
     // Stores a variable
     //
-    void store_var(symbol_ref var) noexcept;
+    void store_var(variable_ref var) noexcept;
 
     //
     // Parses input and executes commands
@@ -152,7 +153,7 @@ namespace tnac_rt
 
     std::ofstream m_outFile{};
 
-    sym_collection m_vars;
+    var_collection m_vars;
 
     bool m_running{};
   };

@@ -10,7 +10,7 @@ namespace tnac::ast
   //
   // Creates and manages lifetime of AST nodes
   //
-  class builder
+  class builder final
   {
   public:
     using base_node = node;

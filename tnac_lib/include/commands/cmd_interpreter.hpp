@@ -11,7 +11,7 @@ namespace tnac
   //
   // Interprets commands and calls the specified callbacks subscribed to them
   //
-  class cmd
+  class cmd final
   {
   public:
     using err_handler_t = std::function<void(const token&, string_t)>;

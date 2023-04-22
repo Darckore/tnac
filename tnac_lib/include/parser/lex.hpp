@@ -10,7 +10,7 @@ namespace tnac
   //
   // Lexer for the input parser
   //
-  class lex
+  class lex final
   {
   public:
     using value_type = string_t;

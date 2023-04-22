@@ -16,7 +16,7 @@ namespace tnac::semantics
   //
   // Symbol table. Stores symbols associated to names in respect with their scopes
   //
-  class sym_table
+  class sym_table final
   {
   private:
     template <typename T>

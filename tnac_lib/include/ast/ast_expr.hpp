@@ -57,7 +57,7 @@ namespace tnac::ast
   // Corresponds to the _result keyword
   // Holds the last evaluated value
   //
-  class result_expr : public expr
+  class result_expr final : public expr
   {
   private:
     friend class builder;
@@ -76,7 +76,7 @@ namespace tnac::ast
   // Literal expression
   // Corresponds to any value literals of supported types
   //
-  class lit_expr : public expr
+  class lit_expr final : public expr
   {
   private:
     friend class builder;
@@ -95,7 +95,7 @@ namespace tnac::ast
   // Id expression
   // Corresponds to references to any previously declared entities
   //
-  class id_expr : public expr
+  class id_expr final : public expr
   {
   private:
     friend class builder;
@@ -135,7 +135,7 @@ namespace tnac::ast
   // Unary expression
   // Provides info on the corresponding unary operator and its operand expression
   //
-  class unary_expr : public expr
+  class unary_expr final : public expr
   {
   private:
     friend class builder;
@@ -234,7 +234,7 @@ namespace tnac::ast
   // left returns the assigned-to expr
   // right returns the assigned-from expr
   //
-  class assign_expr : public binary_expr
+  class assign_expr final : public binary_expr
   {
   private:
     friend class builder;
@@ -253,7 +253,7 @@ namespace tnac::ast
   // Paren expression
   // Represents any expression enclosed in parentheses
   //
-  class paren_expr : public expr
+  class paren_expr final : public expr
   {
   private:
     friend class builder;

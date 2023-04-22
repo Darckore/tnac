@@ -97,7 +97,7 @@ namespace tnac::semantics
   //
   // Symbol corresponding to a variable
   //
-  class variable : public symbol
+  class variable final : public symbol
   {
   private:
     friend class sym_table;

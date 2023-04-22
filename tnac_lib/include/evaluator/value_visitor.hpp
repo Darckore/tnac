@@ -74,7 +74,7 @@ namespace tnac::eval
   //
   // Value visitor used in expression evaluations
   //
-  class value_visitor
+  class value_visitor final
   {
   public:
     using enum val_ops;

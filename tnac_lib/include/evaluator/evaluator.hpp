@@ -13,7 +13,7 @@ namespace tnac
   // Evaluator for expressions
   // Visits the provided ast node bottom-up (children first)
   //
-  class evaluator : public ast::bottom_up_visitor<evaluator>
+  class evaluator final : public ast::bottom_up_visitor<evaluator>
   {
   public:
     CLASS_SPECIALS_NONE(evaluator);
