@@ -90,11 +90,15 @@ namespace tnac_rt
 
   void driver::list_code(command c) noexcept
   {
-    utils::unused(c);
-    out() << '\n';
+    tnac::value_guard _{ m_out };
+    if (c.param_count())
+    {
+      try_redirect_output(c[size_type{}]);
+    }
+
     out::lister ls;
     ls(m_parser.root(), out());
-    out() << '\n';
+    end_redirect();
   }
 
   void driver::print_ast(command c) noexcept
@@ -116,17 +120,25 @@ namespace tnac_rt
     };
 
     auto ast = toPrint(c);
+    tnac::value_guard _{ m_out };
+    if (c.param_count())
+    {
+      try_redirect_output(c[size_type{}]);
+    }
 
-    out() << '\n';
     out::ast_printer pr;
     pr(ast, out());
-    out() << '\n';
+    end_redirect();
   }
 
   void driver::print_vars(command c) noexcept
   {
-    utils::unused(c);
-    out() << '\n';
+    tnac::value_guard _{ m_out };
+    if (c.param_count())
+    {
+      try_redirect_output(c[size_type{}]);
+    }
+
     if (m_vars.empty())
       out() << "<none>";
 
@@ -137,7 +149,7 @@ namespace tnac_rt
       vp(var->value(), out());
       out() << '\n';
     }
-    out() << '\n';
+    end_redirect();
   }
 
   // Utility
@@ -153,6 +165,25 @@ namespace tnac_rt
   out_stream& driver::err() noexcept
   {
     return *m_err;
+  }
+
+  void driver::try_redirect_output(const tnac::token& pathTok) noexcept
+  {
+    fsys::path outPath{ pathTok.m_value };
+    m_outFile.open(outPath);
+    if (!m_outFile)
+    {
+      m_srcMgr.on_error(pathTok, "Failed to open output file"sv);
+      return;
+    }
+
+    m_out = &m_outFile;
+  }
+
+  void driver::end_redirect() noexcept
+  {
+    if (m_outFile)
+      m_outFile.close();
   }
 
   void driver::init_commands() noexcept

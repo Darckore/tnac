@@ -108,6 +108,19 @@ namespace tnac_rt
     out_stream& err() noexcept;
 
     //
+    // Attempts to open a file by a filename stored in the given token
+    // If successful, sets the output stream
+    // Otherwise, issues an error and leaves the current stream intact
+    // The caller must maintain a value guard to restore the previous out stream
+    //
+    void try_redirect_output(const tnac::token& pathTok) noexcept;
+
+    //
+    // Cloases the temporary output file (if applicable)
+    //
+    void end_redirect() noexcept;
+
+    //
     // Declares supported commands
     //
     void init_commands() noexcept;
@@ -136,6 +149,8 @@ namespace tnac_rt
     in_stream*  m_in { &std::cin };
     out_stream* m_out{ &std::cout };
     out_stream* m_err{ &std::cerr };
+
+    std::ofstream m_outFile{};
 
     sym_collection m_vars;
 
