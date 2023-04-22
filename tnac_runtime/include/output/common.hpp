@@ -25,7 +25,7 @@ namespace tnac_rt::out
   //
   // Value printer
   //
-  class value_printer
+  class value_printer final
   {
   public:
     CLASS_SPECIALS_NONE_CUSTOM(value_printer);

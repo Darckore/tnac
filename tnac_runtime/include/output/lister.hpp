@@ -10,7 +10,7 @@ namespace tnac_rt::out
   //
   // Prints the source code corresponding to an ast node
   //
-  class lister
+  class lister final
   {
   public:
     CLASS_SPECIALS_NONE_CUSTOM(lister);

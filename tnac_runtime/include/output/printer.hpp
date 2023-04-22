@@ -11,7 +11,7 @@ namespace tnac_rt::out
   // Printer for AST
   // Visits each node top to bottom and prints it into the specified stream
   //
-  class ast_printer : public printer_base<ast_printer>
+  class ast_printer final : public printer_base<ast_printer>
   {
   public:
     CLASS_SPECIALS_NONE_CUSTOM(ast_printer);

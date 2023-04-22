@@ -17,7 +17,7 @@ namespace tnac_rt
   // System driver
   // Reads input and evaluates expressions
   //
-  class driver
+  class driver final
   {
   public:
     //

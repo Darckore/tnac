@@ -17,7 +17,7 @@ namespace tnac_rt
   //
   // Manages the input buffer and reports errors
   //
-  class src_manager
+  class src_manager final
   {
   public:
     //
