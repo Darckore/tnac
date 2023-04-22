@@ -4,6 +4,7 @@
 
 #pragma once
 #include "ast/ast_util.hpp"
+#include "driver/cmd/commands.hpp"
 
 namespace tnac_rt
 {
@@ -14,20 +15,9 @@ namespace tnac_rt
   }
 
   //
-  // Indicates whether or not a command passes verification
-  //
-  enum class verification : std::uint8_t
-  {
-    Correct,
-    WrongName,
-    TooFew,
-    TooMany,
-    WrongKind
-  };
-
-  //
   // Interprets commands and calls the specified callbacks subscribed to them
   //
+  template <detail::command_id ID>
   class cmd
   {
   public:
@@ -72,5 +62,6 @@ namespace tnac_rt
 
   private:
     err_handler_t m_errHandler{};
+    commands::store<ID> m_cmdStore;
   };
 }

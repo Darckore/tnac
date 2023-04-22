@@ -14,6 +14,16 @@
 namespace tnac_rt
 {
   //
+  // Command ids specified by this driver
+  //
+  enum class cmd_id : std::uint8_t
+  {
+    Exit,
+    Ast,
+    Result
+  };
+
+  //
   // System driver
   // Reads input and evaluates expressions
   //
@@ -92,7 +102,7 @@ namespace tnac_rt
 
     parser m_parser;
     src_manager m_srcMgr;
-    cmd m_cmd;
+    cmd<cmd_id> m_cmd;
 
     in_stream*  m_in { &std::cin };
     out_stream* m_out{ &std::cout };
