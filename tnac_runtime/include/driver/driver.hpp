@@ -69,6 +69,12 @@ namespace tnac_rt
     //
     driver& set_ostream(out_stream& stream) noexcept;
 
+  private: // Command handlers
+    //
+    // #exit
+    //
+    void on_exit() noexcept;
+
   private:
     //
     // Returns a reference to the in stream

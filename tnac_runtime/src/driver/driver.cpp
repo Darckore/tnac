@@ -71,6 +71,14 @@ namespace tnac_rt
 
   // Private members
 
+  // Command handlers
+
+  void driver::on_exit() noexcept
+  {
+    m_running = false;
+  }
+
+
   in_stream& driver::in() noexcept
   {
     return *m_in;
@@ -86,7 +94,7 @@ namespace tnac_rt
 
   void driver::init_commands() noexcept
   {
-    m_commands.declare("exit"sv, cmd_id::Exit);
+    m_commands.declare("exit"sv, cmd_id::Exit, [this](auto) noexcept { on_exit(); });
   }
 
   void driver::parse(tnac::buf_t input, bool interactive) noexcept

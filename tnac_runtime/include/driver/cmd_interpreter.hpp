@@ -42,7 +42,16 @@ namespace tnac_rt
     //
     void on_command(value_type command) noexcept
     {
-      utils::unused(command);
+      using enum commands::verification;
+      auto descr = m_cmdStore.find(command.name());
+      if (!descr)
+      {
+        on_error(command, WrongName);
+        return;
+      }
+
+      // todo: verification
+      descr->handler()(std::move(command));
     }
 
     //
@@ -58,9 +67,12 @@ namespace tnac_rt
     //
     // Produces an error
     //
-    void on_error(cmd_ref command) noexcept
+    void on_error(cmd_ref command, commands::verification reason) noexcept
     {
-      utils::unused(command);
+      if (!m_errHandler)
+        return;
+
+      utils::unused(command, reason);
     }
 
   private:
