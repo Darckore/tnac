@@ -22,16 +22,19 @@ namespace tnac_rt
   {
   public:
     using err_handler_t = std::function<void(const tnac::token&, tnac::string_t)>;
-    using value_type = tnac::ast::command;
-    using cmd_ptr = const value_type*;
-    using cmd_ref = const value_type&;
+    using value_type    = tnac::ast::command;
+    using cmd_ptr       = const value_type*;
+    using cmd_ref       = const value_type&;
+    using cmd_store     = commands::store<ID>;
 
   public:
-    CLASS_SPECIALS_NONE_CUSTOM(cmd);
+    CLASS_SPECIALS_NONE(cmd);
 
     ~cmd() noexcept = default;
 
-    cmd() noexcept = default;
+    cmd(cmd_store& store) noexcept :
+      m_cmdStore{ store }
+    {}
 
   public:
     //
@@ -62,6 +65,6 @@ namespace tnac_rt
 
   private:
     err_handler_t m_errHandler{};
-    commands::store<ID> m_cmdStore;
+    cmd_store& m_cmdStore;
   };
 }

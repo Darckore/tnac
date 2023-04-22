@@ -86,6 +86,11 @@ namespace tnac_rt
     out_stream& err() noexcept;
 
     //
+    // Declares supported commands
+    //
+    void init_commands() noexcept;
+
+    //
     // Parses input and executes commands
     //
     void parse(tnac::buf_t input, bool interactive) noexcept;
@@ -102,6 +107,8 @@ namespace tnac_rt
 
     parser m_parser;
     src_manager m_srcMgr;
+
+    commands::store<cmd_id> m_commands;
     cmd<cmd_id> m_cmd;
 
     in_stream*  m_in { &std::cin };

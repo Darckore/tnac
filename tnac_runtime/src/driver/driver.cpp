@@ -7,12 +7,15 @@ namespace tnac_rt
   // Special members
 
   driver::driver() noexcept :
-    m_parser{ m_builder, m_sema }
+    m_parser{ m_builder, m_sema },
+    m_cmd{ m_commands }
   {
     m_cmd.on_error([this](auto&& tok, auto msg) noexcept { m_srcMgr.on_error(tok, msg); });
 
     m_parser.on_error([this](auto&& err) noexcept { m_srcMgr.on_parse_error(err); });
     m_parser.on_command([this](auto command) noexcept { m_cmd.on_command(std::move(command)); });
+
+    init_commands();
   }
 
 
@@ -79,6 +82,11 @@ namespace tnac_rt
   out_stream& driver::err() noexcept
   {
     return *m_err;
+  }
+
+  void driver::init_commands() noexcept
+  {
+    m_commands.declare("exit"sv, cmd_id::Exit);
   }
 
   void driver::parse(tnac::buf_t input, bool interactive) noexcept

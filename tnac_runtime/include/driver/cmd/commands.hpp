@@ -52,6 +52,10 @@ namespace tnac_rt::commands
       m_reqCount = m_params.size();
     }
 
+    descr(id_type id) noexcept :
+      descr{ id, param_list{}, size_type{} }
+    {}
+
   private:
     param_list m_params;
     size_type m_reqCount{};
@@ -72,12 +76,23 @@ namespace tnac_rt::commands
     using cmd_descr = descr<id_type>;
     using storage   = std::unordered_map<name_type, cmd_descr>;
 
-  private:
+  public:
     CLASS_SPECIALS_NONE_CUSTOM(store);
 
     ~store() noexcept = default;
 
     store() noexcept = default;
+
+  public:
+    //
+    // Declares a command with the specified name and parameters
+    // Subsequent additions overwrite the existing records
+    //
+    template <typename ...Args>
+    void declare(name_type name, id_type id, Args&& ...args) noexcept
+    {
+      m_cmds.insert_or_assign(name, id, std::forward<Args>(args)...);
+    }
 
   private:
     storage m_cmds;
