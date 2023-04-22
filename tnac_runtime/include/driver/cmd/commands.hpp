@@ -112,7 +112,7 @@ namespace tnac_rt::commands
     template <detail::cmd_handler F, typename ...Args>
     void declare(name_type name, id_type id, F&& handler, Args&& ...args) noexcept
     {
-      m_cmds.insert_or_assign(name, descr{ std::forward<F>(handler), id, std::forward<Args>(args)... });
+      m_cmds.insert_or_assign(name, cmd_descr{ std::forward<F>(handler), id, std::forward<Args>(args)... });
     }
 
     //
