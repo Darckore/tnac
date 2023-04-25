@@ -72,7 +72,7 @@ namespace tnac::eval
   }
 
   template <detail::expr_result T>
-  constexpr auto id_from_type = detail::id_from_type<T>::value;
+  inline constexpr auto id_from_type = detail::id_from_type<T>::value;
 
   template <type_id TI>
   using type_from_id = detail::type_from_id<TI>::type;

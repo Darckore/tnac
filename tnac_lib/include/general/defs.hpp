@@ -204,13 +204,13 @@ namespace tnac
   }
 
   template <typename T1, typename T2>
-  constexpr auto is_same_noquals_v = detail::is_same_noquals<T1, T2>::value;
+  inline constexpr auto is_same_noquals_v = detail::is_same_noquals<T1, T2>::value;
 
   template <typename First, typename ...Others>
-  constexpr auto is_any_v = detail::is_any<First, Others...>::value;
+  inline constexpr auto is_any_v = detail::is_any<First, Others...>::value;
 
   template <typename First, typename ...Others>
-  constexpr auto is_all_v = detail::is_all<First, Others...>::value;
+  inline constexpr auto is_all_v = detail::is_all<First, Others...>::value;
 
   template <typename T1, typename T2>
   using common_type_t = detail::common_type<T1, T2>::type;

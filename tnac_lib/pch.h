@@ -12,6 +12,8 @@
 #include <string>
 #include <string_view>
 
+#include <complex>
+
 #include <array>
 #include <vector>
 #include <map>

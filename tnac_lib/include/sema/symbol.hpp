@@ -147,7 +147,7 @@ namespace tnac::semantics
   }
 
   template <detail::sym S>
-  static constexpr auto kind_from_sym = detail::kind_from_sym<S>::value;
+  inline constexpr auto kind_from_sym = detail::kind_from_sym<S>::value;
 
   template <sym_kind K>
   using sym_from_kind = detail::sym_from_kind<K>::type;
