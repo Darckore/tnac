@@ -53,7 +53,7 @@ namespace tnac::ast
   {
     for (auto child : children)
     {
-      node::assume_ancestry(child);
+      assume_ancestry(child);
     }
 
     m_children.insert(m_children.end(), children.begin(), children.end());

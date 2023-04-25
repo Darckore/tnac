@@ -41,6 +41,7 @@
 *     result-expr
 *     literal-expr
 *     id-expr
+*     typed-expr
 *     '(' expr ')'
 * 
 *   declarator:
@@ -57,10 +58,15 @@
 * 
 *   literal-expr:
 *     number
-*     complex
 * 
-*   complex:
-*     _complex params
+*   typed-expr:
+*     type-name params
+* 
+*   type-name:
+*     type-keyword
+* 
+*   type-keyword: one of
+*     _complex
 * 
 *   params:
 *     '(' param-list ')'

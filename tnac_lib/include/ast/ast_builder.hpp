@@ -66,6 +66,11 @@ namespace tnac::ast
     id_expr* make_id(const token& tok, semantics::symbol& sym) noexcept;
 
     //
+    // Creates a typed expression
+    //
+    typed_expr* make_typed(const token& kw, typed_expr::param_list params) noexcept;
+
+    //
     // Creates a paren expression
     //
     paren_expr* make_paren(expr& e, const token& op) noexcept;

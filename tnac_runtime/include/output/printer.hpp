@@ -40,6 +40,8 @@ namespace tnac_rt::out
 
     void visit(const ast::paren_expr& expr) noexcept;
 
+    void visit(const ast::typed_expr& expr) noexcept;
+
     void visit(const ast::lit_expr& expr) noexcept;
 
     void visit(const ast::id_expr& expr) noexcept;

@@ -56,6 +56,10 @@ namespace tnac
       {
         return tok.is(token::ParenClose);
       }
+      constexpr auto is_comma(const token& tok) noexcept
+      {
+        return tok.is(token::Comma);
+      }
 
       constexpr auto is_expression_separator(const token& tok) noexcept
       {
@@ -65,6 +69,11 @@ namespace tnac
       constexpr auto is_command_name(const token& tok) noexcept
       {
         return tok.is(token::Command);
+      }
+
+      constexpr auto is_type_keyword(const token& tok) noexcept
+      {
+        return tok.is_any(token::KwComplex);
       }
 
       auto is_error_expr(ast::expr* expr) noexcept
@@ -365,6 +374,11 @@ namespace tnac
       return m_builder.make_literal(next_tok());
     }
 
+    if (detail::is_type_keyword(next))
+    {
+      return typed_expr();
+    }
+
     if (next.is(token::KwResult))
     {
       return m_builder.make_result(next_tok());
@@ -381,6 +395,41 @@ namespace tnac
     }
 
     return error_expr(next, "Expected expression"sv, true);
+  }
+
+  ast::expr* parser::typed_expr() noexcept
+  {
+    auto kw = next_tok();
+
+    if (!detail::is_open_paren(peek_next()))
+      return error_expr(next_tok(), "Expected parameter list"sv);
+
+    next_tok();
+    auto params = param_list();
+
+    if (!detail::is_close_paren(peek_next()))
+      return error_expr(next_tok(), "Expected ')'"sv);
+
+    next_tok();
+    return m_builder.make_typed(kw, std::move(params));
+  }
+
+  parser::expr_list parser::param_list() noexcept
+  {
+    expr_list res;
+
+    while (!peek_next().is_eol())
+    {
+      auto e = expr();
+      res.push_back(e);
+
+      if (!detail::is_comma(peek_next()))
+        break;
+
+      next_tok();
+    }
+
+    return res;
   }
 
   ast::expr* parser::id_expr() noexcept

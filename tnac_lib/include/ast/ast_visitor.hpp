@@ -252,6 +252,23 @@ namespace tnac::ast
     }
 
     //
+    // Visits a typed expression
+    //
+    void visit_impl(dest<typed_expr> typed) noexcept
+    {
+      if constexpr (is_top_down())
+        visit(typed);
+
+      for (auto param : typed->params())
+      {
+        visit_root(param);
+      }
+
+      if constexpr (is_bottom_up())
+        visit(typed);
+    }
+
+    //
     // Visits a variable reference expression
     //
     void visit_impl(dest<id_expr> id) noexcept
@@ -328,6 +345,10 @@ namespace tnac::ast
 
       case Paren:
         visit_impl(cast<node_t, paren_expr>(cur));
+        break;
+
+      case Typed:
+        visit_impl(cast<node_t, typed_expr>(cur));
         break;
 
       case Error:

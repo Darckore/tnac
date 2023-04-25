@@ -167,4 +167,33 @@ namespace tnac::ast
   {
     return FROM_CONST(internal_expr);
   }
+
+
+  // Typed expr
+
+  typed_expr::~typed_expr() noexcept = default;
+
+  typed_expr::typed_expr(const token& typeName, param_list params) noexcept :
+    expr{ kind::Typed, typeName },
+    m_params{ std::move(params) }
+  {
+    for (auto par : m_params)
+    {
+      assume_ancestry(par);
+    }
+  }
+
+  const token& typed_expr::type_name() const noexcept
+  {
+    return pos();
+  }
+
+  const typed_expr::param_list& typed_expr::params() const noexcept
+  {
+    return m_params;
+  }
+  typed_expr::param_list& typed_expr::params() noexcept
+  {
+    return FROM_CONST(params);
+  }
 }

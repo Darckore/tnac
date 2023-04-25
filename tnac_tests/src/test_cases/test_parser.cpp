@@ -65,6 +65,11 @@ namespace tnac_tests
           check_node(expr, "");
         }
 
+        void visit(const tree::typed_expr& expr) noexcept
+        {
+          check_node(expr, expr.type_name().m_value);
+        }
+
         void visit(const tree::lit_expr& expr) noexcept
         {
           check_node(expr, expr.pos().m_value);
@@ -367,6 +372,58 @@ namespace tnac_tests
       expected_node{  "+", Binary,  Binary },
       expected_node{  "1", Literal, Binary },
       expected_node{  "+", Binary,  Scope }
+    };
+
+    detail::check_tree_structute(exp, input);
+  }
+
+  TEST(parser, t_struct_typed)
+  {
+    using detail::expected_node;
+    using enum detail::node_kind;
+    constexpr auto input = "_complex(1,2)"sv;
+
+    /*
+         --'_complex'--
+        |              |
+        1              2
+    */
+
+    std::array exp{
+      expected_node{        "1", Literal, Typed },
+      expected_node{        "2", Literal, Typed },
+      expected_node{ "_complex", Typed,   Scope },
+    };
+
+    detail::check_tree_structute(exp, input);
+  }
+
+  TEST(parser, t_struct_complex_typed)
+  {
+    using detail::expected_node;
+    using enum detail::node_kind;
+    constexpr auto input = "_complex(1 + 2, 2 * 2 + 3)"sv;
+
+    /*
+               --'_complex'--
+              |              |
+           --'+'--        --'+'--
+          |       |      |       |
+          1       2   --'*'--    3
+                     |       |
+                     2       2
+    */
+
+    std::array exp{
+      expected_node{        "1", Literal, Binary },
+      expected_node{        "2", Literal, Binary },
+      expected_node{        "+", Binary,  Typed },
+      expected_node{        "2", Literal, Binary },
+      expected_node{        "2", Literal, Binary },
+      expected_node{        "*", Binary,  Binary },
+      expected_node{        "3", Literal, Binary },
+      expected_node{        "+", Binary,  Typed },
+      expected_node{ "_complex", Typed,   Scope },
     };
 
     detail::check_tree_structute(exp, input);

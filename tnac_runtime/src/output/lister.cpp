@@ -81,6 +81,10 @@ namespace tnac_rt::out
       print(to<ast::paren_expr>(*root));
       break;
 
+    case Typed:
+      print(to<ast::typed_expr>(*root));
+      break;
+
     case Result:
       print(to<ast::result_expr>(*root));
       break;
@@ -140,6 +144,26 @@ namespace tnac_rt::out
   {
     out() << '(';
     print(&expr.internal_expr());
+    out() << ") ";
+  }
+
+  void lister::print(const ast::typed_expr& expr) noexcept
+  {
+    print_token(expr.type_name(), false);
+    out() << "( ";
+
+    auto&& params = expr.params();
+    const auto size = params.size();
+    auto idx = std::size_t{};
+    for (auto param : expr.params())
+    {
+      print(param);
+      ++idx;
+
+      if (idx != size)
+        out() << ", ";
+    }
+
     out() << ") ";
   }
 

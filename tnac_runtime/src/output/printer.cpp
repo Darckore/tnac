@@ -86,6 +86,15 @@ namespace tnac_rt::out
     push_parent(1u);
   }
 
+  void ast_printer::visit(const ast::typed_expr& expr) noexcept
+  {
+    indent();
+    out() << "Typed expression";
+    print_token(expr.type_name());
+    endl();
+    push_parent(expr.params().size());
+  }
+
   void ast_printer::visit(const ast::lit_expr& expr) noexcept
   {
     indent();

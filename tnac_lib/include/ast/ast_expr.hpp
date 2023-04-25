@@ -283,4 +283,51 @@ namespace tnac::ast
     expr* m_expr{};
   };
 
+
+  //
+  // Typed expression
+  // Represents a value of the given type initialised by a parameter list
+  //
+  class typed_expr final : public expr
+  {
+  public:
+    using param = expr;
+    using pointer = param*;
+    using const_pointer = const param*;
+
+    using param_list = std::vector<pointer>;
+
+  private:
+    friend class builder;
+
+  public:
+    CLASS_SPECIALS_NONE(typed_expr);
+
+    virtual ~typed_expr() noexcept;
+
+  protected:
+    typed_expr(const token& typeName, param_list params) noexcept;
+
+  public:
+    //
+    // Returns the type name token
+    //
+    const token& type_name() const noexcept;
+
+    //
+    // Returns the param list
+    // 
+    // const version
+    //
+    const param_list& params() const noexcept;
+
+    //
+    // Returns the param list
+    //
+    param_list& params() noexcept;
+
+  private:
+    param_list m_params;
+  };
+
 }

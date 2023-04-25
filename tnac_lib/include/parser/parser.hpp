@@ -242,6 +242,16 @@ namespace tnac
     ast::expr* primary_expr() noexcept;
 
     //
+    // Parses a typed expr
+    //
+    ast::expr* typed_expr() noexcept;
+
+    //
+    // Parses a parameter list
+    //
+    expr_list param_list() noexcept;
+
+    //
     // Parses an id expression
     //
     ast::expr* id_expr() noexcept;
