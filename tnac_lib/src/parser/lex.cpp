@@ -62,9 +62,14 @@ namespace tnac
       {
         return is_paren_open(c) || is_paren_close(c);
       }
+      constexpr auto is_comma(char_t c) noexcept
+      {
+        return c == ',';
+      }
       constexpr auto is_separator(char_t c) noexcept
       {
         return is_expr_separator(c) ||
+               is_comma(c) ||
                is_paren(c) ||
                is_blank(c) ||
                is_operator(c);
@@ -132,7 +137,8 @@ namespace tnac
         using kw_map = std::unordered_map<string_t, tok_kind>;
 
         static const kw_map keywords{
-          { "result", tok_kind::KwResult }
+          { "result",  tok_kind::KwResult },
+          { "complex", tok_kind::KwComplex },
         };
 
         constexpr auto err = tok_kind::Error;
@@ -490,6 +496,10 @@ namespace tnac
 
     case ')':
       resKind = ParenClose;
+      break;
+
+    case ',':
+      resKind = Comma;
       break;
 
     default:

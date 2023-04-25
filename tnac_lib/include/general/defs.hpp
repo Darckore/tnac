@@ -41,7 +41,7 @@
 *     result-expr
 *     literal-expr
 *     id-expr
-*     (expr)
+*     '(' expr ')'
 * 
 *   declarator:
 *     var-decl
@@ -57,6 +57,17 @@
 * 
 *   literal-expr:
 *     number
+*     complex
+* 
+*   complex:
+*     _complex params
+* 
+*   params:
+*     '(' param-list ')'
+* 
+*   param-list:
+*     expr
+*     param-list ',' expr
 * 
 *   command:
 *     # id-sequence
@@ -166,6 +177,7 @@ namespace tnac
 
   using int_type   = std::intmax_t;
   using float_type = double;
+  using complex = std::complex<float_type>;
 
   namespace detail
   {

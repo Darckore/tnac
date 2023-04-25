@@ -25,6 +25,7 @@ Assign,
 // Punctuation
 ParenOpen,
 ParenClose,
+Comma,
 
 // Identifiers
 Identifier,
@@ -32,3 +33,4 @@ Command,
 
 // Keywords
 KwResult,
+KwComplex,
