@@ -17,6 +17,7 @@ namespace tnac::eval
     Subtraction,
     Multiplication,
     Division,
+    Modulo,
     UnaryNegation,
     UnaryPlus
   };
@@ -66,7 +67,7 @@ namespace tnac::eval
     constexpr auto is_binary(val_ops op) noexcept
     {
       using enum val_ops;
-      return utils::eq_any(op, Addition, Subtraction, Multiplication, Division);
+      return utils::eq_any(op, Addition, Subtraction, Multiplication, Division, Modulo);
     }
   }
 
@@ -147,7 +148,6 @@ namespace tnac::eval
       }
     }
 
-
     value visit_binary(invalid_val_t, invalid_val_t, val_ops) noexcept
     {
       return m_registry.reset_result();
@@ -193,6 +193,27 @@ namespace tnac::eval
             { return l / r; });
         else
           return visit_binary(lhs, rhs, [](auto l, auto r) noexcept { return l / r; });
+
+      case Modulo:
+      {
+        // Corner case. If we have ints, and rhs is 0, we'll do a floating-point modulo
+        // to get nan instead of an exception
+        if constexpr (is_same_noquals_v<decltype(lhs), int_type>)
+        {
+          if (rhs == int_type{})
+            return visit_binary(lhs, rhs, [](auto l, auto r) noexcept
+              {
+                auto lhs = static_cast<float_type>(l);
+                auto rhs = static_cast<float_type>(r);
+                return std::fmod(lhs, rhs);
+              });
+        }
+
+        if constexpr (is_same_noquals_v<decltype(lhs), float_type>)
+          return visit_binary(lhs, rhs, [](auto l, auto r) noexcept { return std::fmod(l, r); });
+        else
+          return visit_binary(lhs, rhs, [](auto l, auto r) noexcept { return l % r; });
+      }
 
       default:
         return m_registry.reset_result();

@@ -19,6 +19,7 @@ Plus,
 Minus,
 Asterisk,
 Slash,
+Percent,
 Assign,
 
 // Punctuation

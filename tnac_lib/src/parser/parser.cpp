@@ -18,7 +18,7 @@ namespace tnac
       }
       constexpr auto is_mul_op(const token& tok) noexcept
       {
-        return tok.is_any(token::Asterisk, token::Slash);
+        return tok.is_any(token::Asterisk, token::Slash, token::Percent);
       }
       constexpr auto is_assign(const token& tok) noexcept
       {

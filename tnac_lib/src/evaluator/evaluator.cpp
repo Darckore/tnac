@@ -40,6 +40,9 @@ namespace tnac
         case Slash:
           return eval::val_ops::Division;
 
+        case Percent:
+          return eval::val_ops::Modulo;
+
         default:
           return eval::val_ops::InvalidOp;
         }
