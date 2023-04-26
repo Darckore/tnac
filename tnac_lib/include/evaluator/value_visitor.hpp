@@ -69,6 +69,7 @@ namespace tnac::eval
       using enum val_ops;
       return utils::eq_any(op, Addition, Subtraction, Multiplication, Division, Modulo);
     }
+
   }
 
 
@@ -89,6 +90,28 @@ namespace tnac::eval
       m_registry{ reg }
     {}
 
+  private: // Invalid value handlers
+    value visit_unary(invalid_val_t, val_ops) noexcept
+    {
+      return get_empty();
+    }
+    value visit_assign(invalid_val_t) noexcept
+    {
+      return get_empty();
+    }
+    value visit_binary(invalid_val_t, invalid_val_t, val_ops) noexcept
+    {
+      return get_empty();
+    }
+    template <typename T> value visit_binary(invalid_val_t, T, val_ops) noexcept
+    {
+      return visit_binary(invalid_val_t{}, invalid_val_t{}, val_ops{});
+    }
+    template <typename T> value visit_binary(T, invalid_val_t, val_ops) noexcept
+    {
+      return visit_binary(invalid_val_t{}, invalid_val_t{}, val_ops{});
+    }
+
   private:
     //
     // Extracts type from value and calls the specified function
@@ -99,7 +122,9 @@ namespace tnac::eval
       return on_value(val, std::forward<F>(func));
     }
 
-
+    //
+    // Registers the value in the registry
+    //
     template <detail::expr_result T>
     value reg_value(T val) noexcept
     {
@@ -109,28 +134,27 @@ namespace tnac::eval
       return m_registry.register_literal(val);
     }
 
-    value visit_assign(invalid_val_t) noexcept
-    {
-      return m_registry.reset_result();
-    }
-
+    //
+    // Registers result of assignment operations
+    //
     template <detail::expr_result T>
     value visit_assign(T rhs) noexcept
     {
       return reg_value(rhs);
     }
 
-    value visit_unary(invalid_val_t, val_ops) noexcept
-    {
-      return m_registry.reset_result();
-    }
-
+    //
+    // Registers result of unary operations
+    //
     template <detail::expr_result T, detail::unary_function<T> F>
     value visit_unary(T val, F&& op) noexcept
     {
       return reg_value(op(val));
     }
 
+    //
+    // Dispatches unary operations according to operator type
+    //
     template <detail::expr_result T>
     value visit_unary(T val, val_ops op) noexcept
     {
@@ -144,31 +168,35 @@ namespace tnac::eval
         return visit_unary(val, [](auto v) noexcept { return +v; });
 
       default:
-        return m_registry.reset_result();
+        return get_empty();
       }
     }
 
-    value visit_binary(invalid_val_t, invalid_val_t, val_ops) noexcept
-    {
-      return m_registry.reset_result();
-    }
-    template <typename T>
-    value visit_binary(invalid_val_t, T, val_ops) noexcept
-    {
-      return visit_binary(invalid_val_t{}, invalid_val_t{}, val_ops{});
-    }
-    template <typename T>
-    value visit_binary(T, invalid_val_t, val_ops) noexcept
-    {
-      return visit_binary(invalid_val_t{}, invalid_val_t{}, val_ops{});
-    }
-
+    //
+    // Registers result of binary operations
+    //
     template <detail::expr_result L, detail::expr_result R, detail::binary_function<L, R> F>
     value visit_binary(L lhs, R rhs, F&& op) noexcept
     {
       return reg_value(op(lhs, rhs));
     }
 
+    //
+    // Intermadiate binary visitor
+    // Dispatches the right operand according to its type
+    //
+    template <detail::expr_result L>
+    value visit_binary(L lhs, value rhs, val_ops op) noexcept
+    {
+      return visit_value(rhs, [this, lhs, op](auto rhs) noexcept
+        {
+          return visit_binary(lhs, rhs, op);
+        });
+    }
+
+    //
+    // Dispatches binary operations according to operator type
+    //
     template <detail::expr_result L, detail::expr_result R>
     value visit_binary(L l, R r, val_ops op) noexcept
     {
@@ -216,17 +244,8 @@ namespace tnac::eval
       }
 
       default:
-        return m_registry.reset_result();
+        return get_empty();
       }
-    }
-
-    template <detail::expr_result L>
-    value visit_binary(L lhs, value rhs, val_ops op) noexcept
-    {
-      return visit_value(rhs, [this, lhs, op](auto rhs) noexcept
-        {
-          return visit_binary(lhs, rhs, op);
-        });
     }
 
   public:
@@ -236,7 +255,7 @@ namespace tnac::eval
     value visit_binary(id_param_t ent, value lhs, value rhs, val_ops op) noexcept
     {
       if (!lhs || !rhs || !detail::is_binary(op))
-        return m_registry.reset_result();
+        return get_empty();
 
       value_guard _{ m_curEntity, *ent };
 
@@ -252,7 +271,7 @@ namespace tnac::eval
     value visit_unary(id_param_t ent, value val, val_ops op) noexcept
     {
       if (!val || !detail::is_unary(op))
-        return m_registry.reset_result();
+        return get_empty();
 
       value_guard _{ m_curEntity, *ent };
 
@@ -268,7 +287,7 @@ namespace tnac::eval
     value visit_assign(id_param_t ent, value rhs) noexcept
     {
       if (!rhs)
-        return m_registry.reset_result();
+        return get_empty();
 
       value_guard _{ m_curEntity, *ent };
 
@@ -295,7 +314,7 @@ namespace tnac::eval
       int_type result{};
       auto convRes = std::from_chars(begin, end, result, base);
       if (convRes.ec != std::errc{ 0 })
-        return m_registry.reset_result();
+        return get_empty();
 
       return reg_value(result);
     }
@@ -311,7 +330,7 @@ namespace tnac::eval
       float_type result{};
       auto convRes = std::from_chars(begin, end, result);
       if (convRes.ec != std::errc{ 0 })
-        return m_registry.reset_result();
+        return get_empty();
 
       return reg_value(result);
     }
@@ -323,6 +342,14 @@ namespace tnac::eval
     {
       auto ret = visit_assign(ent, m_registry.evaluation_result());
       return ret;
+    }
+
+    //
+    // Resets the last evaluation result and returns an empty value
+    //
+    value get_empty() noexcept
+    {
+      return m_registry.reset_result();
     }
 
   private:
