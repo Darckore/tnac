@@ -112,6 +112,87 @@ namespace tnac::eval
       return visit_binary(invalid_val_t{}, invalid_val_t{}, val_ops{});
     }
 
+  private: // Operation support
+
+    // Addition
+    
+    template <detail::expr_result L, detail::expr_result R>
+    auto add(L, R) noexcept { return get_empty(); }
+    template <detail::expr_result L, detail::expr_result R>
+      requires requires (L l, R r) { l + r; }
+    auto add(L lhs, R rhs) noexcept
+    {
+      return visit_binary(lhs, rhs, [](auto l, auto r) noexcept { return l + r; });
+    }
+
+
+    // Subtraction
+
+    template <detail::expr_result L, detail::expr_result R>
+    auto sub(L, R) noexcept { return get_empty(); }
+    template <detail::expr_result L, detail::expr_result R>
+      requires requires (L l, R r) { l - r; }
+    auto sub(L lhs, R rhs) noexcept
+    {
+      return visit_binary(lhs, rhs, [](auto l, auto r) noexcept { return l - r; });
+    }
+
+
+    // Multiplication
+
+    template <detail::expr_result L, detail::expr_result R>
+    auto mul(L, R) noexcept { return get_empty(); }
+    template <detail::expr_result L, detail::expr_result R>
+      requires requires (L l, R r) { l * r; }
+    auto mul(L lhs, R rhs) noexcept
+    {
+      return visit_binary(lhs, rhs, [](auto l, auto r) noexcept { return l * r; });
+    }
+
+
+    // Division
+
+    template <detail::expr_result L, detail::expr_result R>
+    auto div(L, R) noexcept { return get_empty(); }
+    template <detail::expr_result L, detail::expr_result R>
+      requires requires (L l, R r) { l / r; }
+    auto div(L lhs, R rhs) noexcept
+    {
+      return visit_binary(lhs, rhs, [](auto l, auto r) noexcept { return l / r; });
+    }
+    
+    // Corner case, we don't want integral division, so, let's convert lhs to float
+    auto div(int_type lhs, int_type rhs) noexcept
+    {
+      return div(static_cast<float_type>(lhs), rhs);
+    }
+
+
+    // Modulo
+
+    template <detail::expr_result L, detail::expr_result R>
+    auto mod(L, R) noexcept { return get_empty(); }
+    template <detail::expr_result L, detail::expr_result R>
+      requires requires (L l, R r) { l % r; }
+    auto mod(L lhs, R rhs) noexcept
+    {
+      return visit_binary(lhs, rhs, [](auto l, auto r) noexcept { return l % r; });
+    }
+    template <detail::expr_result R>
+    auto mod(float_type lhs, R rhs) noexcept
+    {
+      return visit_binary(lhs, rhs, [](auto l, auto r) noexcept { return std::fmod(l, r); });
+    }
+
+    // Corner case. If we have ints, and rhs is 0, we'll do a floating-point modulo
+    // to get NAN instead of an exception
+    auto mod(int_type lhs, int_type rhs) noexcept
+    {
+      return rhs ?
+        mod<int_type, int_type>(lhs, rhs) :
+        mod(static_cast<float_type>(lhs), rhs);
+    }
+
   private:
     //
     // Extracts type from value and calls the specified function
@@ -198,50 +279,25 @@ namespace tnac::eval
     // Dispatches binary operations according to operator type
     //
     template <detail::expr_result L, detail::expr_result R>
-    value visit_binary(L l, R r, val_ops op) noexcept
+    value visit_binary(L lhs, R rhs, val_ops op) noexcept
     {
       using enum val_ops;
-      auto [lhs, rhs] = common_type_cast<decltype(l), decltype(r)>{}(l, r);
-
       switch (op)
       {
       case Addition:
-        return visit_binary(lhs, rhs, [](auto l, auto r) noexcept { return l + r; });
+        return add(lhs, rhs);
 
       case Subtraction:
-        return visit_binary(lhs, rhs, [](auto l, auto r) noexcept { return l - r; });
+        return sub(lhs, rhs);
 
       case Multiplication:
-        return visit_binary(lhs, rhs, [](auto l, auto r) noexcept { return l * r; });
+        return mul(lhs, rhs);
 
       case Division:
-        // Corner case, we don't want integral division, so, let's convert lhs to float
-        if constexpr (is_same_noquals_v<decltype(lhs), int_type>)
-          return visit_binary(static_cast<float_type>(lhs), rhs, [](auto l, auto r) noexcept 
-            { return l / r; });
-        else
-          return visit_binary(lhs, rhs, [](auto l, auto r) noexcept { return l / r; });
+        return div(lhs, rhs);
 
       case Modulo:
-      {
-        // Corner case. If we have ints, and rhs is 0, we'll do a floating-point modulo
-        // to get nan instead of an exception
-        if constexpr (is_same_noquals_v<decltype(lhs), int_type>)
-        {
-          if (rhs == int_type{})
-            return visit_binary(lhs, rhs, [](auto l, auto r) noexcept
-              {
-                auto lhs = static_cast<float_type>(l);
-                auto rhs = static_cast<float_type>(r);
-                return std::fmod(lhs, rhs);
-              });
-        }
-
-        if constexpr (is_same_noquals_v<decltype(lhs), float_type>)
-          return visit_binary(lhs, rhs, [](auto l, auto r) noexcept { return std::fmod(l, r); });
-        else
-          return visit_binary(lhs, rhs, [](auto l, auto r) noexcept { return l % r; });
-      }
+        return mod(lhs, rhs);
 
       default:
         return get_empty();
