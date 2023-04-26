@@ -14,8 +14,6 @@ namespace tnac::eval
   {
   public:
     using value_type = value;
-    using int_type   = tnac::int_type;
-    using float_type = tnac::float_type;
 
     template <detail::expr_result T>
     using typed_store = std::unordered_set<T>;
@@ -24,7 +22,8 @@ namespace tnac::eval
 
     using stored_val_t = std::variant<
       int_type,
-      float_type
+      float_type,
+      complex_type
     >;
 
     using entity_vals  = std::unordered_map<entity_id, stored_val_t>;
@@ -94,6 +93,7 @@ namespace tnac::eval
     // Registers and interns a literal
     //
     template <detail::expr_result T>
+      requires is_any_v<T, int_type, float_type>
     value_type register_literal(T val) noexcept
     {
       return intern(val);

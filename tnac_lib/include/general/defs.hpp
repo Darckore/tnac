@@ -181,9 +181,9 @@ namespace tnac
   using string_t = std::string_view;
   using char_t   = string_t::value_type;
 
-  using int_type   = std::intmax_t;
-  using float_type = double;
-  using complex = std::complex<float_type>;
+  using int_type     = std::intmax_t;
+  using float_type   = double;
+  using complex_type = std::complex<float_type>;
 
   namespace detail
   {

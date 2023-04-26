@@ -24,6 +24,10 @@ namespace tnac_tests
             {
               ASSERT_TRUE(false) << "Undefined value detected";
             }
+            else if constexpr (!tnac::is_same_noquals_v<decltype(val), T>)
+            {
+              ASSERT_TRUE(false) << "Wrong value type";
+            }
             else
             {
               using ct = tnac::common_type_t<decltype(val), decltype(expected)>;

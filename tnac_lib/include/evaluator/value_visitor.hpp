@@ -179,6 +179,7 @@ namespace tnac::eval
       return visit_binary(lhs, rhs, [](auto l, auto r) noexcept { return l % r; });
     }
     template <detail::expr_result R>
+      requires std::is_convertible_v<R, float_type>
     auto mod(float_type lhs, R rhs) noexcept
     {
       return visit_binary(lhs, rhs, [](auto l, auto r) noexcept { return std::fmod(l, r); });
@@ -212,7 +213,7 @@ namespace tnac::eval
       if (m_curEntity != invalidEnt)
         return m_registry.register_entity(m_curEntity, val);
 
-      return m_registry.register_literal(val);
+      return m_registry.register_entity({}, val);
     }
 
     //
@@ -372,7 +373,7 @@ namespace tnac::eval
       if (convRes.ec != std::errc{ 0 })
         return get_empty();
 
-      return reg_value(result);
+      return m_registry.register_literal(result);
     }
 
     //
@@ -388,7 +389,7 @@ namespace tnac::eval
       if (convRes.ec != std::errc{ 0 })
         return get_empty();
 
-      return reg_value(result);
+      return m_registry.register_literal(result);
     }
 
     //
