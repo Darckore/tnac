@@ -144,6 +144,8 @@ namespace tnac_rt
     parser m_parser;
     src_manager m_srcMgr;
 
+    eval m_ev;
+
     tnac::commands::store m_commands;
     tnac::cmd m_cmd;
 

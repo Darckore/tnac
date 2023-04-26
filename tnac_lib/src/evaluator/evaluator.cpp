@@ -97,6 +97,27 @@ namespace tnac
     unary.eval_result(m_visitor.visit_unary(&unary, val, opCode));
   }
 
+  void evaluator::visit(ast::typed_expr& expr) noexcept
+  {
+    using enum tok_kind;
+    auto&& typeName = expr.type_name();
+    auto&& args     = expr.params();
+
+    switch (typeName.m_kind)
+    {
+    case KwComplex:
+      if (check_args(typeName, args, 0, 2))
+      {
+
+      }
+      break;
+
+    default:
+      UTILS_ASSERT(false);
+      break;
+    }
+  }
+
   void evaluator::visit(ast::paren_expr& paren) noexcept
   {
     paren.eval_result(paren.internal_expr().value());
@@ -136,6 +157,27 @@ namespace tnac
 
 
   // Private members
+
+  void evaluator::on_error(const token& pos, string_t msg) noexcept
+  {
+    if (m_errHandler)
+      m_errHandler(pos, msg);
+  }
+
+  bool evaluator::check_args(const token& tok, const param_list_t& args, size_type min, size_type max) noexcept
+  {
+    const auto size = args.size();
+    if (utils::in_range(size, min, max))
+      return true;
+
+    if (size < min)
+      on_error(tok, "Too few arguments"sv);
+
+    if (size > min)
+      on_error(tok, "Too many arguments"sv);
+
+    return false;
+  }
 
   eval::value evaluator::eval_token(const token& tok) noexcept
   {

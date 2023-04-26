@@ -8,11 +8,14 @@ namespace tnac_rt
 
   driver::driver() noexcept :
     m_parser{ m_builder, m_sema },
+    m_ev{ m_registry },
     m_cmd{ m_commands }
   {
     m_sema.on_variable([this](auto&& sym) noexcept { store_var(sym); });
 
     m_cmd.on_error([this](auto&& tok, auto msg) noexcept { m_srcMgr.on_error(tok, msg); });
+
+    m_ev.on_error([this](auto&& tok, auto msg) noexcept { m_srcMgr.on_error(tok, msg); });
 
     m_parser.on_error([this](auto&& err) noexcept { m_srcMgr.on_parse_error(err); });
     m_parser.on_command([this](auto command) noexcept { m_cmd.on_command(std::move(command)); });
@@ -219,10 +222,10 @@ namespace tnac_rt
     auto ast = m_parser(inputData.m_buf);
     inputData.m_node = ast;
     
-    eval ev{ m_registry };
     if (!interactive)
       ast = m_parser.root();
 
-    ev(ast);
+    if(interactive && ast != m_parser.root())
+      m_ev(ast);
   }
 }

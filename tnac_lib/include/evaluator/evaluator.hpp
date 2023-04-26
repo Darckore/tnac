@@ -9,6 +9,12 @@
 
 namespace tnac
 {
+  namespace eval::detail
+  {
+    template <typename F>
+    concept err_handler = std::is_nothrow_invocable_r_v<void, F, const token&, string_t>;
+  }
+
   //
   // Evaluator for expressions
   // Visits the provided ast node bottom-up (children first)
@@ -16,9 +22,23 @@ namespace tnac
   class evaluator final : public ast::bottom_up_visitor<evaluator>
   {
   public:
+    using err_handler_t = std::function<void(const token&, string_t)>;
+    using param_list_t  = ast::typed_expr::param_list;
+    using size_type     = param_list_t::size_type;
+
+  public:
     CLASS_SPECIALS_NONE(evaluator);
 
     explicit evaluator(eval::registry& registry) noexcept;
+
+    //
+    // Attaches the error handler
+    //
+    template <eval::detail::err_handler F>
+    void on_error(F&& f) noexcept
+    {
+      m_errHandler = std::forward<F>(f);
+    }
 
   public: // expressions
     //
@@ -40,6 +60,11 @@ namespace tnac
     // Visits a parenthesised expression
     //
     void visit(ast::paren_expr& paren) noexcept;
+
+    //
+    // Visits a typed expression
+    //
+    void visit(ast::typed_expr& expr) noexcept;
 
     //
     // Visits a literal expression
@@ -69,6 +94,16 @@ namespace tnac
 
   private:
     //
+    // Produces an evaluation error
+    //
+    void on_error(const token& pos, string_t msg) noexcept;
+
+    //
+    // Checks the number of arguments of an expression which supports those
+    //
+    bool check_args(const token& tok, const param_list_t& args, size_type min, size_type max) noexcept;
+
+    //
     // Evaluates a literal and returns its value
     //
     eval::value eval_token(const token& tok) noexcept;
@@ -80,5 +115,6 @@ namespace tnac
 
   private:
     eval::value_visitor m_visitor;
+    err_handler_t m_errHandler{};
   };
 }
