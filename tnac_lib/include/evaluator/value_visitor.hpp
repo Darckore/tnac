@@ -312,6 +312,16 @@ namespace tnac::eval
       }
     }
 
+    //
+    // Dispatches the instantiation call
+    //
+    template <detail::expr_result Obj, typename T, T... Seq>
+    value instantiate(const std::array<value, sizeof...(Seq)>& args, std::integer_sequence<T, Seq...>) noexcept
+    {
+      using type_info = eval::type_info<Obj>;
+      return reg_value(Obj{ cast_value<type_from_id<type_info::params[Seq]>>{}(args[Seq])... });
+    }
+
   public:
     //
     // Instantiates an object
@@ -321,13 +331,13 @@ namespace tnac::eval
     value instantiate(id_param_t ent, Args ...args) noexcept
     {
       using type_info = eval::type_info<Obj>;
-      static constexpr auto min = type_info::minArgs;
       static constexpr auto max = type_info::maxArgs;
-      static_assert(utils::in_range(sizeof ...(Args), min, max));
+      static_assert(sizeof ...(Args) == max);
 
       value_guard _{ m_curEntity, *ent };
-      utils::unused(args...);
-      return get_empty();
+
+      const std::array argList{ args... };
+      return instantiate<Obj>(argList, std::make_index_sequence<max>{});
     }
 
     //
