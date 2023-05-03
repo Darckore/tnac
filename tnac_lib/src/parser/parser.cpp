@@ -420,6 +420,9 @@ namespace tnac
 
     while (!peek_next().is_eol())
     {
+      if (detail::is_close_paren(peek_next()))
+        break;
+
       auto e = expr();
       res.push_back(e);
 
