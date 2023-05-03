@@ -173,7 +173,7 @@ namespace tnac
     if (size < min)
       on_error(tok, "Too few arguments"sv);
 
-    if (size > min)
+    if (size > max)
       on_error(tok, "Too many arguments"sv);
 
     return false;
