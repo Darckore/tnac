@@ -223,7 +223,10 @@ namespace tnac_rt
     inputData.m_node = ast;
     
     if (!interactive)
+    {
       ast = m_parser.root();
+      m_ev(ast);
+    }
 
     if(interactive && ast != m_parser.root())
       m_ev(ast);
