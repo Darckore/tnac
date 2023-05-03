@@ -9,6 +9,12 @@ namespace tnac_rt::out
       out << "<undef>";
       return out;
     }
+
+    std::ostream& operator<<(std::ostream& out, const tnac::complex_type& c) noexcept
+    {
+      out << "complex(" << c.real() << ", " << c.imag() << ')';
+      return out;
+    }
   }
 
   std::ostream& operator<<(std::ostream& out, const tnac::token& tok) noexcept
