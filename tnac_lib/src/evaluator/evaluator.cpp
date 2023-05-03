@@ -102,13 +102,14 @@ namespace tnac
     using enum tok_kind;
     auto&& typeName = expr.type_name();
     auto&& args     = expr.params();
+    eval::value val;
 
     switch (typeName.m_kind)
     {
     case KwComplex:
       if (check_args(typeName, args, 0, 2))
       {
-
+        val = m_visitor.instantiate<complex_type>(&expr, extract(args, 0), extract(args, 1));
       }
       break;
 
@@ -116,6 +117,8 @@ namespace tnac
       UTILS_ASSERT(false);
       break;
     }
+
+    expr.eval_result(val);
   }
 
   void evaluator::visit(ast::paren_expr& paren) noexcept
@@ -177,6 +180,12 @@ namespace tnac
       on_error(tok, "Too many arguments"sv);
 
     return false;
+  }
+
+  eval::value evaluator::extract(const param_list_t& args, size_type idx) noexcept
+  {
+    const auto count = args.size();
+    return idx < count ? args[idx]->value() : eval::value{};
   }
 
   eval::value evaluator::eval_token(const token& tok) noexcept

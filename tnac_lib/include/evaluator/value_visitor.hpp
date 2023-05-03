@@ -313,6 +313,29 @@ namespace tnac::eval
 
   public:
     //
+    // Instantiates an object
+    // Base version
+    //
+    template <detail::expr_result Obj, typename... Args>
+    value instantiate(id_param_t, Args ...) noexcept
+    {
+      return get_empty();
+    }
+
+    //
+    // Instantiates a complex
+    //
+    template <>
+    value instantiate<complex_type>(id_param_t ent, value real, value img) noexcept
+    {
+      value_guard _{ m_curEntity, *ent };
+
+      utils::unused(real, img);
+
+      return get_empty();
+    }
+
+    //
     // Returns a resulting value from a binary expr
     //
     value visit_binary(id_param_t ent, value lhs, value rhs, val_ops op) noexcept

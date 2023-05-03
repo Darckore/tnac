@@ -104,6 +104,12 @@ namespace tnac
     bool check_args(const token& tok, const param_list_t& args, size_type min, size_type max) noexcept;
 
     //
+    // Extracts a parameter value from the given parameter list by index
+    // If the size of the list is less than index, an invalid value is returned
+    //
+    eval::value extract(const param_list_t& args, size_type idx) noexcept;
+
+    //
     // Evaluates a literal and returns its value
     //
     eval::value eval_token(const token& tok) noexcept;
