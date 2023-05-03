@@ -47,6 +47,82 @@ namespace tnac
           return eval::val_ops::InvalidOp;
         }
       }
+    
+      //
+      // Helper object for instantiations
+      //
+      template <eval::detail::expr_result T>
+      class instance
+      {
+      public:
+        using err_handler_t = evaluator::err_handler_t;
+        using param_list_t = evaluator::param_list_t;
+        using size_type = param_list_t::size_type;
+        using visitor       = eval::value_visitor;
+        using value_type    = T;
+        using type_info     = eval::type_info<value_type>;
+
+        static constexpr auto min = type_info::minArgs;
+        static constexpr auto max = type_info::maxArgs;
+
+      public:
+        CLASS_SPECIALS_NONE(instance);
+
+        instance(visitor& valVisitor, err_handler_t& onError) noexcept :
+          m_visitor{ valVisitor },
+          m_errHandler{ onError }
+        {}
+
+        eval::value operator()(const ast::typed_expr& expr) noexcept
+        {
+          if (!check_args(expr))
+          {
+            return {};
+          }
+
+          return instantiate(expr, std::make_index_sequence<max>{});
+        }
+
+      private:
+        template <typename T, T... Seq>
+        eval::value instantiate(const ast::typed_expr& expr, std::integer_sequence<T, Seq...>) noexcept
+        {
+          auto&& exprArgs = expr.params();
+          return m_visitor.instantiate<value_type>(&expr, extract(exprArgs, Seq)...);
+        }
+
+        void on_error(const token& pos, string_t msg) noexcept
+        {
+          if (m_errHandler)
+            m_errHandler(pos, msg);
+        }
+
+        bool check_args(const ast::typed_expr& expr) noexcept
+        {
+          const auto size = expr.params().size();
+          if (utils::in_range(size, min, max))
+            return true;
+
+          auto&& tok = expr.type_name();
+          if (size < min)
+            on_error(tok, "Too few arguments"sv);
+
+          if (size > max)
+            on_error(tok, "Too many arguments"sv);
+
+          return false;
+        }
+
+        eval::value extract(const param_list_t& args, size_type idx) noexcept
+        {
+          const auto count = args.size();
+          return idx < count ? args[idx]->value() : eval::value{};
+        }
+
+      private:
+        visitor& m_visitor;
+        err_handler_t& m_errHandler;
+      };
     }
   }
 
@@ -100,17 +176,13 @@ namespace tnac
   void evaluator::visit(ast::typed_expr& expr) noexcept
   {
     using enum tok_kind;
-    auto&& typeName = expr.type_name();
-    auto&& args     = expr.params();
     eval::value val;
+    using detail::instance;
 
-    switch (typeName.m_kind)
+    switch (expr.type_name().m_kind)
     {
     case KwComplex:
-      if (check_args(typeName, args, 0, 2))
-      {
-        val = m_visitor.instantiate<complex_type>(&expr, extract(args, 0), extract(args, 1));
-      }
+      val = instance<complex_type>{ m_visitor, m_errHandler }(expr);
       break;
 
     default:
@@ -165,27 +237,6 @@ namespace tnac
   {
     if (m_errHandler)
       m_errHandler(pos, msg);
-  }
-
-  bool evaluator::check_args(const token& tok, const param_list_t& args, size_type min, size_type max) noexcept
-  {
-    const auto size = args.size();
-    if (utils::in_range(size, min, max))
-      return true;
-
-    if (size < min)
-      on_error(tok, "Too few arguments"sv);
-
-    if (size > max)
-      on_error(tok, "Too many arguments"sv);
-
-    return false;
-  }
-
-  eval::value evaluator::extract(const param_list_t& args, size_type idx) noexcept
-  {
-    const auto count = args.size();
-    return idx < count ? args[idx]->value() : eval::value{};
   }
 
   eval::value evaluator::eval_token(const token& tok) noexcept

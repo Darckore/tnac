@@ -4,6 +4,7 @@
 
 #pragma once
 #include "evaluator/value_registry.hpp"
+#include "evaluator/traits.hpp"
 
 namespace tnac::eval
 {
@@ -314,24 +315,18 @@ namespace tnac::eval
   public:
     //
     // Instantiates an object
-    // Base version
     //
     template <detail::expr_result Obj, typename... Args>
-    value instantiate(id_param_t, Args ...) noexcept
+      requires is_all_v<value, Args...>
+    value instantiate(id_param_t ent, Args ...args) noexcept
     {
-      return get_empty();
-    }
+      using type_info = eval::type_info<Obj>;
+      static constexpr auto min = type_info::minArgs;
+      static constexpr auto max = type_info::maxArgs;
+      static_assert(utils::in_range(sizeof ...(Args), min, max));
 
-    //
-    // Instantiates a complex
-    //
-    template <>
-    value instantiate<complex_type>(id_param_t ent, value real, value img) noexcept
-    {
       value_guard _{ m_curEntity, *ent };
-
-      utils::unused(real, img);
-
+      utils::unused(args...);
       return get_empty();
     }
 
