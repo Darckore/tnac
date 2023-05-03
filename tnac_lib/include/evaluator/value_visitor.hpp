@@ -184,6 +184,12 @@ namespace tnac::eval
     {
       return visit_binary(lhs, rhs, [](auto l, auto r) noexcept { return std::fmod(l, r); });
     }
+    template <detail::expr_result L>
+      requires (std::is_convertible_v<L, float_type> && !is_same_noquals_v<L, float_type>)
+    auto mod(L lhs, float_type rhs) noexcept
+    {
+      return mod(static_cast<float_type>(lhs), rhs);
+    }
 
     // Corner case. If we have ints, and rhs is 0, we'll do a floating-point modulo
     // to get NAN instead of an exception
