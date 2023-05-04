@@ -85,10 +85,9 @@ namespace tnac_rt
 
   void driver::print_result() noexcept
   {
-    out() << '\n';
     out::value_printer vp;
     vp(m_registry.evaluation_result(), out());
-    out() << "\n\n";
+    out() << '\n';
   }
 
   void driver::list_code(command c) noexcept
@@ -143,7 +142,7 @@ namespace tnac_rt
     }
 
     if (m_vars.empty())
-      out() << "<none>";
+      out() << "<none>\n";
 
     out::value_printer vp;
     for (auto var : m_vars)
