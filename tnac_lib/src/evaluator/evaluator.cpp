@@ -103,12 +103,8 @@ namespace tnac
           if (utils::in_range(size, min, max))
             return true;
 
-          auto&& tok = expr.type_name();
-          if (size < min)
-            on_error(tok, "Too few arguments"sv);
-
-          if (size > max)
-            on_error(tok, "Too many arguments"sv);
+          auto msg = std::format("Expected at least {} and at most {} arguments"sv, min, max);
+          on_error(expr.type_name(), msg);
 
           return false;
         }

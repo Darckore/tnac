@@ -21,7 +21,37 @@ namespace tnac_rt::out
       if (f.sign() < 0)
         out << '-';
 
-      out << f.num() << '/' << f.denom();
+      if (f.is_infinity())
+      {
+        out << std::numeric_limits<tnac::float_type>::infinity();
+        return out;
+      }
+
+      const auto den = f.denom();
+      auto num = f.num();
+      if (den == tnac::int_type{ 1 })
+      {
+        out << num;
+        return out;
+      }
+
+      auto wholePart = num / den;
+
+      if (wholePart)
+      {
+        out << wholePart;
+        num = num % den;
+        if (!num)
+          return out;
+
+        out << '(';
+      }
+
+      out << num << '/' << den;
+
+      if (wholePart)
+        out << ')';
+
       return out;
     }
   }

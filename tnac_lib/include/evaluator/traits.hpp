@@ -39,7 +39,7 @@ namespace tnac::eval
 
   template <>
   struct type_info<fraction_type> :
-    detail::basic_type_info<0, type_id::Int, type_id::Int>
+    detail::basic_type_info<2, type_id::Int, type_id::Int>
   {};
 
 
@@ -114,7 +114,7 @@ namespace tnac::eval
           [](float_type v) noexcept { return fraction_type{ static_cast<int_type>(v) }; }, // todo: float to frac
           [](complex_type v) noexcept { return fraction_type{ static_cast<int_type>(v.real()) }; }, // todo: float to frac
           [](fraction_type v) noexcept { return v; },
-          [](invalid_val_t) noexcept { return fraction_type{}; }
+          [](invalid_val_t) noexcept { return fraction_type{ 0 }; }
         });
     }
   };
