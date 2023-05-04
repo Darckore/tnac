@@ -214,7 +214,7 @@ namespace tnac_rt::out
   void ast_printer::print_value(eval::value v) noexcept
   {
     out() << "<value: ";
-    value_printer{}(v, out());
+    value_printer{}(v, 10, out());
     out() << '>';
   }
 }

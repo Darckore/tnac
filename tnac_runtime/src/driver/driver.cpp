@@ -83,10 +83,29 @@ namespace tnac_rt
     m_running = false;
   }
 
-  void driver::print_result() noexcept
+  void driver::print_result(command c) noexcept
   {
+    static constexpr auto bin = "bin"sv;
+    static constexpr auto oct = "oct"sv;
+    static constexpr auto hex = "hex"sv;
+
+    auto base = 10;
+    if (c.param_count())
+    {
+      auto&& param   = c[size_type{}];
+      auto paramName = param.m_value;
+      if (paramName == bin)
+        base = 2;
+      else if (paramName == oct)
+        base = 8;
+      else if (paramName == hex)
+        base = 16;
+      else
+        m_srcMgr.on_error(param, "Unknown parameter"sv);
+    }
+
     out::value_printer vp;
-    vp(m_registry.evaluation_result(), out());
+    vp(m_registry.evaluation_result(), base, out());
     out() << '\n';
   }
 
@@ -148,7 +167,7 @@ namespace tnac_rt
     for (auto var : m_vars)
     {
       out() << var->name() << " : ";
-      vp(var->value(), out());
+      vp(var->value(), 10, out());
       out() << '\n';
     }
     end_redirect();
@@ -198,7 +217,8 @@ namespace tnac_rt
     using size_type = params::size_type;
 
     m_commands.declare("exit"sv,   [this](auto  ) noexcept { on_exit(); });
-    m_commands.declare("result"sv, [this](auto  ) noexcept { print_result(); });
+    m_commands.declare("result"sv, params{ Identifier }, size_type{},
+                       [this](auto c) noexcept { print_result(std::move(c)); });
     
     m_commands.declare("list"sv, params{ String }, size_type{},
                        [this](auto c) noexcept { list_code(std::move(c)); });

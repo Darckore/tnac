@@ -75,7 +75,7 @@ namespace tnac_rt
     //
     // Prints evaluation result of the last operation
     //
-    void print_result() noexcept;
+    void print_result(command c) noexcept;
 
     //
     // Lists the entire source

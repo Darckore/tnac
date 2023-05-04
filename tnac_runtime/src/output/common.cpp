@@ -31,15 +31,17 @@ namespace tnac_rt::out
 
   // Public members
 
-  void value_printer::operator()(eval::value val, out_stream& os) noexcept
+  void value_printer::operator()(eval::value val, int base, out_stream& os) noexcept
   {
     m_out = &os;
+
+    tnac::value_guard _{ m_base, base };
     print_value(val);
   }
 
-  void value_printer::operator()(eval::value val) noexcept
+  void value_printer::operator()(eval::value val, int base) noexcept
   {
-    this->operator()(val, out());
+    this->operator()(val, base, out());
   }
 
   // Private members
@@ -53,7 +55,44 @@ namespace tnac_rt::out
   {
     eval::on_value(val, [this](auto val)
       {
-        out() << val;
+        if constexpr (tnac::is_same_noquals_v<decltype(val), tnac::int_type>)
+        {
+          if (m_base == 10)
+          {
+            out() << val;
+            return;
+          }
+
+          tnac::buf_t conv;
+          static constexpr auto byteSizeInBin = 8u;
+          static constexpr auto byteSizeInOct = 3u;
+          static constexpr auto byteSizeInHex = 2u;
+          static constexpr auto intSize = sizeof(tnac::int_type);
+
+          switch (m_base)
+          {
+          case 2:
+            conv.resize(byteSizeInBin * intSize);
+            out() << "0b";
+            break;
+          case 8:
+            conv.resize(byteSizeInOct * intSize);
+            out() << '0';
+            break;
+          case 16:
+            conv.resize(byteSizeInHex * intSize);
+            out() << "0x";
+            break;
+          }
+
+          auto basePtr = conv.data();
+          std::to_chars(basePtr, basePtr + conv.size(), val, m_base);
+          out() << conv;
+        }
+        else
+        {
+          out() << val;
+        }
       });
   }
 }

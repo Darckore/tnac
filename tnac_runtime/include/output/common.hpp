@@ -35,9 +35,9 @@ namespace tnac_rt::out
     value_printer() noexcept;
 
   public:
-    void operator()(eval::value val, out_stream& os) noexcept;
+    void operator()(eval::value val, int base, out_stream& os) noexcept;
 
-    void operator()(eval::value val) noexcept;
+    void operator()(eval::value val, int base) noexcept;
 
   private:
     out_stream& out() noexcept;
@@ -46,5 +46,6 @@ namespace tnac_rt::out
 
   private:
     out_stream* m_out{ &std::cout };
+    int m_base{ 10 };
   };
 }
