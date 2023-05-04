@@ -83,6 +83,13 @@ namespace tnac_rt
     m_running = false;
   }
 
+  void driver::print_result(int base /*= 10*/) noexcept
+  {
+    out::value_printer vp;
+    vp(m_registry.evaluation_result(), base, out());
+    out() << '\n';
+  }
+
   void driver::print_result(command c) noexcept
   {
     static constexpr auto bin = "bin"sv;
@@ -104,9 +111,7 @@ namespace tnac_rt
         m_srcMgr.on_error(param, "Unknown parameter"sv);
     }
 
-    out::value_printer vp;
-    vp(m_registry.evaluation_result(), base, out());
-    out() << '\n';
+    print_result(base);
   }
 
   void driver::list_code(command c) noexcept
@@ -247,7 +252,10 @@ namespace tnac_rt
       m_ev(ast);
     }
 
-    if(interactive && ast != m_parser.root())
+    if (interactive && ast != m_parser.root())
+    {
       m_ev(ast);
+      print_result();
+    }
   }
 }

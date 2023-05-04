@@ -73,6 +73,11 @@ namespace tnac_rt
     void on_exit() noexcept;
 
     //
+    // Helper intended to be used by the handler and elsewhere
+    //
+    void print_result(int base = 10) noexcept;
+
+    //
     // Prints evaluation result of the last operation
     //
     void print_result(command c) noexcept;
