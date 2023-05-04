@@ -125,6 +125,12 @@ namespace tnac::eval
     {
       return std::fmod(static_cast<float_type>(l), r.real());
     }
+    complex_type operator%(const complex_type& l, const complex_type& r) noexcept
+    {
+      const auto quotient = l / r;
+      const auto mul = complex_type{ std::round(quotient.real()), std::round(quotient.imag()) };
+      return l - mul * r;
+    }
   }
 
 
