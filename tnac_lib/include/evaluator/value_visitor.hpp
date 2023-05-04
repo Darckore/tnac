@@ -73,6 +73,60 @@ namespace tnac::eval
 
   }
 
+  //
+  // Missing operators
+  //
+  namespace
+  {
+    complex_type operator+(const complex_type& l, int_type r) noexcept
+    {
+      return l + static_cast<float_type>(r);
+    }
+    complex_type operator+(int_type l, const complex_type& r) noexcept
+    {
+      return r + l;
+    }
+
+    complex_type operator-(const complex_type& l, int_type r) noexcept
+    {
+      return l - static_cast<float_type>(r);
+    }
+    complex_type operator-(int_type l, const complex_type& r) noexcept
+    {
+      return static_cast<float_type>(l) - r;
+    }
+
+    complex_type operator*(const complex_type& l, int_type r) noexcept
+    {
+      return l * static_cast<float_type>(r);
+    }
+    complex_type operator*(int_type l, const complex_type& r) noexcept
+    {
+      return r * l;
+    }
+
+    complex_type operator/(const complex_type& l, int_type r) noexcept
+    {
+      return l / static_cast<float_type>(r);
+    }
+    complex_type operator/(int_type l, const complex_type& r) noexcept
+    {
+      return static_cast<float_type>(l) / r;
+    }
+
+    template <detail::expr_result T> requires std::is_arithmetic_v<T>
+    complex_type operator%(const complex_type& l, T r) noexcept
+    {
+      return { std::fmod(l.real(), static_cast<float_type>(r)),
+               std::fmod(l.imag(), static_cast<float_type>(r)) };
+    }
+    template <detail::expr_result T> requires std::is_arithmetic_v<T>
+    float_type operator%(T l, const complex_type& r) noexcept
+    {
+      return std::fmod(static_cast<float_type>(l), r.real());
+    }
+  }
+
 
   //
   // Value visitor used in expression evaluations
