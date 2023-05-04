@@ -7,6 +7,26 @@ namespace tnac_tests
   {
     namespace
     {
+      using cplx = tnac::complex_type;
+
+      template <tnac::eval::detail::expr_result T>
+      bool eq(const T& l, const T& r) noexcept
+      {
+        return l == r;
+      }
+
+      template <>
+      bool eq(const tnac::float_type& l, const tnac::float_type& r) noexcept
+      {
+        if (std::isinf(l) && std::isinf(r))
+          return true;
+
+        if (std::isnan(l) && std::isnan(r))
+          return true;
+
+        return utils::eq(l, r);
+      }
+
       template <tnac::eval::detail::expr_result T>
       void check_eval(string_t input, T expected) noexcept
       {
@@ -30,12 +50,118 @@ namespace tnac_tests
             }
             else
             {
-              using ct = tnac::common_type_t<decltype(val), decltype(expected)>;
-              ASSERT_TRUE(utils::eq(static_cast<ct>(expected), static_cast<ct>(val)));
+              ASSERT_TRUE(eq(expected, val)) << "expected: " << expected << " got: " << val;
             }
           });
       }
     }
+  }
+
+  TEST(evaluation, t_basic_add)
+  {
+    using detail::check_eval;
+    using cplx = detail::cplx;
+
+    // Int
+    check_eval("1 + 2"sv, 3ll);
+    check_eval("1 + 2.0"sv, 3.0);
+    check_eval("1 + _complex(1, 2)"sv, cplx{ 2.0, 2.0 });
+    check_eval("_complex(1, 2) + 2"sv, cplx{ 3.0, 2.0 });
+
+    // Float
+    check_eval("4.0 + 5.0"sv, 9.0);
+    check_eval("4.0 + 5"sv, 9.0);
+    check_eval("4.0 + _complex(1.0, 6)"sv, cplx{ 5.0, 6.0 });
+    check_eval("_complex(2.0, 6) + 5.0"sv, cplx{ 7.0, 6.0 });
+
+    // Complex
+    check_eval("_complex(7, 10) + _complex(10, 11)"sv, cplx{ 17.0, 21.0 });
+  }
+
+  TEST(evaluation, t_basic_sub)
+  {
+    using detail::check_eval;
+    using cplx = detail::cplx;
+
+    // Int
+    check_eval("1 - 2"sv, -1ll);
+    check_eval("1 - 2.0"sv, -1.0);
+    check_eval("1 - _complex(1, 2)"sv, cplx{ 0.0, -2.0 });
+    check_eval("_complex(1, 2) - 2"sv, cplx{ -1.0, 2.0 });
+
+    // Float
+    check_eval("4.0 - 5.0"sv, -1.0);
+    check_eval("6.0 - 5"sv, 1.0);
+    check_eval("4.0 - _complex(1.0, 6)"sv, cplx{ 3.0, -6.0 });
+    check_eval("_complex(2.0, 6) - 5.0"sv, cplx{ -3.0, 6.0 });
+
+    // Complex
+    check_eval("_complex(7, 11) - _complex(10, 11)"sv, cplx{ -3.0, 0.0 });
+  }
+
+  TEST(evaluation, t_basic_mul)
+  {
+    using detail::check_eval;
+    using cplx = detail::cplx;
+
+    // Int
+    check_eval("1 * 2"sv, 2ll);
+    check_eval("1 * 2.0"sv, 2.0);
+    check_eval("1 * _complex(1, 2)"sv, cplx{ 1.0, 2.0 });
+    check_eval("_complex(1, 2) * 2"sv, cplx{ 2.0, 4.0 });
+
+    // Float
+    check_eval("4.0 * 5.0"sv, 20.0);
+    check_eval("6.0 * 5"sv, 30.0);
+    check_eval("4.0 * _complex(1.0, 6)"sv, cplx{ 4.0, 24.0 });
+    check_eval("_complex(2.0, 6) * 5.0"sv, cplx{ 10.0, 30.0 });
+
+    // Complex
+    check_eval("_complex(7, 11) * _complex(10, 11)"sv, cplx{ -51.0, 187.0 });
+  }
+
+  TEST(evaluation, t_basic_div)
+  {
+    using detail::check_eval;
+    using cplx = detail::cplx;
+    static constexpr auto inf = std::numeric_limits<tnac::float_type>::infinity();
+
+    // Int
+    check_eval("2 / 2"sv, 1.0);
+    check_eval("1 / 0"sv, inf);
+    check_eval("1 / _complex(1, 2)"sv, cplx{ 0.2, -0.4 });
+    check_eval("_complex(1, 2) / 2"sv, cplx{ 0.5, 1.0 });
+
+    // Float
+    check_eval("4.0 / 5.0"sv, 0.8);
+    check_eval("6.0 / 5"sv, 1.2);
+    check_eval("4.0 / _complex(2.0, 4)"sv, cplx{ 0.4, -0.8 });
+    check_eval("_complex(2.0, 6) / 5.0"sv, cplx{ 0.4, 1.2 });
+
+    // Complex
+    check_eval("_complex(-51, 187) / _complex(10, 11)"sv, cplx{ 7.0, 11.0 });
+  }
+
+  TEST(evaluation, t_basic_mod)
+  {
+    using detail::check_eval;
+    using cplx = detail::cplx;
+    static constexpr auto nan = std::numeric_limits<tnac::float_type>::quiet_NaN();
+
+    // Int
+    check_eval("2 % 2"sv, 0ll);
+    check_eval("1 % 0"sv, nan);
+    check_eval("1 % _complex(1, 2)"sv, 0.0);
+    check_eval("_complex(1, 2) % 2"sv, cplx{ 1.0, 0.0 });
+
+    // Float
+    check_eval("4.0 % 5.0"sv, 4.0);
+    check_eval("6.0 % 5"sv, 1.0);
+    check_eval("4.0 % _complex(2.0, 4)"sv, 0.0);
+    check_eval("_complex(2.0, 6) % 5.0"sv, cplx{ 2.0, 1.0 });
+
+    // Complex
+    check_eval("_complex(26, 120) % _complex(37, 226)"sv, cplx{ -11.0, -106.0 });
   }
 
   TEST(evaluation, t_literal)
