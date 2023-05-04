@@ -137,8 +137,9 @@ namespace tnac
         using kw_map = std::unordered_map<string_t, tok_kind>;
 
         static const kw_map keywords{
-          { "result",  tok_kind::KwResult },
-          { "complex", tok_kind::KwComplex },
+          { "result",   tok_kind::KwResult },
+          { "complex",  tok_kind::KwComplex },
+          { "fraction", tok_kind::KwFraction },
         };
 
         constexpr auto err = tok_kind::Error;

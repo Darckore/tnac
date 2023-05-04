@@ -185,6 +185,10 @@ namespace tnac
       val = instance<complex_type>{ m_visitor, m_errHandler }(expr);
       break;
 
+    case KwFraction:
+      val = instance<fraction_type>{ m_visitor, m_errHandler }(expr);
+      break;
+
     default:
       UTILS_ASSERT(false);
       break;

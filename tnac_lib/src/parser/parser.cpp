@@ -73,7 +73,7 @@ namespace tnac
 
       constexpr auto is_type_keyword(const token& tok) noexcept
       {
-        return tok.is_any(token::KwComplex);
+        return tok.is_any(token::KwComplex, token::KwFraction);
       }
 
       auto is_error_expr(ast::expr* expr) noexcept

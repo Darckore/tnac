@@ -17,7 +17,7 @@ namespace tnac::eval
     // Defines a valid result of expression evaluation
     //
     template <typename T>
-    concept expr_result = is_any_v<T, int_type, float_type, complex_type>;
+    concept expr_result = is_any_v<T, int_type, float_type, complex_type, fraction_type>;
   }
 
   //
@@ -41,7 +41,8 @@ namespace tnac::eval
     Invalid,
     Int,
     Float,
-    Complex
+    Complex,
+    Fraction
   };
 
   namespace detail
@@ -80,6 +81,17 @@ namespace tnac::eval
     struct type_from_id<type_id::Complex>
     {
       using type = complex_type;
+    };
+
+    template <>
+    struct id_from_type<fraction_type>
+    {
+      static constexpr auto value = type_id::Fraction;
+    };
+    template <>
+    struct type_from_id<type_id::Fraction>
+    {
+      using type = fraction_type;
     };
   }
 
@@ -231,6 +243,9 @@ namespace tnac::eval
 
     case Complex:
       return func(val.get<complex_type>());
+
+    case Fraction:
+      return func(val.get<fraction_type>());
 
     default:
       return func(invalid_val_t{});

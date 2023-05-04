@@ -23,7 +23,8 @@ namespace tnac::eval
     using stored_val_t = std::variant<
       int_type,
       float_type,
-      complex_type
+      complex_type,
+      fraction_type
     >;
 
     using entity_vals  = std::unordered_map<entity_id, stored_val_t>;

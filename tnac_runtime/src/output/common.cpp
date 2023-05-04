@@ -15,6 +15,15 @@ namespace tnac_rt::out
       out << "complex(" << c.real() << ", " << c.imag() << ')';
       return out;
     }
+
+    std::ostream& operator<<(std::ostream& out, const tnac::fraction_type& f) noexcept
+    {
+      if (f.sign() < 0)
+        out << '-';
+
+      out << f.num() << '/' << f.denom();
+      return out;
+    }
   }
 
   std::ostream& operator<<(std::ostream& out, const tnac::token& tok) noexcept
