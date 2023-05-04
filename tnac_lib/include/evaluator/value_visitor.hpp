@@ -86,6 +86,14 @@ namespace tnac::eval
     {
       return r + l;
     }
+    complex_type operator+(const complex_type& l, const fraction_type& r) noexcept
+    {
+      return l + r.to<float_type>();
+    }
+    complex_type operator+(const fraction_type& l, const complex_type& r) noexcept
+    {
+      return r + l;
+    }
 
     complex_type operator-(const complex_type& l, int_type r) noexcept
     {
@@ -95,12 +103,28 @@ namespace tnac::eval
     {
       return static_cast<float_type>(l) - r;
     }
+    complex_type operator-(const complex_type& l, const fraction_type& r) noexcept
+    {
+      return l - r.to<float_type>();
+    }
+    complex_type operator-(const fraction_type& l, const complex_type& r) noexcept
+    {
+      return l.to<float_type>() - r;
+    }
 
     complex_type operator*(const complex_type& l, int_type r) noexcept
     {
       return l * static_cast<float_type>(r);
     }
     complex_type operator*(int_type l, const complex_type& r) noexcept
+    {
+      return r * l;
+    }
+    complex_type operator*(const complex_type& l, const fraction_type& r) noexcept
+    {
+      return l * r.to<float_type>();
+    }
+    complex_type operator*(const fraction_type& l, const complex_type& r) noexcept
     {
       return r * l;
     }
@@ -113,6 +137,14 @@ namespace tnac::eval
     {
       return static_cast<float_type>(l) / r;
     }
+    complex_type operator/(const complex_type& l, const fraction_type& r) noexcept
+    {
+      return l / r.to<float_type>();
+    }
+    complex_type operator/(const fraction_type& l, const complex_type& r) noexcept
+    {
+      return l.to<float_type>() / r;
+    }
 
     template <detail::expr_result T> requires std::is_arithmetic_v<T>
     complex_type operator%(const complex_type& l, T r) noexcept
@@ -121,15 +153,40 @@ namespace tnac::eval
                std::fmod(l.imag(), static_cast<float_type>(r)) };
     }
     template <detail::expr_result T> requires std::is_arithmetic_v<T>
+    float_type operator%(const fraction_type& l, T r) noexcept
+    {
+      return std::fmod(l.to<float_type>(), static_cast<float_type>(r));
+    }
+    
+    template <detail::expr_result T> requires std::is_arithmetic_v<T>
     float_type operator%(T l, const complex_type& r) noexcept
     {
       return std::fmod(static_cast<float_type>(l), r.real());
     }
+    template <detail::expr_result T> requires std::is_arithmetic_v<T>
+    float_type operator%(T l, const fraction_type& r) noexcept
+    {
+      return std::fmod(static_cast<float_type>(l), r.to<float_type>());
+    }
+    
     complex_type operator%(const complex_type& l, const complex_type& r) noexcept
     {
       const auto quotient = l / r;
       const auto mul = complex_type{ std::round(quotient.real()), std::round(quotient.imag()) };
       return l - mul * r;
+    }
+    float_type   operator%(const fraction_type& l, const fraction_type& r) noexcept
+    {
+      return l % r.to<float_type>();
+    }
+
+    complex_type operator%(const complex_type& l, const fraction_type& r) noexcept
+    {
+      return l % r.to<float_type>();
+    }
+    float_type   operator%(const fraction_type& l, const complex_type& r) noexcept
+    {
+      return l.to<float_type>() % r;
     }
   }
 
