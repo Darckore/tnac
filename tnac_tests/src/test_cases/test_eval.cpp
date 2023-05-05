@@ -253,7 +253,9 @@ namespace tnac_tests
     using detail::check_invalid;
 
     check_eval("~2", (~2ll));
+    check_eval("~(4/2)", (~2ll));
     check_invalid("~2.0");
+    check_invalid("~(3/2)");
   }
 
   TEST(evaluation, t_binary)
