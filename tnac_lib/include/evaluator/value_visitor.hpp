@@ -280,9 +280,15 @@ namespace tnac::eval
       return visit_binary(lhs, rhs, [](auto l, auto r) noexcept { return l / r; });
     }
     
-    // Corner case, we don't want integral division, so, let's convert lhs to float
+    //
+    // Corner case. In most cases, we don't want integral division, so let's convert lhs to float
+    // if the remainder is not zero
+    //
     auto div(int_type lhs, int_type rhs) noexcept
     {
+      if(rhs && !(lhs % rhs))
+        return visit_binary(lhs, rhs, [](auto l, auto r) noexcept { return l / r; });
+
       return div(static_cast<float_type>(lhs), rhs);
     }
 
