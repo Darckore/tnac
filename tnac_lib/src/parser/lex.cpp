@@ -37,7 +37,7 @@ namespace tnac
       constexpr auto is_operator(char_t c) noexcept
       {
         constexpr std::array ops{
-          '+', '-', '~', '*', '/', '%', '='
+          '+', '-', '~', '*', '/', '%', '&', '^', '|', '='
         };
 
         return is_in_range(c, ops.begin(), ops.end());
@@ -468,6 +468,18 @@ namespace tnac
 
     case '%':
       resKind = Percent;
+      break;
+
+    case '&':
+      resKind = Amp;
+      break;
+
+    case '^':
+      resKind = Hat;
+      break;
+
+    case '|':
+      resKind = Pipe;
       break;
 
     case '=':

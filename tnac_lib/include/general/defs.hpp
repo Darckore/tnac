@@ -25,6 +25,18 @@
 *     additive_expr
 *     id-expr assign-operator assign-expr
 * 
+*   bit-or-expr:
+*     bit-xor-expr
+*     bit-or-expr '|' bit-xor-expr
+* 
+*   bit-xor-expr:
+*     bit-and-expr
+*     bit-xor-expr '^' bit-and-expr
+* 
+*   bit-and-expr:
+*     additive-expr
+*     bit-and-expr '&' additive-expr
+* 
 *   additive-expr:
 *     multiplicative-expr
 *     additive-expr additive-operator multiplicative-expr
@@ -140,7 +152,7 @@
 *     + - ~
 * 
 *   operator: one of
-*     + - ~ * / % =
+*     + - ~ * / % | ^ & =
 * 
 *   string-literal:
 *     ' anything '

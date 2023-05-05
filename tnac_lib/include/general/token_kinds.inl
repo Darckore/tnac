@@ -22,6 +22,9 @@ Slash,
 Percent,
 Assign,
 Tilde,
+Amp,
+Hat,
+Pipe,
 
 // Punctuation
 ParenOpen,
