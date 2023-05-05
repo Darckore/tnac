@@ -35,17 +35,21 @@ namespace tnac_tests
         return msg;
       }
 
-      template <tnac::eval::detail::expr_result T>
-      void check_eval(string_t input, T expected) noexcept
+      auto parse_input(string_t input, tnac::eval::registry& reg) noexcept
       {
         parse_helper p;
         p.parser(input);
-
-        tnac::eval::registry reg;
         tnac::evaluator ev{ reg };
         ev(p.parser.root());
 
-        auto res = reg.evaluation_result();
+        return reg.evaluation_result();
+      }
+
+      template <tnac::eval::detail::expr_result T>
+      void check_eval(string_t input, T expected) noexcept
+      {
+        tnac::eval::registry reg;
+        auto res = parse_input(input, reg);
         tnac::eval::on_value(res, [expected](auto val) noexcept
           {
             if constexpr (tnac::is_same_noquals_v<decltype(val), tnac::eval::invalid_val_t>)
@@ -61,6 +65,13 @@ namespace tnac_tests
               ASSERT_TRUE(eq(expected, val)) << "expected: " << expected << " got: " << val;
             }
           });
+      }
+
+      void check_invalid(string_t input) noexcept
+      {
+        tnac::eval::registry reg;
+        auto res = parse_input(input, reg);
+        ASSERT_TRUE(!res);
       }
     }
   }
@@ -234,6 +245,15 @@ namespace tnac_tests
     check_eval("-(2 + 3)"sv, -5ll);
     check_eval("-(2/4)"sv, -0.5);
     check_eval("a = 10 : -a"sv, -10ll);
+  }
+
+  TEST(evaluation, t_bitwise)
+  {
+    using detail::check_eval;
+    using detail::check_invalid;
+
+    check_eval("~2", (~2ll));
+    check_invalid("~2.0");
   }
 
   TEST(evaluation, t_binary)

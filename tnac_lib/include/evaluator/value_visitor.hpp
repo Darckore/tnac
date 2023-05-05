@@ -20,7 +20,8 @@ namespace tnac::eval
     Division,
     Modulo,
     UnaryNegation,
-    UnaryPlus
+    UnaryPlus,
+    UnaryBitwiseNot
   };
 
   namespace detail
@@ -63,7 +64,7 @@ namespace tnac::eval
     constexpr auto is_unary(val_ops op) noexcept
     {
       using enum val_ops;
-      return utils::eq_any(op, UnaryPlus, UnaryNegation);
+      return utils::eq_any(op, UnaryPlus, UnaryNegation, UnaryBitwiseNot);
     }
     constexpr auto is_binary(val_ops op) noexcept
     {
@@ -318,6 +319,19 @@ namespace tnac::eval
         mod(static_cast<float_type>(lhs), rhs);
     }
 
+
+    // Bitwise not
+
+    template <detail::expr_result T>
+    auto bitwise_not(T) noexcept { return get_empty(); }
+    template <detail::expr_result T>
+      requires requires (T v) { ~v; }
+    auto bitwise_not(T operand) noexcept
+    {
+      return visit_unary(operand, [](auto val) noexcept { return ~val; });
+    }
+
+
   private:
     //
     // Extracts type from value and calls the specified function
@@ -372,6 +386,9 @@ namespace tnac::eval
 
       case UnaryPlus:
         return visit_unary(val, [](auto v) noexcept { return +v; });
+
+      case UnaryBitwiseNot:
+        return bitwise_not(val);
 
       default:
         return get_empty();

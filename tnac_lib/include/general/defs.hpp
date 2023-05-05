@@ -67,11 +67,13 @@
 * 
 *   type-keyword: one of
 *     _complex
+*     _fraction
 * 
 *   params:
 *     '(' param-list ')'
 * 
 *   param-list:
+*     ''
 *     expr
 *     param-list ',' expr
 * 
@@ -135,10 +137,10 @@
 *     + -
 * 
 *   unary-operator: one of
-*     + -
+*     + - ~
 * 
 *   operator: one of
-*     + - * / % =
+*     + - ~ * / % =
 * 
 *   string-literal:
 *     ' anything '

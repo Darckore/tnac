@@ -21,6 +21,7 @@ Asterisk,
 Slash,
 Percent,
 Assign,
+Tilde,
 
 // Punctuation
 ParenOpen,

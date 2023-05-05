@@ -187,7 +187,7 @@ namespace tnac_tests
   TEST(parser, t_unaries)
   {
     constexpr std::array inputArr{
-      "+0"sv, "-42"sv, "+042"sv, "+0b1101"sv, "-0xfF2"sv, "-42.69"sv
+      "+0"sv, "-42"sv, "+042"sv, "+0b1101"sv, "-0xfF2"sv, "-42.69"sv, "~42"sv
     };
 
     using tnac::ast::node_kind;

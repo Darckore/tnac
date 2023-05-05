@@ -18,6 +18,9 @@ namespace tnac
 
         case Minus:
           return eval::val_ops::UnaryNegation;
+
+        case Tilde:
+          return eval::val_ops::UnaryBitwiseNot;
           
         default:
           return eval::val_ops::InvalidOp;

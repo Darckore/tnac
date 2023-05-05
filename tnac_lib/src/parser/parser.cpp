@@ -10,7 +10,7 @@ namespace tnac
     {
       constexpr auto is_unary_op(const token& tok) noexcept
       {
-        return tok.is_any(token::Plus, token::Minus);
+        return tok.is_any(token::Plus, token::Minus, token::Tilde);
       }
       constexpr auto is_add_op(const token& tok) noexcept
       {

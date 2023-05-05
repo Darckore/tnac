@@ -124,8 +124,10 @@ namespace tnac_rt::out
             break;
           }
 
+          using uint = std::make_unsigned_t<tnac::int_type>;
+          auto outVal = std::bit_cast<uint>(val);
           auto basePtr = conv.data();
-          std::to_chars(basePtr, basePtr + conv.size(), val, m_base);
+          std::to_chars(basePtr, basePtr + conv.size(), outVal, m_base);
           out() << conv;
         }
         else
