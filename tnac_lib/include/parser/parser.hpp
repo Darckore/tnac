@@ -21,6 +21,9 @@ namespace tnac
     public:
       enum class prec : std::uint8_t
       {
+        BitOr,
+        BitXor,
+        BitAnd,
         Additive,
         Multiplicative,
         Unary
@@ -29,6 +32,9 @@ namespace tnac
 
     private:
       inline static constexpr std::array precOrder{
+        BitXor,
+        BitAnd,
+        Additive,
         Multiplicative,
         Unary
       };
@@ -56,7 +62,7 @@ namespace tnac
       }
 
     private:
-      prec m_cur{ Additive };
+      prec m_cur{ BitOr };
     };
 
     template <typename F>

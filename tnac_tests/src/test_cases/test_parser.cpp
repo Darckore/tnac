@@ -463,6 +463,49 @@ namespace tnac_tests
     detail::check_tree_structute(exp, input);
   }
 
+  TEST(parser, t_bitwise_precedence)
+  {
+    using detail::expected_node;
+    using enum detail::node_kind;
+    constexpr auto input = "1 | 2 ^ 3 & 4 + 5 & 6 | 7 ^ 8"sv;
+
+    /*
+            --'|'-----------
+           |                |
+        --'|'--          --'^'--
+       |       |        |       |
+      '1'   --'^'--    '7'     '8'
+           |       |
+          '2'   --'&'--
+               |       |
+            --'&'--   '6'
+           |       |
+          '3'   --'+'--
+               |       |
+              '4'     '5'
+    */
+
+    std::array exp{
+      expected_node{  "1", Literal, Binary },
+      expected_node{  "2", Literal, Binary },
+      expected_node{  "3", Literal, Binary },
+      expected_node{  "4", Literal, Binary },
+      expected_node{  "5", Literal, Binary },
+      expected_node{  "+", Binary,  Binary },
+      expected_node{  "&", Binary,  Binary },
+      expected_node{  "6", Literal, Binary },
+      expected_node{  "&", Binary,  Binary },
+      expected_node{  "^", Binary,  Binary },
+      expected_node{  "|", Binary,  Binary },
+      expected_node{  "7", Literal, Binary },
+      expected_node{  "8", Literal, Binary },
+      expected_node{  "^", Binary,  Binary },
+      expected_node{  "|", Binary,  Scope  },
+    };
+
+    detail::check_tree_structute(exp, input);
+  }
+
   TEST(parser, t_struct_simple_decl)
   {
     using detail::expected_node;

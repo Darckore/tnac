@@ -34,6 +34,15 @@ namespace tnac
         using enum op_precedence::prec;
         switch (*prec)
         {
+        case BitOr:
+          return tok.is(token::Pipe);
+
+        case BitXor:
+          return tok.is(token::Hat);
+
+        case BitAnd:
+          return tok.is(token::Amp);
+
         case Additive:
           return is_add_op(tok);
 
@@ -299,7 +308,7 @@ namespace tnac
 
   ast::expr* parser::assign_expr() noexcept
   {
-    auto lhs = binary_expr(prec::Additive);
+    auto lhs = binary_expr(prec::BitOr);
     
     if (!detail::is_assign(peek_next()))
       return lhs;
