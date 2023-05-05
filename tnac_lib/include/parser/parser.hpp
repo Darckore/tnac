@@ -62,7 +62,7 @@ namespace tnac
       }
 
     private:
-      prec m_cur{ BitOr };
+      prec m_cur{};
     };
 
     template <typename F>
