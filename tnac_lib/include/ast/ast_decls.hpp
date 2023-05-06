@@ -28,7 +28,7 @@ namespace tnac::ast
     virtual ~decl() noexcept;
 
   protected:
-    decl(kind k, const token& id, expr& def) noexcept;
+    decl(kind k, const token& id, node& def) noexcept;
 
     //
     // Attaches a symbol to this declarator. Called from the corresponding
@@ -43,18 +43,16 @@ namespace tnac::ast
     string_t name() const noexcept;
 
     //
-    // Returns the definition expression which is present at the right side
-    // of the assignment operator
+    // Returns the definition
     // 
     // const version
     //
-    const expr& definition() const noexcept;
+    const node& definition() const noexcept;
 
     //
-    // Returns the definition expression which is present at the right side
-    // of the assignment operator
+    // Returns the definition
     // 
-    expr& definition() noexcept;
+    node& definition() noexcept;
 
     //
     // Returns the first token associated with this declarator
@@ -74,7 +72,7 @@ namespace tnac::ast
     semantics::symbol& symbol() noexcept;
 
   private:
-    expr* m_def{};
+    node* m_def{};
     semantics::symbol* m_symbol{};
     token m_id{};
   };
@@ -126,6 +124,19 @@ namespace tnac::ast
     CLASS_SPECIALS_NONE(var_decl);
 
     virtual ~var_decl() noexcept;
+
+  public:
+    //
+    // Returns the initialiser which is present at the right side of the the assignment operator
+    // 
+    // const version
+    //
+    const expr& initialiser() const noexcept;
+
+    //
+    // Returns the initialiser which is present at the right side of the the assignment operator
+    //
+    expr& initialiser() noexcept;
 
   protected:
     var_decl(const token& var, expr& initialiser) noexcept;

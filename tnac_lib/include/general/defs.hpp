@@ -18,7 +18,7 @@
 *     decl-expr
 * 
 *   decl-expr:
-*     var-decl '=' expr
+*     var-decl
 *     func-decl
 *     assign-expr
 * 
@@ -58,7 +58,7 @@
 *     '(' expr ')'
 * 
 *   var-decl:
-*     undeclared-identifier
+*     undeclared-identifier '=' expr
 * 
 *   func-decl:
 *     undeclared-identifier func-params func-body

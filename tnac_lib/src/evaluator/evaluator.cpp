@@ -241,7 +241,7 @@ namespace tnac
 
   void evaluator::visit(ast::var_decl& decl) noexcept
   {
-    eval_assign(decl.symbol(), decl.definition().value());
+    eval_assign(decl.symbol(), decl.initialiser().value());
   }
 
 
