@@ -28,7 +28,7 @@ namespace tnac::ast
     virtual ~decl() noexcept;
 
   protected:
-    decl(kind k, const token& id, node& def) noexcept;
+    decl(kind k, const token& id, node* def) noexcept;
 
     //
     // Attaches a symbol to this declarator. Called from the corresponding
@@ -47,12 +47,12 @@ namespace tnac::ast
     // 
     // const version
     //
-    const node& definition() const noexcept;
+    const node* definition() const noexcept;
 
     //
     // Returns the definition
     // 
-    node& definition() noexcept;
+    node* definition() noexcept;
 
     //
     // Returns the first token associated with this declarator
@@ -125,6 +125,9 @@ namespace tnac::ast
 
     virtual ~var_decl() noexcept;
 
+  protected:
+    var_decl(const token& var, expr& initialiser) noexcept;
+
   public:
     //
     // Returns the initialiser which is present at the right side of the the assignment operator
@@ -137,8 +140,48 @@ namespace tnac::ast
     // Returns the initialiser which is present at the right side of the the assignment operator
     //
     expr& initialiser() noexcept;
+  };
+
+
+  //
+  // Parameter declarator
+  //
+  class param_decl final : public decl
+  {
+  private:
+    friend class builder;
+
+  public:
+    CLASS_SPECIALS_NONE(param_decl);
+
+    virtual ~param_decl() noexcept;
 
   protected:
-    var_decl(const token& var, expr& initialiser) noexcept;
+    param_decl(const token& paramName) noexcept;
   };
+
+
+  //
+  // Function declarator
+  //
+  class func_decl final : public decl
+  {
+  public:
+    using param_list = std::vector<param_decl*>;
+
+  private:
+    friend class builder;
+
+  public:
+    CLASS_SPECIALS_NONE(func_decl);
+
+    virtual ~func_decl() noexcept;
+
+  protected:
+    func_decl(const token& func, scope& def, param_list params) noexcept;
+
+  private:
+    param_list m_params;
+  };
+
 }

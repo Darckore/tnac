@@ -6,10 +6,10 @@ namespace tnac::ast
 
   decl::~decl() noexcept = default;
 
-  decl::decl(kind k, const token& id, node& def) noexcept :
+  decl::decl(kind k, const token& id, node* def) noexcept :
     node{ k },
     m_id{ id },
-    m_def{ &def }
+    m_def{ def }
   {
     assume_ancestry(m_def);
   }
@@ -24,11 +24,11 @@ namespace tnac::ast
     return m_id.m_value;
   }
 
-  const node& decl::definition() const noexcept
+  const node* decl::definition() const noexcept
   {
-    return *m_def;
+    return m_def;
   }
-  node& decl::definition() noexcept
+  node* decl::definition() noexcept
   {
     return FROM_CONST(definition);
   }
@@ -74,15 +74,33 @@ namespace tnac::ast
   var_decl::~var_decl() noexcept = default;
 
   var_decl::var_decl(const token& var, expr& initialiser) noexcept :
-    decl{ kind::VarDecl, var, initialiser }
+    decl{ kind::VarDecl, var, &initialiser }
   {}
 
   const expr& var_decl::initialiser() const noexcept
   {
-    return static_cast<const expr&>(definition());
+    return static_cast<const expr&>(*definition());
   }
   expr& var_decl::initialiser() noexcept
   {
     return FROM_CONST(initialiser);
   }
+
+
+  // Parameter decl
+
+  param_decl::~param_decl() noexcept = default;
+
+  param_decl::param_decl(const token& paramName) noexcept :
+    decl{ kind::ParamDecl, paramName, nullptr }
+  {}
+
+
+  // Function decl
+
+  func_decl::~func_decl() noexcept = default;
+
+  func_decl::func_decl(const token& func, scope& def, param_list params) noexcept :
+    decl{ kind::FuncDecl, func, &def }
+  {}
 }

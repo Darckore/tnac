@@ -102,6 +102,16 @@ namespace tnac::ast
     //
     var_decl* make_var_decl(const token& var, expr& initialiser) noexcept;
 
+    //
+    // Makes a parameter declarator
+    //
+    param_decl* make_param_decl(const token& name) noexcept;
+
+    //
+    // Makes a function declarator
+    //
+    func_decl* make_func_decl(const token& func, scope& def, func_decl::param_list params) noexcept;
+
   private:
     owner_store m_store;
   };

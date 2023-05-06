@@ -191,7 +191,7 @@ namespace tnac_rt::out
   {
     print_token(decl.pos(), true);
     out() << "= ";
-    print(&decl.definition());
+    print(&decl.initialiser());
   }
 
   void lister::endl() noexcept

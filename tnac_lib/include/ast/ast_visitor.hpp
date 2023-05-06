@@ -187,7 +187,7 @@ namespace tnac::ast
       if constexpr (is_top_down())
         visit(varDecl);
 
-      visit_root(&varDecl->definition());
+      visit_root(&varDecl->initialiser());
 
       if constexpr (is_bottom_up())
         visit(varDecl);

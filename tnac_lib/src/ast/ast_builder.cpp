@@ -75,6 +75,16 @@ namespace tnac::ast
     return make<var_decl>(var, initialiser);
   }
 
+  param_decl* builder::make_param_decl(const token& name) noexcept
+  {
+    return make<param_decl>(name);
+  }
+
+  func_decl* builder::make_func_decl(const token& func, scope& def, func_decl::param_list params) noexcept
+  {
+    return make<func_decl>(func, def, std::move(params));
+  }
+
   // Private members
 
 }
