@@ -93,6 +93,18 @@ namespace tnac
 
     using cmd_handler_t = std::function<void(ast::command)>;
 
+  private:
+    //
+    // Helper for the expr list parser
+    // Defines whether the expression list should belong to a global
+    // or a nested scope
+    //
+    enum class scope_level : std::uint8_t
+    {
+      Global,
+      Nested
+    };
+
   public:
     CLASS_SPECIALS_NONE(parser);
 
@@ -195,7 +207,7 @@ namespace tnac
     //
     // Parses a list of expressions
     //
-    expr_list expression_list() noexcept;
+    expr_list expression_list(scope_level scopeLvl) noexcept;
 
     //
     // Parses an expression

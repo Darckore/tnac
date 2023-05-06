@@ -69,6 +69,10 @@ namespace tnac
       {
         return tok.is(token::Comma);
       }
+      constexpr auto is_semi(const token& tok) noexcept
+      {
+        return tok.is(token::Semicolon);
+      }
 
       constexpr auto is_expression_separator(const token& tok) noexcept
       {
@@ -115,7 +119,7 @@ namespace tnac
     }
 
     pointer res = m_root;
-    auto eList = expression_list();
+    auto eList = expression_list(scope_level::Global);
     if (!eList.empty())
     {
       res = eList.back();
@@ -234,7 +238,7 @@ namespace tnac
     return errExpr;
   }
 
-  parser::expr_list parser::expression_list() noexcept
+  parser::expr_list parser::expression_list(scope_level scopeLvl) noexcept
   {
     expr_list res;
 
@@ -251,6 +255,9 @@ namespace tnac
 
       auto&& next = peek_next();
       if (next.is_eol())
+        break;
+
+      if (scopeLvl == scope_level::Nested && detail::is_semi(next))
         break;
 
       if (detail::is_expression_separator(next))
