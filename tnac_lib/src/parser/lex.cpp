@@ -66,10 +66,15 @@ namespace tnac
       {
         return c == ',';
       }
+      constexpr auto is_semi(char_t c) noexcept
+      {
+        return c == ';';
+      }
       constexpr auto is_separator(char_t c) noexcept
       {
         return is_expr_separator(c) ||
                is_comma(c) ||
+               is_semi(c)  ||
                is_paren(c) ||
                is_blank(c) ||
                is_operator(c);
@@ -517,6 +522,10 @@ namespace tnac
 
     case ',':
       resKind = Comma;
+      break;
+
+    case ';':
+      resKind = Semicolon;
       break;
 
     default:

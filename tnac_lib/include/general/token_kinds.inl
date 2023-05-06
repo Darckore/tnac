@@ -30,6 +30,7 @@ Pipe,
 ParenOpen,
 ParenClose,
 Comma,
+Semicolon,
 
 // Identifiers
 Identifier,

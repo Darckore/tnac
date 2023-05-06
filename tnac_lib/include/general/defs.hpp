@@ -18,7 +18,8 @@
 *     decl-expr
 * 
 *   decl-expr:
-*     declarator '=' expr
+*     var-decl '=' expr
+*     func-decl
 *     assign-expr
 * 
 *   assign-expr:
@@ -56,11 +57,27 @@
 *     typed-expr
 *     '(' expr ')'
 * 
-*   declarator:
-*     var-decl
-* 
 *   var-decl:
-*     identifier (previously not declared)
+*     undeclared-identifier
+* 
+*   func-decl:
+*     undeclared-identifier func-params func-body
+* 
+*   func-body:
+*     expr-list ';'
+* 
+*   func-params:
+*     '(' func-param-list ')'
+* 
+*   func-param-list:
+*     param-decl
+*     func-param-list ',' param-decl
+* 
+*   param-decl:
+*     undeclared-identifier
+* 
+*   undeclared-identifier:
+*     identifier (not previously declared)
 * 
 *   result-expr:
 *     _result
