@@ -443,7 +443,7 @@ namespace tnac
       return error_expr(next_tok(), "Expected parameter list"sv);
 
     next_tok();
-    auto params = param_list();
+    auto params = arg_list();
 
     if (!detail::is_close_paren(peek_next()))
       return error_expr(next_tok(), "Expected ')'"sv);
@@ -452,7 +452,7 @@ namespace tnac
     return m_builder.make_typed(kw, std::move(params));
   }
 
-  parser::expr_list parser::param_list() noexcept
+  parser::expr_list parser::arg_list() noexcept
   {
     expr_list res;
 

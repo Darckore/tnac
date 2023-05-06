@@ -86,6 +86,7 @@ namespace tnac
     using root_ptr = root_type*;
     using const_root_ptr = const root_type*;
     using expr_list = root_type::elem_list;
+    //using param_list = ast::func_decl::param_list;
 
     using prec = detail::op_precedence;
 
@@ -270,9 +271,9 @@ namespace tnac
     ast::expr* typed_expr() noexcept;
 
     //
-    // Parses a parameter list
+    // Parses an argument list
     //
-    expr_list param_list() noexcept;
+    expr_list arg_list() noexcept;
 
     //
     // Parses an id expression
