@@ -11,43 +11,54 @@ namespace tnac
       constexpr auto conv_unary(tok_kind tk) noexcept
       {
         using enum tok_kind;
+        using enum eval::val_ops;
         switch (tk)
         {
         case Plus:
-          return eval::val_ops::UnaryPlus;
+          return UnaryPlus;
 
         case Minus:
-          return eval::val_ops::UnaryNegation;
+          return UnaryNegation;
 
         case Tilde:
-          return eval::val_ops::UnaryBitwiseNot;
+          return UnaryBitwiseNot;
           
         default:
-          return eval::val_ops::InvalidOp;
+          return InvalidOp;
         }
       }
       constexpr auto conv_binary(tok_kind tk) noexcept
       {
         using enum tok_kind;
+        using enum eval::val_ops;
         switch (tk)
         {
         case Plus:
-          return eval::val_ops::Addition;
+          return Addition;
 
         case Minus:
-          return eval::val_ops::Subtraction;
+          return Subtraction;
 
         case Asterisk:
-          return eval::val_ops::Multiplication;
+          return Multiplication;
 
         case Slash:
-          return eval::val_ops::Division;
+          return Division;
 
         case Percent:
-          return eval::val_ops::Modulo;
+          return Modulo;
+
+        case Amp:
+          return BitwiseAnd;
+
+        case Hat:
+          return BitwiseXor;
+
+        case Pipe:
+          return BitwiseOr;
 
         default:
-          return eval::val_ops::InvalidOp;
+          return InvalidOp;
         }
       }
     

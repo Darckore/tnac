@@ -19,6 +19,9 @@ namespace tnac::eval
     Multiplication,
     Division,
     Modulo,
+    BitwiseAnd,
+    BitwiseXor,
+    BitwiseOr,
     UnaryNegation,
     UnaryPlus,
     UnaryBitwiseNot
@@ -69,7 +72,9 @@ namespace tnac::eval
     constexpr auto is_binary(val_ops op) noexcept
     {
       using enum val_ops;
-      return utils::eq_any(op, Addition, Subtraction, Multiplication, Division, Modulo);
+      return utils::eq_any(op, Addition, Subtraction, 
+                               Multiplication, Division, Modulo,
+                               BitwiseAnd, BitwiseOr, BitwiseXor);
     }
 
   }
@@ -337,6 +342,38 @@ namespace tnac::eval
       return visit_unary(operand, [](auto val) noexcept { return ~val; });
     }
 
+    // Bitwise and
+
+    template <detail::expr_result L, detail::expr_result R>
+    auto bitwise_and(L, R) noexcept { return get_empty(); }
+    template <detail::expr_result L, detail::expr_result R>
+      requires requires (L l, R r) { l & r; }
+    auto bitwise_and(L lhs, R rhs) noexcept
+    { 
+      return visit_binary(lhs, rhs, [](auto l, auto r) noexcept { return l & r; });
+    }
+
+    // Bitwise xor
+
+    template <detail::expr_result L, detail::expr_result R>
+    auto bitwise_xor(L, R) noexcept { return get_empty(); }
+    template <detail::expr_result L, detail::expr_result R>
+      requires requires (L l, R r) { l ^ r; }
+    auto bitwise_xor(L lhs, R rhs) noexcept
+    {
+      return visit_binary(lhs, rhs, [](auto l, auto r) noexcept { return l ^ r; });
+    }
+
+    // Bitwise or
+
+    template <detail::expr_result L, detail::expr_result R>
+    auto bitwise_or(L, R) noexcept { return get_empty(); }
+    template <detail::expr_result L, detail::expr_result R>
+      requires requires (L l, R r) { l | r; }
+    auto bitwise_or(L lhs, R rhs) noexcept
+    {
+      return visit_binary(lhs, rhs, [](auto l, auto r) noexcept { return l | r; });
+    }
 
   private:
     //
@@ -446,6 +483,15 @@ namespace tnac::eval
 
       case Modulo:
         return mod(lhs, rhs);
+
+      case BitwiseAnd:
+        return bitwise_and(lhs, rhs);
+
+      case BitwiseXor:
+        return bitwise_xor(lhs, rhs);
+
+      case BitwiseOr:
+        return bitwise_or(lhs, rhs);
 
       default:
         return get_empty();
