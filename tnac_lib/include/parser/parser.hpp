@@ -86,7 +86,7 @@ namespace tnac
     using root_ptr = root_type*;
     using const_root_ptr = const root_type*;
     using expr_list = root_type::elem_list;
-    //using param_list = ast::func_decl::param_list;
+    using param_list = ast::func_decl::param_list;
 
     using prec = detail::op_precedence;
 
@@ -104,6 +104,29 @@ namespace tnac
     {
       Global,
       Nested
+    };
+
+    //
+    // Helper type to manage scopes RAII-way
+    //
+    class scope_guard
+    {
+    public:
+      CLASS_SPECIALS_NONE(scope_guard);
+
+      scope_guard(parser& p, root_ptr newScope) noexcept :
+        m_parser{ p }
+      {
+        m_parser.new_scope(newScope);
+      }
+
+      ~scope_guard() noexcept
+      {
+        m_parser.end_scope();
+      }
+
+    private:
+      parser& m_parser;
     };
 
   public:
@@ -234,6 +257,11 @@ namespace tnac
     // Parses a function declarator
     //
     ast::decl* func_decl(token name) noexcept;
+
+    //
+    // Parses function parameters
+    //
+    param_list formal_params() noexcept;
 
     //
     // Parses an assign expr

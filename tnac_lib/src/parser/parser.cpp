@@ -329,9 +329,15 @@ namespace tnac
     UTILS_ASSERT(detail::is_open_paren(peek_next()));
     next_tok();
 
-    
+    auto def = m_builder.make_scope({});
+    scope_guard _{ *this, def };
 
     utils::unused(name);
+    return {};
+  }
+
+  parser::param_list parser::formal_params() noexcept
+  {
     return {};
   }
 
