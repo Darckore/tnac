@@ -73,9 +73,15 @@ namespace tnac_rt
     void on_exit() noexcept;
 
     //
+    // Sets the base for ints
+    // The setting persists until a new base is set
+    //
+    void set_num_base(int base) noexcept;
+
+    //
     // Helper intended to be used by the handler and elsewhere
     //
-    void print_result(int base = 10) noexcept;
+    void print_result() noexcept;
 
     //
     // Prints evaluation result of the last operation
@@ -162,6 +168,7 @@ namespace tnac_rt
 
     var_collection m_vars;
 
+    int m_numBase{ 10 };
     bool m_running{};
   };
 }

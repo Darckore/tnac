@@ -162,13 +162,13 @@ namespace tnac
     // If no command handler is set, skips to the end of input, or the
     // nearest expression separator (if one exists)
     //
-    void command() noexcept;
+    void command(bool consumeSeparator) noexcept;
 
     //
     // Parses command parameters until the end of input, or an expression separator
     // is encountered
     //
-    ast::command::param_list command_params() noexcept;
+    ast::command::param_list command_params(bool consumeSeparator) noexcept;
 
   private: // parsing
     //

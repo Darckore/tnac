@@ -83,10 +83,15 @@ namespace tnac_rt
     m_running = false;
   }
 
-  void driver::print_result(int base /*= 10*/) noexcept
+  void driver::set_num_base(int base) noexcept
+  {
+    m_numBase = base;
+  }
+
+  void driver::print_result() noexcept
   {
     out::value_printer vp;
-    vp(m_registry.evaluation_result(), base, out());
+    vp(m_registry.evaluation_result(), m_numBase, out());
     out() << '\n';
   }
 
@@ -94,9 +99,10 @@ namespace tnac_rt
   {
     static constexpr auto bin = "bin"sv;
     static constexpr auto oct = "oct"sv;
+    static constexpr auto dec = "dec"sv;
     static constexpr auto hex = "hex"sv;
 
-    auto base = 10;
+    auto base = m_numBase;
     if (c.param_count())
     {
       auto&& param   = c[size_type{}];
@@ -105,13 +111,16 @@ namespace tnac_rt
         base = 2;
       else if (paramName == oct)
         base = 8;
+      else if (paramName == dec)
+        base = 10;
       else if (paramName == hex)
         base = 16;
       else
         m_srcMgr.on_error(param, "Unknown parameter"sv);
     }
 
-    print_result(base);
+    tnac::value_guard _{ m_numBase, base };
+    print_result();
   }
 
   void driver::list_code(command c) noexcept
@@ -233,6 +242,11 @@ namespace tnac_rt
 
     m_commands.declare("vars"sv, params{ String }, size_type{},
                        [this](auto c) noexcept { print_vars(std::move(c)); });
+
+    m_commands.declare("bin"sv, [this](auto) noexcept { set_num_base(2); });
+    m_commands.declare("oct"sv, [this](auto) noexcept { set_num_base(8); });
+    m_commands.declare("dec"sv, [this](auto) noexcept { set_num_base(10); });
+    m_commands.declare("hex"sv, [this](auto) noexcept { set_num_base(16); });
   }
 
   void driver::store_var(variable_ref var) noexcept

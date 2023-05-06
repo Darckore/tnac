@@ -150,7 +150,7 @@ namespace tnac
 
   /// Commands
 
-  void parser::command() noexcept
+  void parser::command(bool consumeSeparator) noexcept
   {
     auto cmdName = peek_next();
     if (!detail::is_command_name(cmdName))
@@ -159,18 +159,20 @@ namespace tnac
     if (!m_cmdHandler)
     {
       to_expr_end();
-      next_tok();
+      
+      if(consumeSeparator)
+        next_tok();
 
       return;
     }
 
     next_tok();
-    auto paramList = command_params();
+    auto paramList = command_params(consumeSeparator);
     ast::command cmd{ cmdName, std::move(paramList) };
     m_cmdHandler(std::move(cmd));
   }
 
-  ast::command::param_list parser::command_params() noexcept
+  ast::command::param_list parser::command_params(bool consumeSeparator) noexcept
   {
     ast::command::param_list res{};
 
@@ -183,7 +185,9 @@ namespace tnac
 
       if (detail::is_expression_separator(next))
       {
-        next_tok();
+        if(consumeSeparator)
+          next_tok();
+
         break;
       }
 
@@ -236,12 +240,14 @@ namespace tnac
 
     while (!peek_next().is_eol())
     {
-      command();
+      command(true);
       if (peek_next().is_eol())
         break;
 
       auto e = expr();
       res.push_back(e);
+
+      command(false);
 
       auto&& next = peek_next();
       if (next.is_eol())
