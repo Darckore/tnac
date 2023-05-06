@@ -295,25 +295,25 @@ namespace tnac
     if (m_sema.find(next.m_value))
       return {};
 
-    auto res = var_decl();
+    auto name = next_tok();
+    auto res = var_decl(name);
     m_sema.visit_decl(*res);
     return res;
   }
 
-  ast::decl* parser::var_decl() noexcept
+  ast::decl* parser::var_decl(token name) noexcept
   {
-    auto name = next_tok();
-    auto op   = peek_next();
+    auto op = peek_next();
 
     ast::expr* init{};
-    if (!detail::is_init(op))
-    {
-      init = error_expr(op, "Expected initialisation"sv, true);
-    }
-    else
+    if (detail::is_init(op))
     {
       next_tok();
       init = expr();
+    }
+    else
+    {
+      init = error_expr(op, "Expected initialisation"sv, true);
     }
 
     return m_builder.make_var_decl(name, *init);
