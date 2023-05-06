@@ -230,6 +230,11 @@ namespace tnac
     ast::decl* var_decl(token name) noexcept;
 
     //
+    // Parses a function declarator
+    //
+    ast::decl* func_decl(token name) noexcept;
+
+    //
     // Parses an assign expr
     //
     ast::expr* assign_expr() noexcept;

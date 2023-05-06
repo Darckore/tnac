@@ -14,3 +14,5 @@ Result,
 
 // Decls,
 VarDecl,
+FuncDecl,
+ParamDecl,
