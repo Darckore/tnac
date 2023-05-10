@@ -103,10 +103,10 @@ namespace tnac_rt
     static constexpr auto hex = "hex"sv;
 
     auto base = m_numBase;
-    if (c.param_count())
+    if (c.arg_count())
     {
-      auto&& param   = c[size_type{}];
-      auto paramName = param.m_value;
+      auto&& arg     = c[size_type{}];
+      auto paramName = arg.m_value;
       if (paramName == bin)
         base = 2;
       else if (paramName == oct)
@@ -116,7 +116,7 @@ namespace tnac_rt
       else if (paramName == hex)
         base = 16;
       else
-        m_srcMgr.on_error(param, "Unknown parameter"sv);
+        m_srcMgr.on_error(arg, "Unknown parameter"sv);
     }
 
     tnac::value_guard _{ m_numBase, base };
@@ -126,7 +126,7 @@ namespace tnac_rt
   void driver::list_code(command c) noexcept
   {
     tnac::value_guard _{ m_out };
-    if (c.param_count())
+    if (c.arg_count())
     {
       try_redirect_output(c[size_type{}]);
     }
@@ -140,10 +140,10 @@ namespace tnac_rt
   {
     auto toPrint = [this](const command& c) noexcept -> const tnac::ast::node*
     {
-      constexpr auto maxParams = size_type{ 2 };
-      const auto paramCount = c.param_count();
+      constexpr auto maxArgs = size_type{ 2 };
+      const auto argCount    = c.arg_count();
       
-      if (paramCount < maxParams)
+      if (argCount < maxArgs)
         return m_parser.root();
 
       auto&& second = c[size_type{ 1 }];
@@ -156,7 +156,7 @@ namespace tnac_rt
 
     auto ast = toPrint(c);
     tnac::value_guard _{ m_out };
-    if (c.param_count())
+    if (c.arg_count())
     {
       try_redirect_output(c[size_type{}]);
     }
@@ -169,7 +169,7 @@ namespace tnac_rt
   void driver::print_vars(command c) noexcept
   {
     tnac::value_guard _{ m_out };
-    if (c.param_count())
+    if (c.arg_count())
     {
       try_redirect_output(c[size_type{}]);
     }

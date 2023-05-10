@@ -26,14 +26,14 @@ namespace tnac::ast
 
   command::~command() noexcept = default;
 
-  command::command(const token& cmd, param_list params) noexcept :
+  command::command(const token& cmd, arg_list args) noexcept :
     m_cmd{ cmd },
-    m_params{ std::move(params) }
+    m_args{ std::move(args) }
   {}
 
   const token& command::operator[](size_type idx) const noexcept
   {
-    return m_params[idx];
+    return m_args[idx];
   }
 
   const token& command::pos() const noexcept
@@ -46,18 +46,18 @@ namespace tnac::ast
     return pos().m_value;
   }
 
-  command::size_type command::param_count() const noexcept
+  command::size_type command::arg_count() const noexcept
   {
-    return m_params.size();
+    return m_args.size();
   }
 
   command::iterator command::begin() const noexcept
   {
-    return m_params.begin();
+    return m_args.begin();
   }
 
   command::iterator command::end() const noexcept
   {
-    return m_params.end();
+    return m_args.end();
   }
 }

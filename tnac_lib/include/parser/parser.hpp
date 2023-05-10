@@ -201,10 +201,10 @@ namespace tnac
     void command(bool consumeSeparator) noexcept;
 
     //
-    // Parses command parameters until the end of input, or an expression separator
+    // Parses command arguments until the end of input, or an expression separator
     // is encountered
     //
-    ast::command::param_list command_params(bool consumeSeparator) noexcept;
+    ast::command::arg_list command_args(bool consumeSeparator) noexcept;
 
   private: // parsing
     //

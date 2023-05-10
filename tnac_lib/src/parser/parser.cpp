@@ -171,14 +171,14 @@ namespace tnac
     }
 
     next_tok();
-    auto paramList = command_params(consumeSeparator);
-    ast::command cmd{ cmdName, std::move(paramList) };
+    auto argList = command_args(consumeSeparator);
+    ast::command cmd{ cmdName, std::move(argList) };
     m_cmdHandler(std::move(cmd));
   }
 
-  ast::command::param_list parser::command_params(bool consumeSeparator) noexcept
+  ast::command::arg_list parser::command_args(bool consumeSeparator) noexcept
   {
-    ast::command::param_list res{};
+    ast::command::arg_list res{};
 
     for (;;)
     {

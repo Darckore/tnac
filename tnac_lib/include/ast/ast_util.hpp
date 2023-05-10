@@ -58,11 +58,11 @@ namespace tnac::ast
     friend class tnac::parser;
 
   public:
-    using param_list = std::vector<token>;
-    using iterator = param_list::const_iterator;
-    using size_type = param_list::size_type;
+    using arg_list = std::vector<token>;
+    using iterator = arg_list::const_iterator;
+    using size_type = arg_list::size_type;
 
-    using param_baseline = std::span<const tok_kind>;
+    using arg_baseline = std::span<const tok_kind>;
 
   public:
     CLASS_SPECIALS_NODEFAULT(command);
@@ -70,11 +70,11 @@ namespace tnac::ast
     ~command() noexcept;
 
   protected:
-    command(const token& cmd, param_list params) noexcept;
+    command(const token& cmd, arg_list args) noexcept;
 
   public:
     //
-    // Returns the parameter by the given index
+    // Returns the argeter by the given index
     // Bounds checking is on the caller
     //
     const token& operator[](size_type idx) const noexcept;
@@ -90,22 +90,22 @@ namespace tnac::ast
     string_t name() const noexcept;
 
     //
-    // Returns the number of parameters
+    // Returns the number of argeters
     //
-    size_type param_count() const noexcept;
+    size_type arg_count() const noexcept;
 
     //
-    // Begin iterator to the param list
+    // Begin iterator to the arg list
     //
     iterator begin() const noexcept;
 
     //
-    // End iterator to the param list
+    // End iterator to the arg list
     //
     iterator end() const noexcept;
 
   private:
     token m_cmd;
-    param_list m_params;
+    arg_list m_args;
   };
 }

@@ -42,19 +42,19 @@ namespace tnac
     using enum commands::verification;
     using size_type = ver_result::size_type;
 
-    const auto paramSize = command.param_count();
+    const auto argSize = command.arg_count();
     
-    if (paramSize > base.size())
+    if (argSize > base.size())
       res.m_res = TooMany;
-    else if (paramSize < base.required())
+    else if (argSize < base.required())
       res.m_res = TooFew;
 
     if (res.m_res != Correct)
-      res.m_diff = paramSize;
+      res.m_diff = argSize;
     else
     {
       auto idx = size_type{};
-      for (; idx < paramSize; ++idx)
+      for (; idx < argSize; ++idx)
       {
         if (command[idx].is(base[idx]))
           continue;
@@ -86,17 +86,17 @@ namespace tnac
 
     case TooFew:
       pos = !reason.m_diff ? &command.pos() : &command[reason.m_diff - 1];
-      msg = "Too few parameters"sv;
+      msg = "Too few arguments"sv;
       break;
 
     case TooMany:
       pos = &command[reason.m_diff - 1];
-      msg = "Too many parameters"sv;
+      msg = "Too many arguments"sv;
       break;
 
     case WrongKind:
       pos = &command[reason.m_diff];
-      msg = "Wrong parameter type"sv;
+      msg = "Wrong argument type"sv;
       break;
 
     default:
