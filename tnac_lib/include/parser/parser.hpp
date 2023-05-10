@@ -194,7 +194,7 @@ namespace tnac
 
   private: // commands
     //
-    // Parses a command along with its parameters and calls the current command handler
+    // Parses a command along with its arguments and calls the current command handler
     // If no command handler is set, skips to the end of input, or the
     // nearest expression separator (if one exists)
     //

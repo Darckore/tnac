@@ -286,7 +286,7 @@ namespace tnac::ast
 
   //
   // Typed expression
-  // Represents a value of the given type initialised by a parameter list
+  // Represents a value of the given type initialised by a arg list
   //
   class typed_expr final : public expr
   {
@@ -306,7 +306,7 @@ namespace tnac::ast
     virtual ~typed_expr() noexcept;
 
   protected:
-    typed_expr(const token& typeName, arg_list params) noexcept;
+    typed_expr(const token& typeName, arg_list args) noexcept;
 
   public:
     //
@@ -315,14 +315,14 @@ namespace tnac::ast
     const token& type_name() const noexcept;
 
     //
-    // Returns the param list
+    // Returns the argument list
     // 
     // const version
     //
     const arg_list& args() const noexcept;
 
     //
-    // Returns the param list
+    // Returns the argument list
     //
     arg_list& args() noexcept;
 

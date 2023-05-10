@@ -98,13 +98,13 @@
 *     _complex
 *     _fraction
 * 
-*   params:
-*     '(' param-list ')'
+*   args:
+*     '(' arg-list ')'
 * 
-*   param-list:
+*   arg-list:
 *     ''
 *     expr
-*     param-list ',' expr
+*     arg-list ',' expr
 * 
 *   command:
 *     # id-sequence

@@ -11,12 +11,12 @@ namespace tnac::eval
 
   namespace detail
   {
-    template <std::size_t MinArgs, type_id... Params>
+    template <std::size_t MinArgs, type_id... Args>
     struct basic_type_info
     {
-      static constexpr std::array params{ Params... };
+      static constexpr std::array params{ Args... };
       static constexpr auto minArgs = MinArgs;
-      static constexpr auto maxArgs = sizeof...(Params);
+      static constexpr auto maxArgs = sizeof...(Args);
     };
   }
 

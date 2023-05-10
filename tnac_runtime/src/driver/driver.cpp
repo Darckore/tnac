@@ -106,14 +106,14 @@ namespace tnac_rt
     if (c.arg_count())
     {
       auto&& arg     = c[size_type{}];
-      auto paramName = arg.m_value;
-      if (paramName == bin)
+      auto argName = arg.m_value;
+      if (argName == bin)
         base = 2;
-      else if (paramName == oct)
+      else if (argName == oct)
         base = 8;
-      else if (paramName == dec)
+      else if (argName == dec)
         base = 10;
-      else if (paramName == hex)
+      else if (argName == hex)
         base = 16;
       else
         m_srcMgr.on_error(arg, "Unknown parameter"sv);

@@ -446,16 +446,16 @@ namespace tnac
     auto kw = next_tok();
 
     if (!detail::is_open_paren(peek_next()))
-      return error_expr(next_tok(), "Expected parameter list"sv);
+      return error_expr(next_tok(), "Expected argument list"sv);
 
     next_tok();
-    auto params = arg_list();
+    auto args = arg_list();
 
     if (!detail::is_close_paren(peek_next()))
       return error_expr(next_tok(), "Expected ')'"sv);
 
     next_tok();
-    return m_builder.make_typed(kw, std::move(params));
+    return m_builder.make_typed(kw, std::move(args));
   }
 
   parser::expr_list parser::arg_list() noexcept
