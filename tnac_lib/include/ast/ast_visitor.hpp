@@ -259,9 +259,9 @@ namespace tnac::ast
       if constexpr (is_top_down())
         visit(typed);
 
-      for (auto param : typed->params())
+      for (auto arg : typed->args())
       {
-        visit_root(param);
+        visit_root(arg);
       }
 
       if constexpr (is_bottom_up())

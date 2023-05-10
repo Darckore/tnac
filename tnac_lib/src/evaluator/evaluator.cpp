@@ -70,8 +70,8 @@ namespace tnac
       {
       public:
         using err_handler_t = evaluator::err_handler_t;
-        using param_list_t = evaluator::param_list_t;
-        using size_type = param_list_t::size_type;
+        using arg_list_t    = evaluator::arg_list_t;
+        using size_type     = arg_list_t::size_type;
         using visitor       = eval::value_visitor;
         using value_type    = T;
         using type_info     = eval::type_info<value_type>;
@@ -101,7 +101,7 @@ namespace tnac
         template <typename T, T... Seq>
         eval::value instantiate(const ast::typed_expr& expr, std::integer_sequence<T, Seq...>) noexcept
         {
-          auto&& exprArgs = expr.params();
+          auto&& exprArgs = expr.args();
           return m_visitor.instantiate<value_type>(&expr, extract(exprArgs, Seq)...);
         }
 
@@ -113,7 +113,7 @@ namespace tnac
 
         bool check_args(const ast::typed_expr& expr) noexcept
         {
-          const auto size = expr.params().size();
+          const auto size = expr.args().size();
           if (utils::in_range(size, min, max))
             return true;
 
@@ -123,7 +123,7 @@ namespace tnac
           return false;
         }
 
-        eval::value extract(const param_list_t& args, size_type idx) noexcept
+        eval::value extract(const arg_list_t& args, size_type idx) noexcept
         {
           const auto count = args.size();
           return idx < count ? args[idx]->value() : eval::value{};

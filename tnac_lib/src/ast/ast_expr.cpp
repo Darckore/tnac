@@ -173,11 +173,11 @@ namespace tnac::ast
 
   typed_expr::~typed_expr() noexcept = default;
 
-  typed_expr::typed_expr(const token& typeName, param_list params) noexcept :
+  typed_expr::typed_expr(const token& typeName, arg_list args) noexcept :
     expr{ kind::Typed, typeName },
-    m_params{ std::move(params) }
+    m_args{ std::move(args) }
   {
-    for (auto par : m_params)
+    for (auto par : m_args)
     {
       assume_ancestry(par);
     }
@@ -188,12 +188,12 @@ namespace tnac::ast
     return pos();
   }
 
-  const typed_expr::param_list& typed_expr::params() const noexcept
+  const typed_expr::arg_list& typed_expr::args() const noexcept
   {
-    return m_params;
+    return m_args;
   }
-  typed_expr::param_list& typed_expr::params() noexcept
+  typed_expr::arg_list& typed_expr::args() noexcept
   {
-    return FROM_CONST(params);
+    return FROM_CONST(args);
   }
 }

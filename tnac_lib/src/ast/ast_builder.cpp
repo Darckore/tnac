@@ -38,7 +38,7 @@ namespace tnac::ast
     return make<id_expr>(tok, sym);
   }
 
-  typed_expr* builder::make_typed(const token& kw, typed_expr::param_list params) noexcept
+  typed_expr* builder::make_typed(const token& kw, typed_expr::arg_list params) noexcept
   {
     return make<typed_expr>(kw, std::move(params));
   }

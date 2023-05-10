@@ -68,7 +68,7 @@ namespace tnac::ast
     //
     // Creates a typed expression
     //
-    typed_expr* make_typed(const token& kw, typed_expr::param_list params) noexcept;
+    typed_expr* make_typed(const token& kw, typed_expr::arg_list params) noexcept;
 
     //
     // Creates a paren expression

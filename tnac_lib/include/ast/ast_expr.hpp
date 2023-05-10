@@ -291,11 +291,11 @@ namespace tnac::ast
   class typed_expr final : public expr
   {
   public:
-    using param = expr;
-    using pointer = param*;
-    using const_pointer = const param*;
+    using arg = expr;
+    using pointer = arg*;
+    using const_pointer = const arg*;
 
-    using param_list = std::vector<pointer>;
+    using arg_list = std::vector<pointer>;
 
   private:
     friend class builder;
@@ -306,7 +306,7 @@ namespace tnac::ast
     virtual ~typed_expr() noexcept;
 
   protected:
-    typed_expr(const token& typeName, param_list params) noexcept;
+    typed_expr(const token& typeName, arg_list params) noexcept;
 
   public:
     //
@@ -319,15 +319,15 @@ namespace tnac::ast
     // 
     // const version
     //
-    const param_list& params() const noexcept;
+    const arg_list& args() const noexcept;
 
     //
     // Returns the param list
     //
-    param_list& params() noexcept;
+    arg_list& args() noexcept;
 
   private:
-    param_list m_params;
+    arg_list m_args;
   };
 
 }

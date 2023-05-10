@@ -152,12 +152,12 @@ namespace tnac_rt::out
     print_token(expr.type_name(), false);
     out() << "( ";
 
-    auto&& params = expr.params();
-    const auto size = params.size();
+    auto&& args = expr.args();
+    const auto size = args.size();
     auto idx = std::size_t{};
-    for (auto param : expr.params())
+    for (auto arg : expr.args())
     {
-      print(param);
+      print(arg);
       ++idx;
 
       if (idx != size)

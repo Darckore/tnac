@@ -92,7 +92,7 @@ namespace tnac_rt::out
     out() << "Typed expression";
     print_token(expr.type_name());
     endl();
-    push_parent(expr.params().size());
+    push_parent(expr.args().size());
   }
 
   void ast_printer::visit(const ast::lit_expr& expr) noexcept

@@ -23,8 +23,8 @@ namespace tnac
   {
   public:
     using err_handler_t = std::function<void(const token&, string_t)>;
-    using param_list_t  = ast::typed_expr::param_list;
-    using size_type     = param_list_t::size_type;
+    using arg_list_t    = ast::typed_expr::arg_list;
+    using size_type     = arg_list_t::size_type;
 
   public:
     CLASS_SPECIALS_NONE(evaluator);
