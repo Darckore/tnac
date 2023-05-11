@@ -332,8 +332,23 @@ namespace tnac
     auto def = m_builder.make_scope({});
     scope_guard _{ *this, def };
 
-    utils::unused(name);
-    return {};
+    auto params = formal_params();
+
+    if (!detail::is_close_paren(peek_next()))
+      return {};
+
+    next_tok();
+
+    auto body = expression_list(scope_level::Nested);
+    if (auto last = peek_next(); !detail::is_semi(last))
+    {
+      body.push_back(error_expr(last, "Expected ';' at function definition end"sv));
+    }
+
+    next_tok();
+    def->adopt(std::move(body));
+
+    return m_builder.make_func_decl(name, *def, std::move(params));
   }
 
   parser::param_list parser::formal_params() noexcept

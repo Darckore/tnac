@@ -101,6 +101,7 @@ namespace tnac::ast
   func_decl::~func_decl() noexcept = default;
 
   func_decl::func_decl(const token& func, scope& def, param_list params) noexcept :
-    decl{ kind::FuncDecl, func, &def }
+    decl{ kind::FuncDecl, func, &def },
+    m_params{ std::move(params) }
   {}
 }
