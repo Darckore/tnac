@@ -105,7 +105,7 @@ namespace tnac::ast
     //
     // Makes a parameter declarator
     //
-    param_decl* make_param_decl(const token& name) noexcept;
+    param_decl* make_param_decl(const token& name, expr* opt) noexcept;
 
     //
     // Makes a function declarator

@@ -157,7 +157,7 @@ namespace tnac::ast
     virtual ~param_decl() noexcept;
 
   protected:
-    param_decl(const token& paramName) noexcept;
+    param_decl(const token& paramName, expr* opt) noexcept;
   };
 
 

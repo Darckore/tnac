@@ -91,8 +91,8 @@ namespace tnac::ast
 
   param_decl::~param_decl() noexcept = default;
 
-  param_decl::param_decl(const token& paramName) noexcept :
-    decl{ kind::ParamDecl, paramName, nullptr }
+  param_decl::param_decl(const token& paramName, expr* opt) noexcept :
+    decl{ kind::ParamDecl, paramName, opt }
   {}
 
 

@@ -75,9 +75,9 @@ namespace tnac::ast
     return make<var_decl>(var, initialiser);
   }
 
-  param_decl* builder::make_param_decl(const token& name) noexcept
+  param_decl* builder::make_param_decl(const token& name, expr* opt) noexcept
   {
-    return make<param_decl>(name);
+    return make<param_decl>(name, opt);
   }
 
   func_decl* builder::make_func_decl(const token& func, scope& def, func_decl::param_list params) noexcept
