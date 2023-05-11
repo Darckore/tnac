@@ -18,7 +18,9 @@ namespace tnac::semantics
   //
   enum class sym_kind : std::uint8_t
   {
-    Variable
+    Variable,
+    Parameter,
+    Function
   };
 
   //
@@ -111,6 +113,43 @@ namespace tnac::semantics
     variable(ast::decl& decl) noexcept;
   };
 
+
+  //
+  // Symbol corresponding to a parameter
+  //
+  class parameter final : public symbol
+  {
+  private:
+    friend class sym_table;
+
+  public:
+    CLASS_SPECIALS_NONE(parameter);
+
+    virtual ~parameter() noexcept;
+
+  protected:
+    parameter(ast::decl& decl) noexcept;
+  };
+
+
+  //
+  // Symbol corresponding to a function
+  //
+  class function final : public symbol
+  {
+  private:
+    friend class sym_table;
+
+  public:
+    CLASS_SPECIALS_NONE(function);
+
+    virtual ~function() noexcept;
+
+  protected:
+    function(ast::decl& decl) noexcept;
+  };
+
+
   namespace detail
   {
     template <typename T>
@@ -128,6 +167,28 @@ namespace tnac::semantics
     struct sym_from_kind<sym_kind::Variable>
     {
       using type = variable;
+    };
+
+    template <>
+    struct kind_from_sym<parameter>
+    {
+      static constexpr auto value = sym_kind::Parameter;
+    };
+    template <>
+    struct sym_from_kind<sym_kind::Parameter>
+    {
+      using type = parameter;
+    };
+
+    template <>
+    struct kind_from_sym<function>
+    {
+      static constexpr auto value = sym_kind::Function;
+    };
+    template <>
+    struct sym_from_kind<sym_kind::Function>
+    {
+      using type = function;
     };
 
     template <typename From, typename To> struct sym_caster;

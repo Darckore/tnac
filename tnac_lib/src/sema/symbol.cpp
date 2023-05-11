@@ -52,4 +52,22 @@ namespace tnac::semantics
     symbol{ kind::Variable, decl }
   {}
 
+
+  // Parameter symbol
+
+  parameter::~parameter() noexcept = default;
+
+  parameter::parameter(ast::decl& decl) noexcept :
+    symbol{ kind::Parameter, decl }
+  {}
+
+
+  // Function symbol
+
+  function::~function() noexcept = default;
+
+  function::function(ast::decl& decl) noexcept :
+    symbol{ kind::Function, decl }
+  {}
+
 }

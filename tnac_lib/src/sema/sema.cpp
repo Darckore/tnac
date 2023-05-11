@@ -41,6 +41,18 @@ namespace tnac
     }
       break;
 
+    case ParamDecl:
+    {
+      m_symTab.add_parameter(decl, m_curScope);
+    }
+      break;
+
+    case FuncDecl:
+    {
+      m_symTab.add_function(decl, m_curScope);
+    }
+    break;
+
     default:
       break;
     }

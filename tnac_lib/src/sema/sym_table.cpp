@@ -23,6 +23,16 @@ namespace tnac::semantics
     return *make_symbol<variable>(decl.name(), parent, decl);
   }
 
+  parameter& sym_table::add_parameter(ast::decl& decl, scope_ptr parent) noexcept
+  {
+    return *make_symbol<parameter>(decl.name(), parent, decl);
+  }
+
+  function& sym_table::add_function(ast::decl& decl, scope_ptr parent) noexcept
+  {
+    return *make_symbol<function>(decl.name(), parent, decl);
+  }
+
   sym_table::sym_ptr sym_table::lookup(string_t name, scope_ptr parent) noexcept
   {
     auto scopes = lookup(name);

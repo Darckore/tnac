@@ -218,6 +218,23 @@ namespace tnac
     token next_tok() noexcept;
 
     //
+    // Skips to one of the specified token kinds
+    //
+    template <typename ...Kinds>
+      requires (static_cast<bool>(sizeof ...(Kinds)) && is_all_v<tok_kind, Kinds...>)
+    void skip_to(Kinds ...kinds) noexcept
+    {
+      for (;;)
+      {
+        auto next = peek_next();
+        if (next.is_eol() || next.is_any(kinds...))
+          break;
+
+        next_tok();
+      }
+    }
+
+    //
     // Skips to either the expression separator ':', or EOL
     // Used to produce errors
     //
@@ -257,6 +274,11 @@ namespace tnac
     // Parses a function declarator
     //
     ast::decl* func_decl(token name) noexcept;
+
+    //
+    // Parses a parameter declarator
+    //
+    ast::param_decl* param_decl() noexcept;
 
     //
     // Parses function parameters

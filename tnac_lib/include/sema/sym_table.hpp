@@ -58,6 +58,16 @@ namespace tnac::semantics
     variable& add_variable(ast::decl& decl, scope_ptr parent) noexcept;
 
     //
+    // Inserts a parameter to the specified scope
+    //
+    parameter& add_parameter(ast::decl& decl, scope_ptr parent) noexcept;
+
+    //
+    // Inserts a function to the specified scope
+    //
+    function& add_function(ast::decl& decl, scope_ptr parent) noexcept;
+
+    //
     // Looks for a symbol starting from the specified scope
     //
     sym_ptr lookup(string_t name, scope_ptr parent) noexcept;

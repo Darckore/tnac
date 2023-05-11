@@ -36,6 +36,9 @@ namespace tnac::ast
 
   void node::assume_ancestry(node* child) noexcept
   {
+    if (!child)
+      return;
+
     child->make_child_of(this);
   }
 

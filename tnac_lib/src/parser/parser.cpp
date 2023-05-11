@@ -215,14 +215,7 @@ namespace tnac
 
   void parser::to_expr_end() noexcept
   {
-    for (;;)
-    {
-      auto next = peek_next();
-      if (next.is_eol() || detail::is_expression_separator(next))
-        break;
-
-      next_tok();
-    }
+    skip_to(tok_kind::ExprSep);
   }
 
   ast::expr* parser::error_expr(token pos, string_t msg, bool skipRest /*= false*/) noexcept
@@ -351,9 +344,49 @@ namespace tnac
     return m_builder.make_func_decl(name, *def, std::move(params));
   }
 
+  ast::param_decl* parser::param_decl() noexcept
+  {
+    auto name = next_tok();
+    ast::expr* opt{};
+
+    if (!name.is_identifier())
+    {
+      opt = error_expr(name, "Expected identifier"sv);
+    }
+
+    return m_builder.make_param_decl(name, opt);
+  }
+
   parser::param_list parser::formal_params() noexcept
   {
-    return {};
+    param_list res;
+    
+    for (;;)
+    {
+      if (detail::is_close_paren(peek_next()))
+        break;
+
+      auto paramDecl = param_decl();
+      res.push_back(paramDecl);
+
+      if (paramDecl->definition())
+        skip_to(tok_kind::Comma, tok_kind::ParenClose);
+      else
+        m_sema.visit_decl(*paramDecl);
+
+      auto&& next = peek_next();
+
+      if (detail::is_comma(next))
+      {
+        next_tok();
+        continue;
+      }
+
+      if (next.is_eol() || detail::is_close_paren(next))
+        break;
+    }
+
+    return res;
   }
 
   ast::expr* parser::assign_expr() noexcept
