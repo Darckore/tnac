@@ -104,4 +104,27 @@ namespace tnac::ast
     decl{ kind::FuncDecl, func, &def },
     m_params{ std::move(params) }
   {}
+
+  const func_decl::param_list& func_decl::params() const noexcept
+  {
+    return m_params;
+  }
+  func_decl::param_list& func_decl::params() noexcept
+  {
+    return FROM_CONST(params);
+  }
+
+  func_decl::size_type func_decl::param_count() const noexcept
+  {
+    return params().size();
+  }
+
+  const scope& func_decl::body() const noexcept
+  {
+    return static_cast<const scope&>(*definition());
+  }
+  scope& func_decl::body() noexcept
+  {
+    return FROM_CONST(body);
+  }
 }

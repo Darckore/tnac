@@ -168,6 +168,7 @@ namespace tnac::ast
   {
   public:
     using param_list = std::vector<param_decl*>;
+    using size_type = param_list::size_type;
 
   private:
     friend class builder;
@@ -179,6 +180,36 @@ namespace tnac::ast
 
   protected:
     func_decl(const token& func, scope& def, param_list params) noexcept;
+
+  public:
+    //
+    // Returns function parameter list
+    //
+    // const version
+    //
+    const param_list& params() const noexcept;
+
+    //
+    // Returns function parameter list
+    //
+    param_list& params() noexcept;
+
+    //
+    // Returns the number of parameters
+    //
+    size_type param_count() const noexcept;
+
+    //
+    // Returns function body
+    // 
+    // const version
+    //
+    const scope& body() const noexcept;
+
+    //
+    // Returns function body
+    // 
+    scope& body() noexcept;
 
   private:
     param_list m_params;

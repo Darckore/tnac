@@ -34,6 +34,10 @@ namespace tnac_rt::out
 
     void visit(const ast::var_decl& decl) noexcept;
 
+    void visit(const ast::param_decl& decl) noexcept;
+
+    void visit(const ast::func_decl& decl) noexcept;
+
     void visit(const ast::binary_expr& expr) noexcept;
 
     void visit(const ast::unary_expr& expr) noexcept;

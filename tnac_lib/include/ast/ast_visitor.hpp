@@ -194,6 +194,37 @@ namespace tnac::ast
     }
 
     //
+    // Visits a parameter declarator
+    //
+    void visit_impl(dest<param_decl> paramDecl) noexcept
+    {
+      if constexpr (is_top_down())
+        visit(paramDecl);
+
+      visit_root(paramDecl->definition());
+
+      if constexpr (is_bottom_up())
+        visit(paramDecl);
+    }
+
+    //
+    // Visits a function declarator
+    //
+    void visit_impl(dest<func_decl> funcDecl) noexcept
+    {
+      if constexpr (is_top_down())
+        visit(funcDecl);
+
+      for (auto p : funcDecl->params())
+        visit_root(p);
+
+      visit_root(&funcDecl->body());
+
+      if constexpr (is_bottom_up())
+        visit(funcDecl);
+    }
+
+    //
     // Visits an assign expression
     //
     void visit_impl(dest<assign_expr> assign) noexcept
@@ -341,6 +372,14 @@ namespace tnac::ast
 
       case VarDecl:
         visit_impl(cast<node_t, var_decl>(cur));
+        break;
+
+      case ParamDecl:
+        visit_impl(cast<node_t, param_decl>(cur));
+        break;
+
+      case FuncDecl:
+        visit_impl(cast<node_t, func_decl>(cur));
         break;
 
       case Paren:

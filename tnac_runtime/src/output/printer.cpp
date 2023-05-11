@@ -44,16 +44,40 @@ namespace tnac_rt::out
     push_parent(2u);
   }
 
-  void ast_printer::visit(const ast::decl_expr&) noexcept
+  void ast_printer::visit(const ast::decl_expr& expr) noexcept
   {
     indent();
     out() << "Declaration ";
-    push_parent(1u);
+    
+    auto&& decl = expr.declarator();
+
+    if (decl.is(ast::node::VarDecl))
+    {
+      push_parent(1u);
+    }
+    else if (decl.is(ast::node::FuncDecl))
+    {
+      auto&& funcDecl = static_cast<const ast::func_decl&>(decl);
+      push_parent(funcDecl.param_count() + 1u);
+    }
   }
 
   void ast_printer::visit(const ast::var_decl& decl) noexcept
   {
-    out() << " <VarName: " << decl.name() << ">";
+    out() << " <VarName: " << decl.name() << '>';
+    endl();
+  }
+
+  void ast_printer::visit(const ast::param_decl& decl) noexcept
+  {
+    indent();
+    out() << " <Function parameter: " << decl.name() << '>';
+    endl();
+  }
+
+  void ast_printer::visit(const ast::func_decl& decl) noexcept
+  {
+    out() << "<FuncName: " << decl.name() << '>';
     endl();
   }
 
