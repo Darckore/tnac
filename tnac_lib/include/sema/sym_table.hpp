@@ -124,7 +124,7 @@ namespace tnac::semantics
       if (sym)
         return sym_cast<S>(sym);
 
-      auto res = alloc_sym<S>(std::forward<Args>(args)...);
+      auto res = alloc_sym<S>(*parent, std::forward<Args>(args)...);
       sym = res;
       return res;
     }

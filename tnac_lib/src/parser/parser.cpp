@@ -339,6 +339,12 @@ namespace tnac
 
     next_tok();
 
+    if (detail::is_semi(peek_next()))
+    {
+      next_tok();
+      return funcDecl;
+    }
+
     auto body = expression_list(scope_level::Nested);
     if (auto last = peek_next(); !detail::is_semi(last))
     {

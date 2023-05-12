@@ -53,13 +53,18 @@ namespace tnac::semantics
     virtual ~symbol() noexcept;
 
   protected:
-    symbol(kind k, ast::decl& decl) noexcept;
+    symbol(kind k, ast::decl& decl, const scope& owner) noexcept;
 
   public:
     //
     // Returns the symbol kind
     //
     kind what() const noexcept;
+
+    //
+    // Returns the owner scope
+    //
+    const scope& owner_scope() const noexcept;
 
     //
     // Returns the declarator for which this symbol was created
@@ -90,6 +95,7 @@ namespace tnac::semantics
     void eval_result(eval::value val) noexcept;
 
   private:
+    const scope* m_owner{};
     ast::decl* m_decl{};
     eval::value m_value{};
     kind m_kind{};
@@ -110,7 +116,7 @@ namespace tnac::semantics
     virtual ~variable() noexcept;
 
   protected:
-    variable(ast::decl& decl) noexcept;
+    variable(const scope& owner, ast::decl& decl) noexcept;
   };
 
 
@@ -128,7 +134,7 @@ namespace tnac::semantics
     virtual ~parameter() noexcept;
 
   protected:
-    parameter(ast::decl& decl) noexcept;
+    parameter(const scope& owner, ast::decl& decl) noexcept;
   };
 
 
@@ -146,7 +152,7 @@ namespace tnac::semantics
     virtual ~function() noexcept;
 
   protected:
-    function(ast::decl& decl) noexcept;
+    function(const scope& owner, ast::decl& decl) noexcept;
   };
 
 

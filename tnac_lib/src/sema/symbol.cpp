@@ -8,7 +8,8 @@ namespace tnac::semantics
 
   symbol::~symbol() noexcept = default;
 
-  symbol::symbol(kind k, ast::decl& decl) noexcept :
+  symbol::symbol(kind k, ast::decl& decl, const scope& owner) noexcept :
+    m_owner{ &owner },
     m_decl{ &decl },
     m_kind{ k }
   {
@@ -18,6 +19,11 @@ namespace tnac::semantics
   sym_kind symbol::what() const noexcept
   {
     return m_kind;
+  }
+
+  const scope& symbol::owner_scope() const noexcept
+  {
+    return *m_owner;
   }
 
   const ast::decl& symbol::declarator() const noexcept
@@ -48,8 +54,8 @@ namespace tnac::semantics
 
   variable::~variable() noexcept = default;
 
-  variable::variable(ast::decl& decl) noexcept :
-    symbol{ kind::Variable, decl }
+  variable::variable(const scope& owner, ast::decl& decl) noexcept :
+    symbol{ kind::Variable, decl, owner }
   {}
 
 
@@ -57,8 +63,8 @@ namespace tnac::semantics
 
   parameter::~parameter() noexcept = default;
 
-  parameter::parameter(ast::decl& decl) noexcept :
-    symbol{ kind::Parameter, decl }
+  parameter::parameter(const scope& owner, ast::decl& decl) noexcept :
+    symbol{ kind::Parameter, decl, owner }
   {}
 
 
@@ -66,8 +72,8 @@ namespace tnac::semantics
 
   function::~function() noexcept = default;
 
-  function::function(ast::decl& decl) noexcept :
-    symbol{ kind::Function, decl }
+  function::function(const scope& owner, ast::decl& decl) noexcept :
+    symbol{ kind::Function, decl, owner }
   {}
 
 }
