@@ -49,7 +49,9 @@ namespace tnac
 
     case FuncDecl:
     {
-      m_symTab.add_function(decl, m_curScope);
+      UTILS_ASSERT(static_cast<bool>(m_curScope));
+      auto targetScope = m_curScope->m_enclosing;
+      m_symTab.add_function(decl, targetScope);
     }
     break;
 

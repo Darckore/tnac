@@ -288,11 +288,7 @@ namespace tnac
     if (m_sema.find(next.m_value))
       return {};
 
-    auto res = var_decl(next_tok());
-    if(res)
-      m_sema.visit_decl(*res);
-    
-    return res;
+    return var_decl(next_tok());
   }
 
   ast::decl* parser::var_decl(token name) noexcept
@@ -314,7 +310,9 @@ namespace tnac
       init = error_expr(op, "Expected initialisation"sv, true);
     }
 
-    return m_builder.make_var_decl(name, *init);
+    auto varDecl = m_builder.make_var_decl(name, *init);
+    m_sema.visit_decl(*varDecl);
+    return varDecl;
   }
 
   ast::decl* parser::func_decl(token name) noexcept
@@ -330,6 +328,15 @@ namespace tnac
     if (!detail::is_close_paren(peek_next()))
       return {};
 
+    for (auto param : params)
+    {
+      if (param->definition())
+        return {};
+    }
+
+    auto funcDecl = m_builder.make_func_decl(name, *def, std::move(params));
+    m_sema.visit_decl(*funcDecl);
+
     next_tok();
 
     auto body = expression_list(scope_level::Nested);
@@ -341,7 +348,7 @@ namespace tnac
     next_tok();
     def->adopt(std::move(body));
 
-    return m_builder.make_func_decl(name, *def, std::move(params));
+    return funcDecl;
   }
 
   ast::param_decl* parser::param_decl() noexcept
