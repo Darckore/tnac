@@ -136,7 +136,7 @@ namespace tnac::ast
     // doesn't provide a suitable visit method
     //
     template <typename Node>
-    void visit(Node*)
+    void visit(Node*) noexcept
     {
     }
 
