@@ -103,7 +103,10 @@ namespace tnac::ast
   func_decl::func_decl(const token& func, scope& def, param_list params) noexcept :
     decl{ kind::FuncDecl, func, &def },
     m_params{ std::move(params) }
-  {}
+  {
+    for (auto p : m_params)
+      assume_ancestry(p);
+  }
 
   const func_decl::param_list& func_decl::params() const noexcept
   {

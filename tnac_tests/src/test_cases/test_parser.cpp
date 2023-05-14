@@ -50,6 +50,16 @@ namespace tnac_tests
           check_node(decl, decl.name());
         }
 
+        void visit(const tree::param_decl& decl) noexcept
+        {
+          check_node(decl, decl.name());
+        }
+
+        void visit(const tree::func_decl& decl) noexcept
+        {
+          check_node(decl, decl.name());
+        }
+
         void visit(const tree::binary_expr& expr) noexcept
         {
           check_node(expr, expr.op().m_value);
@@ -567,6 +577,88 @@ namespace tnac_tests
       expected_node{   "", Decl,    VarDecl },
       expected_node{  "a", VarDecl, Decl },
       expected_node{   "", Decl,    Scope },
+    };
+
+    detail::check_tree_structute(exp, input);
+  }
+
+  TEST(parser, t_struct_func_decl_empty)
+  {
+    using detail::expected_node;
+    using enum detail::node_kind;
+    constexpr auto input = "f() ;"sv;
+
+    /*
+             - decl-expr
+            |
+          -'f'-
+         |     |
+        { }   { }
+    */
+
+    std::array exp{
+      expected_node{   "", Scope,    FuncDecl },
+      expected_node{  "f", FuncDecl, Decl },
+      expected_node{   "", Decl,     Scope },
+    };
+
+    detail::check_tree_structute(exp, input);
+  }
+
+  TEST(parser, t_struct_func_decl_params)
+  {
+    using detail::expected_node;
+    using enum detail::node_kind;
+    constexpr auto input = "f(p1, p2, p3) ;"sv;
+
+    /*
+           - decl-expr
+          |
+        -'f'----------
+       |              |
+       |- 'p1'       { }
+       |- 'p2'
+       |- 'p3'
+    */
+
+    std::array exp{
+      expected_node{ "p1", ParamDecl, FuncDecl },
+      expected_node{ "p2", ParamDecl, FuncDecl },
+      expected_node{ "p3", ParamDecl, FuncDecl },
+      expected_node{   "", Scope,     FuncDecl },
+      expected_node{  "f", FuncDecl,  Decl },
+      expected_node{   "", Decl,      Scope },
+    };
+
+    detail::check_tree_structute(exp, input);
+  }
+
+  TEST(parser, t_struct_func_decl_body)
+  {
+    using detail::expected_node;
+    using enum detail::node_kind;
+    constexpr auto input = "f(p) p+1;"sv;
+
+    /*
+            - decl-expr
+           |
+         -'f'-----
+        |         |
+        |- 'p'    |------
+                         |
+                      --'+'--
+                     |       |
+                    'p'     '1'
+    */
+
+    std::array exp{
+      expected_node{  "p", ParamDecl,  FuncDecl },
+      expected_node{  "p", Identifier, Binary },
+      expected_node{  "1", Literal,    Binary },
+      expected_node{  "+", Binary,     Scope },
+      expected_node{   "", Scope,      FuncDecl },
+      expected_node{  "f", FuncDecl,   Decl },
+      expected_node{   "", Decl,       Scope },
     };
 
     detail::check_tree_structute(exp, input);
