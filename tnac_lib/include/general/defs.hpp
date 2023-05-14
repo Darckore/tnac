@@ -89,7 +89,7 @@
 *     number
 * 
 *   typed-expr:
-*     type-name params
+*     type-name args
 * 
 *   type-name:
 *     type-keyword
