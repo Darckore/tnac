@@ -285,10 +285,55 @@ namespace tnac::ast
 
 
   //
+  // Any invocation which has a name and a set of arguments
+  //
+  class invocation : public expr
+  {
+  public:
+    using arg = expr;
+    using pointer = arg*;
+    using const_pointer = const arg*;
+
+    using arg_list = std::vector<pointer>;
+
+  private:
+    friend class builder;
+
+  public:
+    CLASS_SPECIALS_NONE(invocation);
+
+    virtual ~invocation() noexcept;
+
+  protected:
+    invocation(node_kind kind, const token& name, arg_list args) noexcept;
+
+  public:
+    //
+    // Returns the type name token
+    //
+    const token& name() const noexcept;
+
+    //
+    // Returns the argument list
+    // 
+    // const version
+    //
+    const arg_list& args() const noexcept;
+
+    //
+    // Returns the argument list
+    //
+    arg_list& args() noexcept;
+
+  private:
+    arg_list m_args;
+  };
+
+  //
   // Typed expression
   // Represents a value of the given type initialised by a arg list
   //
-  class typed_expr final : public expr
+  class typed_expr final : public invocation
   {
   public:
     using arg = expr;
@@ -313,21 +358,6 @@ namespace tnac::ast
     // Returns the type name token
     //
     const token& type_name() const noexcept;
-
-    //
-    // Returns the argument list
-    // 
-    // const version
-    //
-    const arg_list& args() const noexcept;
-
-    //
-    // Returns the argument list
-    //
-    arg_list& args() noexcept;
-
-  private:
-    arg_list m_args;
   };
 
 }
