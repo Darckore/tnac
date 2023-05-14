@@ -4,12 +4,49 @@
 
 #pragma once
 
+namespace tnac::semantics
+{
+  class function;
+}
+
 namespace tnac::eval
 {
   //
   // A dummy value which doesn't correspond to any of the supported data types
   //
   struct invalid_val_t {};
+
+  //
+  // Function wrapper
+  // Represents the function value type
+  //
+  class function_type final
+  {
+  public:
+    using value_type = const semantics::function;
+    using pointer    = value_type*;
+    using reference  = value_type&;
+
+  public:
+    CLASS_SPECIALS_NODEFAULT(function_type);
+    
+    ~function_type() = default;
+
+    function_type(reference func) noexcept :
+      m_func{ &func }
+    {}
+
+    bool operator==(const function_type& other) const noexcept = default;
+
+  public:
+    pointer operator->() const noexcept
+    {
+      return m_func;
+    }
+
+  private:
+    pointer m_func{};
+  };
 
   namespace detail
   {

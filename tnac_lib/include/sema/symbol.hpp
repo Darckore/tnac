@@ -4,6 +4,7 @@
 
 #pragma once
 #include "evaluator/value.hpp"
+#include "ast/ast_decls.hpp"
 
 namespace tnac::ast
 {
@@ -143,6 +144,9 @@ namespace tnac::semantics
   //
   class function final : public symbol
   {
+  public:
+    using size_type = ast::func_decl::size_type;
+
   private:
     friend class sym_table;
 
@@ -153,6 +157,13 @@ namespace tnac::semantics
 
   protected:
     function(const scope& owner, ast::decl& decl) noexcept;
+
+  public:
+    size_type param_count() const noexcept;
+
+  private:
+    const ast::func_decl& func_decl() const noexcept;
+    ast::func_decl& func_decl() noexcept;
   };
 
 

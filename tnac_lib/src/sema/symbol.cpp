@@ -76,4 +76,19 @@ namespace tnac::semantics
     symbol{ kind::Function, decl, owner }
   {}
 
+  function::size_type function::param_count() const noexcept
+  {
+    return func_decl().param_count();
+  }
+
+  const ast::func_decl& function::func_decl() const noexcept
+  {
+    UTILS_ASSERT(declarator().is(ast::node_kind::FuncDecl));
+    return static_cast<const ast::func_decl&>(declarator());
+  }
+  ast::func_decl& function::func_decl() noexcept
+  {
+    return FROM_CONST(func_decl);
+  }
+
 }
