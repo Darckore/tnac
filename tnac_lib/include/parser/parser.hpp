@@ -326,9 +326,10 @@ namespace tnac
     expr_list arg_list() noexcept;
 
     //
-    // Parses an id expression
+    // Parses a call expression
+    // If the call is not present, produces an id expression
     //
-    ast::expr* id_expr() noexcept;
+    ast::expr* call_expr() noexcept;
 
   private:
     lex m_lex;

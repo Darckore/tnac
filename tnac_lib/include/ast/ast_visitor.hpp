@@ -360,6 +360,26 @@ namespace tnac::ast
     }
 
     //
+    // Visits a call expression
+    //
+    void visit_impl(dest<call_expr> call) noexcept
+    {
+      if constexpr (is_top_down())
+        visit(call);
+
+      if (preview(call))
+      {
+        for (auto arg : call->args())
+        {
+          visit_root(arg);
+        }
+      }
+
+      if constexpr (is_bottom_up())
+        visit(call);
+    }
+
+    //
     // Visits a variable reference expression
     //
     void visit_impl(dest<id_expr> id) noexcept
@@ -448,6 +468,10 @@ namespace tnac::ast
 
       case Typed:
         visit_impl(cast<node_t, typed_expr>(cur));
+        break;
+
+      case Call:
+        visit_impl(cast<node_t, call_expr>(cur));
         break;
 
       case Error:

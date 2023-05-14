@@ -217,13 +217,23 @@ namespace tnac::ast
 
   call_expr::~call_expr() noexcept = default;
 
-  call_expr::call_expr(const token& callable, arg_list args) noexcept :
-    invocation{ kind::Call, callable, std::move(args) }
+  call_expr::call_expr(const token& callable, arg_list args, semantics::symbol& sym) noexcept :
+    invocation{ kind::Call, callable, std::move(args) },
+    m_sym{ &sym }
   {}
 
   const token& call_expr::callable_name() const noexcept
   {
     return name();
+  }
+
+  const semantics::symbol& call_expr::symbol() const noexcept
+  {
+    return *m_sym;
+  }
+  semantics::symbol& call_expr::symbol() noexcept
+  {
+    return FROM_CONST(symbol);
   }
 
 }

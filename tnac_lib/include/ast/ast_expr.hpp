@@ -370,13 +370,29 @@ namespace tnac::ast
     virtual ~call_expr() noexcept;
 
   protected:
-    call_expr(const token& callable, arg_list args) noexcept;
+    call_expr(const token& callable, arg_list args, semantics::symbol& sym) noexcept;
 
   public:
+    //
+    // Returns the attached symbol
+    // 
+    // const version
+    //
+    const semantics::symbol& symbol() const noexcept;
+
+    //
+    // Returns the attached symbol
+    //
+    semantics::symbol& symbol() noexcept;
+
+
     //
     // Returns the type name token
     //
     const token& callable_name() const noexcept;
+
+  private:
+    semantics::symbol* m_sym{};
   };
 
 }

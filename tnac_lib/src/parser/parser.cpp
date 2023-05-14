@@ -491,7 +491,7 @@ namespace tnac
 
     if (next.is_identifier())
     {
-      return id_expr();
+      return call_expr();
     }
 
     if (detail::is_open_paren(peek_next()))
@@ -540,7 +540,7 @@ namespace tnac
     return res;
   }
 
-  ast::expr* parser::id_expr() noexcept
+  ast::expr* parser::call_expr() noexcept
   {
     auto&& next = peek_next();
     auto sym = m_sema.find(next.m_value);
@@ -548,6 +548,17 @@ namespace tnac
     if (!sym)
       return error_expr(next_tok(), "Undefined identifier"sv);
 
-    return m_builder.make_id(next_tok(), *sym);
+    auto name = next_tok();
+    if(!detail::is_open_paren(peek_next()))
+      return m_builder.make_id(name, *sym);
+
+    next_tok();
+    auto args = arg_list();
+
+    if (!detail::is_close_paren(peek_next()))
+      return error_expr(next_tok(), "Expected ')'"sv);
+
+    next_tok();
+    return m_builder.make_call(name, std::move(args), *sym);
   }
 }

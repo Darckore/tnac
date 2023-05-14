@@ -41,6 +41,8 @@ namespace tnac_rt::out
 
     void print(const ast::typed_expr& expr) noexcept;
 
+    void print(const ast::call_expr& expr) noexcept;
+
     void print(const ast::lit_expr& expr) noexcept;
 
     void print(const ast::id_expr& expr) noexcept;
@@ -56,6 +58,8 @@ namespace tnac_rt::out
     void print(const ast::func_decl& decl) noexcept;
 
   private:
+    void print_any_call(const ast::invocation& expr) noexcept;
+
     void indent(const ast::node& cur) noexcept;
 
     void endl() noexcept;

@@ -73,7 +73,7 @@ namespace tnac::ast
     //
     // Creates a call expression
     //
-    call_expr* make_call(const token& callable, invocation::arg_list args) noexcept;
+    call_expr* make_call(const token& callable, invocation::arg_list args, semantics::symbol& sym) noexcept;
 
     //
     // Creates a paren expression
