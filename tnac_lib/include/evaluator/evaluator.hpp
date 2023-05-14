@@ -92,6 +92,15 @@ namespace tnac
     //
     void visit(ast::var_decl& decl) noexcept;
 
+  public: // previews
+    //
+    // Previews a function declaration
+    // Needed to avoid evaluating the body or params before the function
+    // actually gets called
+    //
+    bool preview(ast::func_decl& decl) noexcept;
+
+
   private:
     //
     // Produces an evaluation error

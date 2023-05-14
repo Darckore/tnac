@@ -244,6 +244,12 @@ namespace tnac
     eval_assign(decl.symbol(), decl.initialiser().value());
   }
 
+  // Previews
+
+  bool evaluator::preview(ast::func_decl& ) noexcept
+  {
+    return false;
+  }
 
   // Private members
 
