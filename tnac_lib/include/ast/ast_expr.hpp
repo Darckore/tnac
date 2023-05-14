@@ -329,19 +329,13 @@ namespace tnac::ast
     arg_list m_args;
   };
 
+
   //
   // Typed expression
-  // Represents a value of the given type initialised by a arg list
+  // Represents a value of the given type initialised by an arg list
   //
   class typed_expr final : public invocation
   {
-  public:
-    using arg = expr;
-    using pointer = arg*;
-    using const_pointer = const arg*;
-
-    using arg_list = std::vector<pointer>;
-
   private:
     friend class builder;
 
@@ -358,6 +352,31 @@ namespace tnac::ast
     // Returns the type name token
     //
     const token& type_name() const noexcept;
+  };
+
+
+  //
+  // Call expression
+  // Represents a call to a named callable entity with an arg list
+  //
+  class call_expr final : public invocation
+  {
+  private:
+    friend class builder;
+
+  public:
+    CLASS_SPECIALS_NONE(call_expr);
+
+    virtual ~call_expr() noexcept;
+
+  protected:
+    call_expr(const token& callable, arg_list args) noexcept;
+
+  public:
+    //
+    // Returns the type name token
+    //
+    const token& callable_name() const noexcept;
   };
 
 }

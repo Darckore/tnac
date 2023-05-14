@@ -211,4 +211,19 @@ namespace tnac::ast
   {
     return name();
   }
+
+
+  // Call expr
+
+  call_expr::~call_expr() noexcept = default;
+
+  call_expr::call_expr(const token& callable, arg_list args) noexcept :
+    invocation{ kind::Call, callable, std::move(args) }
+  {}
+
+  const token& call_expr::callable_name() const noexcept
+  {
+    return name();
+  }
+
 }

@@ -9,6 +9,7 @@ Binary,
 Assign,
 Paren,
 Typed,
+Call,
 Decl,
 Result,
 
