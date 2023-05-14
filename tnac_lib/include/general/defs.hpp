@@ -55,6 +55,7 @@
 *     literal-expr
 *     id-expr
 *     typed-expr
+*     call-expr
 *     '(' expr ')'
 * 
 *   var-decl:
@@ -87,6 +88,9 @@
 * 
 *   literal-expr:
 *     number
+* 
+*   call-expr:
+*    identifier args
 * 
 *   typed-expr:
 *     type-name args
