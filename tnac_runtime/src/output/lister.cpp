@@ -43,6 +43,7 @@ namespace tnac_rt::out
     if (!root)
       return;
 
+    indent(*root);
     switch (root->what())
     {
     case Error:
@@ -93,6 +94,14 @@ namespace tnac_rt::out
       print(to<ast::var_decl>(*root));
       break;
 
+    case ParamDecl:
+      print(to<ast::param_decl>(*root));
+      break;
+
+    case FuncDecl:
+      print(to<ast::func_decl>(*root));
+      break;
+
     default:
       UTILS_ASSERT(false);
       break;
@@ -113,7 +122,7 @@ namespace tnac_rt::out
       if (idx != size)
         out() << ':';
 
-      out() << '\n';
+      endl();
     }
   }
 
@@ -192,6 +201,65 @@ namespace tnac_rt::out
     print_token(decl.pos(), true);
     out() << "= ";
     print(&decl.initialiser());
+  }
+
+  void lister::print(const ast::param_decl& decl) noexcept
+  {
+    out() << decl.name();
+  }
+
+  void lister::print(const ast::func_decl& decl) noexcept
+  {
+    print_token(decl.pos(), false);
+    out() << '(';
+
+    auto idx = std::size_t{};
+    const auto size = decl.param_count();
+    for (auto param : decl.params())
+    {
+      print(param);
+      ++idx;
+
+      if (idx != size)
+        out() << ", ";
+    }
+
+    out() << ')';
+
+    if (auto&& body = decl.body(); !body.children().empty())
+    {
+      endl();
+      tnac::value_guard _{ m_indent };
+      ++m_indent;
+      print(body);
+      indent(*decl.parent());
+    }
+    else
+    {
+      out() << ' ';
+    }
+
+    out() << "; ";
+  }
+
+
+  void lister::indent(const ast::node& cur) noexcept
+  {
+    static constexpr auto scopeId = tnac::ast::node_kind::Scope;
+    if (cur.is(scopeId))
+      return;
+
+    if (auto parent = cur.parent();
+            !parent || !parent->is(scopeId))
+    {
+      return;
+    }
+
+    for (auto indentIdx = std::size_t{}; indentIdx < m_indent; ++indentIdx)
+    {
+      for (auto spcIdx = std::size_t{}; spcIdx < spacesPerIndent; ++spcIdx)
+        out() << ' ';
+    }
   }
 
   void lister::endl() noexcept

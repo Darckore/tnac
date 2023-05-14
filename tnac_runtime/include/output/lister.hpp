@@ -49,9 +49,15 @@ namespace tnac_rt::out
 
     void print(const ast::error_expr& expr) noexcept;
 
-    void print(const ast::var_decl& expr) noexcept;
+    void print(const ast::var_decl& decl) noexcept;
+    
+    void print(const ast::param_decl& decl) noexcept;
+    
+    void print(const ast::func_decl& decl) noexcept;
 
   private:
+    void indent(const ast::node& cur) noexcept;
+
     void endl() noexcept;
 
     out_stream& out() noexcept;
@@ -60,5 +66,7 @@ namespace tnac_rt::out
 
   private:
     out_stream* m_out{ &std::cout };
+    static constexpr auto spacesPerIndent = std::size_t{ 2 };
+    std::size_t m_indent{};
   };
 }
