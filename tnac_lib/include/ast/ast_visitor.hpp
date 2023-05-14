@@ -19,6 +19,15 @@ namespace tnac::ast
     };
 
     //
+    // Defines an ast previewable by the specified visitor
+    //
+    template <typename Node, typename Visitor>
+    concept previewable_node = requires(Visitor v, Node * n)
+    {
+      { v.preview(*n) }->std::same_as<bool>;
+    };
+
+    //
     // Defines a root node of ast which can be visited
     //
     template <typename N>
@@ -141,6 +150,27 @@ namespace tnac::ast
     }
 
     //
+    // Previews the parent node to let the derived class decide whether to
+    // visit its children or not
+    // Mostly needed for bottom-up visitors
+    //
+    bool preview(detail::previewable_node<derived_t> auto* cur) noexcept
+    {
+      auto&& self = static_cast<derived_t&>(*this);
+      return self.preview(*cur);
+    }
+
+    //
+    // If no custom preview logic is defined for this node type in the derived class,
+    // instruc the base to visit its children unconditionally
+    //
+    template <typename Node>
+    bool preview(Node*) noexcept
+    {
+      return true;
+    }
+
+    //
     // Visits an error expression
     //
     void visit_impl(dest<error_expr> err) noexcept
@@ -156,9 +186,12 @@ namespace tnac::ast
       if constexpr (is_top_down())
         visit(s);
 
-      for (auto child : s->children())
+      if (preview(s))
       {
-        visit_root(child);
+        for (auto child : s->children())
+        {
+          visit_root(child);
+        }
       }
 
       if constexpr (is_bottom_up())
@@ -173,7 +206,10 @@ namespace tnac::ast
       if constexpr (is_top_down())
         visit(declExpr);
 
-      visit_root(&declExpr->declarator());
+      if (preview(declExpr))
+      {
+        visit_root(&declExpr->declarator());
+      }
 
       if constexpr (is_bottom_up())
         visit(declExpr);
@@ -187,7 +223,10 @@ namespace tnac::ast
       if constexpr (is_top_down())
         visit(varDecl);
 
-      visit_root(&varDecl->initialiser());
+      if (preview(varDecl))
+      {
+        visit_root(&varDecl->initialiser());
+      }
 
       if constexpr (is_bottom_up())
         visit(varDecl);
@@ -201,7 +240,10 @@ namespace tnac::ast
       if constexpr (is_top_down())
         visit(paramDecl);
 
-      visit_root(paramDecl->definition());
+      if (preview(paramDecl))
+      {
+        visit_root(paramDecl->definition());
+      }
 
       if constexpr (is_bottom_up())
         visit(paramDecl);
@@ -215,10 +257,13 @@ namespace tnac::ast
       if constexpr (is_top_down())
         visit(funcDecl);
 
-      for (auto p : funcDecl->params())
-        visit_root(p);
+      if (preview(funcDecl))
+      {
+        for (auto p : funcDecl->params())
+          visit_root(p);
 
-      visit_root(&funcDecl->body());
+        visit_root(&funcDecl->body());
+      }
 
       if constexpr (is_bottom_up())
         visit(funcDecl);
@@ -232,8 +277,11 @@ namespace tnac::ast
       if constexpr (is_top_down())
         visit(assign);
 
-      visit_root(&assign->left());
-      visit_root(&assign->right());
+      if (preview(assign))
+      {
+        visit_root(&assign->left());
+        visit_root(&assign->right());
+      }
 
       if constexpr (is_bottom_up())
         visit(assign);
@@ -247,8 +295,11 @@ namespace tnac::ast
       if constexpr (is_top_down())
         visit(binary);
 
-      visit_root(&binary->left());
-      visit_root(&binary->right());
+      if (preview(binary))
+      {
+        visit_root(&binary->left());
+        visit_root(&binary->right());
+      }
 
       if constexpr (is_bottom_up())
         visit(binary);
@@ -262,7 +313,10 @@ namespace tnac::ast
       if constexpr (is_top_down())
         visit(unary);
 
-      visit_root(&unary->operand());
+      if (preview(unary))
+      {
+        visit_root(&unary->operand());
+      }
       
       if constexpr (is_bottom_up())
         visit(unary);
@@ -276,7 +330,10 @@ namespace tnac::ast
       if constexpr (is_top_down())
         visit(paren);
       
-      visit_root(&paren->internal_expr());
+      if (preview(paren))
+      {
+        visit_root(&paren->internal_expr());
+      }
       
       if constexpr (is_bottom_up())
         visit(paren);
@@ -290,9 +347,12 @@ namespace tnac::ast
       if constexpr (is_top_down())
         visit(typed);
 
-      for (auto arg : typed->args())
+      if (preview(typed))
       {
-        visit_root(arg);
+        for (auto arg : typed->args())
+        {
+          visit_root(arg);
+        }
       }
 
       if constexpr (is_bottom_up())
