@@ -96,6 +96,16 @@ namespace tnac
     }
   }
 
+  bool has_implicit_separator(ast::expr* expr) noexcept
+  {
+    using kind = ast::node_kind;
+    if (!expr || !expr->is(kind::Decl))
+      return false;
+
+    auto de = static_cast<ast::decl_expr*>(expr);
+    return de->declarator().is(kind::FuncDecl);
+  }
+
   // Special members
 
   parser::~parser() noexcept = default;
@@ -258,6 +268,9 @@ namespace tnac
         next_tok();
         continue;
       }
+
+      if (has_implicit_separator(e))
+        continue;
 
       res.push_back(error_expr(next, "Expected ':' or EOL"sv, true));
     }

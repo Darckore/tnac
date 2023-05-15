@@ -1,4 +1,5 @@
 #include "output/lister.hpp"
+#include "parser/parser.hpp"
 
 namespace tnac_rt::out
 {
@@ -123,7 +124,7 @@ namespace tnac_rt::out
       print(child);
       ++idx;
 
-      if (idx != size)
+      if (idx != size && !tnac::has_implicit_separator(child))
         out() << ':';
 
       endl();
