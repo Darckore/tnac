@@ -253,8 +253,9 @@ namespace tnac_tests
     using detail::check_invalid;
 
     check_eval("~2"sv, (~2ll));
+    check_eval("~2.0"sv, (~2ll));
     check_eval("~(4/2)"sv, (~2ll));
-    check_invalid("~2.0"sv);
+    check_invalid("~2.02"sv);
     check_invalid("~(3/2)"sv);
 
     check_eval("2 & 3"sv, 2ll & 3ll);

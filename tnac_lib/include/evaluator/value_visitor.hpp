@@ -238,6 +238,46 @@ namespace tnac::eval
 
   private: // Operation support
 
+    template <detail::expr_result T>
+    using possible_cast = std::optional<T>;
+
+    template <detail::expr_result T>
+    possible_cast<int_type> to_int(T val) noexcept
+    {
+      return {};
+    }
+
+    template <>
+    possible_cast<int_type> to_int(int_type val) noexcept
+    {
+      return val;
+    }
+
+    template <>
+    possible_cast<int_type> to_int(float_type val) noexcept
+    {
+      const auto conv = static_cast<int_type>(val);
+      if (utils::eq(static_cast<float_type>(conv), val))
+        return conv;
+
+      return {};
+    }
+
+    template <>
+    possible_cast<int_type> to_int(complex_type val) noexcept
+    {
+      if (!utils::eq(val.imag(), float_type{}))
+        return {};
+
+      return to_int(val.real());
+    }
+
+    template <>
+    possible_cast<int_type> to_int(fraction_type val) noexcept
+    {
+      return to_int(val.to<float_type>());
+    }
+
     // Addition
     
     template <detail::expr_result L, detail::expr_result R>
@@ -334,45 +374,75 @@ namespace tnac::eval
     // Bitwise not
 
     template <detail::expr_result T>
-    auto bitwise_not(T) noexcept { return get_empty(); }
-    template <detail::expr_result T>
       requires requires (T v) { ~v; }
     auto bitwise_not(T operand) noexcept
     {
       return visit_unary(operand, [](auto val) noexcept { return ~val; });
     }
+    template <detail::expr_result T>
+    auto bitwise_not(T operand) noexcept
+    { 
+      if (auto intOp = to_int(operand))
+        return bitwise_not(*intOp);
+
+      return get_empty();
+    }
 
     // Bitwise and
 
-    template <detail::expr_result L, detail::expr_result R>
-    auto bitwise_and(L, R) noexcept { return get_empty(); }
     template <detail::expr_result L, detail::expr_result R>
       requires requires (L l, R r) { l & r; }
     auto bitwise_and(L lhs, R rhs) noexcept
     { 
       return visit_binary(lhs, rhs, [](auto l, auto r) noexcept { return l & r; });
     }
+    template <detail::expr_result L, detail::expr_result R>
+    auto bitwise_and(L lhs, R rhs) noexcept
+    {
+      auto intL = to_int(lhs);
+      auto intR = to_int(rhs);
+      if (intL && intR)
+        return bitwise_and(*intL, *intR);
+
+      return get_empty(); 
+    }
 
     // Bitwise xor
 
-    template <detail::expr_result L, detail::expr_result R>
-    auto bitwise_xor(L, R) noexcept { return get_empty(); }
     template <detail::expr_result L, detail::expr_result R>
       requires requires (L l, R r) { l ^ r; }
     auto bitwise_xor(L lhs, R rhs) noexcept
     {
       return visit_binary(lhs, rhs, [](auto l, auto r) noexcept { return l ^ r; });
     }
+    template <detail::expr_result L, detail::expr_result R>
+    auto bitwise_xor(L lhs, R rhs) noexcept
+    {
+      auto intL = to_int(lhs);
+      auto intR = to_int(rhs);
+      if (intL && intR)
+        return bitwise_xor(*intL, *intR);
+
+      return get_empty();
+    }
 
     // Bitwise or
 
-    template <detail::expr_result L, detail::expr_result R>
-    auto bitwise_or(L, R) noexcept { return get_empty(); }
     template <detail::expr_result L, detail::expr_result R>
       requires requires (L l, R r) { l | r; }
     auto bitwise_or(L lhs, R rhs) noexcept
     {
       return visit_binary(lhs, rhs, [](auto l, auto r) noexcept { return l | r; });
+    }
+    template <detail::expr_result L, detail::expr_result R>
+    auto bitwise_or(L lhs, R rhs) noexcept
+    {
+      auto intL = to_int(lhs);
+      auto intR = to_int(rhs);
+      if (intL && intR)
+        return bitwise_or(*intL, *intR);
+
+      return get_empty();
     }
 
   private:
