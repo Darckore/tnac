@@ -263,3 +263,122 @@ A call like this will return `10`:
 ```
 parent_func(2, 3)
 ```
+
+## Commands
+
+Commands are special directives to the driver. By default, none are declared.
+Clients should add their own commands according to their needs.
+
+Commands have names and arguments. They begin at the name and end at `:` or
+end of input. Arguments can be any tokens separated by whitespace characters.
+Accepted tokens as well as the number of arguments are defined by the client.
+
+In addition to tokens supported by tnac, arguments can also be string literals -
+any sequences of characters separated by `'`'s.
+
+Names are identifiers preceded by `#` - `#command_name`
+
+Here's an example of a command which takes an int literal, a string and an identifier:
+```
+#command 42 'string of chars' x
+```
+
+Commands can appear between expressions, or directly after an expression:
+```
+a = 0 :
+#command 'between exprs' :
+b = a + 1 #command 'trailing' :
+c = b
+```
+
+tnac driver defines the following commands:
+
+* `#exit` - takes no arguments, exits the main loop
+* `#result [<identifier>]` - prints the last evaluation result.
+Its optional parameter is an identifier which sets the desired base for the printed value.
+Supported modes:
+  * `bin` - base 2
+  * `oct` - base 8
+  * `dec` - base 10
+  * `hex` - base 16
+* `ast [<string>] [<identifier>]` - prints the ast. Arguments are optional.
+The first provides a file name to print the ast to, the second controls whether
+the entire ast, or only the last parsed expression will be printed. See examples below.
+* `#list [<string>]` - prints the entire source code. The optional string argument
+is the file name to print it to
+* `#vars [<string>]` - prints a list of all variables in existence. The optional string argument
+is the file name to print it to
+* `#bin`, `#oct`, `#dec`, `#hex` - these make sense when supplied right after
+an expression. They control the numeric base of the printed value.
+
+### Command examples
+
+The `#ast` command (given the sequence of inputs below):
+
+input 1: `a = 10`
+
+input 2: `b = a + 1`
+
+input 3: `a + b`
+
+`#ast` prints this to stdout:
+```
+<scope>
+|-Declaration  <VarName: a>
+| `-Literal expression '10' <value: 10>
+|-Declaration  <VarName: b>
+| `-Binary expression '+'
+|   |-Id expression 'a'
+|   `-Literal expression '1' <value: 1>
+`-Assign expression '='
+  |-Id expression 'a'
+  `-Binary expression '+'
+    |-Id expression 'a'
+    `-Id expression 'b'
+```
+`#ast 'out.txt'` produces the same output and prints it to a file named
+`out.txt` and located in the current working directory
+
+`#ast 'out.txt' current` same as above, but only prints the last assign expression
+
+`#ast '' current` prints this to stdout:
+```
+Assign expression '='
+|-Id expression 'a'
+`-Binary expression '+'
+  |-Id expression 'a'
+  `-Id expression 'b'
+```
+
+`#vars` prints this to stdout:
+```
+a : 21
+b : 11
+```
+
+`#vars 'out.txt'` - same, but uses the `out.txt` file
+
+`#list` prints this to stdout:
+```
+a = 10 :
+b = a + 1 :
+a = a + b
+```
+
+`#list 'out.txt'` - same, but uses the `out.txt` file
+
+`#result` prints `21`
+
+`#result hex` prints `0x15`
+
+Base-controlling commands work like this:
+```
+0b110011 ^ 0b101101 #bin
+```
+will print `0b11110`
+
+The same, but with a `hex` instead:
+```
+0b110011 ^ 0b101101 #hex
+```
+will print `0x1e`
