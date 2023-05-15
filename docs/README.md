@@ -116,6 +116,16 @@ Expressions can include:
 8. Invocations
 9. Declarations
 
+Multiple expressions can be chained one after another by using `:`.
+
+This:
+```
+2 + 2 :
+3 + 3 :
+4 + 4
+```
+will evaluate the 3 expressions listed one by one from the first one to the last.
+
 **Parentheses** can enclose any valid expression.
 
 **Unary** operators can be applied to numbers, invocations, identifiers, or the `_result` keyword.
@@ -152,3 +162,104 @@ Example: `my_func(1+1, 2)`
 They also can be chained: `var1 = var2 = 42`.
 
 **Declarations** declare stuff. See the next section.
+
+### Declarations
+
+You can declare certain types of things.
+These are the *things* available:
+
+1. Variables
+2. Functions
+
+#### Variables
+
+**Variable declarations** are similar to simple assign expressions.
+
+For example, this declares variables `a` and `b`:
+```
+a = 10 :
+b = a + 1
+```
+
+This code also declares two variables and gives them the same value:
+```
+a = b = 42
+```
+
+The under-the-hood difference between them is that declarations are produced
+for names which haven't been previously declared, whereas assignments operate
+on already existing names.
+
+Here's another example:
+```
+a = 10 :
+a = 11
+```
+
+The above example contains a declaration and an assignment expression.
+Generally, we don't care about distinguishing between those.
+Any unknown name followed by an init (`= <something>`) will become a new variable.
+
+Before a variable can be used, it must be declared.
+
+This is ok:
+```
+a = 10 :
+a + 5
+```
+
+This is a syntax error:
+```
+a + 5
+```
+
+#### Functions (calls are not implemented yet)
+
+**Function declarations** go like this:
+```
+func([<identifier>, ...])
+  [<expr> : ... ] ;
+```
+
+For example, this function will return the sum of its parameters:
+```
+sum(a, b)
+  a + b ;
+```
+
+Function result is inferred from the last evaluated expression.
+
+This is a pointless function which does absolutely nothing:
+```
+stupid() ;
+```
+
+Expressions that declare functions don't need a `:` at the end, as the `;` implies it.
+
+This:
+```
+func(a, b)
+  a + b ;
+func(1, 2) + 1
+```
+
+Is exactly the same as this:
+```
+func(a, b)
+  a + b ; :
+func(1, 2) + 1
+```
+
+Function declarations can appear inside other functions, the nesting is unlimited.
+Such internal functions won't be visible outside the one in which they are declared.
+```
+parent_func(a, b)
+  child_func(a)
+    a * 2 ;
+  child_func(a + b) ;
+```
+
+A call like this will return `10`:
+```
+parent_func(2, 3)
+```
