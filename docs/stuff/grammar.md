@@ -19,7 +19,7 @@ decl-expr:
   func-decl
 
 assign-expr:
-  additive_expr
+  bit-or-expr
   id-expr assign-operator assign-expr
 
 bit-or-expr:
@@ -68,6 +68,7 @@ func-params:
   '(' func-param-list ')'
 
 func-param-list:
+  ''
   param-decl
   func-param-list ',' param-decl
 
@@ -111,7 +112,7 @@ command:
   # id-sequence
 
 keyword:
-  _ id-sequence
+  '_' id-sequence
 
 identifier:
   identifier-start id-sequence
@@ -121,7 +122,7 @@ number:
   float-num
 
 float-num:
-  digit-sequence [.] digit-sequence
+  digit-sequence '.' digit-sequence
 
 int-num:
   binary-int-num
@@ -133,7 +134,7 @@ binary-int-num:
   '0b' binary-digit-sequence
 
 oct-int-num:
-  oct-digit-sequence
+  '0' oct-digit-sequence
 
 decimal-int-num:
   non-zero-digit digit-sequence
