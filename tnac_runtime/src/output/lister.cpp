@@ -124,7 +124,7 @@ namespace tnac_rt::out
       print(child);
       ++idx;
 
-      if (idx != size && !tnac::has_implicit_separator(child))
+      if (idx != size && !tnac::has_implicit_separator(*child))
         out() << ':';
 
       endl();

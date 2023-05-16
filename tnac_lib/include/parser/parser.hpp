@@ -76,7 +76,7 @@ namespace tnac
   // Checks whether the given expression ends with a ';'
   // This implies an expression end, so, no need to add ':'
   //
-  bool has_implicit_separator(ast::expr* expr) noexcept;
+  bool has_implicit_separator(const ast::expr& expr) noexcept;
 
   //
   // Parser for the input

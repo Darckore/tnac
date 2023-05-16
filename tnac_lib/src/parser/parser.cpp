@@ -96,14 +96,14 @@ namespace tnac
     }
   }
 
-  bool has_implicit_separator(ast::expr* expr) noexcept
+  bool has_implicit_separator(const ast::expr& expr) noexcept
   {
     using kind = ast::node_kind;
-    if (!expr || !expr->is(kind::Decl))
+    if (!expr.is(kind::Decl))
       return false;
 
-    auto de = static_cast<ast::decl_expr*>(expr);
-    return de->declarator().is(kind::FuncDecl);
+    auto&& de = static_cast<const ast::decl_expr&>(expr);
+    return de.declarator().is(kind::FuncDecl);
   }
 
   // Special members
@@ -252,6 +252,7 @@ namespace tnac
         break;
 
       auto e = expr();
+      UTILS_ASSERT(static_cast<bool>(e));
       res.push_back(e);
 
       command(false);
@@ -269,7 +270,7 @@ namespace tnac
         continue;
       }
 
-      if (has_implicit_separator(e))
+      if (has_implicit_separator(*e))
         continue;
 
       res.push_back(error_expr(next, "Expected ':' or EOL"sv, true));
