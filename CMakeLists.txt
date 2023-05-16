@@ -84,6 +84,9 @@ endif()
 
 set_target_properties(${TARGET_NAME} PROPERTIES FOLDER additional_deps/utils)
 
+set(TARGET_NAME docs)
+add_subdirectory("${TARGET_NAME}")
+
 if(BUILT_FROM_ROOT)
   set(CMAKE_INSTALL_PREFIX "${CMAKE_SOURCE_DIR}/_bin" CACHE PATH "Install dir" FORCE)
 endif()
