@@ -205,7 +205,7 @@ namespace tnac
         break;
       }
 
-      res.push_back(next_tok());
+      res.emplace_back(next_tok());
     }
 
     return res;
@@ -360,7 +360,7 @@ namespace tnac
     }
 
     auto body = expression_list(scope_level::Nested);
-    if (auto last = peek_next(); !detail::is_semi(last))
+    if (auto&& last = peek_next(); !detail::is_semi(last))
     {
       body.push_back(error_expr(last, "Expected ';' at function definition end"sv));
     }
