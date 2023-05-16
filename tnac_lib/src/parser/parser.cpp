@@ -467,7 +467,6 @@ namespace tnac
       return primary_expr();
 
     auto op = next_tok();
-    auto exprFirst = peek_next();
     auto exp = primary_expr();
     return m_builder.make_unary(*exp, op);
   }
