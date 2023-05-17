@@ -235,7 +235,7 @@ namespace tnac::eval
   private: // Operation support
 
     template <detail::expr_result T>
-    typed_value<int_type> to_int(T val) noexcept
+    typed_value<int_type> to_int(T) noexcept
     {
       return {};
     }
@@ -364,6 +364,35 @@ namespace tnac::eval
     }
 
 
+    // Unary plus
+    
+    template <detail::expr_result T>
+      requires requires (T v) { +v; }
+    auto unary_plus(T operand) noexcept
+    {
+      return visit_unary(operand, [](auto val) noexcept { return +val; });
+    }
+    template <detail::expr_result T>
+    auto unary_plus(T) noexcept
+    {
+      return get_empty();
+    }
+
+    // Unary minus
+
+    template <detail::expr_result T>
+      requires requires (T v) { -v; }
+    auto unary_neg(T operand) noexcept
+    {
+      return visit_unary(operand, [](auto val) noexcept { return -val; });
+    }
+    template <detail::expr_result T>
+    auto unary_neg(T) noexcept
+    {
+      return get_empty();
+    }
+
+
     // Bitwise not
 
     template <detail::expr_result T>
@@ -488,10 +517,10 @@ namespace tnac::eval
       switch (op)
       {
       case UnaryNegation:
-        return visit_unary(val, [](auto v) noexcept { return -v; });
+        return unary_neg(val);
 
       case UnaryPlus:
-        return visit_unary(val, [](auto v) noexcept { return +v; });
+        return unary_plus(val);
 
       case UnaryBitwiseNot:
         return bitwise_not(val);
@@ -593,6 +622,15 @@ namespace tnac::eval
 
       const std::array argList{ args... };
       return instantiate<Obj>(argList, std::make_index_sequence<max>{});
+    }
+
+    //
+    // Stores a value for a function
+    //
+    value make_function(id_param_t ent, function_type f) noexcept
+    {
+      value_guard _{ m_curEntity, *ent };
+      return reg_value(f);
     }
 
     //

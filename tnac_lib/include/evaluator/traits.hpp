@@ -107,6 +107,10 @@ namespace tnac::eval
               }
               return static_cast<int_type>(v.to<float_type>());
             },
+          [](function_type) noexcept -> res_type
+          {
+            return {};
+          },
           [](invalid_val_t) noexcept -> res_type
           { 
             return int_type{};
@@ -143,7 +147,11 @@ namespace tnac::eval
           { 
             return v.to<float_type>();
           },
-          [](invalid_val_t) noexcept  -> res_type
+          [](function_type) noexcept -> res_type
+          {
+            return {};
+          },
+          [](invalid_val_t) noexcept -> res_type
           { 
             return float_type{};
           }
@@ -175,6 +183,10 @@ namespace tnac::eval
           [](fraction_type v) noexcept -> res_type
           { 
             return complex_type{ v.to<float_type>() };
+          },
+          [](function_type) noexcept -> res_type
+          {
+            return {};
           },
           [](invalid_val_t) noexcept -> res_type
           { 
@@ -226,11 +238,52 @@ namespace tnac::eval
           {
             return v;
           },
+          [](function_type) noexcept -> res_type
+          {
+            return {};
+          },
           [](invalid_val_t) noexcept -> res_type
           { 
             return fraction_type{ 0 };
           }
         });
+    }
+  };
+
+  template <>
+  struct cast_value<function_type>
+  {
+    using res_type = typed_value<function_type>;
+
+    auto operator()(value val) noexcept
+    {
+      return on_value(val, utils::visitor
+      {
+        [](int_type) noexcept -> res_type
+        {
+          return {};
+        },
+        [](float_type) noexcept -> res_type
+        {
+          return {};
+        },
+        [](complex_type) noexcept -> res_type
+        {
+          return {};
+        },
+        [](fraction_type) noexcept -> res_type
+        {
+          return {};
+        },
+        [](function_type v) noexcept -> res_type
+        {
+          return v;
+        },
+        [](invalid_val_t) noexcept -> res_type
+        {
+          return {};
+        }
+      });
     }
   };
 }

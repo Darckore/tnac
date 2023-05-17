@@ -244,6 +244,23 @@ namespace tnac
     eval_assign(decl.symbol(), decl.initialiser().value());
   }
 
+  void evaluator::visit(ast::func_decl& decl) noexcept
+  {
+    using semantics::sym_cast;
+    auto sym = sym_cast<semantics::function>(&decl.symbol());
+
+    if (!sym)
+    {
+      on_error(decl.pos(), "Invalid symbol type"sv);
+      return;
+    }
+
+    if (sym->value())
+      return;
+
+    make_function(*sym);
+  }
+
   // Previews
 
   bool evaluator::preview(ast::func_decl& ) noexcept
@@ -283,5 +300,10 @@ namespace tnac
   void evaluator::eval_assign(semantics::symbol& sym, eval::value rhs) noexcept
   {
     sym.eval_result(m_visitor.visit_assign(&sym, rhs));
+  }
+
+  void evaluator::make_function(semantics::function& sym) noexcept
+  {
+    sym.eval_result(m_visitor.make_function(&sym, eval::function_type{ sym }));
   }
 }

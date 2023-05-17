@@ -1,4 +1,5 @@
 #include "output/common.hpp"
+#include "sema/symbol.hpp"
 
 namespace tnac_rt::out
 {
@@ -65,6 +66,13 @@ namespace tnac_rt::out
 
       if (wholePart)
         out << ')';
+
+      return out;
+    }
+
+    std::ostream& operator<<(std::ostream& out, const tnac::eval::function_type& f) noexcept
+    {
+      out << "function(" << f->name() << ')';
 
       return out;
     }

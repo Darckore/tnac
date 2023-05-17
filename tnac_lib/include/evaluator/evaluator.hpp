@@ -92,6 +92,11 @@ namespace tnac
     //
     void visit(ast::var_decl& decl) noexcept;
 
+    //
+    // Visits a function declarator
+    //
+    void visit(ast::func_decl& decl) noexcept;
+
   public: // previews
     //
     // Previews a function declaration
@@ -116,6 +121,11 @@ namespace tnac
     // Evaluates an assign expression and variable declarations 
     //
     void eval_assign(semantics::symbol& sym, eval::value rhs) noexcept;
+
+    //
+    // Creates a value for a function
+    //
+    void make_function(semantics::function& sym) noexcept;
 
   private:
     eval::value_visitor m_visitor;

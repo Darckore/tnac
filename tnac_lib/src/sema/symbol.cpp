@@ -81,6 +81,15 @@ namespace tnac::semantics
     return func_decl().param_count();
   }
 
+  const function::param_list& function::params() const noexcept
+  {
+    return func_decl().params();
+  }
+  function::param_list& function::params() noexcept
+  {
+    return FROM_CONST(params);
+  }
+
   const ast::func_decl& function::func_decl() const noexcept
   {
     UTILS_ASSERT(declarator().is(ast::node_kind::FuncDecl));

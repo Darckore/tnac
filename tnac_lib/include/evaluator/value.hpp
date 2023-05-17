@@ -23,9 +23,11 @@ namespace tnac::eval
   class function_type final
   {
   public:
-    using value_type = const semantics::function;
-    using pointer    = value_type*;
-    using reference  = value_type&;
+    using value_type       = semantics::function;
+    using pointer          = value_type*;
+    using const_pointer    = const value_type*;
+    using reference        = value_type&;
+    using const_reference  = const value_type&;
 
   public:
     CLASS_SPECIALS_NODEFAULT(function_type);
@@ -39,9 +41,14 @@ namespace tnac::eval
     bool operator==(const function_type& other) const noexcept = default;
 
   public:
-    pointer operator->() const noexcept
+    const_pointer operator->() const noexcept
     {
       return m_func;
+    }
+
+    pointer operator->() noexcept
+    {
+      return FROM_CONST(operator->);
     }
 
   private:
@@ -54,7 +61,9 @@ namespace tnac::eval
     // Defines a valid result of expression evaluation
     //
     template <typename T>
-    concept expr_result = is_any_v<T, int_type, float_type, complex_type, fraction_type>;
+    concept expr_result = is_any_v<T, int_type, float_type,
+                                      complex_type, fraction_type,
+                                      function_type>;
   }
 
   //
@@ -79,7 +88,8 @@ namespace tnac::eval
     Int,
     Float,
     Complex,
-    Fraction
+    Fraction,
+    Function
   };
 
   namespace detail
@@ -129,6 +139,17 @@ namespace tnac::eval
     struct type_from_id<type_id::Fraction>
     {
       using type = fraction_type;
+    };
+
+    template <>
+    struct id_from_type<function_type>
+    {
+      static constexpr auto value = type_id::Function;
+    };
+    template <>
+    struct type_from_id<type_id::Function>
+    {
+      using type = function_type;
     };
   }
 
@@ -283,6 +304,9 @@ namespace tnac::eval
 
     case Fraction:
       return func(val.get<fraction_type>());
+
+    case Function:
+      return func(val.get<function_type>());
 
     default:
       return func(invalid_val_t{});

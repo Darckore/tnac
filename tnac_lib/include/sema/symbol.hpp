@@ -145,7 +145,9 @@ namespace tnac::semantics
   class function final : public symbol
   {
   public:
-    using size_type = ast::func_decl::size_type;
+    using decl_type  = ast::func_decl;
+    using size_type  = decl_type::size_type;
+    using param_list = decl_type::param_list;
 
   private:
     friend class sym_table;
@@ -160,6 +162,9 @@ namespace tnac::semantics
 
   public:
     size_type param_count() const noexcept;
+
+    const param_list& params() const noexcept;
+    param_list& params() noexcept;
 
   private:
     const ast::func_decl& func_decl() const noexcept;
