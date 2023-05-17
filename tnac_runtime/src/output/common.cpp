@@ -12,7 +12,21 @@ namespace tnac_rt::out
 
     std::ostream& operator<<(std::ostream& out, const tnac::complex_type& c) noexcept
     {
-      out << "complex(" << c.real() << ", " << c.imag() << ')';
+      const auto r = c.real();
+      const auto i = c.imag();
+
+      out << '(';
+
+      if (!utils::eq(r, tnac::float_type{}))
+        out << r;
+
+      if (!utils::eq(i, tnac::float_type{}))
+      {
+        auto sign = (i > 0) ? '+' : '-';
+        out << ' ' << sign << ' ' << utils::abs(i) << "i";
+      }
+
+      out << ')';
       return out;
     }
 

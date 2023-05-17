@@ -235,22 +235,19 @@ namespace tnac::eval
   private: // Operation support
 
     template <detail::expr_result T>
-    using possible_cast = std::optional<T>;
-
-    template <detail::expr_result T>
-    possible_cast<int_type> to_int(T val) noexcept
+    typed_value<int_type> to_int(T val) noexcept
     {
       return {};
     }
 
     template <>
-    possible_cast<int_type> to_int(int_type val) noexcept
+    typed_value<int_type> to_int(int_type val) noexcept
     {
       return val;
     }
 
     template <>
-    possible_cast<int_type> to_int(float_type val) noexcept
+    typed_value<int_type> to_int(float_type val) noexcept
     {
       const auto conv = static_cast<int_type>(val);
       if (utils::eq(static_cast<float_type>(conv), val))
@@ -260,7 +257,7 @@ namespace tnac::eval
     }
 
     template <>
-    possible_cast<int_type> to_int(complex_type val) noexcept
+    typed_value<int_type> to_int(complex_type val) noexcept
     {
       if (!utils::eq(val.imag(), float_type{}))
         return {};
@@ -269,7 +266,7 @@ namespace tnac::eval
     }
 
     template <>
-    possible_cast<int_type> to_int(fraction_type val) noexcept
+    typed_value<int_type> to_int(fraction_type val) noexcept
     {
       return to_int(val.to<float_type>());
     }
@@ -571,7 +568,13 @@ namespace tnac::eval
     value instantiate(const std::array<value, sizeof...(Seq)>& args, std::integer_sequence<T, Seq...>) noexcept
     {
       using type_info = eval::type_info<Obj>;
-      return reg_value(Obj{ cast_value<type_from_id<type_info::params[Seq]>>{}(args[Seq])... });
+      using type_gen = type_wrapper<Obj>;
+      const auto instance = type_gen{}(cast_value<type_from_id<type_info::params[Seq]>>{}(args[Seq])...);
+
+      if (!instance)
+        return get_empty();
+
+      return reg_value(*instance);
     }
 
   public:

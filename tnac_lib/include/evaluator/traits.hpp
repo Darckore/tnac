@@ -45,28 +45,72 @@ namespace tnac::eval
 
   // Value casters
 
+  template <detail::expr_result T>
+  using typed_value = std::optional<T>;
+
+  template <detail::expr_result T>
+  struct type_wrapper
+  {
+    using value_type  = T;
+    using result_type = typed_value<value_type>;
+
+    template <typename ...Args>
+    result_type operator()(typed_value<Args>&& ...args ) noexcept
+    {
+      if (utils::eq_any(false, static_cast<bool>(args)...))
+      {
+        return {};
+      }
+
+      return value_type{ (*args)... };
+    }
+  };
+
   template <typename T> struct cast_value;
 
   template <>
   struct cast_value<int_type>
   {
-    int_type operator()(value val) noexcept
+    using res_type = typed_value<int_type>;
+
+    auto operator()(value val) noexcept
     {
       return on_value(val, utils::visitor
         {
-          [](int_type v) noexcept { return v; },
-          [](float_type v) noexcept { return static_cast<int_type>(v); },
-          [](complex_type v) noexcept { return static_cast<int_type>(v.real()); },
-          [](fraction_type v) noexcept
+          [](int_type v) noexcept -> res_type
+          {
+            return v;
+          },
+          [](float_type v) noexcept -> res_type
+          {
+            if (std::isnan(v) || std::isinf(v))
+              return {};
+
+            return static_cast<int_type>(v);
+          },
+          [](complex_type v) noexcept -> res_type
+          {
+            if (!utils::eq(v.imag(), float_type{}))
+              return {};
+
+            const auto real = v.real();
+            if (std::isnan(real) || std::isinf(real))
+              return {};
+
+            return static_cast<int_type>(v.real());
+          },
+          [](fraction_type v) noexcept -> res_type
             {
               if (v.is_infinity())
               {
-                using lim = std::numeric_limits<int_type>;
-                return v.sign() > 0 ? lim::min() : lim::max();
+                return {};
               }
               return static_cast<int_type>(v.to<float_type>());
             },
-          [](invalid_val_t) noexcept { return int_type{}; }
+          [](invalid_val_t) noexcept -> res_type
+          { 
+            return int_type{};
+          }
         });
     }
   };
@@ -74,15 +118,35 @@ namespace tnac::eval
   template <>
   struct cast_value<float_type>
   {
-    float_type operator()(value val) noexcept
+    using res_type = typed_value<float_type>;
+
+    auto operator()(value val) noexcept
     {
       return on_value(val, utils::visitor
         {
-          [](int_type v) noexcept { return static_cast<float_type>(v); },
-          [](float_type v) noexcept { return v; },
-          [](complex_type v) noexcept { return v.real(); },
-          [](fraction_type v) noexcept { return v.to<float_type>(); },
-          [](invalid_val_t) noexcept { return float_type{}; }
+          [](int_type v) noexcept -> res_type
+          { 
+            return static_cast<float_type>(v);
+          },
+          [](float_type v) noexcept -> res_type
+          { 
+            return v; 
+          },
+          [](complex_type v) noexcept -> res_type
+          { 
+            if (!utils::eq(v.imag(), float_type{}))
+              return {};
+
+            return v.real(); 
+          },
+          [](fraction_type v) noexcept -> res_type
+          { 
+            return v.to<float_type>();
+          },
+          [](invalid_val_t) noexcept  -> res_type
+          { 
+            return float_type{};
+          }
         });
     }
   };
@@ -90,15 +154,32 @@ namespace tnac::eval
   template <>
   struct cast_value<complex_type>
   {
-    complex_type operator()(value val) noexcept
+    using res_type = typed_value<complex_type>;
+
+    auto operator()(value val) noexcept
     {
       return on_value(val, utils::visitor
         {
-          [](int_type v) noexcept { return complex_type{ static_cast<float_type>(v) }; },
-          [](float_type v) noexcept { return complex_type{ v }; },
-          [](complex_type v) noexcept { return v; },
-          [](fraction_type v) noexcept { return complex_type{ v.to<float_type>() }; },
-          [](invalid_val_t) noexcept { return complex_type{}; }
+          [](int_type v) noexcept -> res_type
+          { 
+            return complex_type{ static_cast<float_type>(v) };
+          },
+          [](float_type v) noexcept -> res_type
+          { 
+            return complex_type{ v };
+          },
+          [](complex_type v) noexcept -> res_type
+          { 
+            return v; 
+          },
+          [](fraction_type v) noexcept -> res_type
+          { 
+            return complex_type{ v.to<float_type>() };
+          },
+          [](invalid_val_t) noexcept -> res_type
+          { 
+            return complex_type{};
+          }
         });
     }
   };
@@ -106,15 +187,49 @@ namespace tnac::eval
   template <>
   struct cast_value<fraction_type>
   {
-    fraction_type operator()(value val) noexcept
+    using res_type = typed_value<fraction_type>;
+
+    auto operator()(value val) noexcept
     {
       return on_value(val, utils::visitor
         {
-          [](int_type v) noexcept { return fraction_type{ v }; },
-          [](float_type v) noexcept { return fraction_type{ static_cast<int_type>(v) }; }, // todo: float to frac
-          [](complex_type v) noexcept { return fraction_type{ static_cast<int_type>(v.real()) }; }, // todo: float to frac
-          [](fraction_type v) noexcept { return v; },
-          [](invalid_val_t) noexcept { return fraction_type{ 0 }; }
+          [](int_type v) noexcept -> res_type
+          {
+            return fraction_type{ v };
+          },
+          [](float_type v) noexcept -> res_type
+          {
+            // todo: float to frac
+            if (std::isnan(v) || std::isinf(v))
+            {
+              const auto sign = static_cast<fraction_type::sign_t>(utils::sign(v));
+              return fraction_type{ int_type{ 1 }, int_type{ }, sign };
+            }
+
+            return fraction_type{ static_cast<int_type>(v) };
+          },
+          [](complex_type v) noexcept -> res_type
+          {
+            // todo: float to frac
+            if (!utils::eq(v.imag(), float_type{}))
+              return {};
+
+            if (const auto real = v.real(); std::isnan(real) || std::isinf(real))
+            {
+              const auto sign = static_cast<fraction_type::sign_t>(utils::sign(real));
+              return fraction_type{ int_type{ 1 }, int_type{ }, sign };
+            }
+
+            return fraction_type{ static_cast<int_type>(v.real()) };
+          }, 
+          [](fraction_type v) noexcept -> res_type
+          {
+            return v;
+          },
+          [](invalid_val_t) noexcept -> res_type
+          { 
+            return fraction_type{ 0 };
+          }
         });
     }
   };
