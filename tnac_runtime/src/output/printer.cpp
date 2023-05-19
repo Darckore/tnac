@@ -57,7 +57,7 @@ namespace tnac_rt::out
     }
     else if (decl.is(ast::node::FuncDecl))
     {
-      auto&& funcDecl = static_cast<const ast::func_decl&>(decl);
+      auto&& funcDecl = utils::cast<ast::func_decl>(decl);
       push_parent(funcDecl.param_count() + 1u);
     }
   }

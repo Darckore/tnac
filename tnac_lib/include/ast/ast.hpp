@@ -84,6 +84,11 @@ namespace tnac::ast
     kind m_kind{ Error };
   };
 
+  inline auto get_id(const node& n) noexcept
+  {
+    return n.what();
+  }
+
   class expr;
 
   //

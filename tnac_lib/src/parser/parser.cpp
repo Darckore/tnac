@@ -102,7 +102,7 @@ namespace tnac
     if (!expr.is(kind::Decl))
       return false;
 
-    auto&& de = static_cast<const ast::decl_expr&>(expr);
+    auto&& de = utils::cast<ast::decl_expr>(expr);
     return de.declarator().is(kind::FuncDecl);
   }
 

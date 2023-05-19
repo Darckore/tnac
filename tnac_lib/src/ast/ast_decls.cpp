@@ -124,7 +124,7 @@ namespace tnac::ast
 
   const scope& func_decl::body() const noexcept
   {
-    return static_cast<const scope&>(*definition());
+    return utils::cast<scope>(*definition());
   }
   scope& func_decl::body() noexcept
   {

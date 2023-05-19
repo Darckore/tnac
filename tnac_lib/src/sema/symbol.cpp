@@ -93,7 +93,7 @@ namespace tnac::semantics
   const ast::func_decl& function::func_decl() const noexcept
   {
     UTILS_ASSERT(declarator().is(ast::node_kind::FuncDecl));
-    return static_cast<const ast::func_decl&>(declarator());
+    return utils::cast<ast::func_decl>(declarator());
   }
   ast::func_decl& function::func_decl() noexcept
   {

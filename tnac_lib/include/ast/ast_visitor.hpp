@@ -131,13 +131,20 @@ namespace tnac::ast
 
   private:
     //
+    // Casts itself to a reference to derived
+    //
+    derived_t& to_derived() noexcept
+    {
+      return static_cast<derived_t&>(*this);
+    }
+
+    //
     // Calls the appropriate visit method of the derived visitor class
     // if it is defined
     //
     void visit(detail::visitable_node<derived_t> auto* cur) noexcept
     {
-      auto&& self = static_cast<derived_t&>(*this);
-      self.visit(*cur);
+      to_derived().visit(*cur);
     }
 
     //
@@ -156,8 +163,7 @@ namespace tnac::ast
     //
     bool preview(detail::previewable_node<derived_t> auto* cur) noexcept
     {
-      auto&& self = static_cast<derived_t&>(*this);
-      return self.preview(*cur);
+      return to_derived().preview(*cur);
     }
 
     //

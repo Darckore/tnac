@@ -149,23 +149,15 @@ namespace tnac
 
   void evaluator::visit(ast::assign_expr& assign) noexcept
   {
-    using enum ast::node::kind;
-    auto&& assignee = assign.left();
-    switch (assignee.what())
+    auto&& left = assign.left();
+    if (auto assignee = utils::try_cast<ast::id_expr>(&left))
     {
-    case Identifier:
-    {
-      auto&& lhs = static_cast<ast::id_expr&>(assignee).symbol();
+      auto&& lhs = assignee->symbol();
       eval_assign(lhs, assign.right().value());
-      assignee.eval_result(lhs.value());
-    }
-      break;
-
-    default:
-      break;
+      assignee->eval_result(lhs.value());
     }
 
-    assign.eval_result(assignee.value());
+    assign.eval_result(left.value());
   }
 
   void evaluator::visit(ast::binary_expr& binary) noexcept
