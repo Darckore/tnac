@@ -109,7 +109,7 @@ namespace tnac::semantics
     auto alloc_sym(Args&& ...args) noexcept
     {
       auto&& res = m_symbols.emplace_back(new S{ std::forward<Args>(args)... });
-      return sym_cast<S>(res.get());
+      return utils::try_cast<S>(res.get());
     }
 
     //
@@ -122,7 +122,7 @@ namespace tnac::semantics
     {
       auto&& sym = make_symbol(make_name(name), parent);
       if (sym)
-        return sym_cast<S>(sym);
+        return utils::try_cast<S>(sym);
 
       auto res = alloc_sym<S>(*parent, std::forward<Args>(args)...);
       sym = res;

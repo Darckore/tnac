@@ -102,6 +102,16 @@ namespace tnac::semantics
     kind m_kind{};
   };
 
+  namespace detail
+  {
+    template <typename T>
+    concept sym = std::is_base_of_v<symbol, T>;
+  }
+
+  inline auto get_id(const symbol& sym) noexcept
+  {
+    return sym.what();
+  }
 
   //
   // Symbol corresponding to a variable
@@ -170,86 +180,8 @@ namespace tnac::semantics
     const ast::func_decl& func_decl() const noexcept;
     ast::func_decl& func_decl() noexcept;
   };
-
-
-  namespace detail
-  {
-    template <typename T>
-    concept sym = std::is_base_of_v<symbol, T>;
-
-    template <sym S> struct kind_from_sym;
-    template <sym_kind K> struct sym_from_kind;
-
-    template <>
-    struct kind_from_sym<variable>
-    {
-      static constexpr auto value = sym_kind::Variable;
-    };
-    template <>
-    struct sym_from_kind<sym_kind::Variable>
-    {
-      using type = variable;
-    };
-
-    template <>
-    struct kind_from_sym<parameter>
-    {
-      static constexpr auto value = sym_kind::Parameter;
-    };
-    template <>
-    struct sym_from_kind<sym_kind::Parameter>
-    {
-      using type = parameter;
-    };
-
-    template <>
-    struct kind_from_sym<function>
-    {
-      static constexpr auto value = sym_kind::Function;
-    };
-    template <>
-    struct sym_from_kind<sym_kind::Function>
-    {
-      using type = function;
-    };
-
-    template <typename From, typename To> struct sym_caster;
-
-    template <sym From, sym To> requires (std::is_const_v<From>)
-    struct sym_caster<From, To>
-    {
-      using type = const To*;
-    };
-
-    template <sym From, sym To> requires (!std::is_const_v<From>)
-    struct sym_caster<From, To>
-    {
-      using type = To*;
-    };
-
-  }
-
-  template <detail::sym S>
-  inline constexpr auto kind_from_sym = detail::kind_from_sym<S>::value;
-
-  template <sym_kind K>
-  using sym_from_kind = detail::sym_from_kind<K>::type;
-
-  template <detail::sym To>
-  auto sym_cast(const symbol* sym) noexcept
-  {
-    using res_t = detail::sym_caster<const symbol, To>::type;
-    static constexpr auto K = kind_from_sym<To>;
-    if (!sym || sym->what() != K)
-      return res_t{};
-
-    return static_cast<res_t>(sym);
-  }
-
-  template <detail::sym To>
-  auto sym_cast(symbol* sym) noexcept
-  {
-    auto castRes = sym_cast<To>(static_cast<const symbol*>(sym));
-    return const_cast<To*>(castRes);
-  }
 }
+
+TYPE_TO_ID_ASSOCIATION(tnac::semantics::variable,  tnac::semantics::sym_kind::Variable);
+TYPE_TO_ID_ASSOCIATION(tnac::semantics::parameter, tnac::semantics::sym_kind::Parameter);
+TYPE_TO_ID_ASSOCIATION(tnac::semantics::function,  tnac::semantics::sym_kind::Function);

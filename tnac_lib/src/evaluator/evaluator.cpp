@@ -246,8 +246,7 @@ namespace tnac
 
   void evaluator::visit(ast::func_decl& decl) noexcept
   {
-    using semantics::sym_cast;
-    auto sym = sym_cast<semantics::function>(&decl.symbol());
+    auto sym = utils::try_cast<semantics::function>(&decl.symbol());
 
     if (!sym)
     {
