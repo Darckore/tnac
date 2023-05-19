@@ -76,7 +76,7 @@ namespace tnac::eval
     {
       update_result(value);
       auto&& store = store_for_type<T>();
-      return { &*(store.emplace(value).first), eval::id_from_type<T> };
+      return { &*(store.emplace(value).first), utils::type_to_id_v<T> };
     }
 
     //
@@ -87,7 +87,7 @@ namespace tnac::eval
     {
       auto&& valStore = m_entityValues[id];
       valStore = value;
-      return { &std::get<T>(valStore), eval::id_from_type<T> };
+      return { &std::get<T>(valStore), utils::type_to_id_v<T> };
     }
 
   public:

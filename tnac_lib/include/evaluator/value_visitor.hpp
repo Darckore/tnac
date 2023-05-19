@@ -598,7 +598,7 @@ namespace tnac::eval
     {
       using type_info = eval::type_info<Obj>;
       using type_gen = type_wrapper<Obj>;
-      const auto instance = type_gen{}(cast_value<type_from_id<type_info::params[Seq]>>{}(args[Seq])...);
+      const auto instance = type_gen{}(cast_value<utils::id_to_type_t<type_info::params[Seq]>>{}(args[Seq])...);
 
       if (!instance)
         return get_empty();

@@ -31,7 +31,7 @@ namespace tnac::eval
 
   public:
     CLASS_SPECIALS_NODEFAULT(function_type);
-    
+
     ~function_type() = default;
 
     function_type(reference func) noexcept :
@@ -62,22 +62,9 @@ namespace tnac::eval
     //
     template <typename T>
     concept expr_result = is_any_v<T, int_type, float_type,
-                                      complex_type, fraction_type,
-                                      function_type>;
+      complex_type, fraction_type,
+      function_type>;
   }
-
-  //
-  // Used for binary expressions. Converts values to their common type
-  //
-  template <detail::expr_result T1, detail::expr_result T2>
-  struct common_type_cast : public tnac::detail::common_type<tnac::detail::nocvref<T1>, tnac::detail::nocvref<T2>>
-  {
-    constexpr auto operator()(T1 v1, T2 v2) noexcept
-    {
-      using res_type = common_type_cast<T1, T2>::type;
-      return std::pair{ static_cast<res_type>(v1), static_cast<res_type>(v2) };
-    }
-  };
 
   //
   // Type ids for every supported type
@@ -91,75 +78,16 @@ namespace tnac::eval
     Fraction,
     Function
   };
+}
 
-  namespace detail
-  {
-    template <typename T> struct id_from_type;
-    template <type_id ID> struct type_from_id;
+TYPE_TO_ID_ASSOCIATION(tnac::int_type,            tnac::eval::type_id::Int);
+TYPE_TO_ID_ASSOCIATION(tnac::float_type,          tnac::eval::type_id::Float);
+TYPE_TO_ID_ASSOCIATION(tnac::complex_type,        tnac::eval::type_id::Complex);
+TYPE_TO_ID_ASSOCIATION(tnac::fraction_type,       tnac::eval::type_id::Fraction);
+TYPE_TO_ID_ASSOCIATION(tnac::eval::function_type, tnac::eval::type_id::Function);
 
-    template <>
-    struct id_from_type<int_type>
-    {
-      static constexpr auto value = type_id::Int;
-    };
-    template <>
-    struct type_from_id<type_id::Int>
-    {
-      using type = int_type;
-    };
-
-    template <>
-    struct id_from_type<float_type>
-    {
-      static constexpr auto value = type_id::Float;
-    };
-    template <>
-    struct type_from_id<type_id::Float>
-    {
-      using type = float_type;
-    };
-
-    template <>
-    struct id_from_type<complex_type>
-    {
-      static constexpr auto value = type_id::Complex;
-    };
-    template <>
-    struct type_from_id<type_id::Complex>
-    {
-      using type = complex_type;
-    };
-
-    template <>
-    struct id_from_type<fraction_type>
-    {
-      static constexpr auto value = type_id::Fraction;
-    };
-    template <>
-    struct type_from_id<type_id::Fraction>
-    {
-      using type = fraction_type;
-    };
-
-    template <>
-    struct id_from_type<function_type>
-    {
-      static constexpr auto value = type_id::Function;
-    };
-    template <>
-    struct type_from_id<type_id::Function>
-    {
-      using type = function_type;
-    };
-  }
-
-  template <detail::expr_result T>
-  inline constexpr auto id_from_type = detail::id_from_type<T>::value;
-
-  template <type_id TI>
-  using type_from_id = detail::type_from_id<TI>::type;
-
-
+namespace tnac::eval
+{
   //
   // Represents a value used for evaluation
   // 
@@ -250,7 +178,7 @@ namespace tnac::eval
     template <type_id TI>
     auto get() const noexcept
     {
-      return get<type_from_id<TI>>();
+      return get<utils::id_to_type_t<TI>>();
     }
 
     //
@@ -261,7 +189,7 @@ namespace tnac::eval
     value_opt<T> try_get() const noexcept
     {
       auto tv = split(m_val);
-      if (!tv.val || tv.id != id_from_type<T>)
+      if (!tv.val || tv.id != utils::type_to_id_v<T>)
         return {};
 
       return get<T>();
@@ -275,12 +203,17 @@ namespace tnac::eval
     template <type_id TI>
     auto try_get() const noexcept
     {
-      return try_get<type_from_id<TI>>();
+      return try_get<utils::id_to_type_t<TI>>();
     }
 
   private:
     value_type m_val{};
   };
+
+  inline auto get_id(const value& val) noexcept
+  {
+    return val.id();
+  }
 
   //
   // Executes the provided callable object and passes it the value converted
