@@ -79,7 +79,7 @@ namespace tnac::ast
 
   const expr& var_decl::initialiser() const noexcept
   {
-    return static_cast<const expr&>(*definition());
+    return utils::cast<expr>(*definition());
   }
   expr& var_decl::initialiser() noexcept
   {

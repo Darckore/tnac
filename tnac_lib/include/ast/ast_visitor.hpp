@@ -33,40 +33,8 @@ namespace tnac::ast
     template <typename N>
     concept visitable_root =
       ast_node<N> &&
-      std::is_same_v<std::remove_const_t<N>, node>;
+      is_same_noquals_v<N, node>;
 
-    //
-    // Unspecialised version of the cast helper
-    // Its job is to maintain const consistency when casting between ast node types
-    //
-    template <typename From, typename To> struct ast_caster;
-
-    //
-    // Cast helper for const nodes
-    //
-    template <ast_node From, ast_node To> requires (std::is_const_v<From>)
-    struct ast_caster<From, To>
-    {
-      using type = const To*;
-    };
-
-    //
-    // Cast helper for non-const nodes
-    //
-    template <ast_node From, ast_node To> requires (!std::is_const_v<From>)
-    struct ast_caster<From, To>
-    {
-      using type = To*;
-    };
-
-    //
-    // Casts the given node to the specified type and maintains constness
-    //
-    template <typename From, typename To>
-    auto cast(From* src) noexcept
-    {
-      return static_cast<ast_caster<From, To>::type>(src);
-    }
 
     //
     // Constrols the order in which tree nodes are visited
@@ -96,7 +64,7 @@ namespace tnac::ast
     // Destination type for casts between various ast kinds
     //
     template <typename T>
-    using dest = detail::ast_caster<node_t, T>::type;
+    using dest = decltype(utils::try_cast<T>(node_ptr{}));
 
     static constexpr auto order = VO;
 
@@ -413,75 +381,76 @@ namespace tnac::ast
     //
     // Dispatches visit calls according to the node type
     //
-    void visit_root(node_ptr cur) noexcept
+    void visit_root(node_ptr n) noexcept
     {
-      using detail::cast;
+      using utils::cast;
 
-      if (!cur)
+      if (!n)
         return;
 
       using enum node_kind;
+      auto&& cur = *n;
 
-      switch (cur->what())
+      switch (cur.what())
       {
       case Scope:
-        visit_impl(cast<node_t, scope>(cur));
+        visit_impl(&cast<scope>(cur));
         break;
 
       case Result:
-        visit_impl(cast<node_t, result_expr>(cur));
+        visit_impl(&cast<result_expr>(cur));
         break;
 
       case Literal:
-        visit_impl(cast<node_t, lit_expr>(cur));
+        visit_impl(&cast<lit_expr>(cur));
         break;
 
       case Identifier:
-        visit_impl(cast<node_t, id_expr>(cur));
+        visit_impl(&cast<id_expr>(cur));
         break;
 
       case Unary:
-        visit_impl(cast<node_t, unary_expr>(cur));
+        visit_impl(&cast<unary_expr>(cur));
         break;
 
       case Binary:
-        visit_impl(cast<node_t, binary_expr>(cur));
+        visit_impl(&cast<binary_expr>(cur));
         break;
 
       case Assign:
-        visit_impl(cast<node_t, assign_expr>(cur));
+        visit_impl(&cast<assign_expr>(cur));
         break;
 
       case Decl:
-        visit_impl(cast<node_t, decl_expr>(cur));
+        visit_impl(&cast<decl_expr>(cur));
         break;
 
       case VarDecl:
-        visit_impl(cast<node_t, var_decl>(cur));
+        visit_impl(&cast<var_decl>(cur));
         break;
 
       case ParamDecl:
-        visit_impl(cast<node_t, param_decl>(cur));
+        visit_impl(&cast<param_decl>(cur));
         break;
 
       case FuncDecl:
-        visit_impl(cast<node_t, func_decl>(cur));
+        visit_impl(&cast<func_decl>(cur));
         break;
 
       case Paren:
-        visit_impl(cast<node_t, paren_expr>(cur));
+        visit_impl(&cast<paren_expr>(cur));
         break;
 
       case Typed:
-        visit_impl(cast<node_t, typed_expr>(cur));
+        visit_impl(&cast<typed_expr>(cur));
         break;
 
       case Call:
-        visit_impl(cast<node_t, call_expr>(cur));
+        visit_impl(&cast<call_expr>(cur));
         break;
 
       case Error:
-        visit_impl(cast<node_t, error_expr>(cur));
+        visit_impl(&cast<error_expr>(cur));
         break;
 
       default:
