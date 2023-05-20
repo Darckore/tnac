@@ -45,12 +45,6 @@ namespace tnac
     template <typename T1, typename T2>
     struct common_type : public std::common_type<nocvref<T1>, nocvref<T2>>
     {};
-
-    template <typename From, typename To>
-    inline constexpr auto to(From val) noexcept
-    {
-      return static_cast<To>(val);
-    }
   }
 
   template <typename T1, typename T2>

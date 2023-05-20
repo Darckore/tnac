@@ -3,18 +3,6 @@
 
 namespace tnac_rt::out
 {
-  namespace detail
-  {
-    namespace
-    {
-      template <ast::ast_node To>
-      decltype(auto) to(const ast::node& from) noexcept
-      {
-        return static_cast<const To&>(from);
-      }
-    }
-  }
-
   // Special members
 
   lister::~lister() noexcept = default;
@@ -39,7 +27,7 @@ namespace tnac_rt::out
   void lister::print(const ast::node* root) noexcept
   {
     using enum ast::node_kind;
-    using detail::to;
+    using utils::cast;
 
     if (!root)
       return;
@@ -48,63 +36,63 @@ namespace tnac_rt::out
     switch (root->what())
     {
     case Error:
-      print(to<ast::error_expr>(*root));
+      print(cast<ast::error_expr>(*root));
       break;
 
     case Scope:
-      print(to<ast::scope>(*root));
+      print(cast<ast::scope>(*root));
       break;
 
     case Literal:
-      print(to<ast::lit_expr>(*root));
+      print(cast<ast::lit_expr>(*root));
       break;
 
     case Identifier:
-      print(to<ast::id_expr>(*root));
+      print(cast<ast::id_expr>(*root));
       break;
 
     case Unary:
-      print(to<ast::unary_expr>(*root));
+      print(cast<ast::unary_expr>(*root));
       break;
 
     case Binary:
-      print(to<ast::binary_expr>(*root));
+      print(cast<ast::binary_expr>(*root));
       break;
 
     case Assign:
-      print(to<ast::assign_expr>(*root));
+      print(cast<ast::assign_expr>(*root));
       break;
 
     case Decl:
-      print(to<ast::decl_expr>(*root));
+      print(cast<ast::decl_expr>(*root));
       break;
 
     case Paren:
-      print(to<ast::paren_expr>(*root));
+      print(cast<ast::paren_expr>(*root));
       break;
 
     case Typed:
-      print(to<ast::typed_expr>(*root));
+      print(cast<ast::typed_expr>(*root));
       break;
 
     case Call:
-      print(to<ast::call_expr>(*root));
+      print(cast<ast::call_expr>(*root));
       break;
 
     case Result:
-      print(to<ast::result_expr>(*root));
+      print(cast<ast::result_expr>(*root));
       break;
 
     case VarDecl:
-      print(to<ast::var_decl>(*root));
+      print(cast<ast::var_decl>(*root));
       break;
 
     case ParamDecl:
-      print(to<ast::param_decl>(*root));
+      print(cast<ast::param_decl>(*root));
       break;
 
     case FuncDecl:
-      print(to<ast::func_decl>(*root));
+      print(cast<ast::func_decl>(*root));
       break;
 
     default:
@@ -133,7 +121,7 @@ namespace tnac_rt::out
 
   void lister::print(const ast::assign_expr& expr) noexcept
   {
-    print(detail::to<ast::binary_expr>(expr));
+    print(utils::cast<ast::binary_expr>(expr));
   }
 
   void lister::print(const ast::decl_expr& expr) noexcept
