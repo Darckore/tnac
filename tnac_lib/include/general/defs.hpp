@@ -41,10 +41,6 @@ namespace tnac
     {
       static constexpr auto value = std::conjunction_v<is_same_noquals<First, Others>...>;
     };
-
-    template <typename T1, typename T2>
-    struct common_type : public std::common_type<nocvref<T1>, nocvref<T2>>
-    {};
   }
 
   template <typename T1, typename T2>
@@ -55,9 +51,6 @@ namespace tnac
 
   template <typename First, typename ...Others>
   inline constexpr auto is_all_v = detail::is_all<First, Others...>::value;
-
-  template <typename T1, typename T2>
-  using common_type_t = detail::common_type<T1, T2>::type;
 
   //
   // Takes a reference to a variable and (possibly) a new value
