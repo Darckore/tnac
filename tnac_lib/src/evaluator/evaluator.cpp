@@ -199,6 +199,19 @@ namespace tnac
     expr.eval_result(val);
   }
 
+  void evaluator::visit(ast::call_expr& expr) noexcept
+  {
+    auto func = expr.symbol().value();
+    auto funcType = func.try_get<eval::function_type>();
+    if (!funcType)
+    {
+      on_error(expr.pos(), "Expected a callable object"sv);
+      return;
+    }
+
+    // todo: call it already
+  }
+
   void evaluator::visit(ast::paren_expr& paren) noexcept
   {
     paren.eval_result(paren.internal_expr().value());

@@ -67,6 +67,11 @@ namespace tnac
     void visit(ast::typed_expr& expr) noexcept;
 
     //
+    // Visits a call expression
+    //
+    void visit(ast::call_expr& expr) noexcept;
+
+    //
     // Visits a literal expression
     //
     void visit(ast::lit_expr& lit) noexcept;

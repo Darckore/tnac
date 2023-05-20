@@ -32,7 +32,7 @@ namespace tnac::eval
   public:
     CLASS_SPECIALS_NODEFAULT(function_type);
 
-    ~function_type() = default;
+    ~function_type() noexcept = default;
 
     function_type(reference func) noexcept :
       m_func{ &func }
