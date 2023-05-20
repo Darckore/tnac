@@ -264,6 +264,15 @@ A call like this will return `10`:
 parent_func(2, 3)
 ```
 
+Also, functions are their own value type:
+```
+func(param1, param2)
+  param1 + param2 ;
+
+variable = func :
+variable(2, 3)
+```
+
 ## Commands
 
 Commands are special directives to the driver. By default, none are declared.
