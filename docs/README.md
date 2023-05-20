@@ -322,7 +322,7 @@ an expression. They control the numeric base of the printed value.
 
 ### Command examples
 
-The `#ast` command (given the sequence of inputs below):
+Given the sequence of inputs below:
 
 input 1: `a = 10`
 
