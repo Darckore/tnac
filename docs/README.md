@@ -275,8 +275,8 @@ variable(2, 3)
 
 ## Commands
 
-Commands are special directives to the driver. By default, none are declared.
-Clients should add their own commands according to their needs.
+Commands are special directives that are not, technically, a part of tnac.
+By default, none are declared. Clients should add their own commands according to their needs.
 
 Commands have names and arguments. They begin at the name and end at `:` or
 end of input. Arguments can be any tokens separated by whitespace characters.
@@ -287,7 +287,7 @@ any sequences of characters separated by `'`'s.
 
 Names are identifiers preceded by `#` - `#command_name`
 
-Here's an example of a command which takes an int literal, a string and an identifier:
+Here's an example of a command which takes an int literal, a string, and an identifier:
 ```
 #command 42 'string of chars' x
 ```
