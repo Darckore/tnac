@@ -61,7 +61,7 @@ namespace tnac::eval
         return value;
       }
 
-      id_t value;
+      id_t value{};
     };
 
     constexpr auto is_unary(val_ops op) noexcept
