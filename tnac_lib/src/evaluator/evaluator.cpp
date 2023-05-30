@@ -209,6 +209,13 @@ namespace tnac
       return;
     }
 
+    auto callable = *funcType;
+    if (const auto paramCnt = callable->param_count(); paramCnt != expr.args().size())
+    {
+      on_error(expr.pos(), std::format("Expected {} arguments"sv, paramCnt));
+      return;
+    }
+
     // todo: call it already
   }
 
