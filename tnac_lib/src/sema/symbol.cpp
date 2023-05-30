@@ -21,6 +21,11 @@ namespace tnac::semantics
     return m_kind;
   }
 
+  bool symbol::is(kind k) const noexcept
+  {
+    return what() == k;
+  }
+
   const scope& symbol::owner_scope() const noexcept
   {
     return *m_owner;

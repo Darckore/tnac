@@ -89,9 +89,15 @@ namespace tnac
         return tok.is_any(token::KwComplex, token::KwFraction);
       }
 
-      auto is_error_expr(ast::expr* expr) noexcept
+      auto is_error_expr(const ast::expr& expr) noexcept
       {
-        return expr->what() == ast::node_kind::Error;
+        return expr.is(ast::node_kind::Error);
+      }
+
+      auto is_assignable(const semantics::symbol& sym) noexcept
+      {
+        using enum semantics::sym_kind;
+        return sym.is_any(Variable, Parameter);
       }
     }
   }
@@ -427,6 +433,13 @@ namespace tnac
     {
       auto err = error_expr(lhs->pos(), "Expected a single identifier"sv, true);
       return err;
+    }
+
+    if (auto&& sym = utils::cast<ast::id_expr>(*lhs).symbol();
+              !detail::is_assignable(sym))
+    {
+      auto err = error_expr(lhs->pos(), "Expected an assignable object"sv);
+      lhs = err;
     }
 
     auto op = next_tok();

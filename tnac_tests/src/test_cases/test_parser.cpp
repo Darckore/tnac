@@ -704,6 +704,7 @@ namespace tnac_tests
     check_error("1 + 1 = 2"sv, "Expected a single identifier"sv);
     check_error("1 + a"sv, "Undefined identifier"sv);
     check_error("2*(1 + 2"sv, "Expected ')'"sv);
+    check_error("f() ; f = 10"sv, "Expected an assignable object"sv);
   }
   
   TEST(parser, t_cmd_skip)

@@ -63,6 +63,20 @@ namespace tnac::semantics
     kind what() const noexcept;
 
     //
+    // Checks whether the symbol is of the specified kind
+    //
+    bool is(kind k) const noexcept;
+
+    //
+    // Checks whether the symbol is of one of the specified kinds
+    //
+    template <typename... KINDS> requires(utils::detail::all_same<kind, KINDS...>)
+      auto is_any(KINDS... kinds) const noexcept
+    {
+      return ((is(kinds)) || ...);
+    }
+
+    //
     // Returns the owner scope
     //
     const scope& owner_scope() const noexcept;
