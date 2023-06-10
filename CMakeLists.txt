@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.23)
+cmake_minimum_required(VERSION 3.26)
 
 set(OPT_PCH_NAME "pch.h")
 set(OPT_STD "cxx_std_23")
@@ -83,9 +83,6 @@ if(OPT_APP)
 endif()
 
 set_target_properties(${TARGET_NAME} PROPERTIES FOLDER additional_deps/utils)
-
-set(TARGET_NAME docs)
-add_subdirectory("${TARGET_NAME}")
 
 if(BUILT_FROM_ROOT)
   set(CMAKE_INSTALL_PREFIX "${CMAKE_SOURCE_DIR}/_bin" CACHE PATH "Install dir" FORCE)

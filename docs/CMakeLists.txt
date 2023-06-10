@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.23)
+cmake_minimum_required(VERSION 3.26)
 
 set(DOCS_DIR ${CMAKE_SOURCE_DIR})
 file(GLOB_RECURSE DOC_FILES
