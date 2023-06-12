@@ -60,7 +60,7 @@ evaluate and produce a result.
 
 The diver also supports certain commands. More on them later.
 
-## Syntax (will be expanded)
+## Syntax
 
 This section will contain syntax basics along with some examples.
 For a taste of actual grammatics behind all this, see [grammar](stuff/grammar.md)

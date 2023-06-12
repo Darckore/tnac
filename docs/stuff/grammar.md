@@ -1,4 +1,4 @@
-# tnac grammar (will be expanded)
+# tnac grammar
 
 This is the complete tnac grammar
 
