@@ -51,6 +51,16 @@ namespace tnac::eval
       return FROM_CONST(operator->);
     }
 
+    const_reference operator*() const noexcept
+    {
+      return *m_func;
+    }
+
+    reference operator*() noexcept
+    {
+      return FROM_CONST(operator*);
+    }
+
   private:
     pointer m_func{};
   };

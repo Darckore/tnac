@@ -24,7 +24,7 @@ namespace tnac
   {
   public:
     using err_handler_t = std::function<void(const token&, string_t)>;
-    using arg_list_t    = ast::typed_expr::arg_list;
+    using arg_list_t    = ast::invocation::arg_list;
     using size_type     = arg_list_t::size_type;
 
   public:
@@ -111,7 +111,6 @@ namespace tnac
     //
     bool preview(ast::func_decl& decl) noexcept;
 
-
   private:
     //
     // Returns a reference to the call stack
@@ -137,6 +136,11 @@ namespace tnac
     // Creates a value for a function
     //
     void make_function(semantics::function& sym) noexcept;
+
+    //
+    // Attempts to initiate a call
+    //
+    bool init_call(semantics::function& sym, ast::call_expr& expr) noexcept;
 
   private:
     eval::value_visitor m_visitor;

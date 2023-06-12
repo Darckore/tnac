@@ -217,7 +217,13 @@ namespace tnac
       return;
     }
 
-    // todo: call it already
+    if (!init_call(*callable, expr))
+      return;
+
+    auto funcBody = callable->declarator().definition();
+    (*this)(funcBody);
+    auto val = m_visitor.last_result(&expr);
+    expr.eval_result(val);
   }
 
   void evaluator::visit(ast::paren_expr& paren) noexcept
@@ -322,5 +328,29 @@ namespace tnac
   void evaluator::make_function(semantics::function& sym) noexcept
   {
     sym.eval_result(m_visitor.make_function(&sym, eval::function_type{ sym }));
+  }
+
+  bool evaluator::init_call(semantics::function& sym, ast::call_expr& expr) noexcept
+  {
+    if (!m_callStack)
+    {
+      on_error(expr.pos(), "Stack overflow"sv);
+      return false;
+    }
+
+    eval::call_stack::value_list argValues;
+    argValues.reserve(expr.args().size());
+
+    for (auto [param, arg] : utils::make_iterators(sym.params(), expr.args()))
+    {
+      UTILS_ASSERT(static_cast<bool>(param));
+      auto&& paramSym = param->symbol();
+
+      auto val = arg->value();
+      argValues.emplace_back(val);
+      eval_assign(paramSym, val);
+    }
+
+    return m_callStack->push(expr.callable_name().m_value, std::move(argValues));
   }
 }

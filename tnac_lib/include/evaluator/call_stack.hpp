@@ -3,16 +3,30 @@
 //
 
 #pragma once
+#include "evaluator/value.hpp"
 
 namespace tnac::eval
 {
+  namespace detail
+  {
+    //
+    // A call stack entry
+    //
+    class stack_frame;
+  }
+
   //
   // Manages the call stack
   //
   class call_stack final
   {
   public:
-    using size_type = std::size_t;
+    using size_type  = std::size_t;
+    using func_name  = std::string_view;
+    using value_list = std::vector<value>;
+
+    using frame = detail::stack_frame;
+    using stack = std::vector<frame>;
 
   public:
     CLASS_SPECIALS_NONE(call_stack);
@@ -23,8 +37,26 @@ namespace tnac::eval
 
     explicit operator bool() const noexcept;
 
+  public:
+    //
+    // Attempts to push a function to the stack
+    // Returns true on success, false if overflown
+    //
+    bool push(func_name funcName, value_list&& funcArgs) noexcept;
+
+    //
+    // Removes the most recent entry from the stack
+    //
+    void pop() noexcept;
+
+  private:
+    //
+    // Checks whether adding a new frame would overflow the stack
+    //
+    bool can_push() const noexcept;
+
   private:
     size_type m_depth{};
-    bool m_overflown{};
+    stack m_frames;
   };
 }
