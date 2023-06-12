@@ -298,4 +298,30 @@ namespace tnac_tests
     check_eval("5 * _result"sv, 25ll);
     check_eval("10 : _result * (_result + 2)"sv, 120ll);
   }
+
+  TEST(evaluation, t_func_call)
+  {
+    using detail::check_eval;
+    check_eval("func(a, b) a * b; func(2, 5)"sv, 10ll);
+    check_eval("func(x) x; 1 + func(1) + _result"sv, 4ll);
+    check_eval("func(x) in(x) x + 1; x + in(x); func(1)"sv, 3ll);
+    check_eval("f() k(a, b) a + b; k; a = f(): a(10, 11)"sv, 21ll);
+    check_eval("f() 10; k(x) x() + 5; k(f)"sv, 15ll);
+  }
+
+  TEST(evaluation, t_overflow)
+  {
+    using detail::parse_helper;
+    parse_helper ph;
+    tnac::eval::registry reg;
+    tnac::eval::call_stack cs{ 1 };
+    tnac::evaluator ev{ reg, cs };
+    ev.on_error([](auto&&, auto msg) noexcept
+      {
+        EXPECT_EQ(msg, "Stack overflow"sv);
+      });
+
+    ph.parser("f() f(); f()"sv);
+    ev(ph.parser.root());
+  }
 }
