@@ -452,9 +452,6 @@ namespace tnac::ast
       case Error:
         visit_impl(&cast<error_expr>(cur));
         break;
-
-      default:
-        break;
       }
     }
   };
