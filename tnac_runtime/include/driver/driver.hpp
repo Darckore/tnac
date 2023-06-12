@@ -49,13 +49,7 @@ namespace tnac_rt
   public:
     CLASS_SPECIALS_NONE_CUSTOM(driver);
 
-    driver() noexcept;
-
-  public:
-    //
-    // Runs in interactive mode until the #exit command is issued
-    //
-    void run_interactive() noexcept;
+    driver(int argCount, char** args) noexcept;
 
   protected:
     //
@@ -67,6 +61,27 @@ namespace tnac_rt
     // Sets the stream for output
     //
     driver& set_ostream(out_stream& stream) noexcept;
+
+  private:
+    //
+    // Inits error handlers
+    //
+    void init_handlers() noexcept;
+
+    //
+    // Parses the command line and launched the driver in the selected the run mode
+    //
+    void run(int argCount, char** args) noexcept;
+
+    //
+    // Reads input from file, parses it, and prints the result
+    //
+    void run(tnac::string_t fileName) noexcept;
+
+    //
+    // Runs in interactive mode until the #exit command is issued
+    //
+    void run_interactive() noexcept;
 
   private: // Command handlers
     //

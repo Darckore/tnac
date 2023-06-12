@@ -6,46 +6,20 @@ namespace tnac_rt
 {
   // Special members
 
-  driver::driver() noexcept :
+  driver::driver(int argCount, char** args) noexcept :
     m_parser{ m_builder, m_sema },
     m_callStack{ 1000 }, // todo: configurable
     m_ev{ m_registry, m_callStack },
     m_cmd{ m_commands }
   {
-    m_sema.on_variable([this](auto&& sym) noexcept { store_var(sym); });
-
-    m_cmd.on_error([this](auto&& tok, auto msg) noexcept { m_srcMgr.on_error(tok, msg); });
-
-    m_ev.on_error([this](auto&& tok, auto msg) noexcept { m_srcMgr.on_error(tok, msg); });
-
-    m_parser.on_error([this](auto&& err) noexcept { m_srcMgr.on_parse_error(err); });
-    m_parser.on_command([this](auto command) noexcept { m_cmd.on_command(std::move(command)); });
-
+    init_handlers();
     init_commands();
+    run(argCount, args);
   }
 
 
   // Public members
 
-  void driver::run_interactive() noexcept
-  {
-    tnac::buf_t input;
-    m_running = true;
-
-    while(m_running)
-    {
-      out() << ">> ";
-      std::getline(in(), input);
-      if (utils::ltrim(input).empty())
-      {
-        out() << "Enter an expression\n";
-        continue;
-      }
-
-      parse(std::move(input), true);
-      input = {};
-    }
-  }
 
   // Protected members
 
@@ -76,6 +50,90 @@ namespace tnac_rt
   }
 
   // Private members
+
+  void driver::init_handlers() noexcept
+  {
+    m_sema.on_variable([this](auto&& sym) noexcept { store_var(sym); });
+
+    m_cmd.on_error([this](auto&& tok, auto msg) noexcept { m_srcMgr.on_error(tok, msg); });
+
+    m_ev.on_error([this](auto&& tok, auto msg) noexcept { m_srcMgr.on_error(tok, msg); });
+
+    m_parser.on_error([this](auto&& err) noexcept { m_srcMgr.on_parse_error(err); });
+    m_parser.on_command([this](auto command) noexcept { m_cmd.on_command(std::move(command)); });
+  }
+
+  void driver::run(int argCount, char** args) noexcept
+  {
+    if (argCount < 2)
+    {
+      run_interactive();
+      return;
+    }
+
+    run(args[1]);
+
+    bool interactive{};
+    for (auto argIdx = 2; argIdx < argCount; ++argIdx)
+    {
+      tnac::string_t arg = args[argIdx];
+      if (arg == "-i")
+        interactive = true;
+    }
+
+    if (interactive)
+      run_interactive();
+  }
+
+  void driver::run(tnac::string_t fileName) noexcept
+  {
+    fsys::path fn{ fileName };
+
+    std::error_code errc;
+    fn = fsys::absolute(fn, errc);
+    if (errc)
+    {
+      err() << "Path '" << fn.string() << "' is invalid. " << errc.message() << '\n';
+      return;
+    }
+
+    tnac::buf_t buf;
+    std::ifstream in{ fn.string() };
+    if (!in)
+    {
+      err() << "Unable to open the input file\n";
+      return;
+    }
+
+    in.seekg(0, std::ios::end);
+    buf.reserve(in.tellg());
+    in.seekg(0, std::ios::beg);
+
+    using it = std::istreambuf_iterator<tnac::buf_t::value_type>;
+    buf.assign(it{ in }, it{});
+
+    parse(std::move(buf), false);
+  }
+
+  void driver::run_interactive() noexcept
+  {
+    tnac::buf_t input;
+    m_running = true;
+
+    while (m_running)
+    {
+      out() << ">> ";
+      std::getline(in(), input);
+      if (utils::ltrim(input).empty())
+      {
+        out() << "Enter an expression\n";
+        continue;
+      }
+
+      parse(std::move(input), true);
+      input = {};
+    }
+  }
 
   // Command handlers
 
@@ -270,7 +328,8 @@ namespace tnac_rt
     if (interactive && ast != m_parser.root())
     {
       m_ev(ast);
-      print_result();
     }
+
+    print_result();
   }
 }
