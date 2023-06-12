@@ -218,7 +218,12 @@ namespace tnac
     }
 
     if (!init_call(*callable, expr))
+    {
+      on_error(expr.pos(), "Stack overflow"sv);
+      call_stack().clear();
+      expr.eval_result(m_visitor.get_empty());
       return;
+    }
 
     auto funcBody = callable->declarator().definition();
     (*this)(funcBody);
@@ -335,7 +340,6 @@ namespace tnac
   {
     if (!call_stack())
     {
-      on_error(expr.pos(), "Stack overflow"sv);
       return false;
     }
 

@@ -57,6 +57,11 @@ namespace tnac::eval
       m_frames.pop_back();
   }
 
+  void call_stack::clear() noexcept
+  {
+    m_frames.clear();
+  }
+
 
   // Private members
 

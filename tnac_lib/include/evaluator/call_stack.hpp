@@ -49,6 +49,11 @@ namespace tnac::eval
     //
     void pop() noexcept;
 
+    //
+    // Clears the call stack
+    //
+    void clear() noexcept;
+
   private:
     //
     // Checks whether adding a new frame would overflow the stack

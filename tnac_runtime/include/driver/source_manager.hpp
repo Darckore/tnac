@@ -34,6 +34,21 @@ namespace tnac_rt
     {
       tnac::buf_t m_buf;
       tnac::ast::node* m_node{};
+
+      std::uintptr_t m_begin{};
+      std::uintptr_t m_end{};
+
+      void init_range() noexcept
+      {
+        m_begin = reinterpret_cast<std::uintptr_t>(m_buf.data());
+        m_end   = m_begin + static_cast<std::uintptr_t>(m_buf.size());
+      }
+
+      bool in_buffer(const tnac::token& tok) const noexcept
+      {
+        const auto tokPos = reinterpret_cast<std::uintptr_t>(tok.m_value.data());
+        return utils::in_range(tokPos, m_begin, m_end);
+      }
     };
 
     using input_storage = std::unordered_map<std::uint32_t, stored_input>;
@@ -73,9 +88,9 @@ namespace tnac_rt
     out_stream& err() noexcept;
 
     //
-    // Retrieves the currently parsed input string
+    // Gets input by token
     //
-    tnac::string_t get_current_input() noexcept;
+    tnac::string_t input_by(const tnac::token& tok) noexcept;
 
     //
     // Retrieves token position from input

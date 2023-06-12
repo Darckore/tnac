@@ -14,6 +14,7 @@ namespace tnac_rt
   {
     m_prevIdx = m_inputIdx;
     auto&& inputData = m_input[m_inputIdx++] = { std::move(in) };
+    inputData.init_range();
     return inputData;
   }
 
@@ -52,25 +53,44 @@ namespace tnac_rt
     return *m_err;
   }
 
-  tnac::string_t src_manager::get_current_input() noexcept
+  tnac::string_t src_manager::input_by(const tnac::token& tok) noexcept
   {
-    return m_input[m_prevIdx].m_buf;
+    auto&& last = m_input[m_prevIdx];
+    if (last.in_buffer(tok))
+      return last.m_buf;
+
+    tnac::string_t ret;
+    for (auto&& it : m_input)
+    {
+      auto&& inputData = it.second;
+      if (inputData.in_buffer(tok))
+      {
+        ret = inputData.m_buf;
+        break;
+      }
+    }
+
+    return ret;
   }
 
   src_manager::src_loc src_manager::token_pos(const tnac::token& tok) noexcept
   {
-    using sz_t = tnac::string_t::size_type;
+    using sz_t = std::uintptr_t;
+    auto toInt = [](auto ptr) noexcept
+    {
+      return reinterpret_cast<sz_t>(ptr);
+    };
+
     static constexpr auto npos = tnac::string_t::npos;
     constexpr auto newLine = '\n';
 
-    auto inputBuf = get_current_input();
-    auto getOffset = [l = tok.m_value.data()](auto r) noexcept
+    auto inputBuf = input_by(tok);
+    auto getOffset = [l = toInt(tok.m_value.data()), &toInt](auto str) noexcept
     {
-      return static_cast<sz_t>(l - r.data());
+      const auto r = toInt(str.data());
+      return static_cast<sz_t>(l - r);
     };
 
-    // Token is guaranteed to be from this input buffer, so we are sure the offset is
-    // positive and is within the buffer
     const auto offset = getOffset(inputBuf);
     auto lineBeg = inputBuf.rfind(newLine, offset);
     if (lineBeg == npos)
