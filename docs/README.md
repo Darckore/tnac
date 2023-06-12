@@ -1,4 +1,4 @@
-# Totally Not Another Calculator (under construction)
+# Totally Not Another Calculator
 
 This is tnac - Totally (Absolutely, Positively, Definitely) Not Another Calculator.
 Well, except it kind of is. Written entirely in C++.
@@ -10,7 +10,7 @@ At any rate, it's been a good excersice on writing parsers.
 
 Under the hood it has an expression evaluator which understands a bunch of maths over some kind of data.
 
-## Features (will be expanded)
+## Features
 
 ### Types
 
@@ -213,7 +213,7 @@ This is a syntax error:
 a + 5
 ```
 
-#### Functions (calls are not implemented yet)
+#### Functions
 
 **Function declarations** go like this:
 ```
@@ -271,6 +271,30 @@ func(param1, param2)
 
 variable = func :
 variable(2, 3)
+```
+
+Just because internal functions are not visible outside of their scope,
+doesn't mean they are not reachable. Example (evaluates to `21`):
+```
+func()
+  internal(a, b)
+    a + b;
+  internal ;
+
+a = func() :
+a(10, 11)
+```
+
+Functions can be arguments of other functions, too.
+This will result in `11`:
+```
+func(x)
+  x() + 1;
+
+other_func()
+  10;
+
+func(other_func)
 ```
 
 ## Commands
