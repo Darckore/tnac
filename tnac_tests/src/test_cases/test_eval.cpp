@@ -35,11 +35,11 @@ namespace tnac_tests
         return msg;
       }
 
-      auto parse_input(string_t input, tnac::eval::registry& reg) noexcept
+      auto parse_input(string_t input, tnac::eval::registry& reg, tnac::eval::call_stack& cs) noexcept
       {
         parse_helper p;
         p.parser(input);
-        tnac::evaluator ev{ reg };
+        tnac::evaluator ev{ reg, cs };
         ev(p.parser.root());
 
         return reg.evaluation_result();
@@ -49,7 +49,8 @@ namespace tnac_tests
       void check_eval(string_t input, T expected) noexcept
       {
         tnac::eval::registry reg;
-        auto res = parse_input(input, reg);
+        tnac::eval::call_stack cs{ 10 };
+        auto res = parse_input(input, reg, cs);
         tnac::eval::on_value(res, [expected](auto val) noexcept
           {
             if constexpr (tnac::is_same_noquals_v<decltype(val), tnac::eval::invalid_val_t>)
@@ -70,7 +71,8 @@ namespace tnac_tests
       void check_invalid(string_t input) noexcept
       {
         tnac::eval::registry reg;
-        auto res = parse_input(input, reg);
+        tnac::eval::call_stack cs{ 0 };
+        auto res = parse_input(input, reg, cs);
         ASSERT_TRUE(!res);
       }
     }

@@ -8,7 +8,8 @@ namespace tnac_rt
 
   driver::driver() noexcept :
     m_parser{ m_builder, m_sema },
-    m_ev{ m_registry },
+    m_callStack{ 1000 }, // todo: configurable
+    m_ev{ m_registry, m_callStack },
     m_cmd{ m_commands }
   {
     m_sema.on_variable([this](auto&& sym) noexcept { store_var(sym); });

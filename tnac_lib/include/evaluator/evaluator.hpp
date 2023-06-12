@@ -6,6 +6,7 @@
 #include "ast/ast_visitor.hpp"
 #include "evaluator/value_visitor.hpp"
 #include "evaluator/value_registry.hpp"
+#include "evaluator/call_stack.hpp"
 
 namespace tnac
 {
@@ -29,7 +30,7 @@ namespace tnac
   public:
     CLASS_SPECIALS_NONE(evaluator);
 
-    explicit evaluator(eval::registry& registry) noexcept;
+    explicit evaluator(eval::registry& registry, eval::call_stack& callStack) noexcept;
 
     //
     // Attaches the error handler
@@ -113,6 +114,11 @@ namespace tnac
 
   private:
     //
+    // Returns a reference to the call stack
+    //
+    eval::call_stack& call_stack() noexcept;
+
+    //
     // Produces an evaluation error
     //
     void on_error(const token& pos, string_t msg) noexcept;
@@ -134,6 +140,7 @@ namespace tnac
 
   private:
     eval::value_visitor m_visitor;
+    eval::call_stack* m_callStack{};
     err_handler_t m_errHandler{};
   };
 }

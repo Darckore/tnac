@@ -7,6 +7,7 @@
 #include "parser/parser.hpp"
 #include "evaluator/evaluator.hpp"
 #include "evaluator/value_registry.hpp"
+#include "evaluator/call_stack.hpp"
 #include "sema/sema.hpp"
 #include "driver/source_manager.hpp"
 #include "commands/cmd_interpreter.hpp"
@@ -40,6 +41,7 @@ namespace tnac_rt
 
     using parser      = tnac::parser;
     using val_reg     = tnac::eval::registry;
+    using call_stack  = tnac::eval::call_stack;
     using eval        = tnac::evaluator;
     using command     = tnac::ast::command;
     using size_type   = command::size_type;
@@ -151,6 +153,7 @@ namespace tnac_rt
     ast_builder m_builder;
     sema m_sema;
     val_reg m_registry;
+    call_stack m_callStack;
 
     parser m_parser;
     src_manager m_srcMgr;

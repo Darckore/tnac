@@ -138,8 +138,9 @@ namespace tnac
 
   // Special members
 
-  evaluator::evaluator(eval::registry& registry) noexcept :
-    m_visitor{ registry }
+  evaluator::evaluator(eval::registry& registry, eval::call_stack& callStack) noexcept :
+    m_visitor{ registry },
+    m_callStack{ &callStack }
   {}
 
 
@@ -285,6 +286,11 @@ namespace tnac
   {
     if (m_errHandler)
       m_errHandler(pos, msg);
+  }
+
+  eval::call_stack& evaluator::call_stack() noexcept
+  {
+    return *m_callStack;
   }
 
   eval::value evaluator::eval_token(const token& tok) noexcept
