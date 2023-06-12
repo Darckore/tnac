@@ -224,6 +224,7 @@ namespace tnac
     (*this)(funcBody);
     auto val = m_visitor.last_result(&expr);
     expr.eval_result(val);
+    call_stack().pop();
   }
 
   void evaluator::visit(ast::paren_expr& paren) noexcept
@@ -332,7 +333,7 @@ namespace tnac
 
   bool evaluator::init_call(semantics::function& sym, ast::call_expr& expr) noexcept
   {
-    if (!m_callStack)
+    if (!call_stack())
     {
       on_error(expr.pos(), "Stack overflow"sv);
       return false;
@@ -351,6 +352,6 @@ namespace tnac
       eval_assign(paramSym, val);
     }
 
-    return m_callStack->push(expr.callable_name().m_value, std::move(argValues));
+    return call_stack().push(expr.callable_name().m_value, std::move(argValues));
   }
 }
