@@ -123,9 +123,8 @@ namespace tnac_rt::out
   {
     indent();
     out() << "Call expression";
-    print_token(expr.callable_name());
     endl();
-    push_parent(expr.args().size());
+    push_parent(expr.args().size() + 1);
   }
 
   void ast_printer::visit(const ast::lit_expr& expr) noexcept

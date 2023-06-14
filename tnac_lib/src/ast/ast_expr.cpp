@@ -177,9 +177,9 @@ namespace tnac::ast
     expr{ kind, name },
     m_args{ std::move(args) }
   {
-    for (auto par : m_args)
+    for (auto arg : m_args)
     {
-      assume_ancestry(par);
+      assume_ancestry(arg);
     }
   }
 
@@ -217,23 +217,34 @@ namespace tnac::ast
 
   call_expr::~call_expr() noexcept = default;
 
-  call_expr::call_expr(const token& callable, arg_list args, semantics::symbol& sym) noexcept :
-    invocation{ kind::Call, callable, std::move(args) },
-    m_sym{ &sym }
-  {}
-
-  const token& call_expr::callable_name() const noexcept
+  call_expr::call_expr(expr& callable, arg_list args) noexcept :
+    expr{ kind::Call, callable.pos() },
+    m_args{ std::move(args) },
+    m_callee{ &callable }
   {
-    return name();
+    assume_ancestry(&callable);
+    for (auto arg : m_args)
+    {
+      assume_ancestry(arg);
+    }
   }
 
-  const semantics::symbol& call_expr::symbol() const noexcept
+  const expr& call_expr::callable() const noexcept
   {
-    return *m_sym;
+    return *m_callee;
   }
-  semantics::symbol& call_expr::symbol() noexcept
+  expr& call_expr::callable() noexcept
   {
-    return FROM_CONST(symbol);
+    return FROM_CONST(callable);
+  }
+
+  const call_expr::arg_list& call_expr::args() const noexcept
+  {
+    return m_args;
+  }
+  call_expr::arg_list& call_expr::args() noexcept
+  {
+    return FROM_CONST(args);
   }
 
 }

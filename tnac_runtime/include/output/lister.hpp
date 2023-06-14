@@ -58,7 +58,9 @@ namespace tnac_rt::out
     void print(const ast::func_decl& decl) noexcept;
 
   private:
-    void print_any_call(const ast::invocation& expr) noexcept;
+    void print_invocation(const ast::invocation& expr) noexcept;
+
+    void print_args(const ast::invocation::arg_list& args) noexcept;
 
     void indent(const ast::node& cur) noexcept;
 

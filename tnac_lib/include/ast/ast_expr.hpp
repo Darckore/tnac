@@ -368,8 +368,11 @@ namespace tnac::ast
   // Call expression
   // Represents a call to a named callable entity with an arg list
   //
-  class call_expr final : public invocation
+  class call_expr final : public expr
   {
+  public:
+    using arg_list = invocation::arg_list;
+
   private:
     friend class builder;
 
@@ -379,29 +382,36 @@ namespace tnac::ast
     virtual ~call_expr() noexcept;
 
   protected:
-    call_expr(const token& callable, arg_list args, semantics::symbol& sym) noexcept;
+    call_expr(expr& callable, arg_list args) noexcept;
 
   public:
     //
-    // Returns the attached symbol
+    // Returns the callee expr
     // 
     // const version
     //
-    const semantics::symbol& symbol() const noexcept;
+    const expr& callable() const noexcept;
 
     //
-    // Returns the attached symbol
+    // Returns the callee expr
     //
-    semantics::symbol& symbol() noexcept;
+    expr& callable() noexcept;
 
+    //
+    // Returns the argument list
+    // 
+    // const version
+    //
+    const arg_list& args() const noexcept;
 
     //
-    // Returns the type name token
+    // Returns the argument list
     //
-    const token& callable_name() const noexcept;
+    arg_list& args() noexcept;
 
   private:
-    semantics::symbol* m_sym{};
+    arg_list m_args;
+    expr* m_callee{};
   };
 
 }

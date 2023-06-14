@@ -151,12 +151,13 @@ namespace tnac_rt::out
 
   void lister::print(const ast::typed_expr& expr) noexcept
   {
-    print_any_call(expr);
+    print_invocation(expr);
   }
 
   void lister::print(const ast::call_expr& expr) noexcept
   {
-    print_any_call(expr);
+    print(&expr.callable());
+    print_args(expr.args());
   }
 
   void lister::print(const ast::lit_expr& expr) noexcept
@@ -226,15 +227,18 @@ namespace tnac_rt::out
   }
 
 
-  void lister::print_any_call(const ast::invocation& expr) noexcept
+  void lister::print_invocation(const ast::invocation& expr) noexcept
   {
     print_token(expr.name(), false);
-    out() << "( ";
+    print_args(expr.args());
+  }
 
-    auto&& args = expr.args();
+  void lister::print_args(const ast::invocation::arg_list& args) noexcept
+  {
+    out() << "( ";
     const auto size = args.size();
     auto idx = std::size_t{};
-    for (auto arg : expr.args())
+    for (auto arg : args)
     {
       print(arg);
       ++idx;

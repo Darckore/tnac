@@ -343,6 +343,7 @@ namespace tnac::ast
 
       if (preview(call))
       {
+        visit_root(&call->callable());
         for (auto arg : call->args())
         {
           visit_root(arg);

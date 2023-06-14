@@ -82,7 +82,7 @@ namespace tnac_tests
 
         void visit(const tree::call_expr& expr) noexcept
         {
-          check_node(expr, expr.callable_name().m_value);
+          check_node(expr, "");
         }
 
         void visit(const tree::lit_expr& expr) noexcept
@@ -399,18 +399,19 @@ namespace tnac_tests
     constexpr auto input = "f(a) ; : f(1+2)"sv;
 
     /*
-             --'f'
-            |
-         --'+'--
-        |       |
-        1       2
+             --call-expr--
+            |             |
+           'f'         --'+'--
+                      |       |
+                      1       2
     */
 
     std::array exp{
-      expected_node{ "1", Literal, Binary },
-      expected_node{ "2", Literal, Binary },
-      expected_node{ "+", Binary,  Call },
-      expected_node{ "f", Call,    Scope },
+      expected_node{ "f", Identifier, Call },
+      expected_node{ "1", Literal,    Binary },
+      expected_node{ "2", Literal,    Binary },
+      expected_node{ "+", Binary,     Call },
+      expected_node{ "",  Call,       Scope },
     };
 
     detail::check_tree_structute(exp, input);

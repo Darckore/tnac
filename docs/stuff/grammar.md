@@ -43,7 +43,7 @@ multiplicative-expr:
   multiplicative-expr multiplicative-operator unary-expr
 
 unary-expr:
-  primary-expr
+  call-expr
   unary-operator primary-expr
 
 primary-expr:
@@ -51,7 +51,6 @@ primary-expr:
   literal-expr
   id-expr
   typed-expr
-  call-expr
   '(' expr ')'
 
 var-decl:
@@ -88,7 +87,8 @@ literal-expr:
   number
 
 call-expr:
- identifier args
+ primary-expr
+ call-expr args
 
 typed-expr:
   type-name args

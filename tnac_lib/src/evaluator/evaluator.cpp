@@ -202,7 +202,7 @@ namespace tnac
 
   void evaluator::visit(ast::call_expr& expr) noexcept
   {
-    auto func = expr.symbol().value();
+    auto func = expr.callable().value();
     auto funcType = func.try_get<eval::function_type>();
     if (!funcType)
     {
@@ -356,6 +356,7 @@ namespace tnac
       eval_assign(paramSym, val);
     }
 
-    return call_stack().push(expr.callable_name().m_value, std::move(argValues));
+    m_visitor.get_empty();
+    return call_stack().push(sym.name(), std::move(argValues));
   }
 }

@@ -478,10 +478,10 @@ namespace tnac
   ast::expr* parser::unary_expr() noexcept
   {
     if (!detail::is_unary_op(peek_next()))
-      return primary_expr();
+      return call_expr();
 
     auto op = next_tok();
-    auto exp = primary_expr();
+    auto exp = call_expr();
     return m_builder.make_unary(*exp, op);
   }
 
@@ -515,14 +515,20 @@ namespace tnac
       return m_builder.make_result(next_tok());
     }
 
-    if (next.is_identifier())
-    {
-      return call_expr();
-    }
-
-    if (detail::is_open_paren(peek_next()))
+    if (detail::is_open_paren(next))
     {
       return paren_expr();
+    }
+
+    if (next.is(token::Identifier))
+    {
+      auto sym = m_sema.find(next.m_value);
+
+      if (!sym)
+        return error_expr(next_tok(), "Undefined identifier"sv);
+
+      auto name = next_tok();
+      return m_builder.make_id(name, *sym);
     }
 
     return error_expr(next, "Expected expression"sv, true);
@@ -568,23 +574,20 @@ namespace tnac
 
   ast::expr* parser::call_expr() noexcept
   {
-    auto&& next = peek_next();
-    auto sym = m_sema.find(next.m_value);
+    auto res = primary_expr();
     
-    if (!sym)
-      return error_expr(next_tok(), "Undefined identifier"sv);
+    while (detail::is_open_paren(peek_next()))
+    {
+      next_tok();
+      auto args = arg_list();
 
-    auto name = next_tok();
-    if(!detail::is_open_paren(peek_next()))
-      return m_builder.make_id(name, *sym);
+      if (!detail::is_close_paren(peek_next()))
+        return error_expr(next_tok(), "Expected ')'"sv, true);
 
-    next_tok();
-    auto args = arg_list();
+      next_tok();
+      res = m_builder.make_call(*res, std::move(args));
+    }
 
-    if (!detail::is_close_paren(peek_next()))
-      return error_expr(next_tok(), "Expected ')'"sv);
-
-    next_tok();
-    return m_builder.make_call(name, std::move(args), *sym);
+    return res;
   }
 }
