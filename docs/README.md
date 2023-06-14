@@ -296,6 +296,17 @@ a = func() :
 a(10, 11)
 ```
 
+Also, this is the same as the one above, just neater:
+```
+func()
+  internal(a, b)
+    a + b;
+  ;
+
+func()(10, 11)
+```
+
+
 Functions can be arguments of other functions, too.
 This will result in `11`:
 ```
