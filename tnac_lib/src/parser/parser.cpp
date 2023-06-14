@@ -102,14 +102,21 @@ namespace tnac
     }
   }
 
-  bool has_implicit_separator(const ast::expr& expr) noexcept
+  bool has_implicit_separator(const ast::node& expr) noexcept
   {
     using kind = ast::node_kind;
+    if (auto binary = utils::try_cast<kind::Binary>(&expr))
+      return has_implicit_separator(binary->right());
+
     if (!expr.is(kind::Decl))
       return false;
 
-    auto&& de = utils::cast<ast::decl_expr>(expr);
-    return de.declarator().is(kind::FuncDecl);
+    auto&& decl = utils::cast<ast::decl_expr>(expr).declarator();
+    if (decl.is(kind::FuncDecl))
+      return true;
+    
+    auto def = decl.definition();
+    return def && has_implicit_separator(*def);
   }
 
   // Special members

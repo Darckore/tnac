@@ -307,7 +307,8 @@ namespace tnac_tests
     check_eval("func(x) in(x) x + 1; x + in(x); func(1)"sv, 3ll);
     check_eval("f() k(a, b) a + b; k; a = f(): a(10, 11)"sv, 21ll);
     check_eval("f() 10; k(x) x() + 5; k(f)"sv, 15ll);
-    check_eval("f() k(a) a * 3; k; f()(3)"sv, 9ll);
+    check_eval("f() k(a) a * 3;; f()(3) + f()(5)"sv, 24ll);
+    check_eval("f() _function(a) a * 3;; f()(3) + f()(5)"sv, 24ll);
   }
 
   TEST(evaluation, t_overflow)
