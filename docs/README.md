@@ -55,7 +55,7 @@ whereas `2.0 + i` is not.
 ### Driver
 
 The driver is a basic CLI interface which works in interactive mode by default.
-It displays a prompt allowing the user to enter expressions with it will then
+It displays a prompt allowing the user to enter expressions which it will then
 evaluate and produce a result.
 
 The diver also supports certain commands. More on them later.
