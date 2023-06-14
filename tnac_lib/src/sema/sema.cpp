@@ -59,4 +59,13 @@ namespace tnac
       break;
     }
   }
+
+  token sema::contrive_name() noexcept
+  {
+    static constexpr auto namePrefix{ "`__anon_entity__"sv };
+    const auto nameIdx = m_generatedNames.size();
+    auto entry = m_generatedNames.emplace(buf_t{ namePrefix } + std::to_string(nameIdx));
+    return { *entry.first, token::Identifier };
+  }
+
 }

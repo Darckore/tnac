@@ -38,5 +38,6 @@ Command,
 
 // Keywords
 KwResult,
+KwFunction,
 KwComplex,
 KwFraction,

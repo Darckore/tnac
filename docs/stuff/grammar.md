@@ -51,6 +51,7 @@ primary-expr:
   literal-expr
   id-expr
   typed-expr
+  anonimous-function
   '(' expr ')'
 
 var-decl:
@@ -86,9 +87,12 @@ id-expr:
 literal-expr:
   number
 
+anonimous-function:
+  _function func-params func-body
+
 call-expr:
- primary-expr
- call-expr args
+  primary-expr
+  call-expr args
 
 typed-expr:
   type-name args

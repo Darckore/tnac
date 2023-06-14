@@ -354,6 +354,11 @@ namespace tnac
         return {};
     }
 
+    if (name.is(token::KwFunction))
+    {
+      name = m_sema.contrive_name();
+    }
+
     auto funcDecl = m_builder.make_func_decl(name, *def, std::move(params));
     m_sema.visit_decl(*funcDecl);
 
@@ -510,6 +515,11 @@ namespace tnac
       return typed_expr();
     }
 
+    if (next.is(token::KwFunction))
+    {
+      return anonimous_function();
+    }
+
     if (next.is(token::KwResult))
     {
       return m_builder.make_result(next_tok());
@@ -532,6 +542,17 @@ namespace tnac
     }
 
     return error_expr(next, "Expected expression"sv, true);
+  }
+
+  ast::expr* parser::anonimous_function() noexcept
+  {
+    UTILS_ASSERT(peek_next().is(token::KwFunction));
+    auto kw = next_tok();
+    auto funcDecl = func_decl(kw);
+    if (!funcDecl)
+      return error_expr(kw, "Invalid anonimous function definition"sv);
+
+    return m_builder.make_decl_expr(*funcDecl);
   }
 
   ast::expr* parser::typed_expr() noexcept

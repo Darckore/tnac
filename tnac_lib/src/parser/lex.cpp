@@ -142,6 +142,7 @@ namespace tnac
         using kw_map = std::unordered_map<string_t, tok_kind>;
 
         static const kw_map keywords{
+          { "function", tok_kind::KwFunction },
           { "result",   tok_kind::KwResult },
           { "complex",  tok_kind::KwComplex },
           { "fraction", tok_kind::KwFraction },

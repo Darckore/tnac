@@ -23,6 +23,8 @@ namespace tnac
     using symbol = semantics::symbol;
     using sym_ptr = symbol*;
     
+    using fake_name_set = std::unordered_set<buf_t>;
+    
     using var_handler_t = std::function<void(const semantics::variable&)>;
 
   public:
@@ -62,8 +64,14 @@ namespace tnac
     //
     void visit_decl(ast::decl& decl) noexcept;
 
+    //
+    // Generates a random name
+    //
+    token contrive_name() noexcept;
+
   private:
     semantics::sym_table m_symTab;
+    fake_name_set m_generatedNames;
     const semantics::scope* m_curScope{};
     var_handler_t m_varCallback{};
   };
