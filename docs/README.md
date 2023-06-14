@@ -61,11 +61,13 @@ evaluate and produce a result.
 The diver also supports certain commands. More on them later.
 
 You can make the program run a program from a file and print out the result like this:
+
 ```tnac myfile.whatevz```
 
 This will run, interpret the code, print the result, and exit.
 
 You can also make it do the interpreting and printing, but stay in interactive mode by adding `-i`:
+
 ```tnac myfile.whatevz -i```
 
 ## Syntax
