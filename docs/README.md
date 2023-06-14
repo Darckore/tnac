@@ -54,11 +54,19 @@ whereas `2.0 + i` is not.
 
 ### Driver
 
-The driver is a basic CLI interface which works in interactive mode.
+The driver is a basic CLI interface which works in interactive mode by default.
 It displays a prompt allowing the user to enter expressions with it will then
 evaluate and produce a result.
 
 The diver also supports certain commands. More on them later.
+
+You can make the program run a program from a file and print out the result like this:
+```tnac myfile.whatevz```
+
+This will run, interpret the code, print the result, and exit.
+
+You can also make it do the interpreting and printing, but stay in interactive mode by adding `-i`:
+```tnac myfile.whatevz -i```
 
 ## Syntax
 
@@ -98,6 +106,7 @@ Keywords are reserved names. They follow the rules for identifiers, except they 
 
 These are the supported keywords:
 
+- `_function`
 - `_result`
 - `_complex`
 - `_fraction`
@@ -296,6 +305,23 @@ other_func()
 
 func(other_func)
 ```
+
+Functions can be anonimous, kinda like lambdas in C++. You can't access them by name,
+but you can do anything else with them what you can do with normal functions.
+
+Such functions are declared via the `_function` keyword:
+```
+a = _function(x, y) x * y;
+a(2, 3)
+```
+prints `6`
+
+Also:
+```
+some_func(x, y) x(y);
+some_func(_function(x) x * x;, 10)
+```
+prints `100`
 
 ## Commands
 
