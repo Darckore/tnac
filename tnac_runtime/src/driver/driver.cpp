@@ -7,7 +7,6 @@ namespace tnac_rt
   // Special members
 
   driver::driver(int argCount, char** args) noexcept :
-    m_parser{ m_builder, m_sema },
     m_callStack{ 1000 }, // todo: configurable
     m_ev{ m_registry, m_callStack },
     m_cmd{ m_commands }
@@ -53,13 +52,12 @@ namespace tnac_rt
 
   void driver::init_handlers() noexcept
   {
-    m_sema.on_variable([this](auto&& sym) noexcept { store_var(sym); });
-
     m_cmd.on_error([this](auto&& tok, auto msg) noexcept { m_srcMgr.on_error(tok, msg); });
 
     m_ev.on_error([this](auto&& tok, auto msg) noexcept { m_srcMgr.on_error(tok, msg); });
 
-    m_parser.on_error([this](auto&& err) noexcept { m_srcMgr.on_parse_error(err); });
+    m_parser.on_variable_declaration([this](auto&& sym) noexcept { store_var(sym); });
+    m_parser.on_parse_error([this](auto&& err) noexcept { m_srcMgr.on_parse_error(err); });
     m_parser.on_command([this](auto command) noexcept { m_cmd.on_command(std::move(command)); });
   }
 

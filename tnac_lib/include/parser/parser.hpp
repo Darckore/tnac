@@ -169,7 +169,7 @@ namespace tnac
     root_ptr root() noexcept;
 
     //
-    // Attaches the error handler which gets called when the parser encounteres a
+    // Attaches the error handler which gets called when the parser encounters a
     // syntax error and produces an error expression
     //
     template <detail::err_handler F>

@@ -3,12 +3,12 @@
 //
 
 #pragma once
-#include "parser/lex.hpp"
-#include "parser/parser.hpp"
+#include "packages/parser_pkg.hpp"
+
 #include "evaluator/evaluator.hpp"
 #include "evaluator/value_registry.hpp"
 #include "evaluator/call_stack.hpp"
-#include "sema/sema.hpp"
+
 #include "driver/source_manager.hpp"
 #include "commands/cmd_interpreter.hpp"
 
@@ -32,14 +32,12 @@ namespace tnac_rt
     friend in_stream& operator>>(in_stream& stream, driver& drv) noexcept;
 
   public:
-    using ast_builder = tnac::ast::builder;
-    using sema        = tnac::sema;
-    
     using variable_ptr  = const tnac::semantics::variable*;
     using variable_ref  = const tnac::semantics::variable&;
     using var_collection = std::vector<variable_ptr>;
 
-    using parser      = tnac::parser;
+    using parser      = tnac::packages::parser;
+
     using val_reg     = tnac::eval::registry;
     using call_stack  = tnac::eval::call_stack;
     using eval        = tnac::evaluator;
@@ -165,12 +163,11 @@ namespace tnac_rt
     void parse(tnac::buf_t input, bool interactive) noexcept;
 
   private:
-    ast_builder m_builder;
-    sema m_sema;
+    parser m_parser;
+
     val_reg m_registry;
     call_stack m_callStack;
 
-    parser m_parser;
     src_manager m_srcMgr;
 
     eval m_ev;
