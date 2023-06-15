@@ -57,6 +57,12 @@ namespace tnac
         case Pipe:
           return BitwiseOr;
 
+        case Pow:
+          return BinaryPow;
+
+        case Root:
+          return BinaryRoot;
+
         default:
           return InvalidOp;
         }

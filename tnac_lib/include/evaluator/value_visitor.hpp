@@ -22,6 +22,8 @@ namespace tnac::eval
     BitwiseAnd,
     BitwiseXor,
     BitwiseOr,
+    BinaryPow,
+    BinaryRoot,
     UnaryNegation,
     UnaryPlus,
     UnaryBitwiseNot
@@ -74,7 +76,8 @@ namespace tnac::eval
       using enum val_ops;
       return utils::eq_any(op, Addition, Subtraction, 
                                Multiplication, Division, Modulo,
-                               BitwiseAnd, BitwiseOr, BitwiseXor);
+                               BitwiseAnd, BitwiseOr, BitwiseXor,
+                               BinaryPow, BinaryRoot);
     }
 
   }
@@ -467,6 +470,12 @@ namespace tnac::eval
       return get_empty();
     }
 
+    // Power
+
+
+    // Root
+
+
   private:
     //
     // Extracts type from value and calls the specified function
@@ -584,6 +593,12 @@ namespace tnac::eval
 
       case BitwiseOr:
         return bitwise_or(lhs, rhs);
+
+      case BinaryPow:
+
+
+      case BinaryRoot:
+
 
       default:
         return get_empty();
