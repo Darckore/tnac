@@ -3,10 +3,7 @@
 //
 
 #pragma once
-#include "packages/parser_pkg.hpp"
-#include "packages/evaluator_pkg.hpp"
-#include "packages/cmd_pkg.hpp"
-
+#include "packages/core.hpp"
 #include "driver/source_manager.hpp"
 
 namespace tnac_rt
@@ -29,16 +26,13 @@ namespace tnac_rt
     friend in_stream& operator>>(in_stream& stream, driver& drv) noexcept;
 
   public:
-    using variable_ptr  = const tnac::semantics::variable*;
-    using variable_ref  = const tnac::semantics::variable&;
+    using variable_ptr   = const tnac::semantics::variable*;
+    using variable_ref   = const tnac::semantics::variable&;
     using var_collection = std::vector<variable_ptr>;
+    using command        = tnac::ast::command;
+    using size_type      = command::size_type;
 
-    using parser      = tnac::packages::parser;
-    using eval        = tnac::packages::evaluator;
-    using cmd         = tnac::packages::cmd;
-
-    using command     = tnac::ast::command;
-    using size_type   = command::size_type;
+    using core = tnac::packages::tnac_core;
 
   public:
     CLASS_SPECIALS_NONE_CUSTOM(driver);
@@ -139,7 +133,7 @@ namespace tnac_rt
     void try_redirect_output(const tnac::token& pathTok) noexcept;
 
     //
-    // Cloases the temporary output file (if applicable)
+    // Closes the temporary output file (if applicable)
     //
     void end_redirect() noexcept;
 
@@ -159,9 +153,7 @@ namespace tnac_rt
     void parse(tnac::buf_t input, bool interactive) noexcept;
 
   private:
-    parser m_parser;
-    eval m_ev;
-    cmd m_cmd;
+    core m_tnac;
 
     src_manager m_srcMgr;
 

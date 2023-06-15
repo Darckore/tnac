@@ -7,7 +7,7 @@ namespace tnac_rt
   // Special members
 
   driver::driver(int argCount, char** args) noexcept :
-    m_ev{ 1000 } // todo: configurable
+    m_tnac{ 1000 } // todo: configurable
   {
     init_handlers();
     init_commands();
@@ -50,13 +50,14 @@ namespace tnac_rt
 
   void driver::init_handlers() noexcept
   {
-    m_cmd.on_error([this](auto&& tok, auto msg) noexcept { m_srcMgr.on_error(tok, msg); });
+    m_tnac.get_commands().on_error([this](auto&& tok, auto msg) noexcept { m_srcMgr.on_error(tok, msg); });
 
-    m_ev.on_error([this](auto&& tok, auto msg) noexcept { m_srcMgr.on_error(tok, msg); });
+    m_tnac.get_eval().on_error([this](auto&& tok, auto msg) noexcept { m_srcMgr.on_error(tok, msg); });
 
-    m_parser.on_variable_declaration([this](auto&& sym) noexcept { store_var(sym); });
-    m_parser.on_parse_error([this](auto&& err) noexcept { m_srcMgr.on_parse_error(err); });
-    m_parser.on_command([this](auto command) noexcept { m_cmd.on_command(std::move(command)); });
+    auto&& parser = m_tnac.get_parser();
+    parser.on_variable_declaration([this](auto&& sym) noexcept { store_var(sym); });
+    parser.on_parse_error([this](auto&& err) noexcept { m_srcMgr.on_parse_error(err); });
+    parser.on_command([this](auto command) noexcept { m_tnac.get_commands().on_command(std::move(command)); });
   }
 
   void driver::run(int argCount, char** args) noexcept
@@ -146,7 +147,7 @@ namespace tnac_rt
   void driver::print_result() noexcept
   {
     out::value_printer vp;
-    vp(m_ev.last_result(), m_numBase, out());
+    vp(m_tnac.get_eval().last_result(), m_numBase, out());
     out() << '\n';
   }
 
@@ -187,7 +188,7 @@ namespace tnac_rt
     }
 
     out::lister ls;
-    ls(m_parser.root(), out());
+    ls(m_tnac.get_parser().root(), out());
     end_redirect();
   }
 
@@ -197,16 +198,17 @@ namespace tnac_rt
     {
       constexpr auto maxArgs = size_type{ 2 };
       const auto argCount    = c.arg_count();
-      
+      auto&& parser = m_tnac.get_parser();
+
       if (argCount < maxArgs)
-        return m_parser.root();
+        return parser.root();
 
       auto&& second = c[size_type{ 1 }];
       if (second.m_value == "current"sv)
         return m_srcMgr.last_parsed();
 
       m_srcMgr.on_error(second, "Unknown parameter"sv);
-      return m_parser.root();
+      return parser.root();
     };
 
     auto ast = toPrint(c);
@@ -284,24 +286,25 @@ namespace tnac_rt
     using enum tnac::tok_kind;
     using params = tnac::commands::descr::param_list;
     using size_type = params::size_type;
+    auto&& cmd = m_tnac.get_commands();
 
-    m_cmd.declare("exit"sv,   [this](auto  ) noexcept { on_exit(); });
-    m_cmd.declare("result"sv, params{ Identifier }, size_type{},
-                  [this](auto c) noexcept { print_result(std::move(c)); });
+    cmd.declare("exit"sv,   [this](auto  ) noexcept { on_exit(); });
+    cmd.declare("result"sv, params{ Identifier }, size_type{},
+                [this](auto c) noexcept { print_result(std::move(c)); });
     
-    m_cmd.declare("list"sv, params{ String }, size_type{},
-                  [this](auto c) noexcept { list_code(std::move(c)); });
+    cmd.declare("list"sv, params{ String }, size_type{},
+                [this](auto c) noexcept { list_code(std::move(c)); });
     
-    m_cmd.declare("ast"sv, params{ String, Identifier }, size_type{},
-                  [this](auto c) noexcept { print_ast(std::move(c)); });
+    cmd.declare("ast"sv, params{ String, Identifier }, size_type{},
+                [this](auto c) noexcept { print_ast(std::move(c)); });
 
-    m_cmd.declare("vars"sv, params{ String }, size_type{},
-                  [this](auto c) noexcept { print_vars(std::move(c)); });
+    cmd.declare("vars"sv, params{ String }, size_type{},
+                [this](auto c) noexcept { print_vars(std::move(c)); });
 
-    m_cmd.declare("bin"sv, [this](auto) noexcept { set_num_base(2); });
-    m_cmd.declare("oct"sv, [this](auto) noexcept { set_num_base(8); });
-    m_cmd.declare("dec"sv, [this](auto) noexcept { set_num_base(10); });
-    m_cmd.declare("hex"sv, [this](auto) noexcept { set_num_base(16); });
+    cmd.declare("bin"sv, [this](auto) noexcept { set_num_base(2); });
+    cmd.declare("oct"sv, [this](auto) noexcept { set_num_base(8); });
+    cmd.declare("dec"sv, [this](auto) noexcept { set_num_base(10); });
+    cmd.declare("hex"sv, [this](auto) noexcept { set_num_base(16); });
   }
 
   void driver::store_var(variable_ref var) noexcept
@@ -312,18 +315,20 @@ namespace tnac_rt
   void driver::parse(tnac::buf_t input, bool interactive) noexcept
   {
     auto&& inputData = m_srcMgr.input(std::move(input));
-    auto ast = m_parser(inputData.m_buf);
+    auto&& parser = m_tnac.get_parser();
+    auto&& ev = m_tnac.get_eval();
+    auto ast = parser(inputData.m_buf);
     inputData.m_node = ast;
     
     if (!interactive)
     {
-      ast = m_parser.root();
-      m_ev(ast);
+      ast = parser.root();
+      ev(ast);
     }
 
-    if (interactive && ast != m_parser.root())
+    if (interactive && ast != parser.root())
     {
-      m_ev(ast);
+      ev(ast);
     }
 
     print_result();

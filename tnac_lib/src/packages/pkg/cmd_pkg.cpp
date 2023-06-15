@@ -1,4 +1,4 @@
-#include "packages/cmd_pkg.hpp"
+#include "packages/pkg/cmd_pkg.hpp"
 
 namespace tnac::packages
 {
