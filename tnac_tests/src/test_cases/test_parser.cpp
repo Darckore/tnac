@@ -358,6 +358,33 @@ namespace tnac_tests
     detail::check_tree_structute(exp, input);
   }
 
+  TEST(parser, t_struct_pow_root)
+  {
+    using detail::expected_node;
+    using enum detail::node_kind;
+    constexpr auto input = "10 ** 2 * 4 // 5"sv;
+
+    /*
+               -----'*'-----
+              |             |
+           --'**'--      --'//'--
+          |        |    |        |
+         10        2    4        5
+    */
+
+    std::array exp{
+      expected_node{ "10", Literal, Binary },
+      expected_node{ "2",  Literal, Binary },
+      expected_node{ "**", Binary,  Binary },
+      expected_node{ "4",  Literal, Binary },
+      expected_node{ "5",  Literal, Binary },
+      expected_node{ "//", Binary,  Binary },
+      expected_node{ "*",  Binary,  Scope },
+    };
+
+    detail::check_tree_structute(exp, input);
+  }
+
   TEST(parser, t_struct_complex_binary)
   {
     using detail::expected_node;

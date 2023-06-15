@@ -26,6 +26,7 @@ namespace tnac
         BitAnd,
         Additive,
         Multiplicative,
+        Power,
         Unary
       };
       using enum prec;
@@ -36,6 +37,7 @@ namespace tnac
         BitAnd,
         Additive,
         Multiplicative,
+        Power,
         Unary
       };
 

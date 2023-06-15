@@ -20,6 +20,10 @@ namespace tnac
       {
         return tok.is_any(token::Asterisk, token::Slash, token::Percent);
       }
+      constexpr auto is_pow_op(const token& tok) noexcept
+      {
+        return tok.is_any(token::Pow, token::Root);
+      }
       constexpr auto is_assign(const token& tok) noexcept
       {
         return tok.is_any(token::Assign);
@@ -48,6 +52,9 @@ namespace tnac
 
         case Multiplicative:
           return is_mul_op(tok);
+
+        case Power:
+          return is_pow_op(tok);
 
         case Unary:
           return is_unary_op(tok);
