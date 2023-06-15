@@ -7,8 +7,7 @@ namespace tnac_rt
   // Special members
 
   driver::driver(int argCount, char** args) noexcept :
-    m_callStack{ 1000 }, // todo: configurable
-    m_ev{ m_registry, m_callStack },
+    m_ev{ 1000 }, // todo: configurable
     m_cmd{ m_commands }
   {
     init_handlers();
@@ -148,7 +147,7 @@ namespace tnac_rt
   void driver::print_result() noexcept
   {
     out::value_printer vp;
-    vp(m_registry.evaluation_result(), m_numBase, out());
+    vp(m_ev.last_result(), m_numBase, out());
     out() << '\n';
   }
 

@@ -4,10 +4,7 @@
 
 #pragma once
 #include "packages/parser_pkg.hpp"
-
-#include "evaluator/evaluator.hpp"
-#include "evaluator/value_registry.hpp"
-#include "evaluator/call_stack.hpp"
+#include "packages/evaluator_pkg.hpp"
 
 #include "driver/source_manager.hpp"
 #include "commands/cmd_interpreter.hpp"
@@ -37,10 +34,8 @@ namespace tnac_rt
     using var_collection = std::vector<variable_ptr>;
 
     using parser      = tnac::packages::parser;
+    using eval        = tnac::packages::evaluator;
 
-    using val_reg     = tnac::eval::registry;
-    using call_stack  = tnac::eval::call_stack;
-    using eval        = tnac::evaluator;
     using command     = tnac::ast::command;
     using size_type   = command::size_type;
 
@@ -164,13 +159,9 @@ namespace tnac_rt
 
   private:
     parser m_parser;
-
-    val_reg m_registry;
-    call_stack m_callStack;
+    eval m_ev;
 
     src_manager m_srcMgr;
-
-    eval m_ev;
 
     tnac::commands::store m_commands;
     tnac::cmd m_cmd;
