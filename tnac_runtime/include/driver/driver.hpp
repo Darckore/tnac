@@ -5,9 +5,9 @@
 #pragma once
 #include "packages/parser_pkg.hpp"
 #include "packages/evaluator_pkg.hpp"
+#include "packages/cmd_pkg.hpp"
 
 #include "driver/source_manager.hpp"
-#include "commands/cmd_interpreter.hpp"
 
 namespace tnac_rt
 {
@@ -35,6 +35,7 @@ namespace tnac_rt
 
     using parser      = tnac::packages::parser;
     using eval        = tnac::packages::evaluator;
+    using cmd         = tnac::packages::cmd;
 
     using command     = tnac::ast::command;
     using size_type   = command::size_type;
@@ -160,11 +161,9 @@ namespace tnac_rt
   private:
     parser m_parser;
     eval m_ev;
+    cmd m_cmd;
 
     src_manager m_srcMgr;
-
-    tnac::commands::store m_commands;
-    tnac::cmd m_cmd;
 
     in_stream*  m_in { &std::cin };
     out_stream* m_out{ &std::cout };

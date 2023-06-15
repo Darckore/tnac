@@ -7,8 +7,7 @@ namespace tnac_rt
   // Special members
 
   driver::driver(int argCount, char** args) noexcept :
-    m_ev{ 1000 }, // todo: configurable
-    m_cmd{ m_commands }
+    m_ev{ 1000 } // todo: configurable
   {
     init_handlers();
     init_commands();
@@ -286,23 +285,23 @@ namespace tnac_rt
     using params = tnac::commands::descr::param_list;
     using size_type = params::size_type;
 
-    m_commands.declare("exit"sv,   [this](auto  ) noexcept { on_exit(); });
-    m_commands.declare("result"sv, params{ Identifier }, size_type{},
-                       [this](auto c) noexcept { print_result(std::move(c)); });
+    m_cmd.declare("exit"sv,   [this](auto  ) noexcept { on_exit(); });
+    m_cmd.declare("result"sv, params{ Identifier }, size_type{},
+                  [this](auto c) noexcept { print_result(std::move(c)); });
     
-    m_commands.declare("list"sv, params{ String }, size_type{},
-                       [this](auto c) noexcept { list_code(std::move(c)); });
+    m_cmd.declare("list"sv, params{ String }, size_type{},
+                  [this](auto c) noexcept { list_code(std::move(c)); });
     
-    m_commands.declare("ast"sv, params{ String, Identifier }, size_type{},
-                       [this](auto c) noexcept { print_ast(std::move(c)); });
+    m_cmd.declare("ast"sv, params{ String, Identifier }, size_type{},
+                  [this](auto c) noexcept { print_ast(std::move(c)); });
 
-    m_commands.declare("vars"sv, params{ String }, size_type{},
-                       [this](auto c) noexcept { print_vars(std::move(c)); });
+    m_cmd.declare("vars"sv, params{ String }, size_type{},
+                  [this](auto c) noexcept { print_vars(std::move(c)); });
 
-    m_commands.declare("bin"sv, [this](auto) noexcept { set_num_base(2); });
-    m_commands.declare("oct"sv, [this](auto) noexcept { set_num_base(8); });
-    m_commands.declare("dec"sv, [this](auto) noexcept { set_num_base(10); });
-    m_commands.declare("hex"sv, [this](auto) noexcept { set_num_base(16); });
+    m_cmd.declare("bin"sv, [this](auto) noexcept { set_num_base(2); });
+    m_cmd.declare("oct"sv, [this](auto) noexcept { set_num_base(8); });
+    m_cmd.declare("dec"sv, [this](auto) noexcept { set_num_base(10); });
+    m_cmd.declare("hex"sv, [this](auto) noexcept { set_num_base(16); });
   }
 
   void driver::store_var(variable_ref var) noexcept
