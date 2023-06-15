@@ -526,6 +526,14 @@ namespace tnac::eval
 
       return get_empty();
     }
+    auto power(fraction_type l, complex_type r) noexcept
+    {
+      return power(l.to<float_type>(), r);
+    }
+    auto power(complex_type l, fraction_type r) noexcept
+    {
+      return power(l, r.to<float_type>());
+    }
 
     // Root
 

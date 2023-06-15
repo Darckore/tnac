@@ -28,6 +28,12 @@ namespace tnac_tests
         return utils::eq(l, r);
       }
 
+      template <>
+      bool eq(const cplx& l, const cplx& r) noexcept
+      {
+        return eq(l.real(), r.real()) && eq(l.imag(), r.imag());
+      }
+
       testing::Message& operator<<(testing::Message& msg, const frac& f) noexcept
       {
         if (f.sign() < 0) msg << '-';
@@ -227,6 +233,22 @@ namespace tnac_tests
 
     // Fraction
     check_eval("_fraction(5, 1) % _fraction(3, 1)"sv, 2.0);
+  }
+
+  TEST(evaluation, t_basic_pow)
+  {
+    using detail::check_eval;
+    using cplx = detail::cplx;
+    using frac = detail::frac;
+
+    check_eval("2 ** 2"sv, 4.0);
+    check_eval("1 ** 0"sv, 1.0);
+    check_eval("1 ** _complex(1, 2)"sv, cplx{ 1.0, 0.0 });
+    check_eval("_fraction(1, 1) ** _complex(1, 2)"sv, cplx{ 1.0, 0.0 });
+    check_eval("4.0 ** 5.0"sv, 1024.0);
+    check_eval("6.0 ** 5"sv, 7776.0);
+    check_eval("_fraction(8, 2) ** _fraction(1, 2)"sv, 2.0);
+
   }
 
   TEST(evaluation, t_literal)
