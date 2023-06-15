@@ -113,11 +113,6 @@ namespace tnac
 
   private:
     //
-    // Returns a reference to the call stack
-    //
-    eval::call_stack& call_stack() noexcept;
-
-    //
     // Produces an evaluation error
     //
     void on_error(const token& pos, string_t msg) noexcept;
@@ -144,7 +139,7 @@ namespace tnac
 
   private:
     eval::value_visitor m_visitor;
-    eval::call_stack* m_callStack{};
+    eval::call_stack& m_callStack;
     err_handler_t m_errHandler{};
   };
 }

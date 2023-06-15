@@ -140,7 +140,7 @@ namespace tnac
 
   evaluator::evaluator(eval::registry& registry, eval::call_stack& callStack) noexcept :
     m_visitor{ registry },
-    m_callStack{ &callStack }
+    m_callStack{ callStack }
   {}
 
 
@@ -220,7 +220,7 @@ namespace tnac
     if (!init_call(*callable, expr))
     {
       on_error(expr.pos(), "Stack overflow"sv);
-      call_stack().clear();
+      m_callStack.clear();
       expr.eval_result(m_visitor.get_empty());
       return;
     }
@@ -229,7 +229,7 @@ namespace tnac
     (*this)(funcBody);
     auto val = m_visitor.last_result(&expr);
     expr.eval_result(val);
-    call_stack().pop();
+    m_callStack.pop();
   }
 
   void evaluator::visit(ast::paren_expr& paren) noexcept
@@ -300,11 +300,6 @@ namespace tnac
       m_errHandler(pos, msg);
   }
 
-  eval::call_stack& evaluator::call_stack() noexcept
-  {
-    return *m_callStack;
-  }
-
   eval::value evaluator::eval_token(const token& tok) noexcept
   {
     switch (tok.m_kind)
@@ -338,7 +333,7 @@ namespace tnac
 
   bool evaluator::init_call(semantics::function& sym, ast::call_expr& expr) noexcept
   {
-    if (!call_stack())
+    if (!m_callStack)
     {
       return false;
     }
@@ -357,6 +352,6 @@ namespace tnac
     }
 
     m_visitor.get_empty();
-    return call_stack().push(sym.name(), std::move(argValues));
+    return m_callStack.push(sym.name(), std::move(argValues));
   }
 }
