@@ -274,6 +274,41 @@ namespace tnac::eval
       return to_int(val.to<float_type>());
     }
 
+
+    template <detail::expr_result T>
+    typed_value<float_type> to_float(T) noexcept
+    {
+      return {};
+    }
+
+    template <>
+    typed_value<float_type> to_float(int_type val) noexcept
+    {
+      return static_cast<float_type>(val);
+    }
+
+    template <>
+    typed_value<float_type> to_float(float_type val) noexcept
+    {
+      return val;
+    }
+
+    template <>
+    typed_value<float_type> to_float(complex_type val) noexcept
+    {
+      if (!utils::eq(val.imag(), float_type{}))
+        return {};
+
+      return to_float(val.real());
+    }
+
+    template <>
+    typed_value<float_type> to_float(fraction_type val) noexcept
+    {
+      return val.to<float_type>();
+    }
+
+
     // Addition
     
     template <detail::expr_result L, detail::expr_result R>
@@ -472,6 +507,25 @@ namespace tnac::eval
 
     // Power
 
+    template <detail::expr_result L, detail::expr_result R>
+      requires requires (L l, R r) { std::pow(l, r); }
+    auto power(L base, R exp) noexcept
+    {
+      return visit_binary(base, exp, [](auto l, auto r) noexcept
+        {
+          return std::pow(l, r);
+        });
+    }
+    template <detail::expr_result L, detail::expr_result R>
+    auto power(L base, R exp) noexcept
+    {
+      auto floatL = to_float(base);
+      auto floatR = to_float(exp);
+      if(floatL && floatR)
+        return power(*floatL, *floatR);
+
+      return get_empty();
+    }
 
     // Root
 
@@ -595,7 +649,7 @@ namespace tnac::eval
         return bitwise_or(lhs, rhs);
 
       case BinaryPow:
-
+        return power(lhs, rhs);
 
       case BinaryRoot:
 
