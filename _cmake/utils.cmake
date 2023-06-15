@@ -53,6 +53,18 @@ function(set_build_opts TARGET_NAME EXCLUDED_FILES)
     set_target_properties( ${TARGET_NAME} PROPERTIES
                            VS_DEBUGGER_WORKING_DIRECTORY "$<TARGET_FILE_DIR:${TARGET_NAME}>")
     set_property(SOURCE ${EXCLUDED_FILES} PROPERTY VS_SETTINGS "ExcludedFromBuild=true")
+
+    #vs modules workaround
+    file( CONFIGURE OUTPUT "${CMAKE_BINARY_DIR}/Directory.Build.props" CONTENT [==[
+          <Project>
+            <ItemDefinitionGroup>
+              <ClCompile>
+                <BuildStlModules>false</BuildStlModules>
+              </ClCompile>
+            </ItemDefinitionGroup>
+          </Project>
+          ]==] @ONLY )
+
   else()
     target_compile_options(${TARGET_NAME} PRIVATE -Wall -Wextra -pedantic -Werror)
   endif()
