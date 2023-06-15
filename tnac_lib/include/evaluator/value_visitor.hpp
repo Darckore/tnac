@@ -508,9 +508,37 @@ namespace tnac::eval
     // Power
 
     template <detail::expr_result L, detail::expr_result R>
+    typed_value<complex_type> enforce_complex(L, R) noexcept
+    {
+      return {};
+    }
+    template <detail::expr_result L, detail::expr_result R>
+      requires (std::is_arithmetic_v<L> && std::is_arithmetic_v<R>)
+    typed_value<complex_type> enforce_complex(L l, R r) noexcept
+    {
+      auto base = static_cast<float_type>(l);
+      if (base > 0.0 || utils::eq(base, 0.0))
+        return {};
+
+      auto exp  = static_cast<float_type>(r);
+      if (!utils::in_range(exp, 0.0, 1.0))
+        return {};
+
+      if (const auto mod2 = std::fmod(utils::inv(exp), 2.0); !utils::eq(mod2, 0.0))
+        return {};
+
+      return complex_type{ 0.0, std::pow(utils::abs(base), exp) };
+    }
+
+    template <detail::expr_result L, detail::expr_result R>
       requires requires (L l, R r) { std::pow(l, r); }
     auto power(L base, R exp) noexcept
     {
+      if (auto cpl = enforce_complex(base, exp))
+      {
+        return reg_value(*cpl);
+      }
+
       return visit_binary(base, exp, [](auto l, auto r) noexcept
         {
           return std::pow(l, r);
@@ -536,6 +564,17 @@ namespace tnac::eval
     }
 
     // Root
+    template <detail::expr_result L, detail::expr_result R>
+    auto root(L, R) noexcept { return get_empty(); }
+    template <detail::expr_result L, detail::expr_result R>
+      requires requires (R r) { 1 / r; }
+    auto root(L base, R exp) noexcept
+    {
+      if constexpr (std::same_as<R, int_type>)
+        return root(base, static_cast<float_type>(exp));
+      else
+        return power(base, 1 / exp);
+    }
 
 
   private:
@@ -660,7 +699,7 @@ namespace tnac::eval
         return power(lhs, rhs);
 
       case BinaryRoot:
-
+        return root(lhs, rhs);
 
       default:
         return get_empty();
