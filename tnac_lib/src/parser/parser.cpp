@@ -108,6 +108,9 @@ namespace tnac
     if (auto binary = utils::try_cast<kind::Binary>(&expr))
       return has_implicit_separator(binary->right());
 
+    if (auto unary = utils::try_cast<kind::Unary>(&expr))
+      return has_implicit_separator(unary->operand());
+
     if (!expr.is(kind::Decl))
       return false;
 
