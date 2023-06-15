@@ -121,6 +121,15 @@ namespace tnac
     const token& op() noexcept;
 
     //
+    // Checks if the next char is the one expected and returns
+    // the 'expected' token kind if it is
+    // Otherwise, returns 'fallback'
+    // 
+    // Advances the buffer iterator if successful
+    //
+    tok_kind try_next(char_t expChar, tok_kind expected, tok_kind fallback) noexcept;
+
+    //
     // Tries to parse punctuation
     //
     const token& punct() noexcept;

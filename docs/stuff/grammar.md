@@ -39,12 +39,19 @@ additive-expr:
   additive-expr additive-operator multiplicative-expr
 
 multiplicative-expr:
+  pow-expr
+  multiplicative-expr multiplicative-operator pow-expr
+
+pow-expr:
   unary-expr
-  multiplicative-expr multiplicative-operator unary-expr
+  pow-expr pow-operator unary-expr
 
 unary-expr:
-  call-expr
-  unary-operator primary-expr
+  unary-operator call-expr
+
+call-expr:
+  primary-expr
+  call-expr args
 
 primary-expr:
   result-expr
@@ -89,10 +96,6 @@ literal-expr:
 
 anonimous-function:
   _function func-params func-body
-
-call-expr:
-  primary-expr
-  call-expr args
 
 typed-expr:
   type-name args
@@ -165,6 +168,9 @@ hex-digit-sequence:
 assign-operator: one of
   =
 
+pow-operator: one of
+  ** //
+
 multiplicative-operator: one of
   * / %
 
@@ -175,7 +181,7 @@ unary-operator: one of
   + - ~
 
 operator: one of
-  + - ~ * / % | ^ & =
+  + - ~ * / % | ^ & = ** //
 
 string-literal:
   ' anything '

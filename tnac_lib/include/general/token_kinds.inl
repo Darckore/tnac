@@ -25,6 +25,8 @@ Tilde,
 Amp,
 Hat,
 Pipe,
+Pow,
+Root,
 
 // Punctuation
 ParenOpen,

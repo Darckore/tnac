@@ -465,11 +465,11 @@ namespace tnac
       break;
 
     case '*':
-      resKind = Asterisk;
+      resKind = try_next('*', Pow, Asterisk);
       break;
 
     case '/':
-      resKind = Slash;
+      resKind = try_next('/', Root, Slash);
       break;
 
     case '%':
@@ -498,6 +498,15 @@ namespace tnac
     }
 
     return consume(resKind);
+  }
+
+  tok_kind lex::try_next(char_t expChar, tok_kind expected, tok_kind fallback) noexcept
+  {
+    if (peek_char() != expChar)
+      return fallback;
+
+    advance();
+    return expected;
   }
 
   const token& lex::punct() noexcept
