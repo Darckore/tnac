@@ -34,6 +34,36 @@ namespace tnac_rt
 
     using core = tnac::packages::tnac_core;
 
+  private:
+    struct io
+    {
+      in_stream*  in{ &std::cin };
+      out_stream* out{ &std::cout };
+      out_stream* err{ &std::cerr };
+
+      std::ofstream outFile{};
+    };
+    
+    struct state
+    {
+      int  numBase{ 10 };
+      bool running{};
+
+      explicit operator bool() const noexcept
+      {
+        return running;
+      }
+
+      void start() noexcept
+      {
+        running = true;
+      }
+      void stop() noexcept
+      {
+        running = false;
+      }
+    };
+
   public:
     CLASS_SPECIALS_NONE_CUSTOM(driver);
 
@@ -153,19 +183,10 @@ namespace tnac_rt
     void parse(tnac::buf_t input, bool interactive) noexcept;
 
   private:
-    core m_tnac;
-
     src_manager m_srcMgr;
-
-    in_stream*  m_in { &std::cin };
-    out_stream* m_out{ &std::cout };
-    out_stream* m_err{ &std::cerr };
-
-    std::ofstream m_outFile{};
-
     var_collection m_vars;
-
-    int m_numBase{ 10 };
-    bool m_running{};
+    core m_tnac;
+    io m_io{};
+    state m_state{};
   };
 }
