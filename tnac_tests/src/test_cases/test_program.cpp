@@ -85,4 +85,9 @@ namespace tnac_tests
   {
     parse_file(TEST_EXAMPLE(3), cplx{});
   }
+
+  TEST(program, t_example4)
+  {
+    parse_file(TEST_EXAMPLE(4), 42ll + 42ll);
+  }
 }
