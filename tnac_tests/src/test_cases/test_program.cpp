@@ -66,6 +66,11 @@ namespace tnac_tests
     using detail::parse_file;
   }
 
+  TEST(program, t_example_comments)
+  {
+    parse_file(TEST_EXAMPLE(_comments), 42ll);
+  }
+
   TEST(program, t_example0)
   {
     parse_file(TEST_EXAMPLE(0), cplx{ 0, 1 });

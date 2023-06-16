@@ -77,6 +77,18 @@ You can also make it do the interpreting and printing, but stay in interactive m
 This section will contain syntax basics along with some examples.
 For a taste of actual grammatics behind all this, see [grammar](stuff/grammar.md)
 
+### Comments
+
+Any sequence of characters enclosed in `'s becomes a comment:
+```
+`I am a comment`
+
+`
+  I am a comment
+  too
+`
+```
+
 ### Numeric literals
 
 Numbers can be of `int` or `float` type.

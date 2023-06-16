@@ -1,0 +1,24 @@
+`
+  This file is heavily commented
+  in order to test how this works
+`
+`variable`a`is now`=`equal to`2`end`:`of expression`
+
+`another variable`
+b = a : `is much less crazy`
+b = `reassign` b * 10 :
+
+`b` `is` `now` `20`
+
+`
+  We expect to get 42 out of this
+  
+  
+  so...
+``hi there`
+b = b * 2 + a :
+`it should be ok now`
+`Just
+to
+      be
+            sure`b

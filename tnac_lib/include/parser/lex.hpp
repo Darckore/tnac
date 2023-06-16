@@ -59,6 +59,12 @@ namespace tnac
     void ffwd() noexcept;
 
     //
+    // Skips comments
+    // Returns false if EOL is reached
+    //
+    bool skip_comment() noexcept;
+
+    //
     // Tries to parse a string
     //
     const token& string() noexcept;
@@ -143,6 +149,11 @@ namespace tnac
     // Advances the iterator one character forward
     //
     void advance() noexcept;
+
+    //
+    // Sets the sequence begin iterator to the end
+    //
+    void collapse() noexcept;
 
     //
     // Checks whether the buffer is at an end

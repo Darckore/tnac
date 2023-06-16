@@ -70,13 +70,18 @@ namespace tnac
       {
         return c == ';';
       }
+      constexpr auto is_comment(char_t c) noexcept
+      {
+        return c == '`';
+      }
       constexpr auto is_separator(char_t c) noexcept
       {
         return is_expr_separator(c) ||
-               is_comma(c) ||
-               is_semi(c)  ||
-               is_paren(c) ||
-               is_blank(c) ||
+               is_comma(c)          ||
+               is_semi(c)           ||
+               is_paren(c)          ||
+               is_blank(c)          ||
+               is_comment(c)        ||
                is_operator(c);
       }
 
@@ -189,6 +194,9 @@ namespace tnac
     if (!good())
       return consume(tok_kind::Eol);
 
+    if (!skip_comment())
+      return consume(tok_kind::Error);
+
     const auto next = peek_char();
 
     if (detail::is_single_quote(next))
@@ -253,7 +261,7 @@ namespace tnac
       break;
     }
 
-    m_from = m_to;
+    collapse();
     m_preview = res;
     return *m_preview;
   }
@@ -273,6 +281,31 @@ namespace tnac
         
       advance();
     }
+  }
+
+  bool lex::skip_comment() noexcept
+  {
+    if (!detail::is_comment(peek_char()))
+      return true;
+
+    advance();
+    while (good() && !detail::is_comment(peek_char()))
+    {
+      advance();
+    }
+
+    if (!detail::is_comment(peek_char()))
+    {
+      return false;
+    }
+
+    advance();
+    
+    while (detail::is_blank(peek_char()))
+      advance();
+
+    collapse();
+    return skip_comment();
   }
 
   const token& lex::string() noexcept
@@ -555,6 +588,11 @@ namespace tnac
   {
     if(good())
       ++m_to;
+  }
+
+  void lex::collapse() noexcept
+  {
+    m_from = m_to;
   }
 
   bool lex::good() const noexcept
