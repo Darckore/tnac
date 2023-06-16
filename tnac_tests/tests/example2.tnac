@@ -1,0 +1,8 @@
+accumulate(sum, val) sum + val;
+
+sum = accumulate(0, 1) :
+sum = accumulate(sum, 2) :
+sum = accumulate(sum, 3) :
+sum = accumulate(sum, 4) :
+sum = accumulate(sum, 5) :
+sum

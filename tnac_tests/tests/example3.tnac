@@ -1,0 +1,9 @@
+func() _function(a, b) a + b;;
+
+sum = func()(1, 1) :
+sum = sum + func()(1.2, 1) :
+
+x = func() :
+sum = sum + x(0, _complex(37.8, -1)) :
+
+x(sum, -sum)

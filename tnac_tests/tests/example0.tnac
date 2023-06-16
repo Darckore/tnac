@@ -1,0 +1,4 @@
+apply(func, a, b) func(a, b);
+
+func = _function(a, b) a // b;
+apply(func, -1, 2)
