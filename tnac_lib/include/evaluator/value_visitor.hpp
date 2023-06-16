@@ -521,9 +521,6 @@ namespace tnac::eval
         return {};
 
       auto exp  = static_cast<float_type>(r);
-      if (!utils::in_range(exp, 0.0, 1.0))
-        return {};
-
       if (const auto mod2 = std::fmod(utils::inv(exp), 2.0); !utils::eq(mod2, 0.0))
         return {};
 

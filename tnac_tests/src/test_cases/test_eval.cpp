@@ -250,7 +250,8 @@ namespace tnac_tests
     check_eval("_fraction(8, 2) ** _fraction(1, 2)"sv, 2.0);
 
     check_eval("-1 ** 0.5"sv, cplx{ 0.0, 1.0 });
-    check_eval("-4 // 2"sv, cplx{ 0.0, 2.0 });
+    check_eval("-4 // 2"sv,   cplx{ 0.0, 2.0 });
+    check_eval("-4 // -2"sv,  cplx{ 0.0, 0.5 });
   }
 
   TEST(evaluation, t_literal)
