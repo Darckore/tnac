@@ -267,7 +267,9 @@ namespace tnac
   void evaluator::visit(ast::decl_expr& expr) noexcept
   {
     auto&& sym = expr.declarator().symbol();
-    expr.eval_result(m_visitor.visit_assign(&expr, sym.value()));
+    auto val = sym.value();
+    m_visitor.visit_assign(nullptr, val);
+    expr.eval_result(val);
   }
 
   void evaluator::visit(ast::var_decl& decl) noexcept
