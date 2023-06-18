@@ -50,6 +50,10 @@ namespace tnac
 
         return is_in_range(c, blanks.begin(), blanks.end());
       }
+      constexpr auto is_blank_nonnull(char_t c) noexcept
+      {
+        return c != '\0' && is_blank(c);
+      }
       constexpr auto is_paren_open(char_t c) noexcept
       {
         return c == '(';
@@ -198,6 +202,9 @@ namespace tnac
     if (!skip_comment())
       return consume(tok_kind::Error);
 
+    if(!good())
+      return consume(tok_kind::Eol);
+
     const auto next = peek_char();
 
     if (detail::is_single_quote(next))
@@ -302,7 +309,7 @@ namespace tnac
 
     advance();
     
-    while (detail::is_blank(peek_char()))
+    while (detail::is_blank_nonnull(peek_char()))
       advance();
 
     collapse();
