@@ -238,6 +238,11 @@ namespace tnac
     m_callStack.pop();
   }
 
+  void evaluator::visit(ast::ret_expr& ret) noexcept
+  {
+    ret.eval_result(ret.returned_value().value());
+  }
+
   void evaluator::visit(ast::paren_expr& paren) noexcept
   {
     paren.eval_result(paren.internal_expr().value());

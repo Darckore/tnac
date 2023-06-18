@@ -73,6 +73,11 @@ namespace tnac
     void visit(ast::call_expr& expr) noexcept;
 
     //
+    // Visits a ret expression
+    //
+    void visit(ast::ret_expr& ret) noexcept;
+
+    //
     // Visits a literal expression
     //
     void visit(ast::lit_expr& lit) noexcept;
