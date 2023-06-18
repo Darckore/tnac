@@ -83,6 +83,10 @@ namespace tnac_rt::out
       print(cast<ast::result_expr>(*root));
       break;
 
+    case Ret:
+      print(cast<ast::ret_expr>(*root));
+      break;
+
     case VarDecl:
       print(cast<ast::var_decl>(*root));
       break;
@@ -168,6 +172,12 @@ namespace tnac_rt::out
   void lister::print(const ast::id_expr& expr) noexcept
   {
     print_token(expr.pos(), true);
+  }
+
+  void lister::print(const ast::ret_expr& expr) noexcept
+  {
+    print_token(expr.pos(), true);
+    print(&expr.returned_value());
   }
 
   void lister::print(const ast::result_expr& expr) noexcept

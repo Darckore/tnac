@@ -122,10 +122,11 @@ Keywords are reserved names. They follow the rules for identifiers, except they 
 
 These are the supported keywords:
 
-- `_function`
-- `_result`
 - `_complex`
 - `_fraction`
+- `_function`
+- `_result`
+- `_ret`
 
 ### Expressions
 

@@ -12,6 +12,7 @@ Typed,
 Call,
 Decl,
 Result,
+Ret,
 
 // Decls,
 VarDecl,

@@ -11,10 +11,11 @@ expr-list:
   expr-list : expr
 
 expr:
+  _ret bit-or-expr
   decl-expr
-  assign-expr
 
 decl-expr:
+  assign-expr
   var-decl
   func-decl
 

@@ -355,6 +355,23 @@ namespace tnac::ast
     }
 
     //
+    // Visits a ret expression
+    //
+    void visit_impl(dest<ret_expr> ret) noexcept
+    {
+      if constexpr (is_top_down())
+        visit(ret);
+
+      if (preview(ret))
+      {
+        visit_root(&ret->returned_value());
+      }
+
+      if constexpr (is_bottom_up())
+        visit(ret);
+    }
+
+    //
     // Visits a variable reference expression
     //
     void visit_impl(dest<id_expr> id) noexcept
@@ -400,6 +417,10 @@ namespace tnac::ast
 
       case Result:
         visit_impl(&cast<result_expr>(cur));
+        break;
+
+      case Ret:
+        visit_impl(&cast<ret_expr>(cur));
         break;
 
       case Literal:

@@ -152,6 +152,14 @@ namespace tnac_rt::out
     endl();
   }
 
+  void ast_printer::visit(const ast::ret_expr&) noexcept
+  {
+    indent();
+    out() << "Ret expression";
+    endl();
+    push_parent(1u);
+  }
+
   void ast_printer::visit(const ast::error_expr& expr) noexcept
   {
     indent();

@@ -36,14 +36,34 @@ namespace tnac::ast
   {}
 
 
+  // Ret expression
+
+  ret_expr::~ret_expr() noexcept = default;
+
+  ret_expr::ret_expr(expr& retVal, const token& kwPos) noexcept :
+    expr{ kind::Ret, kwPos },
+    m_retVal{ &retVal }
+  {
+    assume_ancestry(m_retVal);
+  }
+
+  const expr& ret_expr::returned_value() const noexcept
+  {
+    return *m_retVal;
+  }
+  expr& ret_expr::returned_value() noexcept
+  {
+    return FROM_CONST(returned_value);
+  }
+
+
   // Literal expr
 
   lit_expr::~lit_expr() noexcept = default;
 
   lit_expr::lit_expr(const token& tok) noexcept :
     expr{ kind::Literal, tok }
-  {
-  }
+  {}
 
 
   // Id expr

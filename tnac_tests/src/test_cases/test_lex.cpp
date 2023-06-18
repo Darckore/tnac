@@ -123,14 +123,15 @@ namespace tnac_tests
 
   TEST(lexer, t_keywords)
   {
-    constexpr auto input = "_function _result _complex _fraction"sv;
+    constexpr auto input = "_function _result _complex _fraction _ret"sv;
 
     using enum tnac::tok_kind;
     constexpr std::array testArr{
       KwFunction,
       KwResult,
       KwComplex,
-      KwFraction
+      KwFraction,
+      KwRet
     };
 
     using detail::check_tokens;

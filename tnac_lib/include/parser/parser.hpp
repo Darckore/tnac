@@ -269,6 +269,11 @@ namespace tnac
     ast::expr* decl_expr() noexcept;
 
     //
+    // Parses a ret expr
+    //
+    ast::expr* ret_expr() noexcept;
+
+    //
     // Parses a declarator
     //
     ast::decl* declarator() noexcept;
@@ -297,6 +302,11 @@ namespace tnac
     // Parses an assign expr
     //
     ast::expr* assign_expr() noexcept;
+
+    //
+    // Entry point into a binary expression parser
+    //
+    ast::expr* binary_expr() noexcept;
 
     //
     // Parses a binary expression according to operation precedence

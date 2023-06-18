@@ -28,6 +28,11 @@ namespace tnac::ast
     return make<result_expr>(tok);
   }
 
+  ret_expr* builder::make_ret(expr& retVal, const token& kwPos) noexcept
+  {
+    return make<ret_expr>(retVal, kwPos);
+  }
+
   lit_expr* builder::make_literal(const token& tok) noexcept
   {
     return make<lit_expr>(tok);

@@ -56,6 +56,11 @@ namespace tnac::ast
     result_expr* make_result(const token& tok) noexcept;
 
     //
+    // Created a ret expression
+    //
+    ret_expr* make_ret(expr& retVal, const token& kwPos) noexcept;
+
+    //
     // Creates a literal expression
     //
     lit_expr* make_literal(const token& tok) noexcept;

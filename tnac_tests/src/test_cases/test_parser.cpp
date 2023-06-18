@@ -95,6 +95,11 @@ namespace tnac_tests
           check_node(expr, expr.name());
         }
 
+        void visit(const tree::ret_expr& expr) noexcept
+        {
+          check_node(expr, "");
+        }
+
         void visit(const tree::result_expr& expr) noexcept
         {
           check_node(expr, expr.pos().m_value);

@@ -304,7 +304,7 @@ namespace tnac
 
   ast::expr* parser::expr() noexcept
   {
-    return decl_expr();
+    return ret_expr();
   }
 
   ast::expr* parser::decl_expr() noexcept
@@ -314,6 +314,18 @@ namespace tnac
       return assign_expr();
 
     return m_builder.make_decl_expr(*decl);
+  }
+
+  ast::expr* parser::ret_expr() noexcept
+  {
+    if (peek_next().is(token::KwRet))
+    {
+      auto pos = next_tok();
+      auto retVal = binary_expr();
+      return m_builder.make_ret(*retVal, pos);
+    }
+
+    return decl_expr();
   }
 
   ast::decl* parser::declarator() noexcept
@@ -446,7 +458,7 @@ namespace tnac
 
   ast::expr* parser::assign_expr() noexcept
   {
-    auto lhs = binary_expr(prec::BitOr);
+    auto lhs = binary_expr();
     
     if (!detail::is_assign(peek_next()))
       return lhs;
@@ -467,6 +479,11 @@ namespace tnac
     auto op = next_tok();
     auto rhs = assign_expr();
     return m_builder.make_assign(*lhs, *rhs, op);
+  }
+
+  ast::expr* parser::binary_expr() noexcept
+  {
+    return binary_expr(prec::BitOr);
   }
 
   ast::expr* parser::binary_expr(prec precedence) noexcept

@@ -77,6 +77,41 @@ namespace tnac::ast
 
 
   //
+  // Ret expression
+  // Returns control to the caller
+  //
+  class ret_expr final : public expr
+  {
+  private:
+    friend class builder;
+
+  public:
+    CLASS_SPECIALS_NONE(ret_expr);
+
+    virtual ~ret_expr() noexcept;
+
+  protected:
+    ret_expr(expr& retVal, const token& kwPos) noexcept;
+
+  public:
+    //
+    // Returns the value to propagate to the caller
+    // 
+    // const version
+    //
+    const expr& returned_value() const noexcept;
+
+    //
+    // Returns the value to propagate to the caller
+    // 
+    expr& returned_value() noexcept;
+
+  private:
+    expr* m_retVal{};
+  };
+
+
+  //
   // Literal expression
   // Corresponds to any value literals of supported types
   //

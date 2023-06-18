@@ -151,6 +151,7 @@ namespace tnac
           { "result",   tok_kind::KwResult },
           { "complex",  tok_kind::KwComplex },
           { "fraction", tok_kind::KwFraction },
+          { "ret",      tok_kind::KwRet },
         };
 
         constexpr auto err = tok_kind::Error;
