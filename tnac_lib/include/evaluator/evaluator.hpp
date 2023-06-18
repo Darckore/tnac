@@ -23,6 +23,7 @@ namespace tnac
   class evaluator final : public ast::bottom_up_visitor<evaluator>
   {
   public:
+    using base          = ast::bottom_up_visitor<evaluator>;
     using err_handler_t = std::function<void(const token&, string_t)>;
     using arg_list_t    = ast::invocation::arg_list;
     using size_type     = arg_list_t::size_type;
@@ -31,6 +32,8 @@ namespace tnac
     CLASS_SPECIALS_NONE(evaluator);
 
     explicit evaluator(eval::registry& registry, eval::call_stack& callStack) noexcept;
+
+    void operator()(ast::node* root) noexcept;
 
     //
     // Attaches the error handler
@@ -110,6 +113,15 @@ namespace tnac
 
   public: // previews
     //
+    // Generic preview
+    //
+    template <ast::ast_node Node>
+    bool preview(Node&) noexcept
+    {
+      return !return_path();
+    }
+
+    //
     // Previews a function declaration
     // Needed to avoid evaluating the body or params before the function
     // actually gets called
@@ -142,9 +154,15 @@ namespace tnac
     //
     bool init_call(semantics::function& sym, ast::call_expr& expr) noexcept;
 
+    //
+    // Returns true if a return is active
+    //
+    bool return_path() const noexcept;
+
   private:
     eval::value_visitor m_visitor;
     eval::call_stack& m_callStack;
     err_handler_t m_errHandler{};
+    bool m_return{};
   };
 }

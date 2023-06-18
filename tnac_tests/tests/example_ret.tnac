@@ -1,0 +1,7 @@
+func()
+  _ret 42 :
+  0 `unreachable`
+;
+
+_ret func() :
+1 `unreachable`

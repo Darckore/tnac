@@ -149,13 +149,21 @@ namespace tnac
     m_callStack{ callStack }
   {}
 
-
   // Public members
+
+  void evaluator::operator()(ast::node* root) noexcept
+  {
+    m_return = false;
+    base::operator()(root);
+  }
 
   // Expressions
 
   void evaluator::visit(ast::assign_expr& assign) noexcept
   {
+    if (return_path())
+      return;
+
     auto&& left = assign.left();
     if (auto assignee = utils::try_cast<ast::id_expr>(&left))
     {
@@ -169,6 +177,9 @@ namespace tnac
 
   void evaluator::visit(ast::binary_expr& binary) noexcept
   {
+    if (return_path())
+      return;
+
     auto left = binary.left().value();
     auto right = binary.right().value();
     const auto opCode = detail::conv_binary(binary.op().m_kind);
@@ -177,6 +188,9 @@ namespace tnac
 
   void evaluator::visit(ast::unary_expr& unary) noexcept
   {
+    if (return_path())
+      return;
+
     const auto opCode = detail::conv_unary(unary.op().m_kind);
     auto val = unary.operand().value();
     unary.eval_result(m_visitor.visit_unary(&unary, val, opCode));
@@ -184,6 +198,9 @@ namespace tnac
 
   void evaluator::visit(ast::typed_expr& expr) noexcept
   {
+    if (return_path())
+      return;
+
     using enum tok_kind;
     eval::value val;
     using detail::instance;
@@ -208,6 +225,9 @@ namespace tnac
 
   void evaluator::visit(ast::call_expr& expr) noexcept
   {
+    if (return_path())
+      return;
+
     auto func = expr.callable().value();
     auto funcType = func.try_get<eval::function_type>();
     if (!funcType)
@@ -232,6 +252,7 @@ namespace tnac
     }
 
     auto funcBody = callable->declarator().definition();
+    value_guard _{ m_return };
     (*this)(funcBody);
     auto val = m_visitor.last_result(&expr);
     expr.eval_result(val);
@@ -240,22 +261,35 @@ namespace tnac
 
   void evaluator::visit(ast::ret_expr& ret) noexcept
   {
+    if (return_path())
+      return;
+
     ret.eval_result(ret.returned_value().value());
+    m_return = true;
   }
 
   void evaluator::visit(ast::paren_expr& paren) noexcept
   {
+    if (return_path())
+      return;
+
     paren.eval_result(paren.internal_expr().value());
   }
 
   void evaluator::visit(ast::lit_expr& lit) noexcept
   {
+    if (return_path())
+      return;
+
     auto value = eval_token(lit.pos());
     lit.eval_result(value);
   }
 
   void evaluator::visit(ast::id_expr& id) noexcept
   {
+    if (return_path())
+      return;
+
     auto&& sym = id.symbol();
     auto val = sym.value();
     m_visitor.visit_assign(nullptr, val);
@@ -264,6 +298,9 @@ namespace tnac
 
   void evaluator::visit(ast::result_expr& res) noexcept
   {
+    if (return_path())
+      return;
+
     res.eval_result(m_visitor.last_result(&res));
   }
 
@@ -271,6 +308,9 @@ namespace tnac
 
   void evaluator::visit(ast::decl_expr& expr) noexcept
   {
+    if (return_path())
+      return;
+
     auto&& sym = expr.declarator().symbol();
     auto val = sym.value();
     m_visitor.visit_assign(nullptr, val);
@@ -279,11 +319,17 @@ namespace tnac
 
   void evaluator::visit(ast::var_decl& decl) noexcept
   {
+    if (return_path())
+      return;
+
     eval_assign(decl.symbol(), decl.initialiser().value());
   }
 
   void evaluator::visit(ast::func_decl& decl) noexcept
   {
+    if (return_path())
+      return;
+
     auto sym = utils::try_cast<semantics::function>(&decl.symbol());
 
     if (!sym)
@@ -366,5 +412,10 @@ namespace tnac
 
     m_visitor.get_empty();
     return m_callStack.push(sym.name(), std::move(argValues));
+  }
+
+  bool evaluator::return_path() const noexcept
+  {
+    return m_return;
   }
 }
