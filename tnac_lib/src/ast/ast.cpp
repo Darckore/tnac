@@ -70,4 +70,9 @@ namespace tnac::ast
   {
     return FROM_CONST(children);
   }
+
+  bool scope::is_global() const noexcept
+  {
+    return !parent();
+  }
 }

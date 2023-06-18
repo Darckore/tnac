@@ -132,6 +132,11 @@ namespace tnac::ast
     // 
     elem_list& children() noexcept;
 
+    //
+    // Checks whether the current scope is global
+    //
+    bool is_global() const noexcept;
+
   private:
     elem_list m_children;
   };
