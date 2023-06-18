@@ -7,11 +7,14 @@ scope:
   expr-list
 
 expr-list:
+  ret-expr
+  expr-list : ret-expr
+
+ret-expr:
+  _ret bit-or-expr
   expr
-  expr-list : expr
 
 expr:
-  _ret bit-or-expr
   decl-expr
 
 decl-expr:

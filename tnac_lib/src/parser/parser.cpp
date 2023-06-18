@@ -274,7 +274,7 @@ namespace tnac
       if (peek_next().is_eol())
         break;
 
-      auto e = expr();
+      auto e = ret_expr();
       UTILS_ASSERT(static_cast<bool>(e));
       res.push_back(e);
 
@@ -304,7 +304,7 @@ namespace tnac
 
   ast::expr* parser::expr() noexcept
   {
-    return ret_expr();
+    return decl_expr();
   }
 
   ast::expr* parser::decl_expr() noexcept
@@ -325,7 +325,7 @@ namespace tnac
       return m_builder.make_ret(*retVal, pos);
     }
 
-    return decl_expr();
+    return expr();
   }
 
   ast::decl* parser::declarator() noexcept
