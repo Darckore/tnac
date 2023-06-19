@@ -24,12 +24,12 @@ namespace tnac::eval
 
   template <>
   struct type_info<int_type> :
-    detail::basic_type_info<1, type_id::Int>
+    detail::basic_type_info<0, type_id::Int>
   {};
 
   template <>
   struct type_info<float_type> :
-    detail::basic_type_info<1, type_id::Float>
+    detail::basic_type_info<0, type_id::Float>
   {};
 
   template <>
@@ -40,6 +40,11 @@ namespace tnac::eval
   template <>
   struct type_info<fraction_type> :
     detail::basic_type_info<2, type_id::Int, type_id::Int>
+  {};
+
+  template <>
+  struct type_info<function_type> :
+    detail::basic_type_info<1, type_id::Function>
   {};
 
 
