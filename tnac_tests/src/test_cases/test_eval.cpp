@@ -10,6 +10,7 @@ namespace tnac_tests
     using frac = detail::frac;
 
     // Int
+    check_eval("_true + 1"sv, 2ll);
     check_eval("1 + 2"sv, 3ll);
     check_eval("1 + 2.0"sv, 3.0);
     check_eval("1 + _complex(1, 2)"sv, cplx{ 2.0, 2.0 });
@@ -18,6 +19,7 @@ namespace tnac_tests
     check_eval("_fraction(1, 2) + 2"sv, frac{ 5, 2 });
 
     // Float
+    check_eval("_true + 41.0"sv, 42.0);
     check_eval("4.0 + 5.0"sv, 9.0);
     check_eval("4.0 + 5"sv, 9.0);
     check_eval("4.0 + _complex(1.0, 6)"sv, cplx{ 5.0, 6.0 });
@@ -26,6 +28,7 @@ namespace tnac_tests
     check_eval("_fraction(3, 6) + 5.0"sv, 5.5);
 
     // Complex
+    check_eval("_true + _complex(4, 4)"sv, cplx{ 5.0, 4.0 });
     check_eval("_complex(7, 10) + _complex(10, 11)"sv, cplx{ 17.0, 21.0 });
     check_eval("_complex(7, 10) + _fraction(5, 10)"sv, cplx{ 7.5, 10.0 });
 
@@ -40,6 +43,7 @@ namespace tnac_tests
     using frac = detail::frac;
 
     // Int
+    check_eval("_false - 1"sv, -1ll);
     check_eval("1 - 2"sv, -1ll);
     check_eval("1 - 2.0"sv, -1.0);
     check_eval("1 - _complex(1, 2)"sv, cplx{ 0.0, -2.0 });
@@ -48,6 +52,7 @@ namespace tnac_tests
     check_eval("_fraction(1, 2) - 2"sv, frac{ 3, 2, -1 });
 
     // Float
+    check_eval("42.0 - _true"sv, 41.0);
     check_eval("4.0 - 5.0"sv, -1.0);
     check_eval("6.0 - 5"sv, 1.0);
     check_eval("4.0 - _complex(1.0, 6)"sv, cplx{ 3.0, -6.0 });
@@ -56,6 +61,7 @@ namespace tnac_tests
     check_eval("_fraction(3, 6) - 5.0"sv, -4.5);
 
     // Complex
+    check_eval("_complex(7, 10) - _true"sv, cplx{ 6.0, 10.0 });
     check_eval("_complex(7, 11) - _complex(10, 11)"sv, cplx{ -3.0, 0.0 });
     check_eval("_complex(7, 10) - _fraction(5, 10)"sv, cplx{ 6.5, 10.0 });
 
