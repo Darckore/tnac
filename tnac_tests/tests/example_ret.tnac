@@ -1,7 +1,7 @@
 func()
-  _ret 42 :
+  _ret 41 :
   0 `unreachable`
 ;
 
-_ret func() :
+_ret func() + 1 :
 1 `unreachable`
