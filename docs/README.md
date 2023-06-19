@@ -18,6 +18,7 @@ Under the hood it has an expression evaluator which understands a bunch of maths
 2. Floating point with (`double`)
 3. Complex numbers (via `std::complex`)
 4. Ordinary fractions
+5. Booleans (`bool`)
 
 Types are (mostly) inter-convertible and calculated dynamically.
 
@@ -127,6 +128,8 @@ These are the supported keywords:
 - `_function`
 - `_result`
 - `_ret`
+- `_true`
+- `_false`
 
 ### Expressions
 

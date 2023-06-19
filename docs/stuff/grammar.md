@@ -97,6 +97,8 @@ id-expr:
 
 literal-expr:
   number
+  _true
+  _false
 
 anonimous-function:
   _function func-params func-body

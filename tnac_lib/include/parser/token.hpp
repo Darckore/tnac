@@ -45,7 +45,7 @@ namespace tnac
 
     constexpr auto is_literal() const noexcept
     {
-      return is_any(IntBin, IntOct, IntDec, IntHex, Float);
+      return is_any(IntBin, IntOct, IntDec, IntHex, Float, KwTrue, KwFalse);
     }
 
     constexpr auto is_identifier() const noexcept
