@@ -128,6 +128,11 @@ namespace tnac
     //
     bool preview(ast::func_decl& decl) noexcept;
 
+    //
+    // Pre-evaluates function arguments
+    //
+    bool preview(ast::call_expr& call) noexcept;
+
   private:
     //
     // Produces an evaluation error

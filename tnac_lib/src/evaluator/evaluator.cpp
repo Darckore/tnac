@@ -351,6 +351,20 @@ namespace tnac
     return false;
   }
 
+  bool evaluator::preview(ast::call_expr& call) noexcept
+  {
+    if (return_path())
+      return false;
+
+    auto&& ev = *this;
+    for (auto arg : call.args())
+    {
+      ev(arg);
+    }
+    ev(&call.callable());
+    return false;
+  }
+
   // Private members
 
   void evaluator::on_error(const token& pos, string_t msg) noexcept
