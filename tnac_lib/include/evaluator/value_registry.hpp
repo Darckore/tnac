@@ -21,6 +21,7 @@ namespace tnac::eval
     using entity_id = std::uintptr_t;
 
     using stored_val_t = std::variant<
+      bool_type,
       int_type,
       float_type,
       complex_type,
@@ -99,6 +100,22 @@ namespace tnac::eval
     value_type register_literal(T val) noexcept
     {
       return intern(val);
+    }
+
+    //
+    // Registers an already interned bool value
+    //
+    value_type register_literal(bool val) noexcept
+    {
+      static const auto boolTrue  = stored_val_t{ true };
+      static const auto boolFalse = stored_val_t{ false };
+      auto getValue = [val]() noexcept
+      {
+        return val ? &std::get<bool>(boolTrue) : &std::get<bool>(boolFalse);
+      };
+
+      update_result(val);
+      return { getValue(), type_id::Bool };
     }
 
     //

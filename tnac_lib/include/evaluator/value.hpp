@@ -71,7 +71,8 @@ namespace tnac::eval
     // Defines a valid result of expression evaluation
     //
     template <typename T>
-    concept expr_result = is_any_v<T, int_type, float_type,
+    concept expr_result = is_any_v<T,
+      bool_type, int_type, float_type,
       complex_type, fraction_type,
       function_type>;
   }
@@ -82,6 +83,7 @@ namespace tnac::eval
   enum class type_id : std::uint8_t
   {
     Invalid,
+    Bool,
     Int,
     Float,
     Complex,
@@ -90,6 +92,7 @@ namespace tnac::eval
   };
 }
 
+TYPE_TO_ID_ASSOCIATION(tnac::bool_type,           tnac::eval::type_id::Bool);
 TYPE_TO_ID_ASSOCIATION(tnac::int_type,            tnac::eval::type_id::Int);
 TYPE_TO_ID_ASSOCIATION(tnac::float_type,          tnac::eval::type_id::Float);
 TYPE_TO_ID_ASSOCIATION(tnac::complex_type,        tnac::eval::type_id::Complex);
@@ -236,6 +239,9 @@ namespace tnac::eval
     using enum type_id;
     switch (val.id())
     {
+    case Bool:
+      return func(val.get<bool_type>());
+
     case Int:
       return func(val.get<int_type>());
 

@@ -129,10 +129,21 @@ namespace tnac::eval
     template <detail::expr_result L, detail::expr_result R>
     auto add(L, R) noexcept { return get_empty(); }
     template <detail::expr_result L, detail::expr_result R>
-      requires requires (L l, R r) { l + r; }
+      requires (!is_any_v<bool_type, L, R> && requires (L l, R r) { l + r; })
     auto add(L lhs, R rhs) noexcept
     {
       return visit_binary(lhs, rhs, [](auto l, auto r) noexcept { return l + r; });
+    }
+    template <detail::expr_result L>
+      requires (!is_same_noquals_v<L, bool_type>)
+    auto add(L lhs, bool_type rhs) noexcept
+    {
+      return add(lhs, static_cast<int_type>(rhs));
+    }
+    template <detail::expr_result R>
+    auto add(bool_type lhs, R rhs) noexcept
+    {
+      return add(static_cast<int_type>(lhs), rhs);
     }
 
 
@@ -141,10 +152,21 @@ namespace tnac::eval
     template <detail::expr_result L, detail::expr_result R>
     auto sub(L, R) noexcept { return get_empty(); }
     template <detail::expr_result L, detail::expr_result R>
-      requires requires (L l, R r) { l - r; }
+      requires (!is_any_v<bool_type, L, R> && requires (L l, R r) { l - r; })
     auto sub(L lhs, R rhs) noexcept
     {
       return visit_binary(lhs, rhs, [](auto l, auto r) noexcept { return l - r; });
+    }
+    template <detail::expr_result L>
+      requires (!is_same_noquals_v<L, bool_type>)
+    auto sub(L lhs, bool_type rhs) noexcept
+    {
+      return sub(lhs, static_cast<int_type>(rhs));
+    }
+    template <detail::expr_result R>
+    auto sub(bool_type lhs, R rhs) noexcept
+    {
+      return sub(static_cast<int_type>(lhs), rhs);
     }
 
 
@@ -153,10 +175,21 @@ namespace tnac::eval
     template <detail::expr_result L, detail::expr_result R>
     auto mul(L, R) noexcept { return get_empty(); }
     template <detail::expr_result L, detail::expr_result R>
-      requires requires (L l, R r) { l * r; }
+      requires (!is_any_v<bool_type, L, R> && requires (L l, R r) { l * r; })
     auto mul(L lhs, R rhs) noexcept
     {
       return visit_binary(lhs, rhs, [](auto l, auto r) noexcept { return l * r; });
+    }
+    template <detail::expr_result L>
+      requires (!is_same_noquals_v<L, bool_type>)
+    auto mul(L lhs, bool_type rhs) noexcept
+    {
+      return mul(lhs, static_cast<int_type>(rhs));
+    }
+    template <detail::expr_result R>
+    auto mul(bool_type lhs, R rhs) noexcept
+    {
+      return mul(static_cast<int_type>(lhs), rhs);
     }
 
 
@@ -165,12 +198,12 @@ namespace tnac::eval
     template <detail::expr_result L, detail::expr_result R>
     auto div(L, R) noexcept { return get_empty(); }
     template <detail::expr_result L, detail::expr_result R>
-      requires requires (L l, R r) { l / r; }
+      requires (!is_any_v<bool_type, L, R> && requires (L l, R r) { l / r; })
     auto div(L lhs, R rhs) noexcept
     {
       return visit_binary(lhs, rhs, [](auto l, auto r) noexcept { return l / r; });
     }
-    
+
     //
     // Corner case. In most cases, we don't want integral division, so let's convert lhs to float
     // if the remainder is not zero
@@ -182,6 +215,17 @@ namespace tnac::eval
 
       return div(static_cast<float_type>(lhs), rhs);
     }
+    template <detail::expr_result L>
+      requires (!is_same_noquals_v<L, bool_type>)
+    auto div(L lhs, bool_type rhs) noexcept
+    {
+      return div(lhs, static_cast<int_type>(rhs));
+    }
+    template <detail::expr_result R>
+    auto div(bool_type lhs, R rhs) noexcept
+    {
+      return div(static_cast<int_type>(lhs), rhs);
+    }
 
 
     // Modulo
@@ -189,7 +233,7 @@ namespace tnac::eval
     template <detail::expr_result L, detail::expr_result R>
     auto mod(L, R) noexcept { return get_empty(); }
     template <detail::expr_result L, detail::expr_result R>
-      requires requires (L l, R r) { l % r; }
+      requires (!is_any_v<bool_type, L, R> && requires (L l, R r) { l % r; })
     auto mod(L lhs, R rhs) noexcept
     {
       return visit_binary(lhs, rhs, [](auto l, auto r) noexcept { return l % r; });
@@ -225,12 +269,17 @@ namespace tnac::eval
     {
       return visit_unary(operand, [](auto val) noexcept { return +val; });
     }
+    template <>
+    auto unary_plus(bool v) noexcept
+    {
+      return unary_plus(static_cast<int_type>(v));
+    }
     template <detail::expr_result T>
     auto unary_plus(T) noexcept
     {
       return get_empty();
     }
-
+    
     // Unary minus
 
     template <detail::expr_result T>
@@ -238,6 +287,11 @@ namespace tnac::eval
     auto unary_neg(T operand) noexcept
     {
       return visit_unary(operand, [](auto val) noexcept { return -val; });
+    }
+    template <>
+    auto unary_neg(bool v) noexcept
+    {
+      return unary_neg(static_cast<int_type>(v));
     }
     template <detail::expr_result T>
     auto unary_neg(T) noexcept
@@ -254,6 +308,11 @@ namespace tnac::eval
     {
       return visit_unary(operand, [](auto val) noexcept { return ~val; });
     }
+    template <>
+    auto bitwise_not(bool v) noexcept
+    {
+      return bitwise_not(static_cast<int_type>(v));
+    }
     template <detail::expr_result T>
     auto bitwise_not(T operand) noexcept
     { 
@@ -266,7 +325,7 @@ namespace tnac::eval
     // Bitwise and
 
     template <detail::expr_result L, detail::expr_result R>
-      requires requires (L l, R r) { l & r; }
+      requires (!is_any_v<bool_type, L, R> && requires (L l, R r) { l & r; })
     auto bitwise_and(L lhs, R rhs) noexcept
     { 
       return visit_binary(lhs, rhs, [](auto l, auto r) noexcept { return l & r; });
@@ -285,7 +344,7 @@ namespace tnac::eval
     // Bitwise xor
 
     template <detail::expr_result L, detail::expr_result R>
-      requires requires (L l, R r) { l ^ r; }
+      requires (!is_any_v<bool_type, L, R> && requires (L l, R r) { l ^ r; })
     auto bitwise_xor(L lhs, R rhs) noexcept
     {
       return visit_binary(lhs, rhs, [](auto l, auto r) noexcept { return l ^ r; });
@@ -304,7 +363,7 @@ namespace tnac::eval
     // Bitwise or
 
     template <detail::expr_result L, detail::expr_result R>
-      requires requires (L l, R r) { l | r; }
+      requires (!is_any_v<bool_type, L, R> && requires (L l, R r) { l | r; })
     auto bitwise_or(L lhs, R rhs) noexcept
     {
       return visit_binary(lhs, rhs, [](auto l, auto r) noexcept { return l | r; });
@@ -382,10 +441,15 @@ namespace tnac::eval
       requires requires (R r) { 1 / r; }
     auto root(L base, R exp) noexcept
     {
-      if constexpr (std::same_as<R, int_type>)
+      if constexpr (is_any_v<R, int_type, bool_type>)
         return root(base, static_cast<float_type>(exp));
       else
         return power(base, 1 / exp);
+    }
+    template <detail::expr_result R>
+    auto root(bool_type base, R exp) noexcept
+    {
+      return root(static_cast<int_type>(base), exp);
     }
 
 
@@ -645,6 +709,14 @@ namespace tnac::eval
         return get_empty();
 
       return m_registry.register_literal(result);
+    }
+
+    //
+    // Registers a boolean literal
+    //
+    value visit_bool_literal(bool value) noexcept
+    {
+      return m_registry.register_literal(value);
     }
 
     //

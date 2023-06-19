@@ -377,6 +377,11 @@ namespace tnac
   {
     switch (tok.m_kind)
     {
+    case token::KwTrue:
+      return m_visitor.visit_bool_literal(true);
+    case token::KwFalse:
+      return m_visitor.visit_bool_literal(false);
+
     case token::IntDec:
       return m_visitor.visit_int_literal(tok.m_value, 10);
     case token::IntBin:

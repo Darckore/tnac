@@ -23,6 +23,11 @@ namespace tnac::eval
   template <typename T> struct type_info;
 
   template <>
+  struct type_info<bool_type> :
+    detail::basic_type_info<0, type_id::Bool>
+  {};
+
+  template <>
   struct type_info<int_type> :
     detail::basic_type_info<0, type_id::Int>
   {};
@@ -74,6 +79,50 @@ namespace tnac::eval
   template <typename T> struct cast_value;
 
   template <>
+  struct cast_value<bool_type>
+  {
+    using res_type = typed_value<bool_type>;
+
+    auto operator()(value val) noexcept
+    {
+      return on_value(val, utils::visitor
+      {
+        [](bool_type v) noexcept -> res_type
+        {
+          return v;
+        },
+        [](int_type v) noexcept -> res_type
+        {
+          return static_cast<bool>(v);
+        },
+        [](float_type v) noexcept -> res_type
+        {
+          return !utils::eq(v, float_type{});
+        },
+        [](complex_type v) noexcept -> res_type
+        {
+          constexpr auto cmp = float_type{};
+          return !(utils::eq(v.real(), cmp) ||
+                   utils::eq(v.imag(), cmp));
+        },
+        [](fraction_type v) noexcept -> res_type
+        {
+          return static_cast<bool>(v.num());
+        },
+        [](function_type) noexcept -> res_type
+        {
+          return true;
+        },
+        [](invalid_val_t) noexcept -> res_type
+        {
+          return false;
+        }
+      });
+    }
+  };
+
+
+  template <>
   struct cast_value<int_type>
   {
     using res_type = typed_value<int_type>;
@@ -82,6 +131,10 @@ namespace tnac::eval
     {
       return on_value(val, utils::visitor
         {
+          [](bool_type v) noexcept -> res_type
+          {
+            return static_cast<int_type>(v);
+          },
           [](int_type v) noexcept -> res_type
           {
             return v;
@@ -133,6 +186,10 @@ namespace tnac::eval
     {
       return on_value(val, utils::visitor
         {
+          [](bool_type v) noexcept -> res_type
+          {
+            return v ? float_type{ 1.0 } : float_type{};
+          },
           [](int_type v) noexcept -> res_type
           { 
             return static_cast<float_type>(v);
@@ -173,6 +230,10 @@ namespace tnac::eval
     {
       return on_value(val, utils::visitor
         {
+          [](bool_type v) noexcept -> res_type
+          {
+            return v ? complex_type{ 1.0, 0.0 } : complex_type{};
+          },
           [](int_type v) noexcept -> res_type
           { 
             return complex_type{ static_cast<float_type>(v) };
@@ -210,6 +271,10 @@ namespace tnac::eval
     {
       return on_value(val, utils::visitor
         {
+          [](bool_type v) noexcept -> res_type
+          {
+            return v ? fraction_type{ 1, 1 } : fraction_type{ 0, 1 };
+          },
           [](int_type v) noexcept -> res_type
           {
             return fraction_type{ v };
@@ -264,6 +329,10 @@ namespace tnac::eval
     {
       return on_value(val, utils::visitor
       {
+        [](bool_type) noexcept -> res_type
+        {
+          return {};
+        },
         [](int_type) noexcept -> res_type
         {
           return {};
@@ -297,6 +366,12 @@ namespace tnac::eval
   inline typed_value<int_type> to_int(T) noexcept
   {
     return {};
+  }
+
+  template <>
+  inline typed_value<int_type> to_int(bool_type val) noexcept
+  {
+    return static_cast<int_type>(val);
   }
 
   template <>
@@ -338,6 +413,12 @@ namespace tnac::eval
   }
 
   template <>
+  inline typed_value<float_type> to_float(bool_type val) noexcept
+  {
+    return val ? float_type{ 1.0 } : float_type{};
+  }
+
+  template <>
   inline typed_value<float_type> to_float(int_type val) noexcept
   {
     return static_cast<float_type>(val);
@@ -376,6 +457,14 @@ namespace tnac::eval
   {
     return r + l;
   }
+  inline complex_type operator+(const complex_type& l, bool_type r) noexcept
+  {
+    return l + static_cast<float_type>(r);
+  }
+  inline complex_type operator+(bool_type l, const complex_type& r) noexcept
+  {
+    return r + l;
+  }
   inline complex_type operator+(const complex_type& l, const fraction_type& r) noexcept
   {
     return l + r.to<float_type>();
@@ -390,6 +479,14 @@ namespace tnac::eval
     return l - static_cast<float_type>(r);
   }
   inline complex_type operator-(int_type l, const complex_type& r) noexcept
+  {
+    return static_cast<float_type>(l) - r;
+  }
+  inline complex_type operator-(const complex_type& l, bool_type r) noexcept
+  {
+    return l - static_cast<float_type>(r);
+  }
+  inline complex_type operator-(bool_type l, const complex_type& r) noexcept
   {
     return static_cast<float_type>(l) - r;
   }
@@ -410,6 +507,14 @@ namespace tnac::eval
   {
     return r * l;
   }
+  inline complex_type operator*(const complex_type& l, bool_type r) noexcept
+  {
+    return l * static_cast<float_type>(r);
+  }
+  inline complex_type operator*(bool_type l, const complex_type& r) noexcept
+  {
+    return r * l;
+  }
   inline complex_type operator*(const complex_type& l, const fraction_type& r) noexcept
   {
     return l * r.to<float_type>();
@@ -424,6 +529,14 @@ namespace tnac::eval
     return l / static_cast<float_type>(r);
   }
   inline complex_type operator/(int_type l, const complex_type& r) noexcept
+  {
+    return static_cast<float_type>(l) / r;
+  }
+  inline complex_type operator/(const complex_type& l, bool_type r) noexcept
+  {
+    return l / static_cast<float_type>(r);
+  }
+  inline complex_type operator/(bool_type l, const complex_type& r) noexcept
   {
     return static_cast<float_type>(l) / r;
   }
