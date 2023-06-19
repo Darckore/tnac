@@ -11,7 +11,7 @@ namespace tnac_rt::out
       return out;
     }
 
-    std::ostream& operator<<(std::ostream& out, const tnac::complex_type& c) noexcept
+    std::ostream& operator<<(std::ostream& out, const tnac::eval::complex_type& c) noexcept
     {
       const auto r = c.real();
       const auto i = c.imag();
@@ -24,20 +24,20 @@ namespace tnac_rt::out
       return out;
     }
 
-    std::ostream& operator<<(std::ostream& out, const tnac::fraction_type& f) noexcept
+    std::ostream& operator<<(std::ostream& out, const tnac::eval::fraction_type& f) noexcept
     {
       if (f.sign() < 0)
         out << '-';
 
       if (f.is_infinity())
       {
-        out << std::numeric_limits<tnac::float_type>::infinity();
+        out << std::numeric_limits<tnac::eval::float_type>::infinity();
         return out;
       }
 
       const auto den = f.denom();
       auto num = f.num();
-      if (den == tnac::int_type{ 1 })
+      if (den == tnac::eval::int_type{ 1 })
       {
         out << num;
         return out;
@@ -109,7 +109,7 @@ namespace tnac_rt::out
   {
     eval::on_value(val, [this](auto val)
       {
-        if constexpr (tnac::is_same_noquals_v<decltype(val), tnac::int_type>)
+        if constexpr (tnac::is_same_noquals_v<decltype(val), tnac::eval::int_type>)
         {
           if (m_base == 10)
           {
@@ -121,7 +121,7 @@ namespace tnac_rt::out
           static constexpr auto byteSizeInBin = 8u;
           static constexpr auto byteSizeInOct = 3u;
           static constexpr auto byteSizeInHex = 2u;
-          static constexpr auto intSize = sizeof(tnac::int_type);
+          static constexpr auto intSize = sizeof(tnac::eval::int_type);
 
           switch (m_base)
           {
@@ -139,7 +139,7 @@ namespace tnac_rt::out
             break;
           }
 
-          using uint = std::make_unsigned_t<tnac::int_type>;
+          using uint = std::make_unsigned_t<tnac::eval::int_type>;
           auto outVal = std::bit_cast<uint>(val);
           auto basePtr = conv.data();
           std::to_chars(basePtr, basePtr + conv.size(), outVal, m_base);

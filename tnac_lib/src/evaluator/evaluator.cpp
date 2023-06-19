@@ -208,11 +208,11 @@ namespace tnac
     switch (expr.type_name().m_kind)
     {
     case KwComplex:
-      val = instance<complex_type>{ m_visitor, m_errHandler }(expr);
+      val = instance<eval::complex_type>{ m_visitor, m_errHandler }(expr);
       break;
 
     case KwFraction:
-      val = instance<fraction_type>{ m_visitor, m_errHandler }(expr);
+      val = instance<eval::fraction_type>{ m_visitor, m_errHandler }(expr);
       break;
 
     default:

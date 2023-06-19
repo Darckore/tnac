@@ -104,7 +104,7 @@ namespace tnac_tests
     using detail::check_eval;
     using cplx = detail::cplx;
     using frac = detail::frac;
-    static constexpr auto inf = std::numeric_limits<tnac::float_type>::infinity();
+    static constexpr auto inf = std::numeric_limits<tnac::eval::float_type>::infinity();
 
     // Int
     check_eval("2 / 2"sv, 1ll);
@@ -135,7 +135,7 @@ namespace tnac_tests
     using detail::check_eval;
     using cplx = detail::cplx;
     using frac = detail::frac;
-    static constexpr auto nan = std::numeric_limits<tnac::float_type>::quiet_NaN();
+    static constexpr auto nan = std::numeric_limits<tnac::eval::float_type>::quiet_NaN();
 
     // Int
     check_eval("2 % 2"sv, 0ll);

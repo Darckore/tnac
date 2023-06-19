@@ -121,7 +121,6 @@ namespace tnac::eval
     }
   };
 
-
   template <>
   struct cast_value<int_type>
   {

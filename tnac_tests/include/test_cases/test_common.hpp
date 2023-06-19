@@ -25,8 +25,8 @@ namespace tnac_tests
       tnac::parser parser;
     };
 
-    using cplx = tnac::complex_type;
-    using frac = tnac::fraction_type;
+    using cplx = tnac::eval::complex_type;
+    using frac = tnac::eval::fraction_type;
 
     template <tnac::eval::detail::expr_result T>
     inline bool eq(const T& l, const T& r) noexcept
@@ -35,7 +35,7 @@ namespace tnac_tests
     }
 
     template <>
-    inline bool eq(const tnac::float_type& l, const tnac::float_type& r) noexcept
+    inline bool eq(const tnac::eval::float_type& l, const tnac::eval::float_type& r) noexcept
     {
       if (std::isinf(l) && std::isinf(r))
         return true;
