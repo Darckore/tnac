@@ -7,7 +7,9 @@
 
 namespace tnac::eval
 {
+  //
   // Type info
+  //
 
   namespace detail
   {
@@ -53,7 +55,9 @@ namespace tnac::eval
   {};
 
 
+  //
   // Value casters
+  //
 
   template <detail::expr_result T>
   using typed_value = std::optional<T>;
@@ -446,8 +450,20 @@ namespace tnac::eval
 
 
   //
+  // Common type
+  //
+
+  namespace detail
+  {
+    template <typename T>
+    concept generic_type = expr_result<T> || is_same_noquals_v<T, invalid_val_t>;
+  }
+
+
+  //
   // Missing operators
   //
+
   inline complex_type operator+(const complex_type& l, int_type r) noexcept
   {
     return l + static_cast<float_type>(r);
