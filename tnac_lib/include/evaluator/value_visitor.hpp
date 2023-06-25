@@ -322,6 +322,7 @@ namespace tnac::eval
       return get_empty();
     }
 
+
     // Bitwise and
 
     template <detail::expr_result L, detail::expr_result R>
@@ -340,6 +341,7 @@ namespace tnac::eval
 
       return get_empty(); 
     }
+
 
     // Bitwise xor
 
@@ -360,6 +362,7 @@ namespace tnac::eval
       return get_empty();
     }
 
+
     // Bitwise or
 
     template <detail::expr_result L, detail::expr_result R>
@@ -378,6 +381,7 @@ namespace tnac::eval
 
       return get_empty();
     }
+
 
     // Power
 
@@ -434,7 +438,9 @@ namespace tnac::eval
       return power(l, r.to<float_type>());
     }
 
+
     // Root
+
     template <detail::expr_result L, detail::expr_result R>
     auto root(L, R) noexcept { return get_empty(); }
     template <detail::expr_result L, detail::expr_result R>
