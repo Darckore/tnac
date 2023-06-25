@@ -263,7 +263,7 @@ namespace tnac::eval
 
 
     // Unary plus
-    
+
     template <detail::expr_result T>
       requires requires (T v) { +v; }
     auto unary_plus(T operand) noexcept
@@ -280,7 +280,8 @@ namespace tnac::eval
     {
       return get_empty();
     }
-    
+
+
     // Unary minus
 
     template <detail::expr_result T>
@@ -304,21 +305,10 @@ namespace tnac::eval
     // Bitwise not
 
     template <detail::expr_result T>
-      requires requires (T v) { ~v; }
     auto bitwise_not(T operand) noexcept
     {
-      return visit_unary(operand, [](auto val) noexcept { return ~val; });
-    }
-    template <>
-    auto bitwise_not(bool v) noexcept
-    {
-      return bitwise_not(static_cast<int_type>(v));
-    }
-    template <detail::expr_result T>
-    auto bitwise_not(T operand) noexcept
-    { 
       if (auto intOp = to_int(operand))
-        return bitwise_not(*intOp);
+        return visit_unary(*intOp, [](auto val) noexcept { return ~val; });
 
       return get_empty();
     }
@@ -327,18 +317,12 @@ namespace tnac::eval
     // Bitwise and
 
     template <detail::expr_result L, detail::expr_result R>
-      requires (!is_any_v<bool_type, L, R> && requires (L l, R r) { l & r; })
-    auto bitwise_and(L lhs, R rhs) noexcept
-    { 
-      return visit_binary(lhs, rhs, [](auto l, auto r) noexcept { return l & r; });
-    }
-    template <detail::expr_result L, detail::expr_result R>
     auto bitwise_and(L lhs, R rhs) noexcept
     {
       auto intL = to_int(lhs);
       auto intR = to_int(rhs);
       if (intL && intR)
-        return bitwise_and(*intL, *intR);
+        return visit_binary(*intL, *intR, [](auto l, auto r) noexcept { return l & r; });
 
       return get_empty(); 
     }
@@ -347,18 +331,12 @@ namespace tnac::eval
     // Bitwise xor
 
     template <detail::expr_result L, detail::expr_result R>
-      requires (!is_any_v<bool_type, L, R> && requires (L l, R r) { l ^ r; })
-    auto bitwise_xor(L lhs, R rhs) noexcept
-    {
-      return visit_binary(lhs, rhs, [](auto l, auto r) noexcept { return l ^ r; });
-    }
-    template <detail::expr_result L, detail::expr_result R>
     auto bitwise_xor(L lhs, R rhs) noexcept
     {
       auto intL = to_int(lhs);
       auto intR = to_int(rhs);
       if (intL && intR)
-        return bitwise_xor(*intL, *intR);
+        return visit_binary(*intL, *intR, [](auto l, auto r) noexcept { return l ^ r; });
 
       return get_empty();
     }
@@ -367,18 +345,12 @@ namespace tnac::eval
     // Bitwise or
 
     template <detail::expr_result L, detail::expr_result R>
-      requires (!is_any_v<bool_type, L, R> && requires (L l, R r) { l | r; })
-    auto bitwise_or(L lhs, R rhs) noexcept
-    {
-      return visit_binary(lhs, rhs, [](auto l, auto r) noexcept { return l | r; });
-    }
-    template <detail::expr_result L, detail::expr_result R>
     auto bitwise_or(L lhs, R rhs) noexcept
     {
       auto intL = to_int(lhs);
       auto intR = to_int(rhs);
       if (intL && intR)
-        return bitwise_or(*intL, *intR);
+        return visit_binary(*intL, *intR, [](auto l, auto r) noexcept { return l | r; });
 
       return get_empty();
     }
