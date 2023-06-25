@@ -363,8 +363,13 @@ namespace tnac::eval
     }
   };
 
+  namespace detail
+  {
+    template <typename T>
+    concept generic_type = expr_result<T> || is_same_noquals_v<T, invalid_val_t>;
+  }
 
-  template <detail::expr_result T>
+  template <detail::generic_type T>
   inline typed_value<int_type> to_int(T) noexcept
   {
     return {};
@@ -408,7 +413,7 @@ namespace tnac::eval
   }
 
 
-  template <detail::expr_result T>
+  template <detail::generic_type T>
   inline typed_value<float_type> to_float(T) noexcept
   {
     return {};
@@ -451,12 +456,6 @@ namespace tnac::eval
   //
   // Common type
   //
-
-  namespace detail
-  {
-    template <typename T>
-    concept generic_type = expr_result<T> || is_same_noquals_v<T, invalid_val_t>;
-  }
 
   template <detail::generic_type T1, detail::generic_type T2>
   struct common_type;
