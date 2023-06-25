@@ -126,7 +126,7 @@ namespace tnac::eval
   private: // Operation support
 
     // Addition
-    
+
     template <detail::expr_result L, detail::expr_result R>
     auto add(L, R) noexcept { return get_empty(); }
     template <detail::expr_result L, detail::expr_result R>
