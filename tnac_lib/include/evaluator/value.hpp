@@ -73,9 +73,6 @@ namespace tnac::eval
   public:
     using value_type = std::uintptr_t;
     using input_ptr = const void*;
-    
-    template <detail::expr_result T>
-    using value_opt = std::optional<T>;
 
   private:
     //
@@ -117,7 +114,7 @@ namespace tnac::eval
     //
     // Returns the token with its type id stripped
     //
-    value_type raw_value() const noexcept;
+    value_type raw() const noexcept;
 
     //
     // Unconditionally casts data at the value address to the specified type
@@ -130,9 +127,9 @@ namespace tnac::eval
     //  }
     //
     template <detail::expr_result T>
-    T get() const noexcept
+    decltype(auto) get() const noexcept
     {
-      return *reinterpret_cast<T*>(raw_value());
+      return *reinterpret_cast<T*>(raw());
     }
 
     //
@@ -141,7 +138,7 @@ namespace tnac::eval
     // The caller must ensure that the actual type id is the same as the one specified
     //
     template <type_id TI>
-    auto get() const noexcept
+    decltype(auto) get() const noexcept
     {
       return get<utils::id_to_type_t<TI>>();
     }
@@ -151,13 +148,13 @@ namespace tnac::eval
     // Returns an empty std::optional<T> on failure
     //
     template <detail::expr_result T>
-    value_opt<T> try_get() const noexcept
+    auto try_get() const noexcept -> decltype(&get<T>())
     {
       auto tv = split(m_val);
       if (!tv.val || tv.id != utils::type_to_id_v<T>)
         return {};
 
-      return get<T>();
+      return &get<T>();
     }
 
     //

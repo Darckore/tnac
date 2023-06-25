@@ -81,7 +81,7 @@ namespace tnac::eval
     return split(m_val).id;
   }
 
-  value::value_type value::raw_value() const noexcept
+  value::value_type value::raw() const noexcept
   {
     return split(m_val).val;
   }
