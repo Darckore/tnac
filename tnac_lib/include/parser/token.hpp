@@ -33,11 +33,6 @@ namespace tnac
       return ((is(kinds)) || ...);
     }
 
-    constexpr auto is_operator() const noexcept
-    {
-      return is_any(Plus, Minus, Asterisk, Slash, Assign);
-    }
-
     constexpr auto is_eol() const noexcept
     {
       return is(Eol);

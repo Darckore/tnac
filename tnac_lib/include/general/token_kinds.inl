@@ -15,6 +15,7 @@ Float,
 String,
 
 // Operators
+Exclamation,
 Plus,
 Minus,
 Asterisk,

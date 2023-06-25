@@ -14,6 +14,9 @@ namespace tnac
         using enum eval::val_ops;
         switch (tk)
         {
+        case Exclamation:
+          return LogicalNot;
+
         case Plus:
           return UnaryPlus;
 

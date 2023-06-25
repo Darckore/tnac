@@ -184,7 +184,7 @@ additive-operator: one of
   + -
 
 unary-operator: one of
-  + - ~
+  + - ~ !
 
 operator: one of
   + - ~ * / % | ^ & = ** //

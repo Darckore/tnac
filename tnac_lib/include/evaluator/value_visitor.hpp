@@ -26,7 +26,8 @@ namespace tnac::eval
     BinaryRoot,
     UnaryNegation,
     UnaryPlus,
-    UnaryBitwiseNot
+    UnaryBitwiseNot,
+    LogicalNot
   };
 
   namespace detail
@@ -69,7 +70,7 @@ namespace tnac::eval
     constexpr auto is_unary(val_ops op) noexcept
     {
       using enum val_ops;
-      return utils::eq_any(op, UnaryPlus, UnaryNegation, UnaryBitwiseNot);
+      return utils::eq_any(op, UnaryPlus, UnaryNegation, UnaryBitwiseNot, LogicalNot);
     }
     constexpr auto is_binary(val_ops op) noexcept
     {
