@@ -459,6 +459,125 @@ namespace tnac::eval
     concept generic_type = expr_result<T> || is_same_noquals_v<T, invalid_val_t>;
   }
 
+  template <detail::generic_type T1, detail::generic_type T2>
+  struct common_type;
+
+  template <detail::generic_type T1, detail::generic_type T2>
+  using common_type_t = typename common_type<T1, T2>::type;
+
+  // common type with self
+
+  template <detail::generic_type T1, detail::generic_type T2> requires (is_same_noquals_v<T1, T2>)
+  struct common_type<T1, T2>
+  {
+    using type = std::remove_cvref_t<T1>;
+  };
+
+  // invalid
+
+  template <detail::generic_type T> requires (!is_same_noquals_v<T, invalid_val_t>)
+  struct common_type<invalid_val_t, T>
+  {
+    using type = invalid_val_t;
+  };
+  template <detail::generic_type T> requires (!is_same_noquals_v<T, invalid_val_t>)
+  struct common_type<T, invalid_val_t> : common_type<invalid_val_t, T>
+  {};
+
+  // function
+
+  template <detail::expr_result T> requires (!is_same_noquals_v<T, function_type>)
+  struct common_type<function_type, T>
+  {
+    using type = function_type;
+  };
+  template <detail::expr_result T> requires (!is_same_noquals_v<T, function_type>)
+  struct common_type<T, function_type> : common_type<function_type, T>
+  {};
+
+  // complex
+
+  template <>
+  struct common_type<complex_type, float_type>
+  {
+    using type = complex_type;
+  };
+  template <>
+  struct common_type<complex_type, fraction_type> : common_type<complex_type, float_type>
+  {};
+  template <>
+  struct common_type<complex_type, int_type> : common_type<complex_type, float_type>
+  {};
+  template <>
+  struct common_type<complex_type, bool_type> : common_type<complex_type, float_type>
+  {};
+
+  // float
+
+  template <>
+  struct common_type<float_type, complex_type> : common_type<complex_type, float_type>
+  {};
+  template <>
+  struct common_type<float_type, fraction_type>
+  {
+    using type = float_type;
+  };
+  template <>
+  struct common_type<float_type, int_type> : common_type<float_type, fraction_type>
+  {};
+  template <>
+  struct common_type<float_type, bool_type> : common_type<float_type, fraction_type>
+  {};
+
+  // fraction
+
+  template <>
+  struct common_type<fraction_type, complex_type> : common_type<complex_type, fraction_type>
+  {};
+  template <>
+  struct common_type<fraction_type, float_type> : common_type<float_type, fraction_type>
+  {};
+  template <>
+  struct common_type<fraction_type, int_type>
+  {
+    using type = fraction_type;
+  };
+  template <>
+  struct common_type<fraction_type, bool_type> : common_type<fraction_type, int_type>
+  {};
+
+  // int
+
+  template <>
+  struct common_type<int_type, complex_type> : common_type<complex_type, int_type>
+  {};
+  template <>
+  struct common_type<int_type, float_type> : common_type<float_type, int_type>
+  {};
+  template <>
+  struct common_type<int_type, fraction_type> : common_type<fraction_type, int_type>
+  {};
+  template <>
+  struct common_type<int_type, bool_type>
+  {
+    using type = int_type;
+  };
+
+  // bool
+
+  template <>
+  struct common_type<bool_type, complex_type> : common_type<complex_type, bool_type>
+  {};
+  template <>
+  struct common_type<bool_type, float_type> : common_type<float_type, bool_type>
+  {};
+  template <>
+  struct common_type<bool_type, fraction_type> : common_type<fraction_type, bool_type>
+  {};
+  template <>
+  struct common_type<bool_type, int_type> : common_type<int_type, bool_type>
+  {};
+
 
   //
   // Missing operators
