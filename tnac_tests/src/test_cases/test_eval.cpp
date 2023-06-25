@@ -199,6 +199,23 @@ namespace tnac_tests
     check_eval("a = 10 : -a"sv, -10ll);
   }
 
+  TEST(evaluation, t_log_not)
+  {
+    using detail::check_eval;
+    check_eval("!_false"sv, true);
+    check_eval("!_true"sv,  false);
+    check_eval("!0"sv,  true);
+    check_eval("!42"sv, false);
+    check_eval("!0.0"sv, true);
+    check_eval("!(-42.69)"sv, false);
+    check_eval("!_fraction(0, 42)"sv, true);
+    check_eval("!_fraction(1, 42)"sv, false);
+    check_eval("!_complex(0, 0)"sv, true);
+    check_eval("!_complex(0, 1)"sv, false);
+    check_eval("!_complex(1, 0)"sv, false);
+    check_eval("f() ; !f"sv, false);
+  }
+
   TEST(evaluation, t_bitwise)
   {
     using detail::check_eval;

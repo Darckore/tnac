@@ -106,8 +106,7 @@ namespace tnac::eval
         [](complex_type v) noexcept -> res_type
         {
           constexpr auto cmp = float_type{};
-          return !(utils::eq(v.real(), cmp) ||
-                   utils::eq(v.imag(), cmp));
+          return !utils::eq(v.real(), cmp) || !utils::eq(v.imag(), cmp);
         },
         [](fraction_type v) noexcept -> res_type
         {

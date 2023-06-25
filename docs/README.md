@@ -39,6 +39,7 @@ as `ints` and `floats` for brevity.
 10. Bitwise xor (`^`)
 11. Power (`**`)
 12. Root (`//`)
+13. Logical not (`!`)
 
 Not all operations are supported for all types.
 Using something unsupported results in a quiet "undefined" value.
@@ -138,7 +139,7 @@ Expressions can include:
 1. Numbers
 2. Identifier names
 3. Expressions enclosed in parentheses (`(`, `)`)
-4. Unary operators `+`, `-`, `~`
+4. Unary operators `+`, `-`, `~`, `!`
 5. Binary operators `+`, `-`, `*`, `/`, `%`, `&`, `|`, `^`, `**`, `//`
 6. Assignments `=`
 7. Keywords
