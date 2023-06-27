@@ -344,52 +344,11 @@ namespace tnac::eval
     };
   }
 
-
   template <detail::expr_result T>
   auto cast_value(value val) noexcept
   {
     return on_value(val, get_caster<T>());
   };
-
-
-  template <detail::generic_type T>
-  inline typed_value<float_type> to_float(T) noexcept
-  {
-    return {};
-  }
-
-  template <>
-  inline typed_value<float_type> to_float(bool_type val) noexcept
-  {
-    return val ? float_type{ 1.0 } : float_type{};
-  }
-
-  template <>
-  inline typed_value<float_type> to_float(int_type val) noexcept
-  {
-    return static_cast<float_type>(val);
-  }
-
-  template <>
-  inline typed_value<float_type> to_float(float_type val) noexcept
-  {
-    return val;
-  }
-
-  template <>
-  inline typed_value<float_type> to_float(complex_type val) noexcept
-  {
-    if (!utils::eq(val.imag(), float_type{}))
-      return {};
-
-    return to_float(val.real());
-  }
-
-  template <>
-  inline typed_value<float_type> to_float(fraction_type val) noexcept
-  {
-    return val.to<float_type>();
-  }
 
 
   //
@@ -518,6 +477,7 @@ namespace tnac::eval
   struct common_type<bool_type, bool_type> : common_type<int_type, bool_type>
   {};
 
+
   //
   // Missing operators
   //
@@ -533,4 +493,35 @@ namespace tnac::eval
     return std::fmod(l.to<float_type>(), r.to<float_type>());
   }
 
+
+  //
+  // Utility functions
+  //
+
+  namespace detail
+  {
+    template <typename T>
+    concept has_invert = requires(T t) { utils::inv(t); };
+  }
+
+  template <typename T>
+  auto inv(T) noexcept;
+  
+  template <detail::has_invert T>
+  inline auto inv(T val) noexcept
+  {
+    return utils::inv(val);
+  }
+
+  template <>
+  inline auto inv(int_type i) noexcept
+  {
+    return inv(static_cast<float_type>(i));
+  }
+
+  template <>
+  inline auto inv(complex_type cplx) noexcept
+  {
+    return 1.0 / cplx;
+  }
 }

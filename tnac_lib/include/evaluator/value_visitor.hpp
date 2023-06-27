@@ -71,6 +71,14 @@ namespace tnac::eval
       !std::integral<T> &&
       requires(T l, T r) { std::fmod(l, r); };
 
+    template <typename T>
+    concept pow_raisable = generic_type<T> &&
+      requires(T l, T r) { std::pow(l, r); };
+
+    template <typename T>
+    concept invertible = generic_type<T> &&
+      requires(T op) { eval::inv(op); };
+
     //
     // Helper object to facilitate easy casts from pointers to entity ids
     //
@@ -344,6 +352,60 @@ namespace tnac::eval
     template <detail::generic_type T>
     auto mod(T, T) noexcept { return get_empty(); }
 
+    template <detail::generic_type T>
+      requires (std::is_arithmetic_v<T>)
+    auto enforce_complex(const T& l, const T& r) noexcept -> typed_value<complex_type>
+    {
+      auto base = static_cast<float_type>(l);
+      if (base > 0.0 || utils::eq(base, 0.0))
+        return {};
+
+      auto exp = static_cast<float_type>(r);
+      if (const auto mod2 = std::fmod(utils::inv(exp), 2.0); !utils::eq(mod2, 0.0))
+        return {};
+
+      return complex_type{ 0.0, std::pow(utils::abs(base), exp) };
+    }
+    template <detail::generic_type T>
+    auto enforce_complex(const T&, const T&) noexcept -> typed_value<complex_type> { return {}; }
+
+    template <detail::pow_raisable T>
+    auto power(T base, T exp) noexcept
+    {
+      if (auto cpl = enforce_complex(base, exp))
+      {
+        return reg_value(*cpl);
+      }
+
+      return visit_binary(std::move(base), std::move(exp),
+        [](auto l, auto r) noexcept
+        {
+          return std::pow(l, r);
+        });
+    }
+    template <detail::generic_type T>
+    auto power(T base, T exp) noexcept
+    {
+      auto caster = get_caster<float_type>();
+      auto floatL = caster(base);
+      auto floatR = caster(exp);
+      if (floatL && floatR)
+        return power(*floatL, *floatR);
+
+      return get_empty();
+    }
+
+    template <detail::invertible T>
+    auto root(T base, T exp) noexcept
+    {
+      if constexpr (is_same_noquals_v<T, int_type>)
+        return root(static_cast<float_type>(base), static_cast<float_type>(exp));
+      else
+        return power(base, eval::inv(exp));
+    }
+    template <detail::generic_type T>
+    auto root(T, T) noexcept { return get_empty(); }
+
     //
     // Dispatches binary operations according to operator type
     //
@@ -393,81 +455,6 @@ namespace tnac::eval
       default:
         return get_empty();
       }
-    }
-
-    // Power
-
-    template <detail::generic_type L, detail::generic_type R>
-    typed_value<complex_type> enforce_complex(L, R) noexcept
-    {
-      return {};
-    }
-    template <detail::generic_type L, detail::generic_type R>
-      requires (std::is_arithmetic_v<L> && std::is_arithmetic_v<R>)
-    typed_value<complex_type> enforce_complex(L l, R r) noexcept
-    {
-      auto base = static_cast<float_type>(l);
-      if (base > 0.0 || utils::eq(base, 0.0))
-        return {};
-
-      auto exp  = static_cast<float_type>(r);
-      if (const auto mod2 = std::fmod(utils::inv(exp), 2.0); !utils::eq(mod2, 0.0))
-        return {};
-
-      return complex_type{ 0.0, std::pow(utils::abs(base), exp) };
-    }
-
-    template <detail::generic_type L, detail::generic_type R>
-      requires requires (L l, R r) { std::pow(l, r); }
-    auto power(L base, R exp) noexcept
-    {
-      if (auto cpl = enforce_complex(base, exp))
-      {
-        return reg_value(*cpl);
-      }
-
-      return visit_binary(base, exp, [](auto l, auto r) noexcept
-        {
-          return std::pow(l, r);
-        });
-    }
-    template <detail::generic_type L, detail::generic_type R>
-    auto power(L base, R exp) noexcept
-    {
-      auto floatL = to_float(base);
-      auto floatR = to_float(exp);
-      if(floatL && floatR)
-        return power(*floatL, *floatR);
-
-      return get_empty();
-    }
-    auto power(fraction_type l, complex_type r) noexcept
-    {
-      return power(l.to<float_type>(), r);
-    }
-    auto power(complex_type l, fraction_type r) noexcept
-    {
-      return power(l, r.to<float_type>());
-    }
-
-
-    // Root
-
-    template <detail::generic_type L, detail::generic_type R>
-    auto root(L, R) noexcept { return get_empty(); }
-    template <detail::generic_type L, detail::generic_type R>
-      requires requires (R r) { 1 / r; }
-    auto root(L base, R exp) noexcept
-    {
-      if constexpr (is_any_v<R, int_type, bool_type>)
-        return root(base, static_cast<float_type>(exp));
-      else
-        return power(base, 1 / exp);
-    }
-    template <detail::generic_type R>
-    auto root(bool_type base, R exp) noexcept
-    {
-      return root(static_cast<int_type>(base), exp);
     }
 
 
