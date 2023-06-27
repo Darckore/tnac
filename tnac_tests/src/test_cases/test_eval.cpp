@@ -140,17 +140,17 @@ namespace tnac_tests
     // Int
     check_eval("2 % 2"sv, 0ll);
     check_eval("1 % 0"sv, nan);
-    check_eval("1 % _complex(1, 2)"sv, 0.0);
-    check_eval("_complex(1, 2) % 2"sv, cplx{ 1.0, 0.0 });
-    check_eval("_fraction(1, 1) % _complex(1, 2)"sv, 0.0);
-    check_eval("_complex(1, 2) % _fraction(2, 1)"sv, cplx{ 1.0, 0.0 });
+    check_eval("1 % _complex(1, 2)"sv, cplx{ 1.0, 0.0 });
+    check_eval("_complex(1, 2) % 2"sv, cplx{ -1.0, 0.0 });
+    check_eval("_fraction(1, 1) % _complex(1, 2)"sv, cplx{ 1.0, 0.0 });
+    check_eval("_complex(1, 2) % _fraction(2, 1)"sv, cplx{ -1.0, 0.0 });
 
     // Float
     check_eval("4.0 % 5.0"sv, 4.0);
     check_eval("6.0 % 5"sv, 1.0);
-    check_eval("4.0 % _complex(2.0, 4)"sv, 0.0);
+    check_eval("4.0 % _complex(2.0, 4)"sv, cplx{ 0.0, 2.0 });
     check_eval("_complex(2.0, 6) % 5.0"sv, cplx{ 2.0, 1.0 });
-    check_eval("_fraction(4, 1) % _complex(2.0, 4)"sv, 0.0);
+    check_eval("_fraction(4, 1) % _complex(2.0, 4)"sv, cplx{ 0.0, 2.0 });
     check_eval("_complex(2.0, 6) % _fraction(5, 1)"sv, cplx{ 2.0, 1.0 });
 
     // Complex

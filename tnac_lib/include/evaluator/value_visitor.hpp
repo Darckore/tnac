@@ -247,40 +247,47 @@ namespace tnac::eval
     // Dispatches binary operations according to operator type
     //
     template <detail::generic_type L, detail::generic_type R>
-    value visit_binary(L lhs, R rhs, val_ops op) noexcept
+    value visit_binary(L l, R r, val_ops op) noexcept
     {
+      using common_t = common_type_t<L, R>;
+      auto caster = get_caster<common_t>();
+      auto lhs = caster(std::move(l));
+      auto rhs = caster(std::move(r));
+      if (!lhs || !rhs)
+        return get_empty();
+
       using enum val_ops;
       switch (op)
       {
       case Addition:
-        return add(std::move(lhs), std::move(rhs));
+        return add(std::move(*lhs), std::move(*rhs));
 
       case Subtraction:
-        return sub(std::move(lhs), std::move(rhs));
+        return sub(std::move(*lhs), std::move(*rhs));
 
       case Multiplication:
-        return mul(std::move(lhs), std::move(rhs));
+        return mul(std::move(*lhs), std::move(*rhs));
 
       case Division:
-        return div(std::move(lhs), std::move(rhs));
+        return div(std::move(*lhs), std::move(*rhs));
 
       case Modulo:
-        return mod(std::move(lhs), std::move(rhs));
+        return mod(std::move(*lhs), std::move(*rhs));
 
       case BitwiseAnd:
-        return bitwise_and(std::move(lhs), std::move(rhs));
+        return bitwise_and(std::move(*lhs), std::move(*rhs));
 
       case BitwiseXor:
-        return bitwise_xor(std::move(lhs), std::move(rhs));
+        return bitwise_xor(std::move(*lhs), std::move(*rhs));
 
       case BitwiseOr:
-        return bitwise_or(std::move(lhs), std::move(rhs));
+        return bitwise_or(std::move(*lhs), std::move(*rhs));
 
       case BinaryPow:
-        return power(std::move(lhs), std::move(rhs));
+        return power(std::move(*lhs), std::move(*rhs));
 
       case BinaryRoot:
-        return root(std::move(lhs), std::move(rhs));
+        return root(std::move(*lhs), std::move(*rhs));
 
       default:
         return get_empty();
