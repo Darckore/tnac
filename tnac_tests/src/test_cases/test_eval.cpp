@@ -107,7 +107,7 @@ namespace tnac_tests
     static constexpr auto inf = std::numeric_limits<tnac::eval::float_type>::infinity();
 
     // Int
-    check_eval("2 / 2"sv, 1ll);
+    check_eval("2 / 2"sv, 1.0);
     check_eval("1 / 0"sv, inf);
     check_eval("1 / _complex(1, 2)"sv, cplx{ 0.2, -0.4 });
     check_eval("_complex(1, 2) / 2"sv, cplx{ 0.5, 1.0 });

@@ -288,6 +288,25 @@ namespace tnac::eval
     template <detail::generic_type T>
     auto mul(T, T) noexcept { return get_empty(); }
 
+    template <detail::divisible T>
+    auto div(T lhs, T rhs) noexcept
+    {
+      if constexpr (is_same_noquals_v<T, int_type>)
+      {
+        return div(static_cast<float_type>(lhs), static_cast<float_type>(rhs));
+      }
+      else
+      {
+        return visit_binary(std::move(lhs), std::move(rhs),
+          [](auto l, auto r) noexcept
+          {
+            return l / r;
+          });
+      }
+    }
+    template <detail::generic_type T>
+    auto div(T, T) noexcept { return get_empty(); }
+
     //
     // Dispatches binary operations according to operator type
     //
@@ -338,42 +357,6 @@ namespace tnac::eval
         return get_empty();
       }
     }
-
-
-    // Division
-
-    template <detail::generic_type L, detail::generic_type R>
-    auto div(L, R) noexcept { return get_empty(); }
-    template <detail::generic_type L, detail::generic_type R>
-      requires (!is_any_v<bool_type, L, R> && requires (L l, R r) { l / r; })
-    auto div(L lhs, R rhs) noexcept
-    {
-      return visit_binary(lhs, rhs, [](auto l, auto r) noexcept { return l / r; });
-    }
-
-    //
-    // Corner case. In most cases, we don't want integral division, so let's convert lhs to float
-    // if the remainder is not zero
-    //
-    auto div(int_type lhs, int_type rhs) noexcept
-    {
-      if(rhs && !(lhs % rhs))
-        return visit_binary(lhs, rhs, [](auto l, auto r) noexcept { return l / r; });
-
-      return div(static_cast<float_type>(lhs), rhs);
-    }
-    template <detail::generic_type L>
-      requires (!is_same_noquals_v<L, bool_type>)
-    auto div(L lhs, bool_type rhs) noexcept
-    {
-      return div(lhs, static_cast<int_type>(rhs));
-    }
-    template <detail::generic_type R>
-    auto div(bool_type lhs, R rhs) noexcept
-    {
-      return div(static_cast<int_type>(lhs), rhs);
-    }
-
 
     // Modulo
 
