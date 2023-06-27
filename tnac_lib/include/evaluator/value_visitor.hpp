@@ -337,6 +337,18 @@ namespace tnac::eval
     }
 
 
+    // Logical not
+
+    template <detail::generic_type T>
+    auto logical_not(T operand) noexcept
+    {
+      if (auto boolOp = get_caster<bool_type>()(operand))
+        return visit_unary(*boolOp, [](auto val) noexcept { return !val; });
+
+      return get_empty();
+    }
+
+
     // Power
 
     template <detail::generic_type L, detail::generic_type R>
@@ -415,23 +427,6 @@ namespace tnac::eval
 
   private:
     //
-    // Casts the given value to bool
-    //
-    bool to_bool(value val) noexcept
-    {
-      const auto boolVal = cast_value<bool_type>(val);
-      return static_cast<bool>(boolVal) ? *boolVal : false;
-    }
-
-    //
-    // Casts the given value to bool and applies the logical not operation
-    //
-    value logical_not(value val) noexcept
-    {
-      return reg_value(!to_bool(val));
-    }
-
-    //
     // Extracts type from value and calls the specified function
     //
     template <typename F>
@@ -495,6 +490,9 @@ namespace tnac::eval
 
       case UnaryBitwiseNot:
         return bitwise_not(val);
+
+      case LogicalNot:
+        return logical_not(val);
 
       default:
         return get_empty();
@@ -615,7 +613,7 @@ namespace tnac::eval
     //
     value visit_binary(id_param_t ent, value lhs, value rhs, val_ops op) noexcept
     {
-      if (!lhs || !rhs || !detail::is_binary(op))
+      if (!detail::is_binary(op))
         return get_empty();
 
       value_guard _{ m_curEntity, *ent };
@@ -631,15 +629,10 @@ namespace tnac::eval
     //
     value visit_unary(id_param_t ent, value val, val_ops op) noexcept
     {
-      value_guard _{ m_curEntity, *ent };
-
-      if (op == val_ops::LogicalNot)
-      {
-        return logical_not(val);
-      }
-
-      if (!val || !detail::is_unary(op))
+      if (!detail::is_unary(op))
         return get_empty();
+
+      value_guard _{ m_curEntity, *ent };
 
       return visit_value(val, [this, op](auto v) noexcept
         {
