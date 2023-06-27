@@ -112,6 +112,15 @@ namespace tnac::eval
 
   private: // Unary operations
 
+    //
+    // Registers result of unary operations
+    //
+    template <detail::generic_type T, detail::unary_function<T> F>
+    value visit_unary(T val, F&& op) noexcept
+    {
+      return reg_value(op(std::move(val)));
+    }
+
     auto unary_plus(detail::plusable auto operand) noexcept
     {
       return visit_unary(operand, [](auto val) noexcept { return +val; });
@@ -154,6 +163,32 @@ namespace tnac::eval
     {
       auto boolOp = get_caster<bool_type>()(operand);
       return visit_unary(boolOp && *boolOp, [](auto val) noexcept { return !val; });
+    }
+
+    //
+    // Dispatches unary operations according to operator type
+    //
+    template <detail::generic_type T>
+    value visit_unary(T val, val_ops op) noexcept
+    {
+      using enum val_ops;
+      switch (op)
+      {
+      case UnaryNegation:
+        return unary_neg(std::move(val));
+
+      case UnaryPlus:
+        return unary_plus(std::move(val));
+
+      case UnaryBitwiseNot:
+        return bitwise_not(std::move(val));
+
+      case LogicalNot:
+        return logical_not(std::move(val));
+
+      default:
+        return get_empty();
+      }
     }
 
 
@@ -455,41 +490,6 @@ namespace tnac::eval
     value visit_assign(T rhs) noexcept
     {
       return reg_value(std::move(rhs));
-    }
-
-    //
-    // Registers result of unary operations
-    //
-    template <detail::generic_type T, detail::unary_function<T> F>
-    value visit_unary(T val, F&& op) noexcept
-    {
-      return reg_value(op(std::move(val)));
-    }
-
-    //
-    // Dispatches unary operations according to operator type
-    //
-    template <detail::generic_type T>
-    value visit_unary(T val, val_ops op) noexcept
-    {
-      using enum val_ops;
-      switch (op)
-      {
-      case UnaryNegation:
-        return unary_neg(std::move(val));
-
-      case UnaryPlus:
-        return unary_plus(std::move(val));
-
-      case UnaryBitwiseNot:
-        return bitwise_not(std::move(val));
-
-      case LogicalNot:
-        return logical_not(std::move(val));
-
-      default:
-        return get_empty();
-      }
     }
 
     //
