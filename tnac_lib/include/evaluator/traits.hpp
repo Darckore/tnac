@@ -80,6 +80,25 @@ namespace tnac::eval
     }
   };
 
+  namespace detail
+  {
+    inline auto to_int(float_type val) noexcept -> typed_value<int_type>
+    {
+      const auto conv = static_cast<int_type>(val);
+      if (utils::eq(static_cast<float_type>(conv), val))
+        return conv;
+
+      return {};
+    }
+    inline auto to_int(complex_type val) noexcept -> typed_value<int_type>
+    {
+      if (!utils::eq(val.imag(), float_type{}))
+        return {};
+
+      return to_int(val.real());
+    }
+  }
+
   template <typename To>
   auto get_caster() noexcept;
 
@@ -137,29 +156,15 @@ namespace tnac::eval
       },
       [](float_type v) noexcept -> res_type
       {
-        if (std::isnan(v) || std::isinf(v))
-          return {};
-
-        return static_cast<int_type>(v);
+        return detail::to_int(v);
       },
       [](complex_type v) noexcept -> res_type
       {
-        if (!utils::eq(v.imag(), float_type{}))
-          return {};
-
-        const auto real = v.real();
-        if (std::isnan(real) || std::isinf(real))
-          return {};
-
-        return static_cast<int_type>(v.real());
+        return detail::to_int(v);
       },
       [](fraction_type v) noexcept -> res_type
       {
-        if (v.is_infinity())
-        {
-          return {};
-        }
-        return static_cast<int_type>(v.to<float_type>());
+        return detail::to_int(v.to<float_type>());
       },
       [](function_type) noexcept -> res_type
       {
@@ -330,49 +335,6 @@ namespace tnac::eval
   {
     template <typename T>
     concept generic_type = expr_result<T> || is_same_noquals_v<T, invalid_val_t>;
-  }
-
-  template <detail::generic_type T>
-  inline typed_value<int_type> to_int(T) noexcept
-  {
-    return {};
-  }
-
-  template <>
-  inline typed_value<int_type> to_int(bool_type val) noexcept
-  {
-    return static_cast<int_type>(val);
-  }
-
-  template <>
-  inline typed_value<int_type> to_int(int_type val) noexcept
-  {
-    return val;
-  }
-
-  template <>
-  inline typed_value<int_type> to_int(float_type val) noexcept
-  {
-    const auto conv = static_cast<int_type>(val);
-    if (utils::eq(static_cast<float_type>(conv), val))
-      return conv;
-
-    return {};
-  }
-
-  template <>
-  inline typed_value<int_type> to_int(complex_type val) noexcept
-  {
-    if (!utils::eq(val.imag(), float_type{}))
-      return {};
-
-    return to_int(val.real());
-  }
-
-  template <>
-  inline typed_value<int_type> to_int(fraction_type val) noexcept
-  {
-    return to_int(val.to<float_type>());
   }
 
 

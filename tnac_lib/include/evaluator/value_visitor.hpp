@@ -285,7 +285,7 @@ namespace tnac::eval
     template <detail::generic_type T>
     auto bitwise_not(T operand) noexcept
     {
-      if (auto intOp = to_int(operand))
+      if (auto intOp = get_caster<int_type>()(operand))
         return visit_unary(*intOp, [](auto val) noexcept { return ~val; });
 
       return get_empty();
@@ -297,8 +297,9 @@ namespace tnac::eval
     template <detail::generic_type L, detail::generic_type R>
     auto bitwise_and(L lhs, R rhs) noexcept
     {
-      auto intL = to_int(lhs);
-      auto intR = to_int(rhs);
+      auto caster = get_caster<int_type>();
+      auto intL = caster(lhs);
+      auto intR = caster(rhs);
       if (intL && intR)
         return visit_binary(*intL, *intR, [](auto l, auto r) noexcept { return l & r; });
 
@@ -311,8 +312,9 @@ namespace tnac::eval
     template <detail::generic_type L, detail::generic_type R>
     auto bitwise_xor(L lhs, R rhs) noexcept
     {
-      auto intL = to_int(lhs);
-      auto intR = to_int(rhs);
+      auto caster = get_caster<int_type>();
+      auto intL = caster(lhs);
+      auto intR = caster(rhs);
       if (intL && intR)
         return visit_binary(*intL, *intR, [](auto l, auto r) noexcept { return l ^ r; });
 
@@ -325,8 +327,9 @@ namespace tnac::eval
     template <detail::generic_type L, detail::generic_type R>
     auto bitwise_or(L lhs, R rhs) noexcept
     {
-      auto intL = to_int(lhs);
-      auto intR = to_int(rhs);
+      auto caster = get_caster<int_type>();
+      auto intL = caster(lhs);
+      auto intR = caster(rhs);
       if (intL && intR)
         return visit_binary(*intL, *intR, [](auto l, auto r) noexcept { return l | r; });
 
