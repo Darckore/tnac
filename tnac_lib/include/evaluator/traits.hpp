@@ -500,7 +500,9 @@ namespace tnac::eval
   template <>
   struct common_type<bool_type, int_type> : common_type<int_type, bool_type>
   {};
-
+  template <>
+  struct common_type<bool_type, bool_type> : common_type<int_type, bool_type>
+  {};
 
   //
   // Missing operators
