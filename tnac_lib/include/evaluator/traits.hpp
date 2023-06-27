@@ -59,7 +59,13 @@ namespace tnac::eval
   // Value casters
   //
 
-  template <detail::expr_result T>
+  namespace detail
+  {
+    template <typename T>
+    concept generic_type = expr_result<T> || is_same_noquals_v<T, invalid_val_t>;
+  }
+
+  template <detail::generic_type T>
   using typed_value = std::optional<T>;
 
   template <detail::expr_result T>
@@ -325,17 +331,25 @@ namespace tnac::eval
     };
   }
 
+  template <>
+  inline auto get_caster<invalid_val_t>() noexcept
+  {
+    using res_type = typed_value<invalid_val_t>;
+    return utils::visitor
+    {
+      [](auto) noexcept -> res_type
+      {
+        return invalid_val_t{};
+      }
+    };
+  }
+
+
   template <detail::expr_result T>
   auto cast_value(value val) noexcept
   {
     return on_value(val, get_caster<T>());
   };
-
-  namespace detail
-  {
-    template <typename T>
-    concept generic_type = expr_result<T> || is_same_noquals_v<T, invalid_val_t>;
-  }
 
 
   template <detail::generic_type T>

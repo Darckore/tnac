@@ -125,10 +125,6 @@ namespace tnac::eval
     {
       return visit_unary(operand, [](auto val) noexcept { return +val; });
     }
-    auto unary_plus(bool v) noexcept
-    {
-      return unary_plus(static_cast<int_type>(v));
-    }
     template <detail::generic_type T> 
     auto unary_plus(T) noexcept
     {
@@ -139,10 +135,6 @@ namespace tnac::eval
     {
       return visit_unary(operand, [](auto val) noexcept { return -val; });
     }
-    auto unary_neg(bool v) noexcept
-    {
-      return unary_neg(static_cast<int_type>(v));
-    }
     template <detail::generic_type T>
     auto unary_neg(T) noexcept
     {
@@ -152,7 +144,7 @@ namespace tnac::eval
     template <detail::generic_type T>
     auto bitwise_not(T operand) noexcept
     {
-      if (auto intOp = get_caster<int_type>()(operand))
+      if (auto intOp = get_caster<int_type>()(std::move(operand)))
         return visit_unary(*intOp, [](auto val) noexcept { return ~val; });
 
       return get_empty();
@@ -161,7 +153,7 @@ namespace tnac::eval
     template <detail::generic_type T>
     auto logical_not(T operand) noexcept
     {
-      auto boolOp = get_caster<bool_type>()(operand);
+      auto boolOp = get_caster<bool_type>()(std::move(operand));
       return visit_unary(boolOp && *boolOp, [](auto val) noexcept { return !val; });
     }
 
@@ -169,24 +161,33 @@ namespace tnac::eval
     // Dispatches unary operations according to operator type
     //
     template <detail::generic_type T>
-    value visit_unary(T val, val_ops op) noexcept
+    value visit_unary(T operand, val_ops op) noexcept
     {
+      using op_type = common_type_t<T, T>;
+      auto val = get_caster<op_type>()(std::move(operand));
+      if (!val)
+      {
+        UTILS_ASSERT(false);
+        return get_empty();
+      }
+
       using enum val_ops;
       switch (op)
       {
       case UnaryNegation:
-        return unary_neg(std::move(val));
+        return unary_neg(std::move(*val));
 
       case UnaryPlus:
-        return unary_plus(std::move(val));
+        return unary_plus(std::move(*val));
 
       case UnaryBitwiseNot:
-        return bitwise_not(std::move(val));
+        return bitwise_not(std::move(*val));
 
       case LogicalNot:
-        return logical_not(std::move(val));
+        return logical_not(std::move(*val));
 
       default:
+        UTILS_ASSERT(false);
         return get_empty();
       }
     }
