@@ -46,6 +46,22 @@ namespace tnac::eval
     concept negatable = generic_type<T> &&
       requires(T v) { -v; };
 
+    template <typename T>
+    concept addable = generic_type<T> &&
+      requires(T l, T r) { l + r; };
+
+    template <typename T>
+    concept subtractable = generic_type<T> &&
+      requires(T l, T r) { l - r; };
+
+    template <typename T>
+    concept multipliable = generic_type<T> &&
+      requires(T l, T r) { l * r; };
+
+    template <typename T>
+    concept divisible = generic_type<T> &&
+      requires(T l, T r) { l / r; };
+
     //
     // Helper object to facilitate easy casts from pointers to entity ids
     //
@@ -126,20 +142,14 @@ namespace tnac::eval
       return visit_unary(operand, [](auto val) noexcept { return +val; });
     }
     template <detail::generic_type T> 
-    auto unary_plus(T) noexcept
-    {
-      return get_empty();
-    }
+    auto unary_plus(T) noexcept { return get_empty(); }
 
     auto unary_neg(detail::negatable auto operand) noexcept
     {
       return visit_unary(operand, [](auto val) noexcept { return -val; });
     }
     template <detail::generic_type T>
-    auto unary_neg(T) noexcept
-    {
-      return get_empty();
-    }
+    auto unary_neg(T) noexcept { return get_empty(); }
 
     template <detail::generic_type T>
     auto bitwise_not(T operand) noexcept
@@ -242,6 +252,41 @@ namespace tnac::eval
       return get_empty();
     }
 
+    template <detail::addable T>
+    auto add(T lhs, T rhs) noexcept
+    {
+      return visit_binary(std::move(lhs), std::move(rhs),
+        [](auto l, auto r) noexcept
+        {
+          return l + r;
+        });
+    }
+    template <detail::generic_type T>
+    auto add(T, T) noexcept { return get_empty(); }
+
+    template <detail::subtractable T>
+    auto sub(T lhs, T rhs) noexcept
+    {
+      return visit_binary(std::move(lhs), std::move(rhs),
+        [](auto l, auto r) noexcept
+        {
+          return l - r;
+        });
+    }
+    template <detail::generic_type T>
+    auto sub(T, T) noexcept { return get_empty(); }
+
+    template <detail::multipliable T>
+    auto mul(T lhs, T rhs) noexcept
+    {
+      return visit_binary(std::move(lhs), std::move(rhs),
+        [](auto l, auto r) noexcept
+        {
+          return l * r;
+        });
+    }
+    template <detail::generic_type T>
+    auto mul(T, T) noexcept { return get_empty(); }
 
     //
     // Dispatches binary operations according to operator type
@@ -292,75 +337,6 @@ namespace tnac::eval
       default:
         return get_empty();
       }
-    }
-
-
-    // Addition
-
-    template <detail::generic_type L, detail::generic_type R>
-    auto add(L, R) noexcept { return get_empty(); }
-    template <detail::generic_type L, detail::generic_type R>
-      requires (!is_any_v<bool_type, L, R> && requires (L l, R r) { l + r; })
-    auto add(L lhs, R rhs) noexcept
-    {
-      return visit_binary(lhs, rhs, [](auto l, auto r) noexcept { return l + r; });
-    }
-    template <detail::generic_type L>
-      requires (!is_same_noquals_v<L, bool_type>)
-    auto add(L lhs, bool_type rhs) noexcept
-    {
-      return add(lhs, static_cast<int_type>(rhs));
-    }
-    template <detail::generic_type R>
-    auto add(bool_type lhs, R rhs) noexcept
-    {
-      return add(static_cast<int_type>(lhs), rhs);
-    }
-
-
-    // Subtraction
-
-    template <detail::generic_type L, detail::generic_type R>
-    auto sub(L, R) noexcept { return get_empty(); }
-    template <detail::generic_type L, detail::generic_type R>
-      requires (!is_any_v<bool_type, L, R> && requires (L l, R r) { l - r; })
-    auto sub(L lhs, R rhs) noexcept
-    {
-      return visit_binary(lhs, rhs, [](auto l, auto r) noexcept { return l - r; });
-    }
-    template <detail::generic_type L>
-      requires (!is_same_noquals_v<L, bool_type>)
-    auto sub(L lhs, bool_type rhs) noexcept
-    {
-      return sub(lhs, static_cast<int_type>(rhs));
-    }
-    template <detail::generic_type R>
-    auto sub(bool_type lhs, R rhs) noexcept
-    {
-      return sub(static_cast<int_type>(lhs), rhs);
-    }
-
-
-    // Multiplication
-
-    template <detail::generic_type L, detail::generic_type R>
-    auto mul(L, R) noexcept { return get_empty(); }
-    template <detail::generic_type L, detail::generic_type R>
-      requires (!is_any_v<bool_type, L, R> && requires (L l, R r) { l * r; })
-    auto mul(L lhs, R rhs) noexcept
-    {
-      return visit_binary(lhs, rhs, [](auto l, auto r) noexcept { return l * r; });
-    }
-    template <detail::generic_type L>
-      requires (!is_same_noquals_v<L, bool_type>)
-    auto mul(L lhs, bool_type rhs) noexcept
-    {
-      return mul(lhs, static_cast<int_type>(rhs));
-    }
-    template <detail::generic_type R>
-    auto mul(bool_type lhs, R rhs) noexcept
-    {
-      return mul(static_cast<int_type>(lhs), rhs);
     }
 
 
