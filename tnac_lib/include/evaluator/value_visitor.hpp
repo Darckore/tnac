@@ -33,10 +33,17 @@ namespace tnac::eval
   namespace detail
   {
     template <typename F, typename T>
-    concept unary_function = std::is_nothrow_invocable_v<F, const T&>;
+    concept unary_function = std::is_nothrow_invocable_v<F, T>;
 
     template <typename F, typename T1, typename T2>
-    concept binary_function = std::is_nothrow_invocable_v<F, const T1&, const T2&>;
+    concept binary_function = std::is_nothrow_invocable_v<F, T1, T2>;
+
+    template <typename T>
+    concept plusable = generic_type<T> &&
+    requires(T v)
+    {
+      +v;
+    };
 
     //
     // Helper object to facilitate easy casts from pointers to entity ids
@@ -102,6 +109,51 @@ namespace tnac::eval
     {}
 
   private: // Operation support
+
+    //
+    // Unary
+    //
+
+    // Unary plus
+
+    auto unary_plus(detail::plusable auto operand) noexcept
+    {
+      return visit_unary(operand, [](auto val) noexcept { return +val; });
+    }
+    auto unary_plus(bool v) noexcept
+    {
+      return unary_plus(static_cast<int_type>(v));
+    }
+    template <detail::generic_type T>
+    auto unary_plus(T) noexcept
+    {
+      return get_empty();
+    }
+
+
+    // Unary minus
+
+    template <detail::generic_type T>
+      requires requires (T v) { -v; }
+    auto unary_neg(T operand) noexcept
+    {
+      return visit_unary(operand, [](auto val) noexcept { return -val; });
+    }
+    template <>
+    auto unary_neg(bool v) noexcept
+    {
+      return unary_neg(static_cast<int_type>(v));
+    }
+    template <detail::generic_type T>
+    auto unary_neg(T) noexcept
+    {
+      return get_empty();
+    }
+
+
+    //
+    // \Unary
+    //
 
     // Addition
 
@@ -237,46 +289,6 @@ namespace tnac::eval
       return rhs ?
         mod<int_type, int_type>(lhs, rhs) :
         mod(static_cast<float_type>(lhs), rhs);
-    }
-
-
-    // Unary plus
-
-    template <detail::generic_type T>
-      requires requires (T v) { +v; }
-    auto unary_plus(T operand) noexcept
-    {
-      return visit_unary(operand, [](auto val) noexcept { return +val; });
-    }
-    template <>
-    auto unary_plus(bool v) noexcept
-    {
-      return unary_plus(static_cast<int_type>(v));
-    }
-    template <detail::generic_type T>
-    auto unary_plus(T) noexcept
-    {
-      return get_empty();
-    }
-
-
-    // Unary minus
-
-    template <detail::generic_type T>
-      requires requires (T v) { -v; }
-    auto unary_neg(T operand) noexcept
-    {
-      return visit_unary(operand, [](auto val) noexcept { return -val; });
-    }
-    template <>
-    auto unary_neg(bool v) noexcept
-    {
-      return unary_neg(static_cast<int_type>(v));
-    }
-    template <detail::generic_type T>
-    auto unary_neg(T) noexcept
-    {
-      return get_empty();
     }
 
 
@@ -450,9 +462,9 @@ namespace tnac::eval
     value reg_value(T val) noexcept
     {
       if (m_curEntity != invalidEnt)
-        return m_registry.register_entity(m_curEntity, val);
+        return m_registry.register_entity(m_curEntity, std::move(val));
 
-      return m_registry.register_entity({}, val);
+      return m_registry.register_entity({}, std::move(val));
     }
 
     //
@@ -461,7 +473,7 @@ namespace tnac::eval
     template <detail::generic_type T>
     value visit_assign(T rhs) noexcept
     {
-      return reg_value(rhs);
+      return reg_value(std::move(rhs));
     }
 
     //
@@ -470,7 +482,7 @@ namespace tnac::eval
     template <detail::generic_type T, detail::unary_function<T> F>
     value visit_unary(T val, F&& op) noexcept
     {
-      return reg_value(op(val));
+      return reg_value(op(std::move(val)));
     }
 
     //
@@ -483,16 +495,16 @@ namespace tnac::eval
       switch (op)
       {
       case UnaryNegation:
-        return unary_neg(val);
+        return unary_neg(std::move(val));
 
       case UnaryPlus:
-        return unary_plus(val);
+        return unary_plus(std::move(val));
 
       case UnaryBitwiseNot:
-        return bitwise_not(val);
+        return bitwise_not(std::move(val));
 
       case LogicalNot:
-        return logical_not(val);
+        return logical_not(std::move(val));
 
       default:
         return get_empty();
@@ -505,7 +517,7 @@ namespace tnac::eval
     template <detail::generic_type L, detail::generic_type R, detail::binary_function<L, R> F>
     value visit_binary(L lhs, R rhs, F&& op) noexcept
     {
-      return reg_value(op(lhs, rhs));
+      return reg_value(op(std::move(lhs), std::move(rhs)));
     }
 
     //
@@ -517,7 +529,7 @@ namespace tnac::eval
     {
       return visit_value(rhs, [this, lhs, op](auto rhs) noexcept
         {
-          return visit_binary(lhs, rhs, op);
+          return visit_binary(std::move(lhs), std::move(rhs), op);
         });
     }
 
@@ -531,34 +543,34 @@ namespace tnac::eval
       switch (op)
       {
       case Addition:
-        return add(lhs, rhs);
+        return add(std::move(lhs), std::move(rhs));
 
       case Subtraction:
-        return sub(lhs, rhs);
+        return sub(std::move(lhs), std::move(rhs));
 
       case Multiplication:
-        return mul(lhs, rhs);
+        return mul(std::move(lhs), std::move(rhs));
 
       case Division:
-        return div(lhs, rhs);
+        return div(std::move(lhs), std::move(rhs));
 
       case Modulo:
-        return mod(lhs, rhs);
+        return mod(std::move(lhs), std::move(rhs));
 
       case BitwiseAnd:
-        return bitwise_and(lhs, rhs);
+        return bitwise_and(std::move(lhs), std::move(rhs));
 
       case BitwiseXor:
-        return bitwise_xor(lhs, rhs);
+        return bitwise_xor(std::move(lhs), std::move(rhs));
 
       case BitwiseOr:
-        return bitwise_or(lhs, rhs);
+        return bitwise_or(std::move(lhs), std::move(rhs));
 
       case BinaryPow:
-        return power(lhs, rhs);
+        return power(std::move(lhs), std::move(rhs));
 
       case BinaryRoot:
-        return root(lhs, rhs);
+        return root(std::move(lhs), std::move(rhs));
 
       default:
         return get_empty();
@@ -573,12 +585,12 @@ namespace tnac::eval
     {
       using type_info = eval::type_info<Obj>;
       using type_gen = type_wrapper<Obj>;
-      const auto instance = type_gen{}(cast_value<utils::id_to_type_t<type_info::params[Seq]>>(args[Seq])...);
+      auto instance = type_gen{}(cast_value<utils::id_to_type_t<type_info::params[Seq]>>(args[Seq])...);
 
       if (!instance)
         return get_empty();
 
-      return reg_value(*instance);
+      return reg_value(std::move(*instance));
     }
 
   public:
@@ -620,7 +632,7 @@ namespace tnac::eval
 
       return visit_value(lhs, [this, rhs, op](auto lhs) noexcept
         {
-          return visit_binary(lhs, rhs, op);
+          return visit_binary(std::move(lhs), std::move(rhs), op);
         });
     }
 
@@ -636,7 +648,7 @@ namespace tnac::eval
 
       return visit_value(val, [this, op](auto v) noexcept
         {
-          return visit_unary(v, op);
+          return visit_unary(std::move(v), op);
         });
     }
 
