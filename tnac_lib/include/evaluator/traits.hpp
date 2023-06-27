@@ -321,12 +321,9 @@ namespace tnac::eval
   }
 
   template <detail::expr_result T>
-  struct cast_value
+  auto cast_value(value val) noexcept
   {
-    auto operator()(value val) noexcept
-    {
-      return on_value(val, get_caster<T>());
-    }
+    return on_value(val, get_caster<T>());
   };
 
   namespace detail

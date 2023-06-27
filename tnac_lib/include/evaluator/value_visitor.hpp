@@ -416,7 +416,7 @@ namespace tnac::eval
     //
     bool to_bool(value val) noexcept
     {
-      const auto boolVal = cast_value<bool_type>{}(val);
+      const auto boolVal = cast_value<bool_type>(val);
       return static_cast<bool>(boolVal) ? *boolVal : false;
     }
 
@@ -572,7 +572,7 @@ namespace tnac::eval
     {
       using type_info = eval::type_info<Obj>;
       using type_gen = type_wrapper<Obj>;
-      const auto instance = type_gen{}(cast_value<utils::id_to_type_t<type_info::params[Seq]>>{}(args[Seq])...);
+      const auto instance = type_gen{}(cast_value<utils::id_to_type_t<type_info::params[Seq]>>(args[Seq])...);
 
       if (!instance)
         return get_empty();
