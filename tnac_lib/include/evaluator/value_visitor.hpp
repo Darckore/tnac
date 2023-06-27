@@ -193,7 +193,100 @@ namespace tnac::eval
     }
 
 
-  private: // Binary arithmetic operations
+  private: // Binary operations
+
+    //
+    // Registers result of binary operations
+    //
+    template <detail::generic_type L, detail::generic_type R, detail::binary_function<L, R> F>
+    value visit_binary(L lhs, R rhs, F&& op) noexcept
+    {
+      return reg_value(op(std::move(lhs), std::move(rhs)));
+    }
+
+    // Bitwise
+
+    template <detail::generic_type L, detail::generic_type R>
+    auto bitwise_and(L lhs, R rhs) noexcept
+    {
+      auto caster = get_caster<int_type>();
+      auto intL = caster(lhs);
+      auto intR = caster(rhs);
+      if (intL && intR)
+        return visit_binary(*intL, *intR, [](auto l, auto r) noexcept { return l & r; });
+
+      return get_empty();
+    }
+
+    template <detail::generic_type L, detail::generic_type R>
+    auto bitwise_xor(L lhs, R rhs) noexcept
+    {
+      auto caster = get_caster<int_type>();
+      auto intL = caster(lhs);
+      auto intR = caster(rhs);
+      if (intL && intR)
+        return visit_binary(*intL, *intR, [](auto l, auto r) noexcept { return l ^ r; });
+
+      return get_empty();
+    }
+
+    template <detail::generic_type L, detail::generic_type R>
+    auto bitwise_or(L lhs, R rhs) noexcept
+    {
+      auto caster = get_caster<int_type>();
+      auto intL = caster(lhs);
+      auto intR = caster(rhs);
+      if (intL && intR)
+        return visit_binary(*intL, *intR, [](auto l, auto r) noexcept { return l | r; });
+
+      return get_empty();
+    }
+
+
+    //
+    // Dispatches binary operations according to operator type
+    //
+    template <detail::generic_type L, detail::generic_type R>
+    value visit_binary(L lhs, R rhs, val_ops op) noexcept
+    {
+      using enum val_ops;
+      switch (op)
+      {
+      case Addition:
+        return add(std::move(lhs), std::move(rhs));
+
+      case Subtraction:
+        return sub(std::move(lhs), std::move(rhs));
+
+      case Multiplication:
+        return mul(std::move(lhs), std::move(rhs));
+
+      case Division:
+        return div(std::move(lhs), std::move(rhs));
+
+      case Modulo:
+        return mod(std::move(lhs), std::move(rhs));
+
+      case BitwiseAnd:
+        return bitwise_and(std::move(lhs), std::move(rhs));
+
+      case BitwiseXor:
+        return bitwise_xor(std::move(lhs), std::move(rhs));
+
+      case BitwiseOr:
+        return bitwise_or(std::move(lhs), std::move(rhs));
+
+      case BinaryPow:
+        return power(std::move(lhs), std::move(rhs));
+
+      case BinaryRoot:
+        return root(std::move(lhs), std::move(rhs));
+
+      default:
+        return get_empty();
+      }
+    }
+
 
     // Addition
 
@@ -332,52 +425,6 @@ namespace tnac::eval
     }
 
 
-
-    // Bitwise and
-
-    template <detail::generic_type L, detail::generic_type R>
-    auto bitwise_and(L lhs, R rhs) noexcept
-    {
-      auto caster = get_caster<int_type>();
-      auto intL = caster(lhs);
-      auto intR = caster(rhs);
-      if (intL && intR)
-        return visit_binary(*intL, *intR, [](auto l, auto r) noexcept { return l & r; });
-
-      return get_empty(); 
-    }
-
-
-    // Bitwise xor
-
-    template <detail::generic_type L, detail::generic_type R>
-    auto bitwise_xor(L lhs, R rhs) noexcept
-    {
-      auto caster = get_caster<int_type>();
-      auto intL = caster(lhs);
-      auto intR = caster(rhs);
-      if (intL && intR)
-        return visit_binary(*intL, *intR, [](auto l, auto r) noexcept { return l ^ r; });
-
-      return get_empty();
-    }
-
-
-    // Bitwise or
-
-    template <detail::generic_type L, detail::generic_type R>
-    auto bitwise_or(L lhs, R rhs) noexcept
-    {
-      auto caster = get_caster<int_type>();
-      auto intL = caster(lhs);
-      auto intR = caster(rhs);
-      if (intL && intR)
-        return visit_binary(*intL, *intR, [](auto l, auto r) noexcept { return l | r; });
-
-      return get_empty();
-    }
-
-
     // Power
 
     template <detail::generic_type L, detail::generic_type R>
@@ -494,69 +541,16 @@ namespace tnac::eval
     }
 
     //
-    // Registers result of binary operations
-    //
-    template <detail::generic_type L, detail::generic_type R, detail::binary_function<L, R> F>
-    value visit_binary(L lhs, R rhs, F&& op) noexcept
-    {
-      return reg_value(op(std::move(lhs), std::move(rhs)));
-    }
-
-    //
     // Intermadiate binary visitor
     // Dispatches the right operand according to its type
     //
     template <detail::generic_type L>
     value visit_binary(L lhs, value rhs, val_ops op) noexcept
     {
-      return visit_value(rhs, [this, lhs, op](auto rhs) noexcept
+      return visit_value(rhs, [this, l = std::move(lhs), op](auto rhs) noexcept
         {
-          return visit_binary(std::move(lhs), std::move(rhs), op);
+          return visit_binary(std::move(l), std::move(rhs), op);
         });
-    }
-
-    //
-    // Dispatches binary operations according to operator type
-    //
-    template <detail::generic_type L, detail::generic_type R>
-    value visit_binary(L lhs, R rhs, val_ops op) noexcept
-    {
-      using enum val_ops;
-      switch (op)
-      {
-      case Addition:
-        return add(std::move(lhs), std::move(rhs));
-
-      case Subtraction:
-        return sub(std::move(lhs), std::move(rhs));
-
-      case Multiplication:
-        return mul(std::move(lhs), std::move(rhs));
-
-      case Division:
-        return div(std::move(lhs), std::move(rhs));
-
-      case Modulo:
-        return mod(std::move(lhs), std::move(rhs));
-
-      case BitwiseAnd:
-        return bitwise_and(std::move(lhs), std::move(rhs));
-
-      case BitwiseXor:
-        return bitwise_xor(std::move(lhs), std::move(rhs));
-
-      case BitwiseOr:
-        return bitwise_or(std::move(lhs), std::move(rhs));
-
-      case BinaryPow:
-        return power(std::move(lhs), std::move(rhs));
-
-      case BinaryRoot:
-        return root(std::move(lhs), std::move(rhs));
-
-      default:
-        return get_empty();
-      }
     }
 
     //
