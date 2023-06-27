@@ -72,6 +72,11 @@ namespace tnac::semantics
     //
     sym_ptr lookup(string_t name, scope_ptr parent) noexcept;
 
+    //
+    // Looks up a symbol in the given scope only
+    //
+    sym_ptr scoped_lookup(string_t name, scope_ptr parent) noexcept;
+
   private:
     //
     // Searches for the given name in the name map and returns a pointer to
@@ -88,7 +93,7 @@ namespace tnac::semantics
     // If the scope is found, returns a pointer to the symbol defined in it
     // Otherwise, returns nullptr
     //
-    sym_ptr lookup(scope_map* scopes, scope_ptr parent) noexcept;
+    sym_ptr lookup(scope_map* scopes, scope_ptr parent, bool current) noexcept;
 
     //
     // Adds the given name to the name map and returns an empty scope table

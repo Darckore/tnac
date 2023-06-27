@@ -148,10 +148,22 @@ namespace tnac_tests
 
         void on_error(const tree::error_expr& err) noexcept
         {
-          ASSERT_EQ(err.message(), expectedErr);
+          if (stop) return;
+          
+          if (err.message() == expectedErr)
+          {
+            stop = true;
+            return;
+          }
+
+          if (err.message() != expectedErr)
+          {
+            ASSERT_EQ(err.message(), expectedErr);
+          }
         }
 
         string_t expectedErr{};
+        bool stop{};
       };
 
       template <node_kind kind, std::size_t N>
@@ -738,6 +750,7 @@ namespace tnac_tests
     check_error("1 + a"sv, "Undefined identifier"sv);
     check_error("2*(1 + 2"sv, "Expected ')'"sv);
     check_error("f() ; f = 10"sv, "Expected an assignable object"sv);
+    check_error("f(a, a) ;"sv, "Function parameter redifinition"sv);
   }
   
   TEST(parser, t_cmd_skip)

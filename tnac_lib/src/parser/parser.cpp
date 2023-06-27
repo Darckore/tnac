@@ -420,6 +420,10 @@ namespace tnac
     {
       opt = error_expr(name, "Expected identifier"sv);
     }
+    else if (auto sym = m_sema.find(name.m_value, true))
+    {
+      opt = error_expr(name, "Function parameter redifinition"sv);
+    }
 
     return m_builder.make_param_decl(name, opt);
   }

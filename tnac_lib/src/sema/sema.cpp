@@ -23,9 +23,11 @@ namespace tnac
       m_curScope = m_curScope->m_enclosing;
   }
 
-  sema::sym_ptr sema::find(string_t name) noexcept
+  sema::sym_ptr sema::find(string_t name, bool currentOnly /*= false*/) noexcept
   {
-    return m_symTab.lookup(name, m_curScope);
+    return currentOnly
+      ? m_symTab.scoped_lookup(name, m_curScope)
+      : m_symTab.lookup(name, m_curScope);
   }
 
   void sema::visit_decl(ast::decl& decl) noexcept

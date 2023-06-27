@@ -36,12 +36,18 @@ namespace tnac::semantics
   sym_table::sym_ptr sym_table::lookup(string_t name, scope_ptr parent) noexcept
   {
     auto scopes = lookup(name);
-    return lookup(scopes, parent);
+    return lookup(scopes, parent, false);
+  }
+
+  sym_table::sym_ptr sym_table::scoped_lookup(string_t name, scope_ptr parent) noexcept
+  {
+    auto scopes = lookup(name);
+    return lookup(scopes, parent, true);
   }
 
   // Private members
 
-  sym_table::sym_ptr sym_table::lookup(scope_map* scopes, scope_ptr parent) noexcept
+  sym_table::sym_ptr sym_table::lookup(scope_map* scopes, scope_ptr parent, bool current) noexcept
   {
     sym_ptr res{};
     if (!scopes)
@@ -55,6 +61,8 @@ namespace tnac::semantics
         res = scopeIt->second;
         break;
       }
+      if (current)
+        break;
 
       parent = parent->m_enclosing;
     }
