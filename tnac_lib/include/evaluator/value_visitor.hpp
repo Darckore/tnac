@@ -33,10 +33,10 @@ namespace tnac::eval
   namespace detail
   {
     template <typename F, typename T>
-    concept unary_function = std::is_nothrow_invocable_v<F, T>;
+    concept unary_function = std::is_nothrow_invocable_v<F, const T&>;
 
     template <typename F, typename T1, typename T2>
-    concept binary_function = std::is_nothrow_invocable_v<F, T1, T2>;
+    concept binary_function = std::is_nothrow_invocable_v<F, const T1&, const T2&>;
 
     //
     // Helper object to facilitate easy casts from pointers to entity ids
