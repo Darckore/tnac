@@ -138,7 +138,7 @@ namespace tnac_tests
     static constexpr auto nan = std::numeric_limits<tnac::eval::float_type>::quiet_NaN();
 
     // Int
-    check_eval("2 % 2"sv, 0ll);
+    check_eval("2 % 2"sv, 0.0);
     check_eval("1 % 0"sv, nan);
     check_eval("1 % _complex(1, 2)"sv, cplx{ 1.0, 0.0 });
     check_eval("_complex(1, 2) % 2"sv, cplx{ -1.0, 0.0 });

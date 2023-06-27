@@ -62,6 +62,15 @@ namespace tnac::eval
     concept divisible = generic_type<T> &&
       requires(T l, T r) { l / r; };
 
+    template <typename T>
+    concept modulo_divisible = generic_type<T> &&
+      requires(T l, T r) { l % r; };
+
+    template <typename T>
+    concept fmod_divisible = generic_type<T> &&
+      !std::integral<T> &&
+      requires(T l, T r) { std::fmod(l, r); };
+
     //
     // Helper object to facilitate easy casts from pointers to entity ids
     //
@@ -307,6 +316,34 @@ namespace tnac::eval
     template <detail::generic_type T>
     auto div(T, T) noexcept { return get_empty(); }
 
+    template <detail::fmod_divisible T>
+    auto mod(T lhs, T rhs) noexcept
+    {
+      return visit_binary(std::move(lhs), std::move(rhs),
+        [](auto l, auto r) noexcept
+        {
+          return std::fmod(l, r);
+        });
+    }
+    template <detail::modulo_divisible T>
+    auto mod(T lhs, T rhs) noexcept
+    {
+      if constexpr (is_same_noquals_v<T, int_type>)
+      {
+        return mod(static_cast<float_type>(lhs), static_cast<float_type>(rhs));
+      }
+      else
+      {
+        return visit_binary(std::move(lhs), std::move(rhs),
+          [](auto l, auto r) noexcept
+          {
+            return l % r;
+          });
+      }
+    }
+    template <detail::generic_type T>
+    auto mod(T, T) noexcept { return get_empty(); }
+
     //
     // Dispatches binary operations according to operator type
     //
@@ -357,39 +394,6 @@ namespace tnac::eval
         return get_empty();
       }
     }
-
-    // Modulo
-
-    template <detail::generic_type L, detail::generic_type R>
-    auto mod(L, R) noexcept { return get_empty(); }
-    template <detail::generic_type L, detail::generic_type R>
-      requires (!is_any_v<bool_type, L, R> && requires (L l, R r) { l % r; })
-    auto mod(L lhs, R rhs) noexcept
-    {
-      return visit_binary(lhs, rhs, [](auto l, auto r) noexcept { return l % r; });
-    }
-    template <detail::generic_type R>
-      requires std::is_convertible_v<R, float_type>
-    auto mod(float_type lhs, R rhs) noexcept
-    {
-      return visit_binary(lhs, rhs, [](auto l, auto r) noexcept { return std::fmod(l, r); });
-    }
-    template <detail::generic_type L>
-      requires (std::is_convertible_v<L, float_type> && !is_same_noquals_v<L, float_type>)
-    auto mod(L lhs, float_type rhs) noexcept
-    {
-      return mod(static_cast<float_type>(lhs), rhs);
-    }
-
-    // Corner case. If we have ints, and rhs is 0, we'll do a floating-point modulo
-    // to get NAN instead of an exception
-    auto mod(int_type lhs, int_type rhs) noexcept
-    {
-      return rhs ?
-        mod<int_type, int_type>(lhs, rhs) :
-        mod(static_cast<float_type>(lhs), rhs);
-    }
-
 
     // Power
 
