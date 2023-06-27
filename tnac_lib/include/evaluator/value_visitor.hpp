@@ -40,10 +40,11 @@ namespace tnac::eval
 
     template <typename T>
     concept plusable = generic_type<T> &&
-    requires(T v)
-    {
-      +v;
-    };
+      requires(T v) { +v; };
+
+    template <typename T>
+    concept negatable = generic_type<T> &&
+      requires(T v) { -v; };
 
     //
     // Helper object to facilitate easy casts from pointers to entity ids
@@ -108,13 +109,8 @@ namespace tnac::eval
       m_registry{ reg }
     {}
 
-  private: // Operation support
 
-    //
-    // Unary
-    //
-
-    // Unary plus
+  private: // Unary operations
 
     auto unary_plus(detail::plusable auto operand) noexcept
     {
@@ -124,22 +120,16 @@ namespace tnac::eval
     {
       return unary_plus(static_cast<int_type>(v));
     }
-    template <detail::generic_type T>
+    template <detail::generic_type T> 
     auto unary_plus(T) noexcept
     {
       return get_empty();
     }
 
-
-    // Unary minus
-
-    template <detail::generic_type T>
-      requires requires (T v) { -v; }
-    auto unary_neg(T operand) noexcept
+    auto unary_neg(detail::negatable auto operand) noexcept
     {
       return visit_unary(operand, [](auto val) noexcept { return -val; });
     }
-    template <>
     auto unary_neg(bool v) noexcept
     {
       return unary_neg(static_cast<int_type>(v));
@@ -150,10 +140,24 @@ namespace tnac::eval
       return get_empty();
     }
 
+    template <detail::generic_type T>
+    auto bitwise_not(T operand) noexcept
+    {
+      if (auto intOp = get_caster<int_type>()(operand))
+        return visit_unary(*intOp, [](auto val) noexcept { return ~val; });
 
-    //
-    // \Unary
-    //
+      return get_empty();
+    }
+
+    template <detail::generic_type T>
+    auto logical_not(T operand) noexcept
+    {
+      auto boolOp = get_caster<bool_type>()(operand);
+      return visit_unary(boolOp && *boolOp, [](auto val) noexcept { return !val; });
+    }
+
+
+  private: // Binary arithmetic operations
 
     // Addition
 
@@ -292,17 +296,6 @@ namespace tnac::eval
     }
 
 
-    // Bitwise not
-
-    template <detail::generic_type T>
-    auto bitwise_not(T operand) noexcept
-    {
-      if (auto intOp = get_caster<int_type>()(operand))
-        return visit_unary(*intOp, [](auto val) noexcept { return ~val; });
-
-      return get_empty();
-    }
-
 
     // Bitwise and
 
@@ -344,18 +337,6 @@ namespace tnac::eval
       auto intR = caster(rhs);
       if (intL && intR)
         return visit_binary(*intL, *intR, [](auto l, auto r) noexcept { return l | r; });
-
-      return get_empty();
-    }
-
-
-    // Logical not
-
-    template <detail::generic_type T>
-    auto logical_not(T operand) noexcept
-    {
-      if (auto boolOp = get_caster<bool_type>()(operand))
-        return visit_unary(*boolOp, [](auto val) noexcept { return !val; });
 
       return get_empty();
     }
