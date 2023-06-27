@@ -522,129 +522,6 @@ namespace tnac::eval
   // Missing operators
   //
 
-  inline complex_type operator+(const complex_type& l, int_type r) noexcept
-  {
-    return l + static_cast<float_type>(r);
-  }
-  inline complex_type operator+(int_type l, const complex_type& r) noexcept
-  {
-    return r + l;
-  }
-  inline complex_type operator+(const complex_type& l, bool_type r) noexcept
-  {
-    return l + static_cast<float_type>(r);
-  }
-  inline complex_type operator+(bool_type l, const complex_type& r) noexcept
-  {
-    return r + l;
-  }
-  inline complex_type operator+(const complex_type& l, const fraction_type& r) noexcept
-  {
-    return l + r.to<float_type>();
-  }
-  inline complex_type operator+(const fraction_type& l, const complex_type& r) noexcept
-  {
-    return r + l;
-  }
-
-  inline complex_type operator-(const complex_type& l, int_type r) noexcept
-  {
-    return l - static_cast<float_type>(r);
-  }
-  inline complex_type operator-(int_type l, const complex_type& r) noexcept
-  {
-    return static_cast<float_type>(l) - r;
-  }
-  inline complex_type operator-(const complex_type& l, bool_type r) noexcept
-  {
-    return l - static_cast<float_type>(r);
-  }
-  inline complex_type operator-(bool_type l, const complex_type& r) noexcept
-  {
-    return static_cast<float_type>(l) - r;
-  }
-  inline complex_type operator-(const complex_type& l, const fraction_type& r) noexcept
-  {
-    return l - r.to<float_type>();
-  }
-  inline complex_type operator-(const fraction_type& l, const complex_type& r) noexcept
-  {
-    return l.to<float_type>() - r;
-  }
-
-  inline complex_type operator*(const complex_type& l, int_type r) noexcept
-  {
-    return l * static_cast<float_type>(r);
-  }
-  inline complex_type operator*(int_type l, const complex_type& r) noexcept
-  {
-    return r * l;
-  }
-  inline complex_type operator*(const complex_type& l, bool_type r) noexcept
-  {
-    return l * static_cast<float_type>(r);
-  }
-  inline complex_type operator*(bool_type l, const complex_type& r) noexcept
-  {
-    return r * l;
-  }
-  inline complex_type operator*(const complex_type& l, const fraction_type& r) noexcept
-  {
-    return l * r.to<float_type>();
-  }
-  inline complex_type operator*(const fraction_type& l, const complex_type& r) noexcept
-  {
-    return r * l;
-  }
-
-  inline complex_type operator/(const complex_type& l, int_type r) noexcept
-  {
-    return l / static_cast<float_type>(r);
-  }
-  inline complex_type operator/(int_type l, const complex_type& r) noexcept
-  {
-    return static_cast<float_type>(l) / r;
-  }
-  inline complex_type operator/(const complex_type& l, bool_type r) noexcept
-  {
-    return l / static_cast<float_type>(r);
-  }
-  inline complex_type operator/(bool_type l, const complex_type& r) noexcept
-  {
-    return static_cast<float_type>(l) / r;
-  }
-  inline complex_type operator/(const complex_type& l, const fraction_type& r) noexcept
-  {
-    return l / r.to<float_type>();
-  }
-  inline complex_type operator/(const fraction_type& l, const complex_type& r) noexcept
-  {
-    return l.to<float_type>() / r;
-  }
-
-  template <detail::expr_result T> requires std::is_arithmetic_v<T>
-  inline complex_type operator%(const complex_type& l, T r) noexcept
-  {
-    return { std::fmod(l.real(), static_cast<float_type>(r)),
-             std::fmod(l.imag(), static_cast<float_type>(r)) };
-  }
-  template <detail::expr_result T> requires std::is_arithmetic_v<T>
-  inline float_type operator%(const fraction_type& l, T r) noexcept
-  {
-    return std::fmod(l.to<float_type>(), static_cast<float_type>(r));
-  }
-
-  template <detail::expr_result T> requires std::is_arithmetic_v<T>
-  inline float_type operator%(T l, const complex_type& r) noexcept
-  {
-    return std::fmod(static_cast<float_type>(l), r.real());
-  }
-  template <detail::expr_result T> requires std::is_arithmetic_v<T>
-  inline float_type operator%(T l, const fraction_type& r) noexcept
-  {
-    return std::fmod(static_cast<float_type>(l), r.to<float_type>());
-  }
-
   inline complex_type operator%(const complex_type& l, const complex_type& r) noexcept
   {
     const auto quotient = l / r;
@@ -653,16 +530,7 @@ namespace tnac::eval
   }
   inline float_type   operator%(const fraction_type& l, const fraction_type& r) noexcept
   {
-    return l % r.to<float_type>();
-  }
-
-  inline complex_type operator%(const complex_type& l, const fraction_type& r) noexcept
-  {
-    return l % r.to<float_type>();
-  }
-  inline float_type   operator%(const fraction_type& l, const complex_type& r) noexcept
-  {
-    return l.to<float_type>() % r;
+    return std::fmod(l.to<float_type>(), r.to<float_type>());
   }
 
 }
