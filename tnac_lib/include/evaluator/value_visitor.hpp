@@ -498,7 +498,7 @@ namespace tnac::eval
     }
 
     //
-    // Intermadiate binary visitor
+    // Intermediate binary visitor
     // Dispatches the right operand according to its type
     //
     template <detail::generic_type L>
