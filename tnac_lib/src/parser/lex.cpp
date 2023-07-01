@@ -37,7 +37,8 @@ namespace tnac
       constexpr auto is_operator(char_t c) noexcept
       {
         constexpr std::array ops{
-          '+', '-', '~', '*', '/', '%', '&', '^', '|', '=', '!'
+          '+', '-', '~', '*', '/', '%', '&', '^', '|', '=', '!',
+          '<', '>'
         };
 
         return is_in_range(c, ops.begin(), ops.end());
@@ -496,7 +497,15 @@ namespace tnac
     switch (next)
     {
     case '!':
-      resKind = Exclamation;
+      resKind = try_next('=', NotEq, Exclamation);
+      break;
+
+    case '<':
+      resKind = try_next('=', LessEq, Less);
+      break;
+
+    case '>':
+      resKind = try_next('=', GreaterEq, Greater);
       break;
 
     case '+':
@@ -536,7 +545,7 @@ namespace tnac
       break;
 
     case '=':
-      resKind = Assign;
+      resKind = try_next('=', Eq, Assign);
       break;
 
     default:

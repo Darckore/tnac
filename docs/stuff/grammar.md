@@ -23,8 +23,16 @@ decl-expr:
   func-decl
 
 assign-expr:
-  bit-or-expr
+  equality-expr
   id-expr assign-operator assign-expr
+
+equality-expr:
+  relational-expr
+  equality-expr equality-operator relational-expr
+
+relational-expr:
+  bit-or-expr
+  relational-expr relational-operator bit-or-expr
 
 bit-or-expr:
   bit-xor-expr
@@ -174,6 +182,12 @@ hex-digit-sequence:
 assign-operator: one of
   =
 
+equality-operator: one of
+  == !=
+
+relational-operator: one of
+  < <= > >=
+
 pow-operator: one of
   ** //
 
@@ -187,7 +201,7 @@ unary-operator: one of
   + - ~ !
 
 operator: one of
-  + - ~ * / % | ^ & = ** //
+  + - ~ * / % | ^ & = ** // < > <= >= == !=
 
 string-literal:
   ' anything '

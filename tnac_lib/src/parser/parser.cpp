@@ -32,12 +32,27 @@ namespace tnac
       {
         return tok.is(token::Assign);
       }
+      constexpr auto is_relational(const token& tok) noexcept
+      {
+        return tok.is_any(token::Less, token::LessEq,
+                          token::Greater, token::GreaterEq);
+      }
+      constexpr auto is_eq_comparison(const token& tok) noexcept
+      {
+        return tok.is_any(token::Eq, token::NotEq);
+      }
 
       constexpr auto match(op_precedence prec, const token& tok) noexcept
       {
         using enum op_precedence::prec;
         switch (*prec)
         {
+        case Equality:
+          return is_eq_comparison(tok);
+
+        case Relational:
+          return is_relational(tok);
+
         case BitOr:
           return tok.is(token::Pipe);
 
@@ -487,7 +502,7 @@ namespace tnac
 
   ast::expr* parser::binary_expr() noexcept
   {
-    return binary_expr(prec::BitOr);
+    return binary_expr(prec::Equality);
   }
 
   ast::expr* parser::binary_expr(prec precedence) noexcept

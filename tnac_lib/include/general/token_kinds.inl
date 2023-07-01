@@ -29,6 +29,14 @@ Pipe,
 Pow,
 Root,
 
+Eq,
+NotEq,
+
+Less,
+LessEq,
+Greater,
+GreaterEq,
+
 // Punctuation
 ParenOpen,
 ParenClose,
