@@ -89,6 +89,13 @@ namespace tnac::eval
     concept eq_comparable = generic_type<T> &&
       requires(T l, T r) { eval::eq(l, r); };
 
+    template <typename T>
+    concept rel_comparable = generic_type<T> &&
+      requires(T l, T r) { eval::less(l, r); };
+
+    template <typename T>
+    concept fully_comparable = eq_comparable<T> && rel_comparable<T>;
+
     //
     // Helper object to facilitate easy casts from pointers to entity ids
     //
@@ -427,6 +434,54 @@ namespace tnac::eval
     template <detail::generic_type T>
     auto equal(T, T, bool) noexcept { return get_empty(); }
 
+    template <detail::rel_comparable T>
+    auto less(T lhs, T rhs) noexcept
+    {
+      return visit_binary(std::move(lhs), std::move(rhs),
+        [](auto l, auto r) noexcept
+        {
+          return eval::less(l, r);
+        });
+    }
+    template <detail::generic_type T>
+    auto less(T, T) noexcept { return get_empty(); }
+
+    template <detail::fully_comparable T>
+    auto less_eq(T lhs, T rhs) noexcept
+    {
+      return visit_binary(std::move(lhs), std::move(rhs),
+        [](auto l, auto r) noexcept
+        {
+          return eval::eq(l, r) || eval::less(l, r);
+        });
+    }
+    template <detail::generic_type T>
+    auto less_eq(T, T) noexcept { return get_empty(); }
+
+    template <detail::fully_comparable T>
+    auto greater(T lhs, T rhs) noexcept
+    {
+      return visit_binary(std::move(lhs), std::move(rhs),
+        [](auto l, auto r) noexcept
+        {
+          return !eval::eq(l, r) && !eval::less(l, r);
+        });
+    }
+    template <detail::generic_type T>
+    auto greater(T, T) noexcept { return get_empty(); }
+
+    template <detail::fully_comparable T>
+    auto greater_eq(T lhs, T rhs) noexcept
+    {
+      return visit_binary(std::move(lhs), std::move(rhs),
+        [](auto l, auto r) noexcept
+        {
+          return !eval::less(l, r);
+        });
+    }
+    template <detail::generic_type T>
+    auto greater_eq(T, T) noexcept { return get_empty(); }
+
     //
     // Dispatches binary operations according to operator type
     //
@@ -449,12 +504,12 @@ namespace tnac::eval
       case Division:       return div(std::move(*lhs), std::move(*rhs));
       case Modulo:         return mod(std::move(*lhs), std::move(*rhs));
 
-      //case RelLess:
-      //case RelLessEq:
-      //case RelGr:
-      //case RelGrEq:
-      case Equal:  return equal(std::move(*lhs), std::move(*rhs), true);
-      case NEqual: return equal(std::move(*lhs), std::move(*rhs), false);
+      case RelLess:   return less(std::move(*lhs), std::move(*rhs));
+      case RelLessEq: return less_eq(std::move(*lhs), std::move(*rhs));
+      case RelGr:     return greater(std::move(*lhs), std::move(*rhs));
+      case RelGrEq:   return greater_eq(std::move(*lhs), std::move(*rhs));
+      case Equal:     return equal(std::move(*lhs), std::move(*rhs), true);
+      case NEqual:    return equal(std::move(*lhs), std::move(*rhs), false);
 
       case BitwiseAnd: return bitwise_and(std::move(*lhs), std::move(*rhs));
       case BitwiseXor: return bitwise_xor(std::move(*lhs), std::move(*rhs));

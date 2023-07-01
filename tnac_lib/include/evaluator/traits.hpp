@@ -505,6 +505,17 @@ namespace tnac::eval
 
     template <typename T>
     concept has_eq = requires(T t) { utils::eq(t, t); };
+
+    template <typename T>
+    concept has_less = requires(T t) { t < t; };
+
+  }
+
+  inline auto modulus(const complex_type& val) noexcept
+  {
+    const auto r = val.real();
+    const auto i = val.imag();
+    return std::sqrt(r * r + i * i);
   }
 
   template <typename T>
@@ -555,6 +566,22 @@ namespace tnac::eval
   inline auto eq(const function_type& lhs, const function_type& rhs) noexcept
   {
     return lhs == rhs;
+  }
+
+
+  template <typename T>
+  auto less(const T&, const T&) noexcept;
+
+  template <detail::has_less T>
+  inline auto less(const T& lhs, const T& rhs) noexcept
+  {
+    return lhs < rhs;
+  }
+
+  template <>
+  inline auto less(const complex_type& lhs, const complex_type& rhs) noexcept
+  {
+    return modulus(lhs) < modulus(rhs);
   }
 
 }
