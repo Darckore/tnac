@@ -133,6 +133,13 @@ namespace tnac
     //
     bool preview(ast::call_expr& call) noexcept;
 
+    //
+    // Previews a binary
+    // If it is not a logical expression, moves on
+    // Else, calculates operands in order to short-circuit
+    //
+    bool preview(ast::binary_expr& expr) noexcept;
+
   private:
     //
     // Produces an evaluation error
@@ -163,6 +170,11 @@ namespace tnac
     // Returns true if a return is active
     //
     bool return_path() const noexcept;
+
+    //
+    // Converts a value to bool
+    //
+    bool to_bool(eval::value val) const noexcept;
 
   private:
     eval::value_visitor m_visitor;

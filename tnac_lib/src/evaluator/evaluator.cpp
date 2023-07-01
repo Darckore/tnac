@@ -51,7 +51,11 @@ namespace tnac
         default: return InvalidOp;
         }
       }
-    
+      constexpr auto is_logical(tok_kind tk) noexcept
+      {
+        return utils::eq_any(tk, tok_kind::LogAnd, tok_kind::LogOr);
+      }
+
       //
       // Helper object for instantiations
       //
@@ -164,9 +168,15 @@ namespace tnac
     if (return_path())
       return;
 
+    const auto opcode = binary.op().m_kind;
+
+    // We've already calculated logical && and || at this point
+    if (detail::is_logical(opcode))
+      return;
+
     auto left = binary.left().value();
     auto right = binary.right().value();
-    const auto opCode = detail::conv_binary(binary.op().m_kind);
+    const auto opCode = detail::conv_binary(opcode);
     binary.eval_result(m_visitor.visit_binary(&binary, left, right, opCode));
   }
 
@@ -349,6 +359,38 @@ namespace tnac
     return false;
   }
 
+  bool evaluator::preview(ast::binary_expr& expr) noexcept
+  {
+    if (return_path())
+      return false;
+
+    const auto opcode = expr.op().m_kind;
+    if (!detail::is_logical(opcode))
+      return true;
+
+    auto&& lhs = expr.left();
+    base::operator()(&lhs);
+
+    auto lval = to_bool(lhs.value());
+
+    bool res{};
+    if ((!lval && opcode == tok_kind::LogAnd) ||
+        ( lval && opcode == tok_kind::LogOr))
+    {
+      res = lval;
+    }
+    else
+    {
+      auto&& rhs = expr.right();
+      base::operator()(&rhs);
+      auto rval  = to_bool(rhs.value());
+      res = (opcode == tok_kind::LogAnd) ? (lval && rval) : (lval || rval);
+    }
+
+    expr.eval_result(m_visitor.visit_bool_literal(res));
+    return false;
+  }
+
   // Private members
 
   void evaluator::on_error(const token& pos, string_t msg) noexcept
@@ -421,4 +463,12 @@ namespace tnac
   {
     return m_return;
   }
+
+  bool evaluator::to_bool(eval::value val) const noexcept
+  {
+    auto resVal = eval::cast_value<eval::bool_type>(val);
+    UTILS_ASSERT(resVal.has_value());
+    return *resVal;
+  }
+
 }
