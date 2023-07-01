@@ -236,6 +236,52 @@ namespace tnac_tests
     check_eval("2 | 9 / 3"sv, 2ll | 3ll);
   }
 
+  TEST(evaluation, t_comparisons)
+  {
+    using detail::check_eval;
+    using detail::check_invalid;
+
+    // Eq
+
+    check_eval("2 == 2"sv, true);
+    check_eval("2 == 3"sv, false);
+    check_eval("2 == 2.0"sv, true);
+    check_eval("2 == _complex(_fraction(4, 2))"sv, true);
+    check_eval("_true == _complex(_fraction(2, 2))"sv, true);
+
+    // Not eq
+
+    check_eval("2 != 2"sv, false);
+    check_eval("2 != 3"sv, true);
+    check_eval("2 != 2.0"sv, false);
+    check_eval("2 != _complex(_fraction(4, 2))"sv, false);
+    check_eval("_true != _complex(_fraction(2, 2))"sv, false);
+
+    // Rel
+
+    check_eval("1 < 2"sv, true);
+    check_eval("2 > 1"sv, true);
+    check_eval("2 < 2"sv, false);
+    check_eval("2 <= 2"sv, true);
+    check_eval("2 > 2"sv, false);
+    check_eval("2 >= 2"sv, true);
+
+
+    // Funcs
+    
+    check_eval("f(); f == f"sv, true);
+    check_eval("f1(); f2(); f1 == f2"sv, false);
+    check_invalid("f(); f < 1"sv);
+    check_invalid("f1(); f2(); f1 < f2"sv);
+
+    // Weird
+
+    check_eval("2 > 3 < _true"sv, true);
+    check_eval("1 == 2 == 0"sv, true);
+    check_eval("2 > 3 == _complex(3, 4) < _fraction(10, 6)"sv, true);
+
+  }
+
   TEST(evaluation, t_binary)
   {
     using detail::check_eval;
