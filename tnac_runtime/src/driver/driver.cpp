@@ -4,11 +4,41 @@
 
 namespace tnac_rt
 {
+  namespace
+  {
+    void on_terminate() noexcept
+    {
+      std::cerr << "std::terminate called\n";
+    }
+
+    void on_failed_alloc() noexcept
+    {
+      std::cerr << "memory allocation failed\n";
+    }
+
+    struct handler_reg final
+    {
+      CLASS_SPECIALS_NONE_CUSTOM(handler_reg);
+
+      handler_reg() noexcept
+      {
+        utils::set_new(on_failed_alloc);
+        utils::set_terminate(-1, on_terminate);
+      }
+    };
+
+    void set_terminate_handlers() noexcept
+    {
+      static handler_reg _{};
+    }
+  }
+
   // Special members
 
   driver::driver(int argCount, char** args) noexcept :
     m_tnac{ 1000 } // todo: configurable
   {
+    set_terminate_handlers();
     init_handlers();
     init_commands();
     run(argCount, args);
