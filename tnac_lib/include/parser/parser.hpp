@@ -21,6 +21,8 @@ namespace tnac
     public:
       enum class prec : std::uint8_t
       {
+        LogicalOr,
+        LogicalAnd,
         Equality,
         Relational,
         BitOr,
@@ -35,6 +37,8 @@ namespace tnac
 
     private:
       inline static constexpr std::array precOrder{
+        LogicalAnd,
+        Equality,
         Relational,
         BitOr,
         BitXor,

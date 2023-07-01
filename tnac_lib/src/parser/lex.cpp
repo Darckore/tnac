@@ -533,7 +533,7 @@ namespace tnac
       break;
 
     case '&':
-      resKind = Amp;
+      resKind = try_next('&', LogAnd, Amp);
       break;
 
     case '^':
@@ -541,7 +541,7 @@ namespace tnac
       break;
 
     case '|':
-      resKind = Pipe;
+      resKind = try_next('|', LogOr, Pipe);
       break;
 
     case '=':

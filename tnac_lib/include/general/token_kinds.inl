@@ -37,6 +37,9 @@ LessEq,
 Greater,
 GreaterEq,
 
+LogAnd,
+LogOr,
+
 // Punctuation
 ParenOpen,
 ParenClose,

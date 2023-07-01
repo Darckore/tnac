@@ -41,12 +41,22 @@ namespace tnac
       {
         return tok.is_any(token::Eq, token::NotEq);
       }
+      constexpr auto is_logical(const token& tok) noexcept
+      {
+        return tok.is_any(token::LogAnd, token::LogOr);
+      }
 
       constexpr auto match(op_precedence prec, const token& tok) noexcept
       {
         using enum op_precedence::prec;
         switch (*prec)
         {
+        case LogicalOr:
+          return tok.is(token::LogOr);
+
+        case LogicalAnd:
+          return tok.is(token::LogAnd);
+
         case Equality:
           return is_eq_comparison(tok);
 
@@ -502,7 +512,7 @@ namespace tnac
 
   ast::expr* parser::binary_expr() noexcept
   {
-    return binary_expr(prec::Equality);
+    return binary_expr(prec::LogicalOr);
   }
 
   ast::expr* parser::binary_expr(prec precedence) noexcept
