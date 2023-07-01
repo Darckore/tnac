@@ -19,6 +19,12 @@ namespace tnac::eval
     Multiplication,
     Division,
     Modulo,
+    RelLess,
+    RelLessEq,
+    RelGr,
+    RelGrEq,
+    Equal,
+    NEqual,
     BitwiseAnd,
     BitwiseXor,
     BitwiseOr,
@@ -79,6 +85,10 @@ namespace tnac::eval
     concept invertible = generic_type<T> &&
       requires(T op) { eval::inv(op); };
 
+    template <typename T>
+    concept eq_comparable = generic_type<T> &&
+      requires(T l, T r) { eval::eq(l, r); };
+
     //
     // Helper object to facilitate easy casts from pointers to entity ids
     //
@@ -119,7 +129,9 @@ namespace tnac::eval
       return utils::eq_any(op, Addition, Subtraction, 
                                Multiplication, Division, Modulo,
                                BitwiseAnd, BitwiseOr, BitwiseXor,
-                               BinaryPow, BinaryRoot);
+                               BinaryPow, BinaryRoot,
+                               RelLess, RelLessEq, RelGr, RelGrEq,
+                               Equal, NEqual);
     }
 
   }
@@ -201,21 +213,12 @@ namespace tnac::eval
       using enum val_ops;
       switch (op)
       {
-      case UnaryNegation:
-        return unary_neg(std::move(*val));
+      case UnaryNegation:   return unary_neg(std::move(*val));
+      case UnaryPlus:       return unary_plus(std::move(*val));
+      case UnaryBitwiseNot: return bitwise_not(std::move(*val));
+      case LogicalNot:      return logical_not(std::move(*val));
 
-      case UnaryPlus:
-        return unary_plus(std::move(*val));
-
-      case UnaryBitwiseNot:
-        return bitwise_not(std::move(*val));
-
-      case LogicalNot:
-        return logical_not(std::move(*val));
-
-      default:
-        UTILS_ASSERT(false);
-        return get_empty();
+      default: return get_empty();
       }
     }
 
@@ -268,6 +271,8 @@ namespace tnac::eval
 
       return get_empty();
     }
+
+    // Simple arithmetic
 
     template <detail::addable T>
     auto add(T lhs, T rhs) noexcept
@@ -324,6 +329,8 @@ namespace tnac::eval
     template <detail::generic_type T>
     auto div(T, T) noexcept { return get_empty(); }
 
+    // Modulo
+
     template <detail::fmod_divisible T>
     auto mod(T lhs, T rhs) noexcept
     {
@@ -351,6 +358,8 @@ namespace tnac::eval
     }
     template <detail::generic_type T>
     auto mod(T, T) noexcept { return get_empty(); }
+
+    // Pow and root
 
     template <detail::generic_type T>
       requires (std::is_arithmetic_v<T>)
@@ -406,6 +415,18 @@ namespace tnac::eval
     template <detail::generic_type T>
     auto root(T, T) noexcept { return get_empty(); }
 
+    // Relation and equality
+
+    template <detail::eq_comparable T>
+    auto equal(T lhs, T rhs, bool compareForEquality) noexcept
+    {
+      const auto cmp = eval::eq(lhs, rhs);
+      const auto res = compareForEquality ? cmp : !cmp;
+      return reg_value(res);
+    }
+    template <detail::generic_type T>
+    auto equal(T, T, bool) noexcept { return get_empty(); }
+
     //
     // Dispatches binary operations according to operator type
     //
@@ -422,38 +443,27 @@ namespace tnac::eval
       using enum val_ops;
       switch (op)
       {
-      case Addition:
-        return add(std::move(*lhs), std::move(*rhs));
+      case Addition:       return add(std::move(*lhs), std::move(*rhs));
+      case Subtraction:    return sub(std::move(*lhs), std::move(*rhs));
+      case Multiplication: return mul(std::move(*lhs), std::move(*rhs));
+      case Division:       return div(std::move(*lhs), std::move(*rhs));
+      case Modulo:         return mod(std::move(*lhs), std::move(*rhs));
 
-      case Subtraction:
-        return sub(std::move(*lhs), std::move(*rhs));
+      //case RelLess:
+      //case RelLessEq:
+      //case RelGr:
+      //case RelGrEq:
+      case Equal:  return equal(std::move(*lhs), std::move(*rhs), true);
+      case NEqual: return equal(std::move(*lhs), std::move(*rhs), false);
 
-      case Multiplication:
-        return mul(std::move(*lhs), std::move(*rhs));
+      case BitwiseAnd: return bitwise_and(std::move(*lhs), std::move(*rhs));
+      case BitwiseXor: return bitwise_xor(std::move(*lhs), std::move(*rhs));
+      case BitwiseOr:  return bitwise_or(std::move(*lhs), std::move(*rhs));
 
-      case Division:
-        return div(std::move(*lhs), std::move(*rhs));
+      case BinaryPow:  return power(std::move(*lhs), std::move(*rhs));
+      case BinaryRoot: return root(std::move(*lhs), std::move(*rhs));
 
-      case Modulo:
-        return mod(std::move(*lhs), std::move(*rhs));
-
-      case BitwiseAnd:
-        return bitwise_and(std::move(*lhs), std::move(*rhs));
-
-      case BitwiseXor:
-        return bitwise_xor(std::move(*lhs), std::move(*rhs));
-
-      case BitwiseOr:
-        return bitwise_or(std::move(*lhs), std::move(*rhs));
-
-      case BinaryPow:
-        return power(std::move(*lhs), std::move(*rhs));
-
-      case BinaryRoot:
-        return root(std::move(*lhs), std::move(*rhs));
-
-      default:
-        return get_empty();
+      default: return get_empty();
       }
     }
 

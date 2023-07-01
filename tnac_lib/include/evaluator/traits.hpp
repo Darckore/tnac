@@ -502,26 +502,59 @@ namespace tnac::eval
   {
     template <typename T>
     concept has_invert = requires(T t) { utils::inv(t); };
+
+    template <typename T>
+    concept has_eq = requires(T t) { utils::eq(t, t); };
   }
 
   template <typename T>
-  auto inv(T) noexcept;
+  auto inv(const T&) noexcept;
   
   template <detail::has_invert T>
-  inline auto inv(T val) noexcept
+  inline auto inv(const T& val) noexcept
   {
     return utils::inv(val);
   }
 
   template <>
-  inline auto inv(int_type i) noexcept
+  inline auto inv(const int_type& i) noexcept
   {
     return inv(static_cast<float_type>(i));
   }
 
   template <>
-  inline auto inv(complex_type cplx) noexcept
+  inline auto inv(const complex_type& cplx) noexcept
   {
     return 1.0 / cplx;
   }
+
+
+  template <typename T>
+  auto eq(const T&, const T&) noexcept;
+
+  template <detail::has_eq T>
+  inline auto eq(const T& lhs, const T& rhs) noexcept
+  {
+    return utils::eq(lhs, rhs);
+  }
+
+  template <>
+  inline auto eq(const complex_type& lhs, const complex_type& rhs) noexcept
+  {
+    return eq(lhs.real(), rhs.real())
+        && eq(lhs.imag(), rhs.imag());
+  }
+
+  template <>
+  inline auto eq(const fraction_type& lhs, const fraction_type& rhs) noexcept
+  {
+    return lhs == rhs;
+  }
+
+  template <>
+  inline auto eq(const function_type& lhs, const function_type& rhs) noexcept
+  {
+    return lhs == rhs;
+  }
+
 }

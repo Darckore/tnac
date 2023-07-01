@@ -14,20 +14,12 @@ namespace tnac
         using enum eval::val_ops;
         switch (tk)
         {
-        case Exclamation:
-          return LogicalNot;
-
-        case Plus:
-          return UnaryPlus;
-
-        case Minus:
-          return UnaryNegation;
-
-        case Tilde:
-          return UnaryBitwiseNot;
+        case Exclamation: return LogicalNot;
+        case Plus:        return UnaryPlus;
+        case Minus:       return UnaryNegation;
+        case Tilde:       return UnaryBitwiseNot;
           
-        default:
-          return InvalidOp;
+        default: return InvalidOp;
         }
       }
       constexpr auto conv_binary(tok_kind tk) noexcept
@@ -36,38 +28,27 @@ namespace tnac
         using enum eval::val_ops;
         switch (tk)
         {
-        case Plus:
-          return Addition;
+        case Plus:     return Addition;
+        case Minus:    return Subtraction;
+        case Asterisk: return Multiplication;
+        case Slash:    return Division;
+        case Percent:  return Modulo;
 
-        case Minus:
-          return Subtraction;
+        case Less:      return RelLess;
+        case LessEq:    return RelLessEq;
+        case Greater:   return RelGr;
+        case GreaterEq: return RelGrEq;
+        case Eq:        return Equal;
+        case NotEq:     return NEqual;
 
-        case Asterisk:
-          return Multiplication;
+        case Amp:  return BitwiseAnd;
+        case Hat:  return BitwiseXor;
+        case Pipe: return BitwiseOr;
 
-        case Slash:
-          return Division;
+        case Pow:  return BinaryPow;
+        case Root: return BinaryRoot;
 
-        case Percent:
-          return Modulo;
-
-        case Amp:
-          return BitwiseAnd;
-
-        case Hat:
-          return BitwiseXor;
-
-        case Pipe:
-          return BitwiseOr;
-
-        case Pow:
-          return BinaryPow;
-
-        case Root:
-          return BinaryRoot;
-
-        default:
-          return InvalidOp;
+        default: return InvalidOp;
         }
       }
     

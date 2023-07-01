@@ -109,7 +109,10 @@ namespace tnac_rt::out
   {
     eval::on_value(val, [this](auto val)
       {
-        if constexpr (tnac::is_same_noquals_v<decltype(val), tnac::eval::int_type>)
+        using vt = decltype(val);
+        using tnac::eval::int_type;
+        using tnac::eval::bool_type;
+        if constexpr (tnac::is_same_noquals_v<vt, int_type>)
         {
           if (m_base == 10)
           {
@@ -144,6 +147,10 @@ namespace tnac_rt::out
           auto basePtr = conv.data();
           std::to_chars(basePtr, basePtr + conv.size(), outVal, m_base);
           out() << conv;
+        }
+        else if constexpr (tnac::is_same_noquals_v<vt, bool_type>)
+        {
+          out() << (val ? "_true" : "_false");
         }
         else
         {
