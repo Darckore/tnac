@@ -11,8 +11,8 @@ expr-list:
   expr-list : ret-expr
 
 ret-expr:
-  _ret bit-or-expr
   expr
+  _ret logical-or-expr
 
 expr:
   decl-expr
@@ -88,7 +88,7 @@ func-decl:
   undeclared-identifier func-params func-body
 
 func-body:
-  ''
+  ';'
   expr-list ';'
 
 func-params:
