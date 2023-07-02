@@ -200,7 +200,7 @@ namespace tnac::eval
     auto logical_not(T operand) noexcept
     {
       auto boolOp = get_caster<bool_type>()(std::move(operand));
-      return visit_unary(boolOp && *boolOp, [](auto val) noexcept { return !val; });
+      return visit_unary(boolOp.value_or(false), [](auto val) noexcept { return !val; });
     }
 
     //
