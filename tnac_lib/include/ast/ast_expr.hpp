@@ -449,4 +449,117 @@ namespace tnac::ast
     expr* m_callee{};
   };
 
+
+  //
+  // Pattern
+  // Used in conditional expressions
+  //
+  class pattern final : public expr
+  {
+  private:
+    friend class builder;
+
+  public:
+    CLASS_SPECIALS_NONE(pattern);
+
+    virtual ~pattern() noexcept;
+
+  protected:
+    pattern(const token& op, expr* checkedExpr, scope& body) noexcept;
+
+  public:
+    //
+    // Checks whether the pattern is a default one
+    // Returns true is the checked expr is null
+    //
+    bool is_default() const noexcept;
+
+    //
+    // Returns the checked expression
+    //
+    // const version
+    // 
+    const expr& checked() const noexcept;
+
+    //
+    // Returns the checked expression
+    //
+    expr& checked() noexcept;
+
+    //
+    // Returns the body
+    //
+    // const version
+    // 
+    const scope& body() const noexcept;
+
+    //
+    // Returns the body
+    //
+    scope& body() noexcept;
+
+    //
+    // Checks whether the pattern operator is implicit
+    //
+    bool has_implicit_op() const noexcept;
+
+  private:
+    expr*  m_checked{};
+    scope* m_body{};
+  };
+
+
+  //
+  // Conditional expression
+  // Represents a pattern collection a condition is checked against
+  //
+  class cond_expr final : public expr
+  {
+  private:
+    friend class builder;
+
+  public:
+    using child_type    = pattern;
+    using pointer       = child_type*;
+    using const_pointer = const child_type*;
+
+    using child_list = std::vector<pointer>;
+
+  public:
+    CLASS_SPECIALS_NONE(cond_expr);
+
+    virtual ~cond_expr() noexcept;
+
+  protected:
+    cond_expr(expr& condition, child_list children) noexcept;
+
+  public:
+    //
+    // Returns the condition
+    // 
+    // const version
+    //
+    const expr& cond() const noexcept;
+
+    //
+    // Returns the condition
+    // 
+    expr& cond() noexcept;
+
+    //
+    // Returns the pattern collection
+    // 
+    // const version
+    //
+    const child_list& patterns() const noexcept;
+
+    //
+    // Returns the pattern collection
+    // 
+    child_list& patterns() noexcept;
+
+  private:
+    expr* m_cond{};
+    child_list m_children;
+  };
 }

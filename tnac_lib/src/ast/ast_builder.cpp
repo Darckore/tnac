@@ -73,6 +73,17 @@ namespace tnac::ast
     return make<assign_expr>(left, right, op);
   }
 
+  pattern* builder::make_pattern(const token& op, expr* checkedExpr, scope& body) noexcept
+  {
+    return make<pattern>(op, checkedExpr, body);
+  }
+
+  cond_expr* builder::make_conditional(expr& condition, cond_expr::child_list children) noexcept
+  {
+    return make<cond_expr>(condition, std::move(children));
+  }
+
+
   // Declarators
 
   decl_expr* builder::make_decl_expr(decl& d) noexcept

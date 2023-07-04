@@ -267,4 +267,83 @@ namespace tnac::ast
     return FROM_CONST(args);
   }
 
+
+  // Pattern
+
+  pattern::~pattern() noexcept = default;
+
+  pattern::pattern(const token& op, expr* checkedExpr, scope& body) noexcept :
+    expr{ kind::Pattern, op },
+    m_checked{ checkedExpr },
+    m_body{ &body }
+  {
+    assume_ancestry(checkedExpr);
+    assume_ancestry(&body);
+  }
+
+  bool pattern::is_default() const noexcept
+  {
+    return !static_cast<bool>(m_checked);
+  }
+
+  const expr& pattern::checked() const noexcept
+  {
+    UTILS_ASSERT(!is_default());
+    return *m_checked;
+  }
+  expr& pattern::checked() noexcept
+  {
+    return FROM_CONST(checked);
+  }
+
+  const scope& pattern::body() const noexcept
+  {
+    return *m_body;
+  }
+  scope& pattern::body() noexcept
+  {
+    return FROM_CONST(body);
+  }
+
+  bool pattern::has_implicit_op() const noexcept
+  {
+    using enum tok_kind;
+    return !pos().is_any(Eq, NotEq, Less, LessEq, Greater, GreaterEq);
+  }
+
+
+  // Conditional expr
+
+  cond_expr::~cond_expr() noexcept = default;
+
+  cond_expr::cond_expr(expr& condition, child_list children) noexcept :
+    expr{ kind::Cond, condition.pos() },
+    m_cond{ &condition },
+    m_children{ std::move(children) }
+  {
+    assume_ancestry(&condition);
+    for (auto child : m_children)
+    {
+      assume_ancestry(child);
+    }
+  }
+
+  const expr& cond_expr::cond() const noexcept
+  {
+    return *m_cond;
+  }
+  expr& cond_expr::cond() noexcept
+  {
+    return FROM_CONST(cond);
+  }
+
+  const cond_expr::child_list& cond_expr::patterns() const noexcept
+  {
+    return m_children;
+  }
+  cond_expr::child_list& cond_expr::patterns() noexcept
+  {
+    return FROM_CONST(patterns);
+  }
+
 }

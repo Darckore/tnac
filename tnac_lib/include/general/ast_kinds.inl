@@ -13,6 +13,8 @@ Call,
 Decl,
 Result,
 Ret,
+Cond,
+Pattern,
 
 // Decls,
 VarDecl,

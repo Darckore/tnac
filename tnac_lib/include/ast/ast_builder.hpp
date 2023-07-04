@@ -100,6 +100,15 @@ namespace tnac::ast
     //
     assign_expr* make_assign(expr& left, expr& right, const token& op) noexcept;
 
+    //
+    // Creates a pattern used in conditionals
+    //
+    pattern* make_pattern(const token& op, expr* checkedExpr, scope& body) noexcept;
+
+    //
+    // Creates a conditional expression
+    //
+    cond_expr* make_conditional(expr& condition, cond_expr::child_list children) noexcept;
 
   public: // Declarations
     //
