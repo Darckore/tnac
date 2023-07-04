@@ -67,6 +67,18 @@ namespace tnac
       {
         return is_paren_open(c) || is_paren_close(c);
       }
+      constexpr auto is_curly_open(char_t c) noexcept
+      {
+        return c == '{';
+      }
+      constexpr auto is_curly_close(char_t c) noexcept
+      {
+        return c == '}';
+      }
+      constexpr auto is_curly(char_t c) noexcept
+      {
+        return is_curly_open(c) || is_curly_close(c);
+      }
       constexpr auto is_comma(char_t c) noexcept
       {
         return c == ',';
@@ -85,6 +97,7 @@ namespace tnac
                is_comma(c)          ||
                is_semi(c)           ||
                is_paren(c)          ||
+               is_curly(c)          ||
                is_blank(c)          ||
                is_comment(c)        ||
                is_operator(c);
@@ -496,61 +509,21 @@ namespace tnac
     auto resKind = Eol;
     switch (next)
     {
-    case '!':
-      resKind = try_next('=', NotEq, Exclamation);
-      break;
+    case '!': resKind = try_next('=', NotEq, Exclamation); break;
+    case '<': resKind = try_next('=', LessEq, Less);       break;
+    case '>': resKind = try_next('=', GreaterEq, Greater); break;
+    case '+': resKind = Plus;                              break;
+    case '-': resKind = try_next('>', Arrow, Minus);       break;
+    case '~': resKind = Tilde;                             break;
+    case '*': resKind = try_next('*', Pow, Asterisk);      break;
+    case '/': resKind = try_next('/', Root, Slash);        break;
+    case '%': resKind = Percent;                           break;
+    case '&': resKind = try_next('&', LogAnd, Amp);        break;
+    case '^': resKind = Hat;                               break;
+    case '|': resKind = try_next('|', LogOr, Pipe);        break;
+    case '=': resKind = try_next('=', Eq, Assign);         break;
 
-    case '<':
-      resKind = try_next('=', LessEq, Less);
-      break;
-
-    case '>':
-      resKind = try_next('=', GreaterEq, Greater);
-      break;
-
-    case '+':
-      resKind = Plus;
-      break;
-
-    case '-':
-      resKind = Minus;
-      break;
-
-    case '~':
-      resKind = Tilde;
-      break;
-
-    case '*':
-      resKind = try_next('*', Pow, Asterisk);
-      break;
-
-    case '/':
-      resKind = try_next('/', Root, Slash);
-      break;
-
-    case '%':
-      resKind = Percent;
-      break;
-
-    case '&':
-      resKind = try_next('&', LogAnd, Amp);
-      break;
-
-    case '^':
-      resKind = Hat;
-      break;
-
-    case '|':
-      resKind = try_next('|', LogOr, Pipe);
-      break;
-
-    case '=':
-      resKind = try_next('=', Eq, Assign);
-      break;
-
-    default:
-      resKind = Error;
-      break;
+    default: resKind = Error; break;
     }
 
     return consume(resKind);
@@ -574,29 +547,15 @@ namespace tnac
     auto resKind = Eol;
     switch (next)
     {
-    case ':':
-      resKind = ExprSep;
-      break;
+    case ':': resKind = ExprSep;    break;
+    case '(': resKind = ParenOpen;  break;
+    case ')': resKind = ParenClose; break;
+    case '{': resKind = CurlyOpen;  break;
+    case '}': resKind = CurlyClose; break;
+    case ',': resKind = Comma;      break;
+    case ';': resKind = Semicolon;  break;
 
-    case '(':
-      resKind = ParenOpen;
-      break;
-
-    case ')':
-      resKind = ParenClose;
-      break;
-
-    case ',':
-      resKind = Comma;
-      break;
-
-    case ';':
-      resKind = Semicolon;
-      break;
-
-    default:
-      resKind = Error;
-      break;
+    default: resKind = Error; break;
     }
 
     return consume(resKind);

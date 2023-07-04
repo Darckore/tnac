@@ -7,8 +7,26 @@ scope:
   expr-list
 
 expr-list:
-  ret-expr
-  expr-list : ret-expr
+  conditional-expr
+  expr-list : conditional-expr
+
+conditional-expr:
+  ret_expr
+  condition cond-body
+
+condition:
+  '{' expr '}'
+
+cond-body:
+  pattern-matcher ';'
+  cond-body pattern-matcher ';'
+
+pattern-matcher:
+  pattern '->' expr-list ';'
+
+pattern:
+  '{}'
+  '{' pattern-operator expr '}'
 
 ret-expr:
   expr
@@ -186,6 +204,9 @@ digit-sequence:
 hex-digit-sequence:
   hex-digit
   hex-digit-sequence hex-digit
+
+pattern-operator: one of (== is optional)
+  < <= > >= != [==]
 
 assign-operator: one of
   =

@@ -40,11 +40,15 @@ GreaterEq,
 LogAnd,
 LogOr,
 
+Arrow,
+
 // Punctuation
 ParenOpen,
 ParenClose,
 Comma,
 Semicolon,
+CurlyOpen,
+CurlyClose,
 
 // Identifiers
 Identifier,
