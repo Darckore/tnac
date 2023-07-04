@@ -120,5 +120,11 @@ namespace tnac_tests
       tnac::eval::call_stack cs{ 0 };
       verify(parse_input(input, reg, cs), invalid_value());
     }
+
+    inline auto to_bool(tnac::eval::value val) noexcept -> std::optional<bool>
+    {
+      if (!val) return {};
+      return tnac::eval::cast_value<bool>(val);
+    }
   }
 }
