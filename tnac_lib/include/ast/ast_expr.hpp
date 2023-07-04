@@ -519,19 +519,12 @@ namespace tnac::ast
     friend class builder;
 
   public:
-    using child_type    = pattern;
-    using pointer       = child_type*;
-    using const_pointer = const child_type*;
-
-    using child_list = std::vector<pointer>;
-
-  public:
     CLASS_SPECIALS_NONE(cond_expr);
 
     virtual ~cond_expr() noexcept;
 
   protected:
-    cond_expr(expr& condition, child_list children) noexcept;
+    cond_expr(expr& condition, scope& body) noexcept;
 
   public:
     //
@@ -551,15 +544,15 @@ namespace tnac::ast
     // 
     // const version
     //
-    const child_list& patterns() const noexcept;
+    const scope& patterns() const noexcept;
 
     //
     // Returns the pattern collection
     // 
-    child_list& patterns() noexcept;
+    scope& patterns() noexcept;
 
   private:
     expr* m_cond{};
-    child_list m_children;
+    scope* m_body{};
   };
 }

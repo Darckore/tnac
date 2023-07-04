@@ -362,6 +362,16 @@ namespace tnac
     //
     ast::expr* call_expr() noexcept;
 
+    //
+    // Parses a conditional expression
+    //
+    ast::expr* cond_expr() noexcept;
+
+    //
+    // Parses a pattern used in conditional expressions
+    //
+    ast::expr* cond_pattern() noexcept;
+
   private:
     lex m_lex;
     ast::builder& m_builder;

@@ -41,6 +41,10 @@ namespace tnac
       {
         return tok.is_any(token::Eq, token::NotEq);
       }
+      constexpr auto is_pattern_matcher(const token& tok) noexcept
+      {
+        return is_eq_comparison(tok) || is_relational(tok);
+      }
       constexpr auto is_logical(const token& tok) noexcept
       {
         return tok.is_any(token::LogAnd, token::LogOr);
@@ -51,41 +55,19 @@ namespace tnac
         using enum op_precedence::prec;
         switch (*prec)
         {
-        case LogicalOr:
-          return tok.is(token::LogOr);
+        case LogicalOr:      return tok.is(token::LogOr);
+        case LogicalAnd:     return tok.is(token::LogAnd);
+        case Equality:       return is_eq_comparison(tok);
+        case Relational:     return is_relational(tok);
+        case BitOr:          return tok.is(token::Pipe);
+        case BitXor:         return tok.is(token::Hat);
+        case BitAnd:         return tok.is(token::Amp);
+        case Additive:       return is_add_op(tok);
+        case Multiplicative: return is_mul_op(tok);
+        case Power:          return is_pow_op(tok);
+        case Unary:          return is_unary_op(tok);
 
-        case LogicalAnd:
-          return tok.is(token::LogAnd);
-
-        case Equality:
-          return is_eq_comparison(tok);
-
-        case Relational:
-          return is_relational(tok);
-
-        case BitOr:
-          return tok.is(token::Pipe);
-
-        case BitXor:
-          return tok.is(token::Hat);
-
-        case BitAnd:
-          return tok.is(token::Amp);
-
-        case Additive:
-          return is_add_op(tok);
-
-        case Multiplicative:
-          return is_mul_op(tok);
-
-        case Power:
-          return is_pow_op(tok);
-
-        case Unary:
-          return is_unary_op(tok);
-
-        default:
-          return false;
+        default: return false;
         }
       }
 
@@ -96,6 +78,14 @@ namespace tnac
       constexpr auto is_close_paren(const token& tok) noexcept
       {
         return tok.is(token::ParenClose);
+      }
+      constexpr auto is_open_curly(const token& tok) noexcept
+      {
+        return tok.is(token::CurlyOpen);
+      }
+      constexpr auto is_close_curly(const token& tok) noexcept
+      {
+        return tok.is(token::CurlyClose);
       }
       constexpr auto is_comma(const token& tok) noexcept
       {
@@ -144,7 +134,7 @@ namespace tnac
       return has_implicit_separator(unary->operand());
 
     if (!expr.is(kind::Decl))
-      return false;
+      return expr.is(kind::Cond);
 
     auto&& decl = utils::cast<ast::decl_expr>(expr).declarator();
     if (decl.is(kind::FuncDecl))
@@ -329,6 +319,9 @@ namespace tnac
 
   ast::expr* parser::expr() noexcept
   {
+    if (detail::is_open_curly(peek_next()))
+      return cond_expr();
+
     return decl_expr();
   }
 
@@ -346,7 +339,7 @@ namespace tnac
     if (peek_next().is(token::KwRet))
     {
       auto pos = next_tok();
-      auto retVal = binary_expr();
+      auto retVal = expr();
       return m_builder.make_ret(*retVal, pos);
     }
 
@@ -559,7 +552,7 @@ namespace tnac
     auto intExpr = expr();
 
     if (!detail::is_close_paren(peek_next()))
-      return error_expr(next_tok(), "Expected ')'"sv);
+      return error_expr(peek_next(), "Expected ')'"sv);
 
     next_tok();
     return m_builder.make_paren(*intExpr, op);
@@ -674,4 +667,74 @@ namespace tnac
 
     return res;
   }
+
+  ast::expr* parser::cond_expr() noexcept
+  {
+    UTILS_ASSERT(detail::is_open_curly(peek_next()));
+    next_tok();
+
+    auto body = m_builder.make_scope({});
+    scope_guard _{ *this, body };
+    auto cond = expr();
+    
+    if (!detail::is_close_curly(peek_next()))
+      return error_expr(peek_next(), "Expected '}'"sv);
+
+    next_tok();
+    expr_list patterns;
+    while (!peek_next().is_eol())
+    {
+      patterns.push_back(cond_pattern());
+      if (detail::is_semi(peek_next()))
+        break;
+    }
+
+    if(!detail::is_semi(peek_next()))
+      patterns.push_back(error_expr(peek_next(), "Expected ';' at the end of conditional"sv));
+    
+    next_tok();
+    body->adopt(std::move(patterns));
+
+    return m_builder.make_conditional(*cond, *body);
+  }
+
+  ast::expr* parser::cond_pattern() noexcept
+  {
+    if (!detail::is_open_curly(peek_next()))
+    {
+      auto err = error_expr(peek_next(), "Expected '{'");
+      skip_to(token::CurlyClose, token::ExprSep, token::Semicolon);
+      return err;
+    }
+
+    auto body = m_builder.make_scope({});
+    scope_guard _{ *this, body };
+    
+    auto patternPos = next_tok();
+    ast::expr* checked{};
+    if (detail::is_pattern_matcher(peek_next()))
+    {
+      patternPos = next_tok();
+    }
+    if (!detail::is_close_curly(peek_next()))
+    {
+      checked = expr();
+      if (!detail::is_close_curly(peek_next()))
+        return error_expr(peek_next(), "Expected '}'"sv);
+
+      patternPos = checked->pos();
+    }
+    
+    next_tok();
+    auto exprList = expression_list(scope_level::Nested);
+    body->adopt(std::move(exprList));
+    if (!detail::is_semi(peek_next()))
+    {
+      exprList.push_back(error_expr(peek_next(), "Expected ';' at the end of pattern body"sv));
+    }
+
+    next_tok();
+    return m_builder.make_pattern(patternPos, checked, *body);
+  }
+
 }

@@ -108,7 +108,7 @@ namespace tnac::ast
     //
     // Creates a conditional expression
     //
-    cond_expr* make_conditional(expr& condition, cond_expr::child_list children) noexcept;
+    cond_expr* make_conditional(expr& condition, scope& body) noexcept;
 
   public: // Declarations
     //

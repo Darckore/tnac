@@ -7,11 +7,23 @@ scope:
   expr-list
 
 expr-list:
+  ret-expr
+  expr-list : ret-expr
+
+ret-expr:
+  expr
+  _ret expr
+
+expr:
   conditional-expr
-  expr-list : conditional-expr
+  decl-expr
+
+decl-expr:
+  assign-expr
+  var-decl
+  func-decl
 
 conditional-expr:
-  ret_expr
   condition cond-body
 
 condition:
@@ -27,18 +39,6 @@ pattern-matcher:
 pattern:
   '{}'
   '{' pattern-operator expr '}'
-
-ret-expr:
-  expr
-  _ret logical-or-expr
-
-expr:
-  decl-expr
-
-decl-expr:
-  assign-expr
-  var-decl
-  func-decl
 
 assign-expr:
   logical-or-expr

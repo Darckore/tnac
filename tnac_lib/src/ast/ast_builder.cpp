@@ -78,9 +78,9 @@ namespace tnac::ast
     return make<pattern>(op, checkedExpr, body);
   }
 
-  cond_expr* builder::make_conditional(expr& condition, cond_expr::child_list children) noexcept
+  cond_expr* builder::make_conditional(expr& condition, scope& body) noexcept
   {
-    return make<cond_expr>(condition, std::move(children));
+    return make<cond_expr>(condition, body);
   }
 
 

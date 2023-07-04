@@ -316,16 +316,13 @@ namespace tnac::ast
 
   cond_expr::~cond_expr() noexcept = default;
 
-  cond_expr::cond_expr(expr& condition, child_list children) noexcept :
+  cond_expr::cond_expr(expr& condition, scope& body) noexcept :
     expr{ kind::Cond, condition.pos() },
     m_cond{ &condition },
-    m_children{ std::move(children) }
+    m_body{ &body }
   {
     assume_ancestry(&condition);
-    for (auto child : m_children)
-    {
-      assume_ancestry(child);
-    }
+    assume_ancestry(&body);
   }
 
   const expr& cond_expr::cond() const noexcept
@@ -337,11 +334,11 @@ namespace tnac::ast
     return FROM_CONST(cond);
   }
 
-  const cond_expr::child_list& cond_expr::patterns() const noexcept
+  const scope& cond_expr::patterns() const noexcept
   {
-    return m_children;
+    return *m_body;
   }
-  cond_expr::child_list& cond_expr::patterns() noexcept
+  scope& cond_expr::patterns() noexcept
   {
     return FROM_CONST(patterns);
   }
