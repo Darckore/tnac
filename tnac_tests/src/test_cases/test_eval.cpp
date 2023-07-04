@@ -13,27 +13,27 @@ namespace tnac_tests
     check_eval("_true + 1"sv, 2ll);
     check_eval("1 + 2"sv, 3ll);
     check_eval("1 + 2.0"sv, 3.0);
-    check_eval("1 + _complex(1, 2)"sv, cplx{ 2.0, 2.0 });
-    check_eval("_complex(1, 2) + 2"sv, cplx{ 3.0, 2.0 });
-    check_eval("2 + _fraction(1, 2)"sv, frac{ 5, 2 });
-    check_eval("_fraction(1, 2) + 2"sv, frac{ 5, 2 });
+    check_eval("1 + _cplx(1, 2)"sv, cplx{ 2.0, 2.0 });
+    check_eval("_cplx(1, 2) + 2"sv, cplx{ 3.0, 2.0 });
+    check_eval("2 + _frac(1, 2)"sv, frac{ 5, 2 });
+    check_eval("_frac(1, 2) + 2"sv, frac{ 5, 2 });
 
     // Float
     check_eval("_true + 41.0"sv, 42.0);
     check_eval("4.0 + 5.0"sv, 9.0);
     check_eval("4.0 + 5"sv, 9.0);
-    check_eval("4.0 + _complex(1.0, 6)"sv, cplx{ 5.0, 6.0 });
-    check_eval("_complex(2.0, 6) + 5.0"sv, cplx{ 7.0, 6.0 });
-    check_eval("4.0 + _fraction(1, 2)"sv, 4.5);
-    check_eval("_fraction(3, 6) + 5.0"sv, 5.5);
+    check_eval("4.0 + _cplx(1.0, 6)"sv, cplx{ 5.0, 6.0 });
+    check_eval("_cplx(2.0, 6) + 5.0"sv, cplx{ 7.0, 6.0 });
+    check_eval("4.0 + _frac(1, 2)"sv, 4.5);
+    check_eval("_frac(3, 6) + 5.0"sv, 5.5);
 
     // Complex
-    check_eval("_true + _complex(4, 4)"sv, cplx{ 5.0, 4.0 });
-    check_eval("_complex(7, 10) + _complex(10, 11)"sv, cplx{ 17.0, 21.0 });
-    check_eval("_complex(7, 10) + _fraction(5, 10)"sv, cplx{ 7.5, 10.0 });
+    check_eval("_true + _cplx(4, 4)"sv, cplx{ 5.0, 4.0 });
+    check_eval("_cplx(7, 10) + _cplx(10, 11)"sv, cplx{ 17.0, 21.0 });
+    check_eval("_cplx(7, 10) + _frac(5, 10)"sv, cplx{ 7.5, 10.0 });
 
     // Fraction
-    check_eval("_fraction(1,2) + _fraction(1,3)"sv, frac{ 5, 6 });
+    check_eval("_frac(1,2) + _frac(1,3)"sv, frac{ 5, 6 });
   }
 
   TEST(evaluation, t_basic_sub)
@@ -46,27 +46,27 @@ namespace tnac_tests
     check_eval("_false - 1"sv, -1ll);
     check_eval("1 - 2"sv, -1ll);
     check_eval("1 - 2.0"sv, -1.0);
-    check_eval("1 - _complex(1, 2)"sv, cplx{ 0.0, -2.0 });
-    check_eval("_complex(1, 2) - 2"sv, cplx{ -1.0, 2.0 });
-    check_eval("2 - _fraction(1, 2)"sv, frac{ 3, 2 });
-    check_eval("_fraction(1, 2) - 2"sv, frac{ 3, 2, -1 });
+    check_eval("1 - _cplx(1, 2)"sv, cplx{ 0.0, -2.0 });
+    check_eval("_cplx(1, 2) - 2"sv, cplx{ -1.0, 2.0 });
+    check_eval("2 - _frac(1, 2)"sv, frac{ 3, 2 });
+    check_eval("_frac(1, 2) - 2"sv, frac{ 3, 2, -1 });
 
     // Float
     check_eval("42.0 - _true"sv, 41.0);
     check_eval("4.0 - 5.0"sv, -1.0);
     check_eval("6.0 - 5"sv, 1.0);
-    check_eval("4.0 - _complex(1.0, 6)"sv, cplx{ 3.0, -6.0 });
-    check_eval("_complex(2.0, 6) - 5.0"sv, cplx{ -3.0, 6.0 });
-    check_eval("4.0 - _fraction(1, 2)"sv, 3.5);
-    check_eval("_fraction(3, 6) - 5.0"sv, -4.5);
+    check_eval("4.0 - _cplx(1.0, 6)"sv, cplx{ 3.0, -6.0 });
+    check_eval("_cplx(2.0, 6) - 5.0"sv, cplx{ -3.0, 6.0 });
+    check_eval("4.0 - _frac(1, 2)"sv, 3.5);
+    check_eval("_frac(3, 6) - 5.0"sv, -4.5);
 
     // Complex
-    check_eval("_complex(7, 10) - _true"sv, cplx{ 6.0, 10.0 });
-    check_eval("_complex(7, 11) - _complex(10, 11)"sv, cplx{ -3.0, 0.0 });
-    check_eval("_complex(7, 10) - _fraction(5, 10)"sv, cplx{ 6.5, 10.0 });
+    check_eval("_cplx(7, 10) - _true"sv, cplx{ 6.0, 10.0 });
+    check_eval("_cplx(7, 11) - _cplx(10, 11)"sv, cplx{ -3.0, 0.0 });
+    check_eval("_cplx(7, 10) - _frac(5, 10)"sv, cplx{ 6.5, 10.0 });
 
     // Fraction
-    check_eval("_fraction(1,2) - _fraction(1,3)"sv, frac{ 1, 6 });
+    check_eval("_frac(1,2) - _frac(1,3)"sv, frac{ 1, 6 });
   }
 
   TEST(evaluation, t_basic_mul)
@@ -78,25 +78,25 @@ namespace tnac_tests
     // Int
     check_eval("1 * 2"sv, 2ll);
     check_eval("1 * 2.0"sv, 2.0);
-    check_eval("1 * _complex(1, 2)"sv, cplx{ 1.0, 2.0 });
-    check_eval("_complex(1, 2) * 2"sv, cplx{ 2.0, 4.0 });
-    check_eval("2 * _fraction(1, 2)"sv, frac{ 1, 1 });
-    check_eval("_fraction(1, 2) * 2"sv, frac{ 1, 1 });
+    check_eval("1 * _cplx(1, 2)"sv, cplx{ 1.0, 2.0 });
+    check_eval("_cplx(1, 2) * 2"sv, cplx{ 2.0, 4.0 });
+    check_eval("2 * _frac(1, 2)"sv, frac{ 1, 1 });
+    check_eval("_frac(1, 2) * 2"sv, frac{ 1, 1 });
 
     // Float
     check_eval("4.0 * 5.0"sv, 20.0);
     check_eval("6.0 * 5"sv, 30.0);
-    check_eval("4.0 * _complex(1.0, 6)"sv, cplx{ 4.0, 24.0 });
-    check_eval("_complex(2.0, 6) * 5.0"sv, cplx{ 10.0, 30.0 });
-    check_eval("4.0 * _fraction(1, 2)"sv, 2.0);
-    check_eval("_fraction(3, 6) * 5.0"sv, 2.5);
+    check_eval("4.0 * _cplx(1.0, 6)"sv, cplx{ 4.0, 24.0 });
+    check_eval("_cplx(2.0, 6) * 5.0"sv, cplx{ 10.0, 30.0 });
+    check_eval("4.0 * _frac(1, 2)"sv, 2.0);
+    check_eval("_frac(3, 6) * 5.0"sv, 2.5);
 
     // Complex
-    check_eval("_complex(7, 11) * _complex(10, 11)"sv, cplx{ -51.0, 187.0 });
-    check_eval("_complex(7, 10) * _fraction(5, 10)"sv, cplx{ 3.5, 5.0 });
+    check_eval("_cplx(7, 11) * _cplx(10, 11)"sv, cplx{ -51.0, 187.0 });
+    check_eval("_cplx(7, 10) * _frac(5, 10)"sv, cplx{ 3.5, 5.0 });
 
     // Fraction
-    check_eval("_fraction(1,2) * _fraction(1,3)"sv, frac{ 1, 6 });
+    check_eval("_frac(1,2) * _frac(1,3)"sv, frac{ 1, 6 });
   }
 
   TEST(evaluation, t_basic_div)
@@ -109,25 +109,25 @@ namespace tnac_tests
     // Int
     check_eval("2 / 2"sv, 1.0);
     check_eval("1 / 0"sv, inf);
-    check_eval("1 / _complex(1, 2)"sv, cplx{ 0.2, -0.4 });
-    check_eval("_complex(1, 2) / 2"sv, cplx{ 0.5, 1.0 });
-    check_eval("2 / _fraction(1, 2)"sv, frac{ 4, 1 });
-    check_eval("_fraction(1, 2) / 2"sv, frac{ 1, 4 });
+    check_eval("1 / _cplx(1, 2)"sv, cplx{ 0.2, -0.4 });
+    check_eval("_cplx(1, 2) / 2"sv, cplx{ 0.5, 1.0 });
+    check_eval("2 / _frac(1, 2)"sv, frac{ 4, 1 });
+    check_eval("_frac(1, 2) / 2"sv, frac{ 1, 4 });
 
     // Float
     check_eval("4.0 / 5.0"sv, 0.8);
     check_eval("6.0 / 5"sv, 1.2);
-    check_eval("4.0 / _complex(2.0, 4)"sv, cplx{ 0.4, -0.8 });
-    check_eval("_complex(2.0, 6) / 5.0"sv, cplx{ 0.4, 1.2 });
-    check_eval("4.0 / _fraction(1, 2)"sv, 8.0);
-    check_eval("_fraction(3, 6) / 5.0"sv, 0.1);
+    check_eval("4.0 / _cplx(2.0, 4)"sv, cplx{ 0.4, -0.8 });
+    check_eval("_cplx(2.0, 6) / 5.0"sv, cplx{ 0.4, 1.2 });
+    check_eval("4.0 / _frac(1, 2)"sv, 8.0);
+    check_eval("_frac(3, 6) / 5.0"sv, 0.1);
 
     // Complex
-    check_eval("_complex(-51, 187) / _complex(10, 11)"sv, cplx{ 7.0, 11.0 });
-    check_eval("_complex(7, 10) / _fraction(5, 10)"sv, cplx{ 14.0, 20.0 });
+    check_eval("_cplx(-51, 187) / _cplx(10, 11)"sv, cplx{ 7.0, 11.0 });
+    check_eval("_cplx(7, 10) / _frac(5, 10)"sv, cplx{ 14.0, 20.0 });
 
     // Fraction
-    check_eval("_fraction(1,2) / _fraction(1,3)"sv, frac{ 3, 2 });
+    check_eval("_frac(1,2) / _frac(1,3)"sv, frac{ 3, 2 });
   }
 
   TEST(evaluation, t_basic_mod)
@@ -140,24 +140,24 @@ namespace tnac_tests
     // Int
     check_eval("2 % 2"sv, 0.0);
     check_eval("1 % 0"sv, nan);
-    check_eval("1 % _complex(1, 2)"sv, cplx{ 1.0, 0.0 });
-    check_eval("_complex(1, 2) % 2"sv, cplx{ -1.0, 0.0 });
-    check_eval("_fraction(1, 1) % _complex(1, 2)"sv, cplx{ 1.0, 0.0 });
-    check_eval("_complex(1, 2) % _fraction(2, 1)"sv, cplx{ -1.0, 0.0 });
+    check_eval("1 % _cplx(1, 2)"sv, cplx{ 1.0, 0.0 });
+    check_eval("_cplx(1, 2) % 2"sv, cplx{ -1.0, 0.0 });
+    check_eval("_frac(1, 1) % _cplx(1, 2)"sv, cplx{ 1.0, 0.0 });
+    check_eval("_cplx(1, 2) % _frac(2, 1)"sv, cplx{ -1.0, 0.0 });
 
     // Float
     check_eval("4.0 % 5.0"sv, 4.0);
     check_eval("6.0 % 5"sv, 1.0);
-    check_eval("4.0 % _complex(2.0, 4)"sv, cplx{ 0.0, 2.0 });
-    check_eval("_complex(2.0, 6) % 5.0"sv, cplx{ 2.0, 1.0 });
-    check_eval("_fraction(4, 1) % _complex(2.0, 4)"sv, cplx{ 0.0, 2.0 });
-    check_eval("_complex(2.0, 6) % _fraction(5, 1)"sv, cplx{ 2.0, 1.0 });
+    check_eval("4.0 % _cplx(2.0, 4)"sv, cplx{ 0.0, 2.0 });
+    check_eval("_cplx(2.0, 6) % 5.0"sv, cplx{ 2.0, 1.0 });
+    check_eval("_frac(4, 1) % _cplx(2.0, 4)"sv, cplx{ 0.0, 2.0 });
+    check_eval("_cplx(2.0, 6) % _frac(5, 1)"sv, cplx{ 2.0, 1.0 });
 
     // Complex
-    check_eval("_complex(26, 120) % _complex(37, 226)"sv, cplx{ -11.0, -106.0 });
+    check_eval("_cplx(26, 120) % _cplx(37, 226)"sv, cplx{ -11.0, -106.0 });
 
     // Fraction
-    check_eval("_fraction(5, 1) % _fraction(3, 1)"sv, 2.0);
+    check_eval("_frac(5, 1) % _frac(3, 1)"sv, 2.0);
   }
 
   TEST(evaluation, t_basic_pow)
@@ -168,11 +168,11 @@ namespace tnac_tests
 
     check_eval("2 ** 2"sv, 4.0);
     check_eval("1 ** 0"sv, 1.0);
-    check_eval("1 ** _complex(1, 2)"sv, cplx{ 1.0, 0.0 });
-    check_eval("_fraction(1, 1) ** _complex(1, 2)"sv, cplx{ 1.0, 0.0 });
+    check_eval("1 ** _cplx(1, 2)"sv, cplx{ 1.0, 0.0 });
+    check_eval("_frac(1, 1) ** _cplx(1, 2)"sv, cplx{ 1.0, 0.0 });
     check_eval("4.0 ** 5.0"sv, 1024.0);
     check_eval("6.0 ** 5"sv, 7776.0);
-    check_eval("_fraction(8, 2) ** _fraction(1, 2)"sv, 2.0);
+    check_eval("_frac(8, 2) ** _frac(1, 2)"sv, 2.0);
 
     check_eval("-1 ** 0.5"sv, cplx{ 0.0, 1.0 });
     check_eval("-4 // 2"sv,   cplx{ 0.0, 2.0 });
@@ -208,11 +208,11 @@ namespace tnac_tests
     check_eval("!42"sv, false);
     check_eval("!0.0"sv, true);
     check_eval("!(-42.69)"sv, false);
-    check_eval("!_fraction(0, 42)"sv, true);
-    check_eval("!_fraction(1, 42)"sv, false);
-    check_eval("!_complex(0, 0)"sv, true);
-    check_eval("!_complex(0, 1)"sv, false);
-    check_eval("!_complex(1, 0)"sv, false);
+    check_eval("!_frac(0, 42)"sv, true);
+    check_eval("!_frac(1, 42)"sv, false);
+    check_eval("!_cplx(0, 0)"sv, true);
+    check_eval("!_cplx(0, 1)"sv, false);
+    check_eval("!_cplx(1, 0)"sv, false);
     check_eval("f() ; !f"sv, false);
   }
 
@@ -246,16 +246,16 @@ namespace tnac_tests
     check_eval("2 == 2"sv, true);
     check_eval("2 == 3"sv, false);
     check_eval("2 == 2.0"sv, true);
-    check_eval("2 == _complex(_fraction(4, 2))"sv, true);
-    check_eval("_true == _complex(_fraction(2, 2))"sv, true);
+    check_eval("2 == _cplx(_frac(4, 2))"sv, true);
+    check_eval("_true == _cplx(_frac(2, 2))"sv, true);
 
     // Not eq
 
     check_eval("2 != 2"sv, false);
     check_eval("2 != 3"sv, true);
     check_eval("2 != 2.0"sv, false);
-    check_eval("2 != _complex(_fraction(4, 2))"sv, false);
-    check_eval("_true != _complex(_fraction(2, 2))"sv, false);
+    check_eval("2 != _cplx(_frac(4, 2))"sv, false);
+    check_eval("_true != _cplx(_frac(2, 2))"sv, false);
 
     // Rel
 
@@ -278,7 +278,7 @@ namespace tnac_tests
 
     check_eval("2 > 3 < _true"sv, true);
     check_eval("1 == 2 == 0"sv, true);
-    check_eval("2 > 3 == _complex(3, 4) < _fraction(10, 6)"sv, true);
+    check_eval("2 > 3 == _cplx(3, 4) < _frac(10, 6)"sv, true);
 
   }
 
@@ -321,7 +321,7 @@ namespace tnac_tests
     check_eval("f() k(a, b) a + b; k; a = f(): a(10, 11)"sv, 21ll);
     check_eval("f() 10; k(x) x() + 5; k(f)"sv, 15ll);
     check_eval("f() k(a) a * 3;; f()(3) + f()(5)"sv, 24ll);
-    check_eval("f() _function(a) a * 3;; f()(3) + f()(5)"sv, 24ll);
+    check_eval("f() _fn(a) a * 3;; f()(3) + f()(5)"sv, 24ll);
   }
 
   TEST(evaluation, t_overflow)

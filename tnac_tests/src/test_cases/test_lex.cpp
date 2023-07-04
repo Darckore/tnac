@@ -127,7 +127,7 @@ namespace tnac_tests
 
   TEST(lexer, t_keywords)
   {
-    constexpr auto input = "_function _result _complex _fraction _ret"sv;
+    constexpr auto input = "_fn _result _cplx _frac _ret"sv;
 
     using enum tnac::tok_kind;
     constexpr std::array testArr{

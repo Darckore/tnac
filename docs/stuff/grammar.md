@@ -117,7 +117,7 @@ literal-expr:
   _false
 
 anonimous-function:
-  _function func-params func-body
+  _fn func-params func-body
 
 typed-expr:
   type-name args
@@ -126,8 +126,8 @@ type-name:
   type-keyword
 
 type-keyword: one of
-  _complex
-  _fraction
+  _cplx
+  _frac
 
 args:
   '(' arg-list ')'

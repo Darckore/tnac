@@ -124,9 +124,9 @@ Keywords are reserved names. They follow the rules for identifiers, except they 
 
 These are the supported keywords:
 
-- `_complex`
-- `_fraction`
-- `_function`
+- `_cplx`
+- `_frac`
+- `_fn`
 - `_result`
 - `_ret`
 - `_true`
@@ -164,26 +164,26 @@ The `_result` keyword gets replaced with the most recent evaluation result.
 For example, the expression `2 + 2 + _result` evaluates to `8`, since `_result`
 expands to the evaluation result of `2 + 2`.
 
-Examples: `-1`, `-(2+2)`, `+(10 / 4)`, `-_result`, `+_complex(1,2)`
+Examples: `-1`, `-(2+2)`, `+(10 / 4)`, `-_result`, `+_cplx(1,2)`
 
 **Binary** operators can combine pretty much any valid expressions.
 
-Examples: `2+2`, `-(_fraction(1, 2) + 1) * 2`
+Examples: `2+2`, `-(_frac(1, 2) + 1) * 2`
 
 **Invocations** are things with arguments.
 They can create values of certain types, or call functions.
 
 Currently, there are these invocation expressions:
 
-- `_fraction(<expr>, <expr>)` - instantiates an ordinary fraction.
+- `_frac(<expr>, <expr>)` - instantiates an ordinary fraction.
 Both the arguments (numerator and denominator) are mandatory. Any expressions will work, however,
 value types other than int will convert and, potentially, lose data.
-Examples: `_fraction(1, 2)` is `1/2`, `_fraction(4-2, 6/2)` is `2/3`.
+Examples: `_frac(1, 2)` is `1/2`, `_frac(4-2, 6/2)` is `2/3`.
 
-- `_complex(<expr>, <expr>)` - instantiates a complex number.
+- `_cplx(<expr>, <expr>)` - instantiates a complex number.
 The first argument is the real part, and the second is imaginary.
 None of the arguments are mandatory, they'll be 0 by default. Examples:
-`_complex()` is `0 + 0i`, `_complex(1)` is `1 + 0i`, `_complex(2+2, 1/2)` is `4 + 0.5i`
+`_cplx()` is `0 + 0i`, `_cplx(1)` is `1 + 0i`, `_cplx(2+2, 1/2)` is `4 + 0.5i`
 
 - `func_name([<expr>, ...])` - calls a previously defined function.
 Example: `my_func(1+1, 2)`
@@ -341,9 +341,9 @@ func(other_func)
 Functions can be anonimous, kinda like lambdas in C++. You can't access them by name,
 but you can do anything else with them what you can do with normal functions.
 
-Such functions are declared via the `_function` keyword:
+Such functions are declared via the `_fn` keyword:
 ```
-a = _function(x, y) x * y;
+a = _fn(x, y) x * y;
 a(2, 3)
 ```
 prints `6`
@@ -351,7 +351,7 @@ prints `6`
 Also:
 ```
 some_func(x, y) x(y);
-some_func(_function(x) x * x;, 10)
+some_func(_fn(x) x * x;, 10)
 ```
 prints `100`
 

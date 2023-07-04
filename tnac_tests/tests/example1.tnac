@@ -3,4 +3,4 @@ mul(a, b) a * b;
 
 var1 = sum(10, 12) :
 var2 = mul(var1, 3) :
-var1 + var2 * _fraction(1, 2)
+var1 + var2 * _frac(1, 2)

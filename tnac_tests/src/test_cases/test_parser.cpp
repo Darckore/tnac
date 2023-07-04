@@ -465,18 +465,18 @@ namespace tnac_tests
   {
     using detail::expected_node;
     using enum detail::node_kind;
-    constexpr auto input = "_complex(1,2)"sv;
+    constexpr auto input = "_cplx(1,2)"sv;
 
     /*
-         --'_complex'--
-        |              |
-        1              2
+         --'_cplx'--
+        |           |
+        1           2
     */
 
     std::array exp{
-      expected_node{        "1", Literal, Typed },
-      expected_node{        "2", Literal, Typed },
-      expected_node{ "_complex", Typed,   Scope },
+      expected_node{     "1", Literal, Typed },
+      expected_node{     "2", Literal, Typed },
+      expected_node{ "_cplx", Typed,   Scope },
     };
 
     detail::check_tree_structute(exp, input);
@@ -486,10 +486,10 @@ namespace tnac_tests
   {
     using detail::expected_node;
     using enum detail::node_kind;
-    constexpr auto input = "_complex(1 + 2, 2 * 2 + 3)"sv;
+    constexpr auto input = "_cplx(1 + 2, 2 * 2 + 3)"sv;
 
     /*
-               --'_complex'--
+               --'_cplx'-----
               |              |
            --'+'--        --'+'--
           |       |      |       |
@@ -499,15 +499,15 @@ namespace tnac_tests
     */
 
     std::array exp{
-      expected_node{        "1", Literal, Binary },
-      expected_node{        "2", Literal, Binary },
-      expected_node{        "+", Binary,  Typed },
-      expected_node{        "2", Literal, Binary },
-      expected_node{        "2", Literal, Binary },
-      expected_node{        "*", Binary,  Binary },
-      expected_node{        "3", Literal, Binary },
-      expected_node{        "+", Binary,  Typed },
-      expected_node{ "_complex", Typed,   Scope },
+      expected_node{     "1", Literal, Binary },
+      expected_node{     "2", Literal, Binary },
+      expected_node{     "+", Binary,  Typed },
+      expected_node{     "2", Literal, Binary },
+      expected_node{     "2", Literal, Binary },
+      expected_node{     "*", Binary,  Binary },
+      expected_node{     "3", Literal, Binary },
+      expected_node{     "+", Binary,  Typed },
+      expected_node{ "_cplx", Typed,   Scope },
     };
 
     detail::check_tree_structute(exp, input);
