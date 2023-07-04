@@ -355,6 +355,45 @@ namespace tnac::ast
     }
 
     //
+    // Visits a conditional expression
+    //
+    void visit_impl(dest<cond_expr> cond) noexcept
+    {
+      if constexpr (is_top_down())
+        visit(cond);
+
+      if (preview(cond))
+      {
+        visit_root(&cond->cond());
+        visit_root(&cond->patterns());
+      }
+
+      if constexpr (is_bottom_up())
+        visit(cond);
+    }
+
+    //
+    // Visits a condition pattern
+    //
+    void visit_impl(dest<pattern> ptrn) noexcept
+    {
+      if constexpr (is_top_down())
+        visit(ptrn);
+
+      if (preview(ptrn))
+      {
+        if (!ptrn->is_default())
+        {
+          visit_root(&ptrn->checked());
+        }
+        visit_root(&ptrn->body());
+      }
+
+      if constexpr (is_bottom_up())
+        visit(ptrn);
+    }
+
+    //
     // Visits a ret expression
     //
     void visit_impl(dest<ret_expr> ret) noexcept
@@ -411,69 +450,24 @@ namespace tnac::ast
 
       switch (cur.what())
       {
-      case Scope:
-        visit_impl(&cast<scope>(cur));
-        break;
-
-      case Result:
-        visit_impl(&cast<result_expr>(cur));
-        break;
-
-      case Ret:
-        visit_impl(&cast<ret_expr>(cur));
-        break;
-
-      case Literal:
-        visit_impl(&cast<lit_expr>(cur));
-        break;
-
-      case Identifier:
-        visit_impl(&cast<id_expr>(cur));
-        break;
-
-      case Unary:
-        visit_impl(&cast<unary_expr>(cur));
-        break;
-
-      case Binary:
-        visit_impl(&cast<binary_expr>(cur));
-        break;
-
-      case Assign:
-        visit_impl(&cast<assign_expr>(cur));
-        break;
-
-      case Decl:
-        visit_impl(&cast<decl_expr>(cur));
-        break;
-
-      case VarDecl:
-        visit_impl(&cast<var_decl>(cur));
-        break;
-
-      case ParamDecl:
-        visit_impl(&cast<param_decl>(cur));
-        break;
-
-      case FuncDecl:
-        visit_impl(&cast<func_decl>(cur));
-        break;
-
-      case Paren:
-        visit_impl(&cast<paren_expr>(cur));
-        break;
-
-      case Typed:
-        visit_impl(&cast<typed_expr>(cur));
-        break;
-
-      case Call:
-        visit_impl(&cast<call_expr>(cur));
-        break;
-
-      case Error:
-        visit_impl(&cast<error_expr>(cur));
-        break;
+      case Scope:      visit_impl(&cast<scope>(cur));       break;
+      case Result:     visit_impl(&cast<result_expr>(cur)); break;
+      case Ret:        visit_impl(&cast<ret_expr>(cur));    break;
+      case Literal:    visit_impl(&cast<lit_expr>(cur));    break;
+      case Identifier: visit_impl(&cast<id_expr>(cur));     break;
+      case Unary:      visit_impl(&cast<unary_expr>(cur));  break;
+      case Binary:     visit_impl(&cast<binary_expr>(cur)); break;
+      case Assign:     visit_impl(&cast<assign_expr>(cur)); break;
+      case Decl:       visit_impl(&cast<decl_expr>(cur));   break;
+      case VarDecl:    visit_impl(&cast<var_decl>(cur));    break;
+      case ParamDecl:  visit_impl(&cast<param_decl>(cur));  break;
+      case FuncDecl:   visit_impl(&cast<func_decl>(cur));   break;
+      case Paren:      visit_impl(&cast<paren_expr>(cur));  break;
+      case Typed:      visit_impl(&cast<typed_expr>(cur));  break;
+      case Call:       visit_impl(&cast<call_expr>(cur));   break;
+      case Pattern:    visit_impl(&cast<pattern>(cur));     break;
+      case Cond:       visit_impl(&cast<cond_expr>(cur));   break;
+      case Error:      visit_impl(&cast<error_expr>(cur));  break;
       }
     }
   };
