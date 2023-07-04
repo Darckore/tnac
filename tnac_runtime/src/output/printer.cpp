@@ -127,6 +127,47 @@ namespace tnac_rt::out
     push_parent(expr.args().size() + 1);
   }
 
+  void ast_printer::visit(const ast::cond_expr&) noexcept
+  {
+    indent();
+    out() << "Conditional expression";
+    endl();
+    push_parent(2);
+  }
+
+  bool ast_printer::preview(const ast::pattern& ptrn) noexcept
+  {
+    indent();
+    auto childCount = 0u;
+    if (ptrn.is_default())
+    {
+      out() << "<Default>";
+      endl();
+    }
+    else if (ptrn.has_implicit_op())
+    {
+      ++childCount;
+      out() << "< '==' >";
+      endl();
+    }
+    else
+    {
+      ++childCount;
+      out() << '<';
+      print_token(ptrn.pos());
+      out() << '>';
+      endl();
+    }
+
+    push_parent(childCount + 1);
+    return true;
+  }
+
+  void ast_printer::visit(const ast::pattern& ptrn) noexcept
+  {
+    utils::unused(ptrn);
+  }
+
   void ast_printer::visit(const ast::lit_expr& expr) noexcept
   {
     indent();

@@ -48,6 +48,10 @@ namespace tnac_rt::out
 
     void visit(const ast::call_expr& expr) noexcept;
 
+    void visit(const ast::cond_expr& expr) noexcept;
+
+    void visit(const ast::pattern& ptrn) noexcept;
+
     void visit(const ast::lit_expr& expr) noexcept;
 
     void visit(const ast::id_expr& expr) noexcept;
@@ -57,6 +61,9 @@ namespace tnac_rt::out
     void visit(const ast::ret_expr& expr) noexcept;
 
     void visit(const ast::error_expr& expr) noexcept;
+
+  public:
+    bool preview(const ast::pattern& ptrn) noexcept;
 
   private:
     using base = printer_base<ast_printer>;

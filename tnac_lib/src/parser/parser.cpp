@@ -702,7 +702,7 @@ namespace tnac
   {
     if (!detail::is_open_curly(peek_next()))
     {
-      auto err = error_expr(peek_next(), "Expected '{'");
+      auto err = error_expr(next_tok(), "Expected '{'");
       skip_to(token::CurlyClose, token::ExprSep, token::Semicolon);
       return err;
     }
@@ -715,6 +715,8 @@ namespace tnac
     if (detail::is_pattern_matcher(peek_next()))
     {
       patternPos = next_tok();
+      if (detail::is_close_curly(peek_next()))
+        return error_expr(next_tok(), "Expected expression"sv);
     }
     if (!detail::is_close_curly(peek_next()))
     {
@@ -722,15 +724,20 @@ namespace tnac
       if (!detail::is_close_curly(peek_next()))
         return error_expr(peek_next(), "Expected '}'"sv);
 
-      patternPos = checked->pos();
+      if(detail::is_open_curly(patternPos))
+        patternPos = checked->pos();
     }
     
     next_tok();
-    auto exprList = expression_list(scope_level::Nested);
-    body->adopt(std::move(exprList));
+
     if (!detail::is_semi(peek_next()))
     {
-      exprList.push_back(error_expr(peek_next(), "Expected ';' at the end of pattern body"sv));
+      auto exprList = expression_list(scope_level::Nested);
+      body->adopt(std::move(exprList));
+      if (!detail::is_semi(peek_next()))
+      {
+        exprList.push_back(error_expr(next_tok(), "Expected ';' at the end of pattern body"sv));
+      }
     }
 
     next_tok();
