@@ -172,17 +172,13 @@ namespace tnac_rt::out
   {
     print(&expr.matcher());
 
+    endl();
     if (auto&& body = expr.body(); !body.children().empty())
     {
-      endl();
       tnac::value_guard _{ m_indent };
       ++m_indent;
       print(body);
       indent(*expr.parent());
-    }
-    else
-    {
-      out() << ' ';
     }
 
     indent(expr);

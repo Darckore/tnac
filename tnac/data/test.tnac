@@ -1,6 +1,6 @@
 factorial(arg)
   { arg }
-    { < 0 }  -> arg ;
+    { < 0 }  -> ;
     { 0 }    ->  1  ;
     {}       ->  arg * factorial(arg - 1) ;
   ;
