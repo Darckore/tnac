@@ -57,12 +57,12 @@ namespace tnac::eval
     //
     // Inits function parameters with stored temporaries
     //
-    void prologue(sym_t& callable) noexcept;
+    void prologue(sym_t& callable, vis_t& visitor) noexcept;
 
     //
     // Restores values of function parameters
     //
-    void epilogue(sym_t& callable) noexcept;
+    void epilogue(sym_t& callable, vis_t& visitor) noexcept;
 
     //
     // Clears the call stack
@@ -74,11 +74,6 @@ namespace tnac::eval
     // Checks whether adding a new frame would overflow the stack
     //
     bool can_push() const noexcept;
-
-    //
-    // Sets parameter values for a callable
-    //
-    void set_params(sym_t& callable) noexcept;
 
   private:
     size_type m_depth{};

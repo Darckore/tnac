@@ -249,8 +249,8 @@ namespace tnac
     auto funcBody = callable->declarator().definition();
     value_guard _{ m_return };
     (*this)(funcBody);
-    auto val = m_visitor.last_result(&expr);
-    expr.eval_result(val);
+    auto res = m_visitor.last_result(&expr);
+    expr.eval_result(res);
   }
 
   void evaluator::visit(ast::ret_expr& ret) noexcept
@@ -431,7 +431,7 @@ namespace tnac
     if (!callable)
       return true;
 
-    m_callStack.prologue(*callable);
+    m_callStack.prologue(*callable, m_visitor);
 
     return true;
   }
@@ -442,8 +442,9 @@ namespace tnac
     if (!callable)
       return;
 
-    m_callStack.pop(m_visitor);
-    m_callStack.epilogue(*callable);
+    auto resVal = m_visitor.last_result(&callable->declarator());
+    m_callStack.epilogue(*callable, m_visitor);
+    m_visitor.visit_assign(nullptr, resVal);
   }
 
   // Private members

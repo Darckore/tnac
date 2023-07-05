@@ -23,11 +23,15 @@ namespace tnac::eval
         return m_args;
       }
 
-      value_list& allocate(size_type count) noexcept
+      value_list& params() noexcept
       {
-        m_args.clear();
+        return m_params;
+      }
+
+      void allocate(size_type count) noexcept
+      {
+        m_params.reserve(count);
         m_args.reserve(count);
-        return m_args;
       }
 
       func_name name() const noexcept
@@ -37,6 +41,7 @@ namespace tnac::eval
 
     private:
       func_name m_name;
+      value_list m_params;
       value_list m_args;
     };
   }
@@ -62,13 +67,18 @@ namespace tnac::eval
   void call_stack::push(const sym_t& callable, const args_t& args, vis_t& visitor) noexcept
   {
     auto&& cur = m_frames.emplace_back(callable.name());
-    auto&& storage = cur.allocate(callable.param_count());
+    cur.allocate(callable.param_count());
+    auto&& argStorage = cur.args();
+    auto&& prmStorage = cur.params();
 
-    for (auto arg : args)
+    for (auto [param, arg] : utils::make_iterators(callable.params(), args))
     {
+      auto prmVal = param->symbol().value();
       auto argVal = arg->value();
-      auto&& paramVal = storage.emplace_back();
-      paramVal = visitor.visit_assign(&paramVal, argVal);
+      auto&& storedArg = argStorage.emplace_back();
+      auto&& storedPrm = prmStorage.emplace_back();
+      storedPrm = visitor.visit_assign(&storedPrm, prmVal);
+      storedArg = visitor.visit_assign(&storedArg, argVal);
     }
   }
 
@@ -77,15 +87,17 @@ namespace tnac::eval
     if (m_frames.empty())
       return;
 
-    for (auto&& val : m_frames.back().args())
+    auto&& cur = m_frames.back();
+    for (auto [param, arg] : utils::make_iterators(cur.params(), cur.args()))
     {
-      visitor.remove_entity(&val);
+      visitor.remove_entity(&param);
+      visitor.remove_entity(&arg);
     }
 
     m_frames.pop_back();
   }
 
-  void call_stack::prologue(sym_t& callable) noexcept
+  void call_stack::prologue(sym_t& callable, vis_t& visitor) noexcept
   {
     if (m_frames.empty())
     {
@@ -93,21 +105,31 @@ namespace tnac::eval
       return;
     }
 
-    set_params(callable);
+    auto&& top = m_frames.back();
+    for (auto [param, arg] : utils::make_iterators(callable.params(), top.args()))
+    {
+      auto&& sym = param->symbol();
+      auto storedVal = visitor.visit_assign(&sym, arg);
+      sym.eval_result(storedVal);
+    }
   }
 
-  void call_stack::epilogue(sym_t& callable) noexcept
+  void call_stack::epilogue(sym_t& callable, vis_t& visitor) noexcept
   {
-    if (!m_frames.empty())
+    if (m_frames.empty())
     {
-      set_params(callable);
       return;
     }
 
-    for (auto param : callable.params())
+    auto&& top = m_frames.back();
+    for (auto [param, storedPrm] : utils::make_iterators(callable.params(), top.params()))
     {
-      param->symbol().eval_result({});
+      auto&& sym = param->symbol();
+      auto restoredVal = visitor.visit_assign(&sym, storedPrm);
+      sym.eval_result(restoredVal);
     }
+
+    pop(visitor);
   }
 
   void call_stack::clear() noexcept
@@ -121,15 +143,6 @@ namespace tnac::eval
   bool call_stack::can_push() const noexcept
   {
     return m_frames.size() < m_depth;
-  }
-
-  void call_stack::set_params(sym_t& callable) noexcept
-  {
-    auto&& top = m_frames.back();
-    for (auto [param, arg] : utils::make_iterators(callable.params(), top.args()))
-    {
-      param->symbol().eval_result(arg);
-    }
   }
 
 }

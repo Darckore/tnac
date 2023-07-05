@@ -71,6 +71,11 @@ namespace tnac_tests
     parse_file(TEST_EXAMPLE(_comments), 42ll);
   }
 
+  TEST(program, t_example_fact)
+  {
+    parse_file(TEST_EXAMPLE(_fact), 3628800ll);
+  }
+
   TEST(program, t_example_ret)
   {
     parse_file(TEST_EXAMPLE(_ret), 42ll);
