@@ -733,6 +733,14 @@ namespace tnac::eval
       return m_registry.reset_result();
     }
 
+    //
+    // Erases an entity's value from the registry
+    //
+    value remove_entity(id_param_t ent) noexcept
+    {
+      return m_registry.erase(*ent);
+    }
+
   private:
     static constexpr auto invalidEnt = detail::ent_id::invalid_id();
     entity_id m_curEntity{ invalidEnt };

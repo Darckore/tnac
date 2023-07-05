@@ -143,6 +143,19 @@ namespace tnac
     //
     bool preview(ast::cond_expr& expr) noexcept;
 
+    //
+    // Previews a function body
+    // We need this to init function params from the call stack
+    //
+    bool preview(ast::scope& scope) noexcept;
+
+  public: // misc
+    //
+    // Visits a function body after call in order to restore param
+    // values from the call stack
+    //
+    void visit(ast::scope& scope) noexcept;
+
   private:
     //
     // Produces an evaluation error
@@ -165,11 +178,6 @@ namespace tnac
     void make_function(semantics::function& sym) noexcept;
 
     //
-    // Attempts to initiate a call
-    //
-    bool init_call(semantics::function& sym, ast::call_expr& expr) noexcept;
-
-    //
     // Returns true if a return is active
     //
     bool return_path() const noexcept;
@@ -178,6 +186,11 @@ namespace tnac
     // Converts a value to bool
     //
     bool to_bool(eval::value val) const noexcept;
+
+    //
+    // Extracts a function symbol from a scope
+    //
+    semantics::function* try_get_callable(ast::scope& scope) const noexcept;
 
   private:
     eval::value_visitor m_visitor;

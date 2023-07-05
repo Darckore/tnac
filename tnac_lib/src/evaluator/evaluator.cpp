@@ -237,7 +237,7 @@ namespace tnac
       return;
     }
 
-    if (!init_call(*callable, expr))
+    if (!m_callStack)
     {
       on_error(expr.pos(), "Stack overflow"sv);
       m_callStack.clear();
@@ -245,12 +245,13 @@ namespace tnac
       return;
     }
 
+    m_callStack.push(*callable, expr.args(), m_visitor);
     auto funcBody = callable->declarator().definition();
     value_guard _{ m_return };
     (*this)(funcBody);
     auto val = m_visitor.last_result(&expr);
     expr.eval_result(val);
-    m_callStack.pop();
+    //m_callStack.pop(m_visitor);
   }
 
   void evaluator::visit(ast::ret_expr& ret) noexcept
@@ -425,6 +426,27 @@ namespace tnac
     return false;
   }
 
+  bool evaluator::preview(ast::scope& scope) noexcept
+  {
+    auto callable = try_get_callable(scope);
+    if (!callable)
+      return true;
+
+    m_callStack.prologue(*callable);
+
+    return true;
+  }
+
+  void evaluator::visit(ast::scope& scope) noexcept
+  {
+    auto callable = try_get_callable(scope);
+    if (!callable)
+      return;
+
+    m_callStack.pop(m_visitor);
+    m_callStack.epilogue(*callable);
+  }
+
   // Private members
 
   void evaluator::on_error(const token& pos, string_t msg) noexcept
@@ -469,30 +491,6 @@ namespace tnac
     sym.eval_result(m_visitor.make_function(&sym, eval::function_type{ sym }));
   }
 
-  bool evaluator::init_call(semantics::function& sym, ast::call_expr& expr) noexcept
-  {
-    if (!m_callStack)
-    {
-      return false;
-    }
-
-    eval::call_stack::value_list argValues;
-    argValues.reserve(expr.args().size());
-
-    for (auto [param, arg] : utils::make_iterators(sym.params(), expr.args()))
-    {
-      UTILS_ASSERT(static_cast<bool>(param));
-      auto&& paramSym = param->symbol();
-
-      auto val = arg->value();
-      argValues.emplace_back(val);
-      eval_assign(paramSym, val);
-    }
-
-    m_visitor.get_empty();
-    return m_callStack.push(sym.name(), std::move(argValues));
-  }
-
   bool evaluator::return_path() const noexcept
   {
     return m_return;
@@ -505,4 +503,12 @@ namespace tnac
     return *resVal;
   }
 
+  semantics::function* evaluator::try_get_callable(ast::scope& scope) const noexcept
+  {
+    using semantics::sym_kind;
+    if(auto func = utils::try_cast<ast::func_decl>(scope.parent()))
+      return utils::try_cast<sym_kind::Function>(&func->symbol());
+
+    return {};
+  }
 }

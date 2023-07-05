@@ -129,6 +129,15 @@ namespace tnac::eval
     }
 
     //
+    // Destroys a value for a specific entity
+    //
+    value_type erase(entity_id id) noexcept
+    {
+      m_entityValues.erase(id);
+      return {};
+    }
+
+    //
     // Resets the stored result value
     //
     value_type reset_result() noexcept
