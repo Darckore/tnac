@@ -345,20 +345,6 @@ namespace tnac
     return false;
   }
 
-  bool evaluator::preview(ast::call_expr& call) noexcept
-  {
-    if (return_path())
-      return false;
-
-    auto&& ev = *this;
-    for (auto arg : call.args())
-    {
-      ev(arg);
-    }
-    ev(&call.callable());
-    return false;
-  }
-
   bool evaluator::preview(ast::binary_expr& expr) noexcept
   {
     if (return_path())

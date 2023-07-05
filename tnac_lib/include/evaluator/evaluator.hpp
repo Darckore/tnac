@@ -129,11 +129,6 @@ namespace tnac
     bool preview(ast::func_decl& decl) noexcept;
 
     //
-    // Pre-evaluates function arguments
-    //
-    bool preview(ast::call_expr& call) noexcept;
-
-    //
     // Previews a binary
     // If it is not a logical expression, moves on
     // Else, calculates operands in order to short-circuit
