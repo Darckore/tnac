@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<AutoVisualizer xmlns="http://schemas.microsoft.com/vstudio/debugger/natvis/2010">
+  
+  <Type Name="tnac::eval::value">
+    <DisplayString>value</DisplayString>
+    <Expand>
+      <Item Name="kind">(tnac::eval::type_id)((m_val &amp; 0xFF00000000000000) &gt;&gt; 56)</Item>
+      <Item Name="value" Condition="((m_val &amp; 0xFF00000000000000) &gt;&gt; 56) == 0">"&lt;undef&gt;"</Item>
+      <Item Name="value" Condition="((m_val &amp; 0xFF00000000000000) &gt;&gt; 56) == 1">*((bool*)(m_val &amp; 0x00ffffffffffffff))</Item>
+      <Item Name="value" Condition="((m_val &amp; 0xFF00000000000000) &gt;&gt; 56) == 2">*((long long*)(m_val &amp; 0x00ffffffffffffff))</Item>
+      <Item Name="value" Condition="((m_val &amp; 0xFF00000000000000) &gt;&gt; 56) == 3">*((double*)(m_val &amp; 0x00ffffffffffffff))</Item>
+      <Item Name="value" Condition="((m_val &amp; 0xFF00000000000000) &gt;&gt; 56) == 4">*((tnac::eval::complex_type*)(m_val &amp; 0x00ffffffffffffff))</Item>
+      <Item Name="value" Condition="((m_val &amp; 0xFF00000000000000) &gt;&gt; 56) == 5">*((tnac::eval::fraction_type*)(m_val &amp; 0x00ffffffffffffff))</Item>
+      <Item Name="value" Condition="((m_val &amp; 0xFF00000000000000) &gt;&gt; 56) == 6">*((tnac::eval::function_type*)(m_val &amp; 0x00ffffffffffffff))</Item>
+    </Expand>
+  </Type>
+  
+</AutoVisualizer>
