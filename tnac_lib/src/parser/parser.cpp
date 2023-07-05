@@ -577,7 +577,6 @@ namespace tnac
     if (detail::is_open_curly(next))
       return cond_expr();
 
-
     if (next.is(token::Identifier))
     {
       auto sym = m_sema.find(next.m_value);
@@ -662,23 +661,15 @@ namespace tnac
 
   ast::expr* parser::cond_expr() noexcept
   {
-    UTILS_ASSERT(detail::is_open_curly(peek_next()));
-    next_tok();
-
     auto body = m_builder.make_scope({});
     scope_guard _{ *this, body };
-    auto cond = expr();
-    
-    if (!detail::is_close_curly(peek_next()))
-      return error_expr(peek_next(), "Expected '}'"sv);
 
-    next_tok();
+    auto condExpr = cond();
+
     expr_list patterns;
-    while (!peek_next().is_eol())
+    while (!peek_next().is_any(token::Eol, token::Semicolon))
     {
       patterns.push_back(cond_pattern());
-      if (detail::is_semi(peek_next()))
-        break;
     }
 
     if(!detail::is_semi(peek_next()))
@@ -687,7 +678,21 @@ namespace tnac
     next_tok();
     body->adopt(std::move(patterns));
 
-    return m_builder.make_conditional(*cond, *body);
+    return m_builder.make_conditional(*condExpr, *body);
+  }
+
+  ast::expr* parser::cond() noexcept
+  {
+    UTILS_ASSERT(detail::is_open_curly(peek_next()));
+    next_tok();
+
+    auto c = expr();
+
+    if (!detail::is_close_curly(peek_next()))
+      return error_expr(next_tok(), "Expected '}'"sv);
+
+    next_tok();
+    return c;
   }
 
   ast::expr* parser::cond_pattern() noexcept
@@ -725,11 +730,11 @@ namespace tnac
     if (!detail::is_semi(peek_next()))
     {
       auto exprList = expression_list(scope_level::Nested);
-      body->adopt(std::move(exprList));
       if (!detail::is_semi(peek_next()))
       {
         exprList.push_back(error_expr(next_tok(), "Expected ';' at the end of pattern body"sv));
       }
+      body->adopt(std::move(exprList));
     }
 
     next_tok();
