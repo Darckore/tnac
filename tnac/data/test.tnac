@@ -5,3 +5,10 @@ factorial(arg)
     {}       ->  arg * factorial(arg - 1) ;
   ;
 ;
+
+test(x)
+  { x }
+    { 0 } -> 1;
+    {} -> x * test(x - 1);
+  ;
+;

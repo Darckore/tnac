@@ -251,7 +251,6 @@ namespace tnac
     (*this)(funcBody);
     auto val = m_visitor.last_result(&expr);
     expr.eval_result(val);
-    //m_callStack.pop(m_visitor);
   }
 
   void evaluator::visit(ast::ret_expr& ret) noexcept
