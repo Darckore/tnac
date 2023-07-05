@@ -73,9 +73,14 @@ namespace tnac::ast
     return make<assign_expr>(left, right, op);
   }
 
-  pattern* builder::make_pattern(const token& op, expr* checkedExpr, scope& body) noexcept
+  matcher* builder::make_matcher(const token& op, expr* checkedExpr) noexcept
   {
-    return make<pattern>(op, checkedExpr, body);
+    return make<matcher>(op, checkedExpr);
+  }
+
+  pattern* builder::make_pattern(expr& matcherExpr, scope& body) noexcept
+  {
+    return make<pattern>(matcherExpr, body);
   }
 
   cond_expr* builder::make_conditional(expr& condition, scope& body) noexcept

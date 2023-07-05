@@ -95,6 +95,10 @@ namespace tnac
       {
         return tok.is(token::Semicolon);
       }
+      constexpr auto is_arrow(const token& tok) noexcept
+      {
+        return tok.is(token::Arrow);
+      }
 
       constexpr auto is_expression_separator(const token& tok) noexcept
       {
@@ -697,35 +701,9 @@ namespace tnac
 
   ast::expr* parser::cond_pattern() noexcept
   {
-    if (!detail::is_open_curly(peek_next()))
-    {
-      auto err = error_expr(next_tok(), "Expected '{'");
-      skip_to(token::CurlyClose, token::ExprSep, token::Semicolon);
-      return err;
-    }
-
     auto body = m_builder.make_scope({});
     scope_guard _{ *this, body };
-    
-    auto patternPos = next_tok();
-    ast::expr* checked{};
-    if (detail::is_pattern_matcher(peek_next()))
-    {
-      patternPos = next_tok();
-      if (detail::is_close_curly(peek_next()))
-        return error_expr(next_tok(), "Expected expression"sv);
-    }
-    if (!detail::is_close_curly(peek_next()))
-    {
-      checked = expr();
-      if (!detail::is_close_curly(peek_next()))
-        return error_expr(peek_next(), "Expected '}'"sv);
-
-      if(detail::is_open_curly(patternPos))
-        patternPos = checked->pos();
-    }
-    
-    next_tok();
+    auto matcher = cond_matcher();
 
     if (!detail::is_semi(peek_next()))
     {
@@ -738,7 +716,40 @@ namespace tnac
     }
 
     next_tok();
-    return m_builder.make_pattern(patternPos, checked, *body);
+    return m_builder.make_pattern(*matcher, *body);
+  }
+
+  ast::expr* parser::cond_matcher() noexcept
+  {
+    if (!detail::is_open_curly(peek_next()))
+      return error_expr(next_tok(), "Expected '{'");
+
+    auto patternPos = next_tok();
+    ast::expr* checked{};
+
+    if (detail::is_pattern_matcher(peek_next()))
+    {
+      patternPos = next_tok();
+      if (detail::is_close_curly(peek_next()))
+        return error_expr(next_tok(), "Expected expression"sv);
+    }
+
+    if (!detail::is_close_curly(peek_next()))
+    {
+      checked = expr();
+      if (!detail::is_close_curly(peek_next()))
+        return error_expr(peek_next(), "Expected '}'"sv);
+
+      if (detail::is_open_curly(patternPos))
+        patternPos = checked->pos();
+    }
+
+    next_tok();
+    if (!detail::is_arrow(peek_next()))
+      return error_expr(next_tok(), "Expected '->' after condition matcher"sv);
+
+    next_tok();
+    return m_builder.make_matcher(patternPos, checked);
   }
 
 }

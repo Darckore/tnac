@@ -377,6 +377,11 @@ namespace tnac
     //
     ast::expr* cond_pattern() noexcept;
 
+    //
+    // Parses a pattern matcher
+    //
+    ast::expr* cond_matcher() noexcept;
+
   private:
     lex m_lex;
     ast::builder& m_builder;

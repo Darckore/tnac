@@ -1,6 +1,7 @@
-sq(a) a * a;
-
-sum(a, b) a + b;
-
-a = 10 :
-b = sum(a, sq(a))
+factorial(arg)
+  { arg }
+    { < 0 }  -> -1 ;
+    { 0 }    ->  1 ;
+    {}       ->  arg * factorial(arg - 1) ;
+  ;
+;

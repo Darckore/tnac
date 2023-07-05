@@ -382,15 +382,29 @@ namespace tnac::ast
 
       if (preview(ptrn))
       {
-        if (!ptrn->is_default())
-        {
-          visit_root(&ptrn->checked());
-        }
+        visit_root(&ptrn->matcher());
         visit_root(&ptrn->body());
       }
 
       if constexpr (is_bottom_up())
         visit(ptrn);
+    }
+
+    //
+    // Visits a pattern matcher
+    //
+    void visit_impl(dest<matcher> matchExpr) noexcept
+    {
+      if constexpr (is_top_down())
+        visit(matchExpr);
+
+      if (preview(matchExpr) && !matchExpr->is_default())
+      {
+        visit_root(&matchExpr->checked());
+      }
+
+      if constexpr (is_bottom_up())
+        visit(matchExpr);
     }
 
     //
@@ -465,6 +479,7 @@ namespace tnac::ast
       case Paren:      visit_impl(&cast<paren_expr>(cur));  break;
       case Typed:      visit_impl(&cast<typed_expr>(cur));  break;
       case Call:       visit_impl(&cast<call_expr>(cur));   break;
+      case Matcher:    visit_impl(&cast<matcher>(cur));     break;
       case Pattern:    visit_impl(&cast<pattern>(cur));     break;
       case Cond:       visit_impl(&cast<cond_expr>(cur));   break;
       case Error:      visit_impl(&cast<error_expr>(cur));  break;

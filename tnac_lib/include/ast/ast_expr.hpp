@@ -451,6 +451,51 @@ namespace tnac::ast
 
 
   //
+  // Matcher for conditional expression's pattern
+  //
+  class matcher final : public expr
+  {
+  private:
+    friend class builder;
+
+  public:
+    CLASS_SPECIALS_NONE(matcher);
+
+    virtual ~matcher() noexcept;
+
+  protected:
+    matcher(const token& op, expr* checkedExpr) noexcept;
+
+  public:
+    //
+    // Checks whether the pattern is a default one
+    // Returns true is the checked expr is null
+    //
+    bool is_default() const noexcept;
+
+    //
+    // Checks whether the pattern operator is implicit
+    //
+    bool has_implicit_op() const noexcept;
+
+    //
+    // Returns the checked expression
+    //
+    // const version
+    // 
+    const expr& checked() const noexcept;
+
+    //
+    // Returns the checked expression
+    //
+    expr& checked() noexcept;
+
+  private:
+    expr* m_checked{};
+  };
+
+
+  //
   // Pattern
   // Used in conditional expressions
   //
@@ -465,26 +510,20 @@ namespace tnac::ast
     virtual ~pattern() noexcept;
 
   protected:
-    pattern(const token& op, expr* checkedExpr, scope& body) noexcept;
+    pattern(expr& matcherExpr, scope& body) noexcept;
 
   public:
     //
-    // Checks whether the pattern is a default one
-    // Returns true is the checked expr is null
-    //
-    bool is_default() const noexcept;
-
-    //
-    // Returns the checked expression
+    // Returns the matcher
     //
     // const version
-    // 
-    const expr& checked() const noexcept;
+    //
+    const expr& matcher() const noexcept;
 
     //
-    // Returns the checked expression
+    // Returns the matcher
     //
-    expr& checked() noexcept;
+    expr& matcher() noexcept;
 
     //
     // Returns the body
@@ -498,13 +537,8 @@ namespace tnac::ast
     //
     scope& body() noexcept;
 
-    //
-    // Checks whether the pattern operator is implicit
-    //
-    bool has_implicit_op() const noexcept;
-
   private:
-    expr*  m_checked{};
+    expr*  m_matcher{};
     scope* m_body{};
   };
 

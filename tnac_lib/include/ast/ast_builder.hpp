@@ -101,9 +101,14 @@ namespace tnac::ast
     assign_expr* make_assign(expr& left, expr& right, const token& op) noexcept;
 
     //
+    // Creates a matcher for a condition pattern
+    //
+    matcher* make_matcher(const token& op, expr* checkedExpr) noexcept;
+
+    //
     // Creates a pattern used in conditionals
     //
-    pattern* make_pattern(const token& op, expr* checkedExpr, scope& body) noexcept;
+    pattern* make_pattern(expr& matcherExpr, scope& body) noexcept;
 
     //
     // Creates a conditional expression

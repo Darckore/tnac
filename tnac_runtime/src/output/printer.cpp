@@ -135,37 +135,34 @@ namespace tnac_rt::out
     push_parent(2);
   }
 
-  bool ast_printer::preview(const ast::pattern& ptrn) noexcept
+  void ast_printer::visit(const ast::pattern& ) noexcept
   {
     indent();
-    auto childCount = 0u;
-    if (ptrn.is_default())
+    out() << "Pattern";
+    endl();
+    push_parent(2);
+  }
+
+  void ast_printer::visit(const ast::matcher& matcher) noexcept
+  {
+    indent();
+    if (matcher.is_default())
     {
-      out() << "<Default>";
+      out() << "default";
       endl();
     }
-    else if (ptrn.has_implicit_op())
+    else if (matcher.has_implicit_op())
     {
-      ++childCount;
-      out() << "< '==' >";
+      push_parent(1);
+      out() << "{==}";
       endl();
     }
     else
     {
-      ++childCount;
-      out() << '<';
-      print_token(ptrn.pos());
-      out() << '>';
+      push_parent(1);
+      out() << '{' << matcher.pos().m_value << '}';
       endl();
     }
-
-    push_parent(childCount + 1);
-    return true;
-  }
-
-  void ast_printer::visit(const ast::pattern& ptrn) noexcept
-  {
-    utils::unused(ptrn);
   }
 
   void ast_printer::visit(const ast::lit_expr& expr) noexcept

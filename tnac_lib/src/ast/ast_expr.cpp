@@ -268,32 +268,59 @@ namespace tnac::ast
   }
 
 
-  // Pattern
+  // Matcher
 
-  pattern::~pattern() noexcept = default;
+  matcher::~matcher() noexcept = default;
 
-  pattern::pattern(const token& op, expr* checkedExpr, scope& body) noexcept :
-    expr{ kind::Pattern, op },
-    m_checked{ checkedExpr },
-    m_body{ &body }
+  matcher::matcher(const token& op, expr* checkedExpr) noexcept :
+    expr{ kind::Matcher, op },
+    m_checked{ checkedExpr }
   {
     assume_ancestry(checkedExpr);
-    assume_ancestry(&body);
   }
 
-  bool pattern::is_default() const noexcept
+  bool matcher::is_default() const noexcept
   {
     return !static_cast<bool>(m_checked);
   }
 
-  const expr& pattern::checked() const noexcept
+  bool matcher::has_implicit_op() const noexcept
+  {
+    using enum tok_kind;
+    return !pos().is_any(Eq, NotEq, Less, LessEq, Greater, GreaterEq);
+  }
+
+  const expr& matcher::checked() const noexcept
   {
     UTILS_ASSERT(!is_default());
     return *m_checked;
   }
-  expr& pattern::checked() noexcept
+  expr& matcher::checked() noexcept
   {
     return FROM_CONST(checked);
+  }
+
+
+  // Pattern
+
+  pattern::~pattern() noexcept = default;
+
+  pattern::pattern(expr& matcherExpr, scope& body) noexcept :
+    expr{ kind::Pattern, matcherExpr.pos() },
+    m_matcher{ &matcherExpr },
+    m_body{ &body }
+  {
+    assume_ancestry(&matcherExpr);
+    assume_ancestry(&body);
+  }
+
+  const expr& pattern::matcher() const noexcept
+  {
+    return *m_matcher;
+  }
+  expr& pattern::matcher() noexcept
+  {
+    return FROM_CONST(matcher);
   }
 
   const scope& pattern::body() const noexcept
@@ -304,13 +331,6 @@ namespace tnac::ast
   {
     return FROM_CONST(body);
   }
-
-  bool pattern::has_implicit_op() const noexcept
-  {
-    using enum tok_kind;
-    return !pos().is_any(Eq, NotEq, Less, LessEq, Greater, GreaterEq);
-  }
-
 
   // Conditional expr
 
