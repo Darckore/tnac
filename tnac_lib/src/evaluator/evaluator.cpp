@@ -391,6 +391,50 @@ namespace tnac
     return false;
   }
 
+  bool evaluator::preview(ast::cond_expr& expr) noexcept
+  {
+    auto&& cond = expr.cond();
+    base::operator()(&cond);
+    auto condVal = cond.value();
+
+    ast::pattern* trueBranch{};
+    ast::pattern* defaultBranch{};
+    using eval::val_ops;
+    for (auto child : expr.patterns().children())
+    {
+      auto&& pattern = utils::cast<ast::pattern>(*child);
+      auto&& matcher = utils::cast<ast::matcher>(pattern.matcher());
+      if (matcher.is_default())
+      {
+        defaultBranch = &pattern;
+        continue;
+      }
+
+      auto&& checkedExpr = matcher.checked();
+      base::operator()(&checkedExpr);
+      auto checkedVal = checkedExpr.value();
+      auto opcode = matcher.has_implicit_op() ?
+        val_ops::Equal :
+        detail::conv_binary(matcher.pos().m_kind);
+
+      auto currentMatch = m_visitor.visit_binary(&matcher, condVal, checkedVal, opcode);
+      matcher.eval_result(currentMatch);
+      if (to_bool(currentMatch))
+      {
+        trueBranch = &pattern;
+        break;
+      }
+    }
+
+    if (auto winner = (trueBranch ? trueBranch : defaultBranch))
+    {
+      base::operator()(&winner->body());
+      expr.eval_result(m_visitor.last_result(&expr));
+    }
+
+    return false;
+  }
+
   // Private members
 
   void evaluator::on_error(const token& pos, string_t msg) noexcept

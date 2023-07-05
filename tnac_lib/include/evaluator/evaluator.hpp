@@ -140,6 +140,14 @@ namespace tnac
     //
     bool preview(ast::binary_expr& expr) noexcept;
 
+    //
+    // Previews a conditional expr
+    // We don't visit it normally due to its short-curcuity nature
+    // (only one path can be evaluated)
+    // So, we'll just tell the base visitor to stop here
+    //
+    bool preview(ast::cond_expr& expr) noexcept;
+
   private:
     //
     // Produces an evaluation error
