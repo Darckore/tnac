@@ -109,12 +109,16 @@ namespace tnac::eval
         return ~id_t{};
       }
 
+      ent_id(id_t id) noexcept :
+        value{ id }
+      {}
+
       ent_id(const void* ent) noexcept :
-        value{ reinterpret_cast<id_t>(ent) }
+        ent_id{ reinterpret_cast<id_t>(ent) }
       {}
 
       ent_id(std::nullptr_t) noexcept :
-        value{}
+        ent_id{}
       {}
 
       auto operator* () const noexcept
