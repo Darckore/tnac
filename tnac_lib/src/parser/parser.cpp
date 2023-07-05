@@ -138,7 +138,7 @@ namespace tnac
       return has_implicit_separator(unary->operand());
 
     if (!expr.is(kind::Decl))
-      return expr.is(kind::Cond);
+      return expr.is_any(kind::Cond, kind::Pattern);
 
     auto&& decl = utils::cast<ast::decl_expr>(expr).declarator();
     if (decl.is(kind::FuncDecl))

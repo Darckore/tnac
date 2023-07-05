@@ -35,73 +35,27 @@ namespace tnac_rt::out
     indent(*root);
     switch (root->what())
     {
-    case Error:
-      print(cast<ast::error_expr>(*root));
-      break;
+    case Error:      print(cast<ast::error_expr>(*root));  break;
+    case Scope:      print(cast<ast::scope>(*root));       break;
+    case Literal:    print(cast<ast::lit_expr>(*root));    break;
+    case Identifier: print(cast<ast::id_expr>(*root));     break;
+    case Unary:      print(cast<ast::unary_expr>(*root));  break;
+    case Binary:     print(cast<ast::binary_expr>(*root)); break;
+    case Assign:     print(cast<ast::assign_expr>(*root)); break;
+    case Decl:       print(cast<ast::decl_expr>(*root));   break;
+    case Paren:      print(cast<ast::paren_expr>(*root));  break;
+    case Typed:      print(cast<ast::typed_expr>(*root));  break;
+    case Call:       print(cast<ast::call_expr>(*root));   break;
+    case Result:     print(cast<ast::result_expr>(*root)); break;
+    case Ret:        print(cast<ast::ret_expr>(*root));    break;
+    case Cond:       print(cast<ast::cond_expr>(*root));   break;
+    case Pattern:    print(cast<ast::pattern>(*root));     break;
+    case Matcher:    print(cast<ast::matcher>(*root));     break;
+    case VarDecl:    print(cast<ast::var_decl>(*root));    break;
+    case ParamDecl:  print(cast<ast::param_decl>(*root));  break;
+    case FuncDecl:   print(cast<ast::func_decl>(*root));   break;
 
-    case Scope:
-      print(cast<ast::scope>(*root));
-      break;
-
-    case Literal:
-      print(cast<ast::lit_expr>(*root));
-      break;
-
-    case Identifier:
-      print(cast<ast::id_expr>(*root));
-      break;
-
-    case Unary:
-      print(cast<ast::unary_expr>(*root));
-      break;
-
-    case Binary:
-      print(cast<ast::binary_expr>(*root));
-      break;
-
-    case Assign:
-      print(cast<ast::assign_expr>(*root));
-      break;
-
-    case Decl:
-      print(cast<ast::decl_expr>(*root));
-      break;
-
-    case Paren:
-      print(cast<ast::paren_expr>(*root));
-      break;
-
-    case Typed:
-      print(cast<ast::typed_expr>(*root));
-      break;
-
-    case Call:
-      print(cast<ast::call_expr>(*root));
-      break;
-
-    case Result:
-      print(cast<ast::result_expr>(*root));
-      break;
-
-    case Ret:
-      print(cast<ast::ret_expr>(*root));
-      break;
-
-    case VarDecl:
-      print(cast<ast::var_decl>(*root));
-      break;
-
-    case ParamDecl:
-      print(cast<ast::param_decl>(*root));
-      break;
-
-    case FuncDecl:
-      print(cast<ast::func_decl>(*root));
-      break;
-
-    default:
-      UTILS_ASSERT(false);
-      break;
+    default: UTILS_ASSERT(false); break;
     }
   }
 
@@ -190,6 +144,65 @@ namespace tnac_rt::out
     out() << "Error '" << expr.message() << "' ";
   }
 
+  void lister::print(const ast::cond_expr& expr) noexcept
+  {
+    utils::unused(expr);
+    out() << "{ ";
+    print(&expr.cond());
+    out() << '}';
+
+    if (auto&& patterns = expr.patterns(); !patterns.children().empty())
+    {
+      endl();
+      tnac::value_guard _{ m_indent };
+      ++m_indent;
+      print(patterns);
+      indent(*expr.parent());
+    }
+    else
+    {
+      out() << ' ';
+    }
+
+    indent(expr);
+    out() << "; ";
+  }
+
+  void lister::print(const ast::pattern& expr) noexcept
+  {
+    print(&expr.matcher());
+
+    if (auto&& body = expr.body(); !body.children().empty())
+    {
+      endl();
+      tnac::value_guard _{ m_indent };
+      ++m_indent;
+      print(body);
+      indent(*expr.parent());
+    }
+    else
+    {
+      out() << ' ';
+    }
+
+    indent(expr);
+    out() << "; ";
+  }
+
+  void lister::print(const ast::matcher& expr) noexcept
+  {
+    out() << "{ ";
+    if (!expr.is_default())
+    {
+      if (!expr.has_implicit_op())
+        print_token(expr.pos(), true);
+
+      print(&expr.checked());
+    }
+
+    out() << "} -> ";
+  }
+
   void lister::print(const ast::var_decl& decl) noexcept
   {
     print_token(decl.pos(), true);
@@ -226,6 +239,7 @@ namespace tnac_rt::out
       tnac::value_guard _{ m_indent };
       ++m_indent;
       print(body);
+      --m_indent;
       indent(*decl.parent());
     }
     else
