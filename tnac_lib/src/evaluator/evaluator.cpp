@@ -428,7 +428,11 @@ namespace tnac
 
     if (auto winner = (trueBranch ? trueBranch : defaultBranch))
     {
-      base::operator()(&winner->body());
+      if (auto&& body = winner->body(); !body.children().empty())
+        base::operator()(&winner->body());
+      else
+        m_visitor.get_empty();
+
       expr.eval_result(m_visitor.last_result(&expr));
     }
 
