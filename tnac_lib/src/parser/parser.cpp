@@ -319,9 +319,6 @@ namespace tnac
 
   ast::expr* parser::expr() noexcept
   {
-    if (detail::is_open_curly(peek_next()))
-      return cond_expr();
-
     return decl_expr();
   }
 
@@ -561,30 +558,25 @@ namespace tnac
   ast::expr* parser::primary_expr() noexcept
   {
     auto&& next = peek_next();
+
     if (next.is_literal())
-    {
       return m_builder.make_literal(next_tok());
-    }
 
     if (detail::is_type_keyword(next))
-    {
       return typed_expr();
-    }
 
     if (next.is(token::KwFunction))
-    {
       return anonimous_function();
-    }
 
     if (next.is(token::KwResult))
-    {
       return m_builder.make_result(next_tok());
-    }
 
     if (detail::is_open_paren(next))
-    {
       return paren_expr();
-    }
+
+    if (detail::is_open_curly(next))
+      return cond_expr();
+
 
     if (next.is(token::Identifier))
     {

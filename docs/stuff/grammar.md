@@ -15,30 +15,12 @@ ret-expr:
   _ret expr
 
 expr:
-  conditional-expr
   decl-expr
 
 decl-expr:
   assign-expr
   var-decl
   func-decl
-
-conditional-expr:
-  condition cond-body
-
-condition:
-  '{' expr '}'
-
-cond-body:
-  pattern-matcher ';'
-  cond-body pattern-matcher ';'
-
-pattern-matcher:
-  pattern '->' expr-list ';'
-
-pattern:
-  '{}'
-  '{' pattern-operator expr '}'
 
 assign-expr:
   logical-or-expr
@@ -97,7 +79,29 @@ primary-expr:
   id-expr
   typed-expr
   anonimous-function
+  conditional-expr
   '(' expr ')'
+
+conditional-expr:
+  condition cond-body ';'
+
+condition:
+  '{' expr '}'
+
+cond-body:
+  pattern-matcher
+  cond-body pattern-matcher
+
+pattern-matcher:
+  pattern '->' pattern-body
+
+pattern-body:
+  ';'
+  expr-list ';'
+
+pattern:
+  '{}'
+  '{' pattern-operator expr '}'
 
 var-decl:
   undeclared-identifier '=' expr
