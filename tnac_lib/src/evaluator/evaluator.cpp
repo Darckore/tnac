@@ -258,7 +258,8 @@ namespace tnac
     if (return_path())
       return;
 
-    ret.eval_result(ret.returned_value().value());
+    auto returnedVal = m_visitor.visit_assign(&ret, ret.returned_value().value());
+    ret.eval_result(returnedVal);
     m_return = true;
   }
 
@@ -379,6 +380,9 @@ namespace tnac
 
   bool evaluator::preview(ast::cond_expr& expr) noexcept
   {
+    if (return_path())
+      return false;
+
     auto&& cond = expr.cond();
     base::operator()(&cond);
     auto condVal = cond.value();
@@ -427,13 +431,15 @@ namespace tnac
 
   bool evaluator::preview(ast::scope& scope) noexcept
   {
+    const auto returning = return_path();
     auto callable = try_get_callable(scope);
     if (!callable)
-      return true;
+      return !returning;
 
-    m_callStack.prologue(*callable, m_visitor);
+    if(!returning)
+      m_callStack.prologue(*callable, m_visitor);
 
-    return true;
+    return !returning;
   }
 
   void evaluator::visit(ast::scope& scope) noexcept

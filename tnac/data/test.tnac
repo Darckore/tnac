@@ -1,3 +1,11 @@
+test(x)
+  { x } { >2 } -> _ret -1;;
+
+  { x } { 1 } -> _ret x;;
+
+  test(x + 1)
+;
+
 factorial(arg)
   { arg }
     { < 0 }  -> ;
