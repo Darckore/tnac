@@ -394,20 +394,28 @@ namespace tnac
     {
       auto&& pattern = utils::cast<ast::pattern>(*child);
       auto&& matcher = utils::cast<ast::matcher>(pattern.matcher());
+      eval::value currentMatch{};
       if (matcher.is_default())
       {
         defaultBranch = &pattern;
         continue;
       }
+      else if (matcher.is_unary())
+      {
+        currentMatch = m_visitor.visit_unary(&matcher, condVal, val_ops::LogicalNot);
+      }
+      else
+      {
+        auto&& checkedExpr = matcher.checked();
+        base::operator()(&checkedExpr);
+        auto checkedVal = checkedExpr.value();
+        auto opcode = matcher.has_implicit_op() ?
+          val_ops::Equal :
+          detail::conv_binary(matcher.pos().m_kind);
 
-      auto&& checkedExpr = matcher.checked();
-      base::operator()(&checkedExpr);
-      auto checkedVal = checkedExpr.value();
-      auto opcode = matcher.has_implicit_op() ?
-        val_ops::Equal :
-        detail::conv_binary(matcher.pos().m_kind);
+        currentMatch = m_visitor.visit_binary(&matcher, condVal, checkedVal, opcode);
+      }
 
-      auto currentMatch = m_visitor.visit_binary(&matcher, condVal, checkedVal, opcode);
       matcher.eval_result(currentMatch);
       if (to_bool(currentMatch))
       {

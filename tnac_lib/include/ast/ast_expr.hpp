@@ -474,6 +474,11 @@ namespace tnac::ast
     bool is_default() const noexcept;
 
     //
+    // Checks whether the matcher is a unary operator
+    //
+    bool is_unary() const noexcept;
+
+    //
     // Checks whether the pattern operator is implicit
     //
     bool has_implicit_op() const noexcept;

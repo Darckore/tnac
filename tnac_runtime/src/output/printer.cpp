@@ -151,6 +151,11 @@ namespace tnac_rt::out
       out() << "default";
       endl();
     }
+    else if (matcher.is_unary())
+    {
+      out() << "{!}";
+      endl();
+    }
     else if (matcher.has_implicit_op())
     {
       push_parent(1);

@@ -45,6 +45,10 @@ namespace tnac
       {
         return is_eq_comparison(tok) || is_relational(tok);
       }
+      constexpr auto is_pattern_unary(const token& tok) noexcept
+      {
+        return tok.is(token::Exclamation);
+      }
       constexpr auto is_logical(const token& tok) noexcept
       {
         return tok.is_any(token::LogAnd, token::LogOr);
@@ -732,6 +736,10 @@ namespace tnac
       patternPos = next_tok();
       if (detail::is_close_curly(peek_next()))
         return error_expr(next_tok(), "Expected expression"sv);
+    }
+    else if (detail::is_pattern_unary(peek_next()))
+    {
+      patternPos = next_tok();
     }
 
     if (!detail::is_close_curly(peek_next()))

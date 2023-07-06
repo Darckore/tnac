@@ -281,7 +281,12 @@ namespace tnac::ast
 
   bool matcher::is_default() const noexcept
   {
-    return !static_cast<bool>(m_checked);
+    return !m_checked && !is_unary();
+  }
+
+  bool matcher::is_unary() const noexcept
+  {
+    return !m_checked && pos().is(tok_kind::Exclamation);
   }
 
   bool matcher::has_implicit_op() const noexcept

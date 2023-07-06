@@ -102,6 +102,7 @@ pattern-body:
 pattern:
   '{}'
   '{' pattern-operator expr '}'
+  '{ ! }'
 
 var-decl:
   undeclared-identifier '=' expr

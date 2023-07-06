@@ -188,12 +188,16 @@ namespace tnac_rt::out
   void lister::print(const ast::matcher& expr) noexcept
   {
     out() << "{ ";
-    if (!expr.is_default())
+    if (!expr.is_default() && !expr.is_unary())
     {
       if (!expr.has_implicit_op())
         print_token(expr.pos(), true);
 
       print(&expr.checked());
+    }
+    if (expr.is_unary())
+    {
+      print_token(expr.pos(), true);
     }
 
     out() << "} -> ";
