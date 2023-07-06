@@ -745,6 +745,9 @@ namespace tnac
     if (!detail::is_close_curly(peek_next()))
     {
       checked = expr();
+      if (detail::is_pattern_unary(patternPos))
+        checked = m_builder.make_unary(*checked, patternPos);
+
       if (!detail::is_close_curly(peek_next()))
         return error_expr(peek_next(), "Expected '}'"sv);
 
