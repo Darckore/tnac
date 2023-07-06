@@ -6,18 +6,129 @@
     <DisplayString Condition="m_sign &gt; 0">({m_num}/{m_den})</DisplayString>
     <DisplayString Condition="m_sign == 0">0</DisplayString>
   </Type>
+
+  <Type Name="tnac::token">
+    <DisplayString>{m_kind,en} ({m_value,sb})</DisplayString>
+  </Type>
+
   
   <Type Name="tnac::eval::value">
-    <DisplayString>value</DisplayString>
+    <DisplayString>{(tnac::eval::type_id)((m_val &amp; 0xFF00000000000000) &gt;&gt; 56),en}</DisplayString>
     <Expand>
-      <Item Name="kind">(tnac::eval::type_id)((m_val &amp; 0xFF00000000000000) &gt;&gt; 56)</Item>
-      <Item Name="value" Condition="((m_val &amp; 0xFF00000000000000) &gt;&gt; 56) == 0">"&lt;undef&gt;"</Item>
-      <Item Name="value" Condition="((m_val &amp; 0xFF00000000000000) &gt;&gt; 56) == 1">*((bool*)(m_val &amp; 0x00ffffffffffffff))</Item>
-      <Item Name="value" Condition="((m_val &amp; 0xFF00000000000000) &gt;&gt; 56) == 2">*((long long*)(m_val &amp; 0x00ffffffffffffff))</Item>
-      <Item Name="value" Condition="((m_val &amp; 0xFF00000000000000) &gt;&gt; 56) == 3">*((double*)(m_val &amp; 0x00ffffffffffffff))</Item>
-      <Item Name="value" Condition="((m_val &amp; 0xFF00000000000000) &gt;&gt; 56) == 4">*((tnac::eval::complex_type*)(m_val &amp; 0x00ffffffffffffff))</Item>
-      <Item Name="value" Condition="((m_val &amp; 0xFF00000000000000) &gt;&gt; 56) == 5">*((tnac::eval::fraction_type*)(m_val &amp; 0x00ffffffffffffff))</Item>
-      <Item Name="value" Condition="((m_val &amp; 0xFF00000000000000) &gt;&gt; 56) == 6">*((tnac::eval::function_type*)(m_val &amp; 0x00ffffffffffffff))</Item>
+      <Item Name="[kind]">(tnac::eval::type_id)((m_val &amp; 0xFF00000000000000) &gt;&gt; 56),en</Item>
+      <Item Name="[value]" Condition="((m_val &amp; 0xFF00000000000000) &gt;&gt; 56) == 0">"&lt;undef&gt;",sb</Item>
+      <Item Name="[value]" Condition="((m_val &amp; 0xFF00000000000000) &gt;&gt; 56) == 1">*((bool*)(m_val &amp; 0x00ffffffffffffff))</Item>
+      <Item Name="[value]" Condition="((m_val &amp; 0xFF00000000000000) &gt;&gt; 56) == 2">*((long long*)(m_val &amp; 0x00ffffffffffffff))</Item>
+      <Item Name="[value]" Condition="((m_val &amp; 0xFF00000000000000) &gt;&gt; 56) == 3">*((double*)(m_val &amp; 0x00ffffffffffffff))</Item>
+      <Item Name="[value]" Condition="((m_val &amp; 0xFF00000000000000) &gt;&gt; 56) == 4">*((tnac::eval::complex_type*)(m_val &amp; 0x00ffffffffffffff))</Item>
+      <Item Name="[value]" Condition="((m_val &amp; 0xFF00000000000000) &gt;&gt; 56) == 5">*((tnac::eval::fraction_type*)(m_val &amp; 0x00ffffffffffffff))</Item>
+      <Item Name="[value]" Condition="((m_val &amp; 0xFF00000000000000) &gt;&gt; 56) == 6">*((tnac::eval::function_type*)(m_val &amp; 0x00ffffffffffffff))</Item>
+      <Item Name="[raw]">m_val,xb</Item>
+    </Expand>
+  </Type>
+
+
+  <Type Name="tnac::semantics::scope">
+    <DisplayString>scope</DisplayString>
+    <Expand>
+      <Item Name="[parent]" Condition="m_enclosing">*m_enclosing</Item>
+      <Item Name="[parent]" Condition="!m_enclosing">"&lt;global&gt;",sb</Item>
+      <Item Name="[scope]" Condition="m_node">*m_node</Item>
+      <Item Name="[scope]" Condition="!m_node">"&lt;empty&gt;"</Item>
+    </Expand>
+  </Type>
+
+  <Type Name="tnac::semantics::symbol">
+    <DisplayString>{m_kind,en} ({m_decl->m_id.m_value,sb})</DisplayString>
+    <Expand>
+      <Item Name="[decl]">*m_decl</Item>
+      <Item Name="[parent]">*m_owner</Item>
+      <Item Name="[value]">m_value</Item>
+    </Expand>
+  </Type>
+
+  <Type Name="tnac::eval::function_type">
+    <DisplayString Condition="m_func">function({m_func->m_decl->m_id.m_value,sb})</DisplayString>
+    <DisplayString Condition="!m_func">empty function</DisplayString>
+    <Expand>
+      <Item Name="[function]" Condition="m_func">*m_func</Item>
+    </Expand>
+  </Type>
+  
+
+  <Type Name="tnac::ast::decl">
+    <DisplayString>{m_kind,en} ({m_id.m_value,sb})</DisplayString>
+    <Expand>
+      <Item Name="[name]">m_id.m_value,sb</Item>
+      <Item Name="[symbol]">*m_symbol</Item>
+      <Item Name="[definition]" Condition="m_def">*m_def</Item>
+    </Expand>
+  </Type>
+
+  <Type Name="tnac::ast::func_decl">
+    <DisplayString>{m_kind,en} ({m_id.m_value,sb})</DisplayString>
+    <Expand>
+      <Item Name="[name]">m_id.m_value,sb</Item>
+      <Item Name="[symbol]">*m_symbol</Item>
+      <Item Name="[definition]">*m_def</Item>
+      <Item Name="[params]">m_params</Item>
+    </Expand>
+  </Type>
+
+  <Type Name="tnac::ast::node">
+    <DisplayString>{m_kind,en}</DisplayString>
+  </Type>
+
+  <Type Name="tnac::ast::expr">
+    <DisplayString>{m_kind,en}</DisplayString>
+    <Expand>
+      <Item Name="[value]">m_val</Item>
+    </Expand>
+  </Type>
+
+  <Type Name="tnac::ast::lit_expr">
+    <DisplayString>{m_kind,en} ({m_pos.m_value,sb})</DisplayString>
+  </Type>
+
+  <Type Name="tnac::ast::binary_expr">
+    <DisplayString>{m_kind,en} ({m_op})</DisplayString>
+    <Expand>
+      <Item Name="[left]">*m_left</Item>
+      <Item Name="[right]">*m_right</Item>
+      <Item Name="[value]">m_val</Item>
+    </Expand>
+  </Type>
+
+  <Type Name="tnac::ast::unary_expr">
+    <DisplayString>{m_kind,en} ({m_pos})</DisplayString>
+    <Expand>
+      <Item Name="[operand]">*m_expr</Item>
+      <Item Name="[value]">m_val</Item>
+    </Expand>
+  </Type>
+
+  <Type Name="tnac::ast::id_expr">
+    <DisplayString>{m_kind,en} ({m_pos.m_value,sb})</DisplayString>
+    <Expand>
+      <Item Name="[symbol]">*m_sym</Item>
+      <Item Name="[value]">m_val</Item>
+    </Expand>
+  </Type>
+
+  <Type Name="tnac::ast::paren_expr">
+    <DisplayString>{m_kind,en} ({*m_expr})</DisplayString>
+    <Expand>
+      <Item Name="[expr]">*m_expr</Item>
+      <Item Name="[value]">m_val</Item>
+    </Expand>
+  </Type>
+
+  <Type Name="tnac::ast::call_expr">
+    <DisplayString>{m_kind,en} ({m_pos.m_value,sb})</DisplayString>
+    <Expand>
+      <Item Name="[callee]">*m_callee</Item>
+      <Item Name="[args]">m_args</Item>
+      <Item Name="[value]">m_val</Item>
     </Expand>
   </Type>
   
