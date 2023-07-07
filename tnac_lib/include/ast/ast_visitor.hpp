@@ -355,6 +355,25 @@ namespace tnac::ast
     }
 
     //
+    // Visits a shorthand conditional
+    //
+    void visit_impl(dest<cond_short> cond) noexcept
+    {
+      if constexpr (is_top_down())
+        visit(cond);
+
+      if (preview(cond))
+      {
+        visit_root(&cond->cond());
+        if (cond->has_true())  visit_root(&cond->on_true());
+        if (cond->has_false()) visit_root(&cond->on_false());
+      }
+
+      if constexpr (is_bottom_up())
+        visit(cond);
+    }
+
+    //
     // Visits a conditional expression
     //
     void visit_impl(dest<cond_expr> cond) noexcept
@@ -481,6 +500,7 @@ namespace tnac::ast
       case Call:       visit_impl(&cast<call_expr>(cur));   break;
       case Matcher:    visit_impl(&cast<matcher>(cur));     break;
       case Pattern:    visit_impl(&cast<pattern>(cur));     break;
+      case CondShort:  visit_impl(&cast<cond_short>(cur));  break;
       case Cond:       visit_impl(&cast<cond_expr>(cur));   break;
       case Error:      visit_impl(&cast<error_expr>(cur));  break;
       }

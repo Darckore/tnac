@@ -115,6 +115,11 @@ namespace tnac::ast
     //
     cond_expr* make_conditional(expr& condition, scope& body) noexcept;
 
+    //
+    // Creates a shorthand conditional
+    //
+    cond_short* make_short_cond(expr& condition, expr* onTrue, expr* onFalse, scope& sc) noexcept;
+
   public: // Declarations
     //
     // Makes a decl expression

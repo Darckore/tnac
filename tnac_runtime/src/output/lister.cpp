@@ -48,6 +48,7 @@ namespace tnac_rt::out
     case Call:       print(cast<ast::call_expr>(*root));   break;
     case Result:     print(cast<ast::result_expr>(*root)); break;
     case Ret:        print(cast<ast::ret_expr>(*root));    break;
+    case CondShort:  print(cast<ast::cond_short>(*root));  break;
     case Cond:       print(cast<ast::cond_expr>(*root));   break;
     case Pattern:    print(cast<ast::pattern>(*root));     break;
     case Matcher:    print(cast<ast::matcher>(*root));     break;
@@ -144,9 +145,29 @@ namespace tnac_rt::out
     out() << "Error '" << expr.message() << "' ";
   }
 
+  void lister::print(const ast::cond_short& expr) noexcept
+  {
+    out() << "{ ";
+    print(&expr.cond());
+    out() << '}';
+
+    out() << " -> { ";
+    
+    if (expr.has_true())
+    {
+      print(&expr.on_true());
+    }
+    if (expr.has_false())
+    {
+      out() << ", ";
+      print(&expr.on_false());
+    }
+    
+    out() << "} ";
+  }
+
   void lister::print(const ast::cond_expr& expr) noexcept
   {
-    utils::unused(expr);
     out() << "{ ";
     print(&expr.cond());
     out() << '}';

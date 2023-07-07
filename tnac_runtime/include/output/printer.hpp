@@ -48,6 +48,8 @@ namespace tnac_rt::out
 
     void visit(const ast::call_expr& expr) noexcept;
 
+    void visit(const ast::cond_short& expr) noexcept;
+
     void visit(const ast::cond_expr& expr) noexcept;
 
     void visit(const ast::pattern& ptrn) noexcept;

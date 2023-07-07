@@ -127,6 +127,19 @@ namespace tnac_rt::out
     push_parent(expr.args().size() + 1);
   }
 
+  void ast_printer::visit(const ast::cond_short& expr) noexcept
+  {
+    indent();
+    out() << "Conditional shorthand";
+    endl();
+
+    auto childCount = 1u;
+    if (expr.has_true())  ++childCount;
+    if (expr.has_false()) ++childCount;
+
+    push_parent(childCount);
+  }
+
   void ast_printer::visit(const ast::cond_expr&) noexcept
   {
     indent();

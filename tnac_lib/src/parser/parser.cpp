@@ -670,24 +670,17 @@ namespace tnac
 
   ast::expr* parser::cond_expr() noexcept
   {
-    auto body = m_builder.make_scope({});
-    scope_guard _{ *this, body };
+    auto scope = m_builder.make_scope({});
+    scope_guard _{ *this, scope };
 
     auto condExpr = cond();
-
-    expr_list patterns;
-    while (!peek_next().is_any(token::Eol, token::Semicolon))
+    if (detail::is_arrow(peek_next()))
     {
-      patterns.push_back(cond_pattern());
+      next_tok();
+      return cond_short(*condExpr, *scope);
     }
 
-    if(!detail::is_semi(peek_next()))
-      patterns.push_back(error_expr(peek_next(), "Expected ';' at the end of conditional"sv));
-    
-    next_tok();
-    body->adopt(std::move(patterns));
-
-    return m_builder.make_conditional(*condExpr, *body);
+    return cond_body(*condExpr, *scope);
   }
 
   ast::expr* parser::cond() noexcept
@@ -702,6 +695,59 @@ namespace tnac
 
     next_tok();
     return c;
+  }
+
+  ast::expr* parser::cond_short(ast::expr& condExpr, ast::scope& scope) noexcept
+  {
+    if (!detail::is_open_curly(peek_next()))
+      return error_expr(next_tok(), "Expected '{'"sv, true);
+
+    next_tok();
+    ast::expr* onTrue{};
+    ast::expr* onFalse{};
+    
+    if (auto&& next = peek_next(); !detail::is_comma(peek_next()) &&
+                                   !detail::is_close_curly(next))
+    {
+      onTrue = expr();
+    }
+
+    if (!detail::is_close_curly(peek_next()))
+    {
+      if (detail::is_comma(peek_next()))
+      {
+        next_tok();
+        onFalse = expr();
+      }
+      else
+      {
+        onFalse = error_expr(next_tok(), "Expected ','"sv);
+        skip_to(token::ExprSep, token::CurlyClose, token::Eol);
+      }
+    }
+
+    if (!detail::is_close_curly(peek_next()))
+      return error_expr(next_tok(), "Expected '}'"sv, true);
+
+    next_tok();
+    return m_builder.make_short_cond(condExpr, onTrue, onFalse, scope);
+  }
+
+  ast::expr* parser::cond_body(ast::expr& condExpr, ast::scope& scope) noexcept
+  {
+    expr_list patterns;
+    while (!peek_next().is_any(token::Eol, token::Semicolon))
+    {
+      patterns.push_back(cond_pattern());
+    }
+
+    if (!detail::is_semi(peek_next()))
+      patterns.push_back(error_expr(peek_next(), "Expected ';' at the end of conditional"sv));
+
+    next_tok();
+    scope.adopt(std::move(patterns));
+
+    return m_builder.make_conditional(condExpr, scope);
   }
 
   ast::expr* parser::cond_pattern() noexcept
@@ -727,7 +773,7 @@ namespace tnac
   ast::expr* parser::cond_matcher() noexcept
   {
     if (!detail::is_open_curly(peek_next()))
-      return error_expr(next_tok(), "Expected '{'");
+      return error_expr(next_tok(), "Expected '{'"sv);
 
     auto patternPos = next_tok();
     ast::expr* checked{};

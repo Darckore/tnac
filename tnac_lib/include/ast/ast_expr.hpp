@@ -594,4 +594,77 @@ namespace tnac::ast
     expr* m_cond{};
     scope* m_body{};
   };
+
+
+  //
+  // Conditional shorthand expression
+  // Provides a simple true/false resolution of any expression
+  // in order to select one of the branches to evaluate
+  //
+  class cond_short final : public expr
+  {
+  private:
+    friend class builder;
+
+  public:
+    CLASS_SPECIALS_NONE(cond_short);
+
+    virtual ~cond_short() noexcept;
+
+  protected:
+    cond_short(expr& condition, expr* onTrue, expr* onFalse, scope& sc) noexcept;
+
+  public:
+    //
+    // Returns the condition
+    // 
+    // const version
+    //
+    const expr& cond() const noexcept;
+
+    //
+    // Returns the condition
+    // 
+    expr& cond() noexcept;
+
+    //
+    // Checks whether the true branch is present
+    //
+    bool has_true() const noexcept;
+
+    //
+    // Checks whether the false branch is present
+    //
+    bool has_false() const noexcept;
+
+    //
+    // Returns the true branch
+    // 
+    // const version
+    //
+    const expr& on_true() const noexcept;
+
+    //
+    // Returns the true branch
+    //
+    expr& on_true() noexcept;
+
+    //
+    // Returns the false branch
+    // 
+    // const version
+    //
+    const expr& on_false() const noexcept;
+
+    //
+    // Returns the false branch
+    //
+    expr& on_false() noexcept;
+
+  private:
+    expr* m_cond{};
+    expr* m_true{};
+    expr* m_false{};
+  };
+
 }

@@ -338,6 +338,7 @@ namespace tnac::ast
     return FROM_CONST(body);
   }
 
+
   // Conditional expr
 
   cond_expr::~cond_expr() noexcept = default;
@@ -367,6 +368,61 @@ namespace tnac::ast
   scope& cond_expr::patterns() noexcept
   {
     return FROM_CONST(patterns);
+  }
+
+
+  // Conditional shorthand expr
+
+  cond_short::~cond_short() noexcept = default;
+
+  cond_short::cond_short(expr& condition, expr* onTrue, expr* onFalse, scope& sc) noexcept :
+    expr{ kind::CondShort, condition.pos() },
+    m_cond{ &condition },
+    m_true{ onTrue },
+    m_false{ onFalse }
+  {
+    assume_ancestry(&condition);
+    assume_ancestry(onTrue);
+    assume_ancestry(onFalse);
+    assume_ancestry(&sc);
+  }
+
+  const expr& cond_short::cond() const noexcept
+  {
+    return *m_cond;
+  }
+  expr& cond_short::cond() noexcept
+  {
+    return FROM_CONST(cond);
+  }
+
+  bool cond_short::has_true() const noexcept
+  {
+    return static_cast<bool>(m_true);
+  }
+  bool cond_short::has_false() const noexcept
+  {
+    return static_cast<bool>(m_false);
+  }
+
+  const expr& cond_short::on_true() const noexcept
+  {
+    UTILS_ASSERT(has_true());
+    return *m_true;
+  }
+  expr& cond_short::on_true() noexcept
+  {
+    return FROM_CONST(on_true);
+  }
+
+  const expr& cond_short::on_false() const noexcept
+  {
+    UTILS_ASSERT(has_false());
+    return *m_false;
+  }
+  expr& cond_short::on_false() noexcept
+  {
+    return FROM_CONST(on_false);
   }
 
 }

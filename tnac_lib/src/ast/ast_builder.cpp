@@ -88,6 +88,11 @@ namespace tnac::ast
     return make<cond_expr>(condition, body);
   }
 
+  cond_short* builder::make_short_cond(expr& condition, expr* onTrue, expr* onFalse, scope& sc) noexcept
+  {
+    return make<cond_short>(condition, onTrue, onFalse, sc);
+  }
+
 
   // Declarators
 

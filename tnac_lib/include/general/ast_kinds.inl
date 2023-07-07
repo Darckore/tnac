@@ -14,6 +14,7 @@ Decl,
 Result,
 Ret,
 Cond,
+CondShort,
 Matcher,
 Pattern,
 

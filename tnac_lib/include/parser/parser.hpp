@@ -373,6 +373,16 @@ namespace tnac
     ast::expr* cond() noexcept;
 
     //
+    // Parses conditional expression's shorthand version
+    //
+    ast::expr* cond_short(ast::expr& condExpr, ast::scope& scope) noexcept;
+
+    //
+    // Parses conditional expression's body
+    //
+    ast::expr* cond_body(ast::expr& condExpr, ast::scope& scope) noexcept;
+
+    //
     // Parses a pattern used in conditional expressions
     //
     ast::expr* cond_pattern() noexcept;

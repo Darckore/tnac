@@ -90,6 +90,7 @@ condition:
   '{' expr '}'
 
 cond-short:
+  '{' cond-resolution '}'
   '{' cond-resolution ',' cond-resolution '}'
 
 cond-resolution:
@@ -108,9 +109,10 @@ pattern-body:
   expr-list ';'
 
 pattern:
-  '{}'
+  '{' '}'
   '{' pattern-operator expr '}'
-  '{ ! }'
+  '{' '!' '}'
+  '{' '?' '}'
 
 var-decl:
   undeclared-identifier '=' expr
