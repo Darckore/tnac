@@ -130,13 +130,28 @@ namespace tnac_rt::out
   void ast_printer::visit(const ast::cond_short& expr) noexcept
   {
     indent();
-    out() << "Conditional shorthand";
-    endl();
+    out() << "Short conditional";
 
     auto childCount = 1u;
-    if (expr.has_true())  ++childCount;
-    if (expr.has_false()) ++childCount;
+    const auto hasTrue  = expr.has_true();
+    const auto hasFalse = expr.has_false();
 
+    if (hasTrue || hasFalse)
+      out() << ": ";
+
+    if (hasTrue)
+    {
+      out() << "has true";
+      ++childCount;
+    }
+    if (hasFalse)
+    {
+      if (hasTrue) out() << ", ";
+      out() << "has false";
+      ++childCount;
+    }
+
+    endl();
     push_parent(childCount);
   }
 
