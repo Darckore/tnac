@@ -286,7 +286,8 @@ namespace tnac::ast
 
   bool matcher::is_unary() const noexcept
   {
-    return !m_checked && pos().is(tok_kind::Exclamation);
+    using enum tok_kind;
+    return !m_checked && pos().is_any(Exclamation, Question);
   }
 
   bool matcher::has_implicit_op() const noexcept

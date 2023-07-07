@@ -15,6 +15,7 @@ namespace tnac
         switch (tk)
         {
         case Exclamation: return LogicalNot;
+        case Question:    return LogicalIs;
         case Plus:        return UnaryPlus;
         case Minus:       return UnaryNegation;
         case Tilde:       return UnaryBitwiseNot;
@@ -402,7 +403,8 @@ namespace tnac
       }
       else if (matcher.is_unary())
       {
-        currentMatch = m_visitor.visit_unary(&matcher, condVal, val_ops::LogicalNot);
+        const auto opcode = detail::conv_unary(matcher.pos().m_kind);
+        currentMatch = m_visitor.visit_unary(&matcher, condVal, opcode);
       }
       else
       {

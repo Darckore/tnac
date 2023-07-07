@@ -84,9 +84,17 @@ primary-expr:
 
 conditional-expr:
   condition cond-body ';'
+  condition '->' cond-short
 
 condition:
   '{' expr '}'
+
+cond-short:
+  '{' cond-resolution ',' cond-resolution '}'
+
+cond-resolution:
+  ''
+  expr
 
 cond-body:
   pattern-matcher
@@ -235,10 +243,10 @@ additive-operator: one of
   + -
 
 unary-operator: one of
-  + - ~ !
+  + - ~ ! ?
 
 operator: one of
-  + - ~ * / % | ^ & = ** // < > <= >= == != && ||
+  + - ~ * / % | ^ & ! ? = ** // < > <= >= == != && ||
 
 string-literal:
   ' anything '

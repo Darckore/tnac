@@ -10,7 +10,8 @@ namespace tnac
     {
       constexpr auto is_unary_op(const token& tok) noexcept
       {
-        return tok.is_any(token::Plus, token::Minus, token::Tilde, token::Exclamation);
+        return tok.is_any(token::Plus, token::Minus, token::Tilde,
+                          token::Exclamation, token::Question);
       }
       constexpr auto is_add_op(const token& tok) noexcept
       {
@@ -47,7 +48,7 @@ namespace tnac
       }
       constexpr auto is_pattern_unary(const token& tok) noexcept
       {
-        return tok.is(token::Exclamation);
+        return tok.is_any(token::Exclamation, token::Question);
       }
       constexpr auto is_logical(const token& tok) noexcept
       {

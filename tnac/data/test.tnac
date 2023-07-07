@@ -1,24 +1,7 @@
-unary(x)
-  thing = x + 10 :
-  { thing }
-    { ! } -> -1;
-    { >0 } -> 42;
-    {} -> thing;
-  ;
-;
-
 test(x)
-  { x } { >2 } -> _ret -1;;
-
-  { x } { 1 } -> _ret x;;
-
-  test(x + 1)
-;
-
-factorial(arg)
-  { arg }
-    { < 0 }  -> ;
-    { 0 }    ->  1  ;
-    {}       ->  arg * factorial(arg - 1) ;
+  thing = x + 1 :
+  { thing }
+    { ! }  ->  0 ;
+    { ? }  ->  1 ;
   ;
 ;

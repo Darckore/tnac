@@ -153,7 +153,7 @@ namespace tnac_rt::out
     }
     else if (matcher.is_unary())
     {
-      out() << "{!}";
+      out() << '{' << matcher.pos().m_value << '}';
       endl();
     }
     else if (matcher.has_implicit_op())

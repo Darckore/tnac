@@ -38,7 +38,7 @@ namespace tnac
       {
         constexpr std::array ops{
           '+', '-', '~', '*', '/', '%', '&', '^', '|', '=', '!',
-          '<', '>'
+          '?', '<', '>'
         };
 
         return is_in_range(c, ops.begin(), ops.end());
@@ -510,6 +510,7 @@ namespace tnac
     switch (next)
     {
     case '!': resKind = try_next('=', NotEq, Exclamation); break;
+    case '?': resKind = Question;                          break;
     case '<': resKind = try_next('=', LessEq, Less);       break;
     case '>': resKind = try_next('=', GreaterEq, Greater); break;
     case '+': resKind = Plus;                              break;

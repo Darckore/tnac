@@ -33,7 +33,8 @@ namespace tnac::eval
     UnaryNegation,
     UnaryPlus,
     UnaryBitwiseNot,
-    LogicalNot
+    LogicalNot,
+    LogicalIs
   };
 
   namespace detail
@@ -132,7 +133,8 @@ namespace tnac::eval
     constexpr auto is_unary(val_ops op) noexcept
     {
       using enum val_ops;
-      return utils::eq_any(op, UnaryPlus, UnaryNegation, UnaryBitwiseNot, LogicalNot);
+      return utils::eq_any(op, UnaryPlus, UnaryNegation, UnaryBitwiseNot,
+                               LogicalNot, LogicalIs);
     }
     constexpr auto is_binary(val_ops op) noexcept
     {
@@ -207,6 +209,13 @@ namespace tnac::eval
       return visit_unary(boolOp.value_or(false), [](auto val) noexcept { return !val; });
     }
 
+    template <detail::generic_type T>
+    auto logical_is(T operand) noexcept
+    {
+      auto boolOp = get_caster<bool_type>()(std::move(operand));
+      return visit_unary(boolOp && *boolOp, [](auto val) noexcept { return val; });
+    }
+
     //
     // Dispatches unary operations according to operator type
     //
@@ -228,6 +237,7 @@ namespace tnac::eval
       case UnaryPlus:       return unary_plus(std::move(*val));
       case UnaryBitwiseNot: return bitwise_not(std::move(*val));
       case LogicalNot:      return logical_not(std::move(*val));
+      case LogicalIs:       return logical_is(std::move(*val));
 
       default: return get_empty();
       }

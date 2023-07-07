@@ -16,6 +16,7 @@ String,
 
 // Operators
 Exclamation,
+Question,
 Plus,
 Minus,
 Asterisk,

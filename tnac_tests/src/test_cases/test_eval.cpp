@@ -216,6 +216,23 @@ namespace tnac_tests
     check_eval("f() ; !f"sv, false);
   }
 
+  TEST(evaluation, t_log_is)
+  {
+    using detail::check_eval;
+    check_eval("?_false"sv, false);
+    check_eval("?_true"sv, true);
+    check_eval("?0"sv, false);
+    check_eval("?42"sv, true);
+    check_eval("?0.0"sv, false);
+    check_eval("?(-42.69)"sv, true);
+    check_eval("?_frac(0, 42)"sv, false);
+    check_eval("?_frac(1, 42)"sv, true);
+    check_eval("?_cplx(0, 0)"sv, false);
+    check_eval("?_cplx(0, 1)"sv, true);
+    check_eval("?_cplx(1, 0)"sv, true);
+    check_eval("f() ; ?f"sv, true);
+  }
+
   TEST(evaluation, t_bitwise)
   {
     using detail::check_eval;
