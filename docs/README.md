@@ -10,15 +10,19 @@ At any rate, it's been a good excersice on writing parsers.
 
 Under the hood it has an expression evaluator which understands a bunch of maths over some kind of data.
 
+Except, it is starting to look like a functional programming language of some sort.
+I guess, I should rename it to IAPL (*"I accidentally a programming language"*) or something.
+
 ## Features
 
 ### Types
 
-1. 64-bit signed integers (`long long` aka `std::int64_t`)
-2. Floating point with (`double`)
-3. Complex numbers (via `std::complex`)
-4. Ordinary fractions
-5. Booleans (`bool`)
+- 64-bit signed integers (`long long` aka `std::int64_t`)
+- Floating point with (`double`)
+- Complex numbers (via `std::complex`)
+- Ordinary fractions
+- Booleans (`bool`)
+- Undefined (you can call those `null` or something similar)
 
 Types are (mostly) inter-convertible and calculated dynamically.
 
@@ -27,24 +31,32 @@ as `ints` and `floats` for brevity.
 
 ### Operations
 
-1. Unary `+` and `-`
-2. Addition (`+`)
-3. Subtraction (`-`)
-4. Multiplication (`*`)
-5. Division (`/`)
-6. Modulo (`%`)
-7. Bitwise negation (`~`)
-8. Bitwise and (`&`)
-9. Bitwise or (`|`)
-10. Bitwise xor (`^`)
-11. Power (`**`)
-12. Root (`//`)
-13. Logical not (`!`)
+- Unary `+` and `-`
+- Addition (`+`)
+- Subtraction (`-`)
+- Multiplication (`*`)
+- Division (`/`)
+- Modulo (`%`)
+- Bitwise negation (`~`)
+- Bitwise and (`&`)
+- Bitwise or (`|`)
+- Bitwise xor (`^`)
+- Power (`**`)
+- Root (`//`)
+- Logical not (`!`)
+- Logical... err... opposite of not (`?`)
+- Logical and (`&&`)
+- Logical or (`||`)
+- Equality comparison (`==`, `!=`)
+- Relational operators (`<`, `>`, `<=`, `>=`)
 
 Not all operations are supported for all types.
 Using something unsupported results in a quiet "undefined" value.
 Given the dynamic nature of types, this seems a reasonable choice since we normally
 can't predict what kind of value we'll get.
+
+The only exception are `!` and `?`. They accept anything and try to cast it to `bool`.
+Any zero values and `undefined` are `false`, others are `true`.
 
 Integer division is implicitly done via the floating type to avoid division by zero.
 An expression like `42 / 0` will result in an `infinity` value.
@@ -93,8 +105,8 @@ Any sequence of characters enclosed in `'s becomes a comment:
 
 ### Numeric literals
 
-Numbers can be of `int` or `float` type.
-They can include any sequence of digits, a dot (`.`), or a prefix.
+Numbers can be of `bool`, `int` or `float` type.
+Numbers can include any sequence of digits, a dot (`.`), or a prefix.
 
 A number with exactly one dot surrounded by digits (for example, `1.111`) is parsed as a `float`.
 
@@ -104,6 +116,8 @@ A number with exactly one dot surrounded by digits (for example, `1.111`) is par
 2. Binary. It is, well, a binary - a sequence of `1`'s and `0`'s prefixed with `0b` or `0B` (`0b11100111`)
 3. Octal. Digits `[0 ... 7]` prefixed with `0` (`0123`)
 4. Hexadecimal. Digits and non-case-sensitive letters `[A ... F]` prefixed with `0x` or `0X` (`0xff12a`)
+
+Boolean literals are `_true` and `_false`.
 
 ### Identifiers
 
@@ -139,8 +153,8 @@ Expressions can include:
 1. Numbers
 2. Identifier names
 3. Expressions enclosed in parentheses (`(`, `)`)
-4. Unary operators `+`, `-`, `~`, `!`
-5. Binary operators `+`, `-`, `*`, `/`, `%`, `&`, `|`, `^`, `**`, `//`
+4. Unary operators `+`, `-`, `~`, `!`, `?`
+5. Binary operators `+`, `-`, `*`, `/`, `%`, `&`, `|`, `^`, `**`, `//`, `||`, `&&`, `<`, `>`, `<=`, `>=`, `==`, `!=`
 6. Assignments `=`
 7. Keywords
 8. Invocations
@@ -158,7 +172,7 @@ will evaluate the 3 expressions listed one by one from the first one to the last
 
 **Parentheses** can enclose any valid expression.
 
-**Unary** operators can be applied to numbers, invocations, identifiers, or the `_result` keyword.
+**Unary** operators can be applied to literals, invocations, identifiers, or the `_result` keyword.
 
 The `_result` keyword gets replaced with the most recent evaluation result.
 For example, the expression `2 + 2 + _result` evaluates to `8`, since `_result`
@@ -354,6 +368,158 @@ some_func(x, y) x(y);
 some_func(_fn(x) x * x;, 10)
 ```
 prints `100`
+
+## _ret
+
+The `_ret` keyword can be used to prematurely return to the caller.
+This works either in functions, or in the global scope (in which case, the execution will finish):
+```
+func()
+  _ret 41 :
+  0 `unreachable`
+;
+
+`This is the global scope`
+_ret func() + 1 : `evaluates to 42`
+1 `unreachable`
+```
+
+## Conditionals
+
+Conditional expressions come in two kinds - full notation, and shorthand notation.
+
+### Full conditionals
+
+The full notation goes like this:
+```
+{ <condition> }
+  { <pattern> } -> [<expr> : ... ];
+  ...
+;
+```
+
+The condition value is subsequently compared with the specified patterns,
+and the first one which evaluates to `true` becomes the resulting value.
+
+If none of the patterns match, the default one is applied.
+If nothing matches at all, the value is undefined.
+
+Pattern bodies (the thing after `->`) are optional. If unspecified, they result in undefined values.
+
+Patterns look like this:
+1. `{ [equality or relational operator] <expr> }`
+2. `{ ! }`
+3. `{ ? }`
+4. `{}`
+
+`Option 1` applies the specified binary operator to the condition value on the left, and the following expression on the right.
+If no operator is specified, `==` is the default
+For example:
+```
+{ 10 }
+  { < 0 } -> -1 ; `this is false since 10 is not less than 0`
+  { 10 }  ->  1 ; `this is true, the implicit == is used`
+;
+```
+
+Another example with a default pattern (`Option 4`):
+```
+factorial(arg)
+  { arg }
+    { < 0 }  -> ;
+    { 0 }    ->  1  ;
+    {}       ->  arg * factorial(arg - 1) ;
+  ;
+;
+```
+This one calculates the factorial.
+The `{ < 0 }` pattern will evaluate to `true` for
+any value less than `0`. The resulting value of the entire function is `undefined` in this case.
+The `{ 0 }` will compare `arg` for equality with `0`
+The `{}` one is default. It will run if the others evaluate to `false` and recurse
+while `arg` is positive.
+
+If we call the above function like this, we'll get a valid result:
+```
+factorial(5) `returns 120`
+```
+
+But what happens if we pass in something weird, like a function?
+This
+```
+factorial(_fn();)
+```
+will result in this:
+```
+{}       ->  arg * factorial(arg - 1) ;
+                   ^~~ Stack overflow
+```
+
+Since functions can't participate in arithmetics, none of the non-default patterns will match.
+
+This is why unary patterns exist. `Option 2` will apply the logical not operation to the condition's value.
+Since absolutely everything converts to `bool`, this will work just fine:
+
+```
+factorial(arg)
+  { arg }
+    { < 0 }  -> ;
+    { ! }    ->  1  ;
+    {}       ->  arg * factorial(arg - 1) ;
+  ;
+;
+```
+The `factorial(_fn();)` example will return `undefined`.
+
+### Short conditionals
+
+If you just need to check an expression in a "bool-like" context, it is inconvenient to write
+a full conditional will patterns and stuff like that.
+Enter shorthand notation:
+```
+{ <condition> } -> { [<expr-if-true>, [<expr-if-false>] }
+```
+
+The condition gets evaluated, then cast to `bool`.
+According to the result:
+- if the condition is `true`, and the optional `expr-if-true` branch exists, the result is the `expr-if-true` value
+- if the condition is `true`, and the optional `expr-if-true` branch doesn't exists, the result is the `condition` value **before** conversion to `bool`
+- if the condition is `false`, and the optional `expr-if-false` branch exists, the result is the `expr-if-false` value
+- if the condition is `false`, and the optional `expr-if-false` branch doesn't exists, the result is an `undefined` value
+
+Example:
+```
+test(x)
+  { x + 1 } -> { 1, 0 }
+;
+```
+This function will happily eat anything you throw at it and return either `0` or `1`
+
+Also:
+```
+{ 0 }  -> { , 42 } : `42`
+{ 23 } -> { , 42 } : `23`
+{ 23 } ->      { } : `23, this one is kinda pointless`
+{ 23 } ->   { 42 } : `42`
+{ 0 }  ->   { 42 } : `undefined`
+```
+
+### Conditionals are expressions
+
+They are primary expressions, to be precise. As such, you can use them anywhere literals can be
+
+```
+a = 10 :
+b = { a > 0 } -> { 1, -1 } `b = 1`
+```
+
+A bit more interesting example:
+```
+a = 10 :
+{ a > 0 } -> { _fn(x) x + 1;, _fn(x) x - 1; }(a)
+```
+This will result in `11` since `a > 0 == true`, so the result of the expression will evaluate to
+function `_fn(x) x + 1;`, which will then accept `a` as its argument and increment it.
 
 ## Commands
 
