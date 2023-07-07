@@ -144,6 +144,14 @@ namespace tnac
     bool preview(ast::cond_expr& expr) noexcept;
 
     //
+    // Previews a conditional shorthand expr
+    // We don't visit it normally due to its short-curcuity nature
+    // (only one path can be evaluated)
+    // So, we'll just tell the base visitor to stop here
+    //
+    bool preview(ast::cond_short& expr) noexcept;
+
+    //
     // Previews a function body
     // We need this to init function params from the call stack
     //

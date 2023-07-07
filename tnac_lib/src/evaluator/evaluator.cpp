@@ -439,6 +439,40 @@ namespace tnac
     return false;
   }
 
+  bool evaluator::preview(ast::cond_short& expr) noexcept
+  {
+    if (return_path())
+      return false;
+
+    auto&& cond = expr.cond();
+    base::operator()(&cond);
+    ast::expr* winner{};
+    if (auto condVal = cond.value(); to_bool(condVal))
+    {
+      if (!expr.has_true())
+      {
+        expr.eval_result(m_visitor.visit_assign(&expr, condVal));
+        return false;
+      }
+      winner = &expr.on_true();
+    }
+    else
+    {
+      if (!expr.has_false())
+      {
+        expr.eval_result(m_visitor.get_empty());
+        return false;
+      }
+      winner = &expr.on_false();
+    }
+
+    UTILS_ASSERT(winner);
+    base::operator()(winner);
+    expr.eval_result(m_visitor.visit_assign(&expr, winner->value()));
+
+    return false;
+  }
+
   bool evaluator::preview(ast::scope& scope) noexcept
   {
     const auto returning = return_path();

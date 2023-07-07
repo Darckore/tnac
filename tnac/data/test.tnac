@@ -1,4 +1,3 @@
 test(x)
-  thing = x + 1 :
-  { ?thing } -> { 0, 1 }
+  { thing = x + 1 } -> { 1, 0 }
 ;
