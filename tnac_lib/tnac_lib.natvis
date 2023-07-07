@@ -90,6 +90,13 @@
     <DisplayString>{m_kind,en} ({m_pos.m_value,sb})</DisplayString>
   </Type>
 
+  <Type Name="tnac::ast::scope">
+    <DisplayString>{m_kind,en}</DisplayString>
+    <Expand>
+      <Item Name="[children]">m_children</Item>
+    </Expand>
+  </Type>
+
   <Type Name="tnac::ast::binary_expr">
     <DisplayString>{m_kind,en} ({m_op})</DisplayString>
     <Expand>
@@ -131,5 +138,36 @@
       <Item Name="[value]">m_val</Item>
     </Expand>
   </Type>
+  
+  <Type Name="tnac::ast::cond_expr">
+    <DisplayString>{m_kind,en}</DisplayString>
+    <Expand>
+      <Item Name="[cond]">*m_cond</Item>
+      <Item Name="[body]">*m_body</Item>
+      <Item Name="[value]">m_val</Item>
+    </Expand>
+  </Type>
+
+  <Type Name="tnac::ast::pattern">
+    <DisplayString>{m_kind,en}</DisplayString>
+    <Expand>
+      <Item Name="[matcher]">*m_matcher</Item>
+      <Item Name="[body]">*m_body</Item>
+      <Item Name="[value]">m_val</Item>
+    </Expand>
+  </Type>
+
+  <Type Name="tnac::ast::matcher">
+    <DisplayString>{m_kind,en}</DisplayString>
+    <Expand>
+      <Item Name="[op]" Condition="m_checked&amp;&amp;m_pos.m_kind!=tnac::tok_kind::CurlyOpen&amp;&amp;m_pos.m_kind!=m_checked->m_pos.m_kind">m_pos</Item>
+      <Item Name="[op]" Condition="m_checked&amp;&amp;m_pos.m_kind!=tnac::tok_kind::CurlyOpen&amp;&amp;m_pos.m_kind==m_checked->m_pos.m_kind">"== implicit",sb</Item>
+      <Item Name="[op]" Condition="!m_checked&amp;&amp;m_pos.m_kind==tnac::tok_kind::Exclamation">"!",sb</Item>
+      <Item Name="[expr]" Condition="m_checked">*m_checked</Item>
+      <Item Name="[expr]" Condition="m_pos.m_kind==tnac::tok_kind::CurlyOpen">"&lt;default&gt;",sb</Item>
+      <Item Name="[value]">m_val</Item>
+    </Expand>
+  </Type>
+  
   
 </AutoVisualizer>
