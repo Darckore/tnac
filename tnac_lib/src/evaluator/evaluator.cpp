@@ -435,6 +435,10 @@ namespace tnac
 
       expr.eval_result(m_visitor.last_result(&expr));
     }
+    else
+    {
+      expr.eval_result(m_visitor.get_empty());
+    }
 
     return false;
   }
