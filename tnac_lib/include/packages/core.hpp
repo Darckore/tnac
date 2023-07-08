@@ -15,7 +15,9 @@ namespace tnac::packages
   class tnac_core final
   {
   public:
-    using size_type = evaluator::size_type;
+    using size_type   = evaluator::size_type;
+    using name_type   = cmd::name_type;
+    using result_type = eval::value;
 
   public:
     CLASS_SPECIALS_NONE(tnac_core);
@@ -28,6 +30,68 @@ namespace tnac::packages
     parser& get_parser() noexcept;
     evaluator& get_eval() noexcept;
     cmd& get_commands() noexcept;
+
+  public:
+    //
+    // Redirects to tnac::commands::store::declare
+    //
+    template <typename ...Args>
+    void declare_command(name_type name, Args&& ...args) noexcept
+    {
+      m_cmd.declare(name, std::forward<Args>(args)...);
+    }
+
+    //
+    // Parses the input and produces a result
+    //
+    result_type evaluate(string_t input) noexcept;
+
+
+  public: // callbacks
+    //
+    // tnac::cmd::on_error
+    //
+    template <commands::detail::err_handler F>
+    void on_command_error(F&& handler) noexcept
+    {
+      m_cmd.on_error(std::forward<F>(handler));
+    }
+
+    //
+    // tnac::evaluator::on_error
+    //
+    template <eval::detail::err_handler F>
+    void on_semantic_error(F&& handler) noexcept
+    {
+      m_ev.on_error(std::forward<F>(handler));
+    }
+
+    //
+    // tnac::parser::on_error
+    //
+    template <detail::err_handler F>
+    void on_parse_error(F&& handler) noexcept
+    {
+      m_parser.on_parse_error(std::forward<F>(handler));
+    }
+
+    //
+    // tnac::parser::on_command
+    //
+    template <detail::cmd_handler F>
+    void on_command(F&& handler) noexcept
+    {
+      m_parser.on_command(std::forward<F>(handler));
+    }
+
+    //
+    // sema::on_variable
+    //
+    template <detail::var_handler F>
+    void on_variable_declaration(F&& handler) noexcept
+    {
+      m_parser.on_variable_declaration(std::forward<F>(handler));
+    }
 
   private:
     parser m_parser;

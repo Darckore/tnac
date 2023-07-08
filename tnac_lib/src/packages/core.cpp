@@ -25,4 +25,11 @@ namespace tnac::packages
   {
     return m_cmd;
   }
+
+  tnac_core::result_type tnac_core::evaluate(string_t input) noexcept
+  {
+    auto parsedAst = m_parser(input);
+    m_ev(parsedAst);
+    return m_ev.last_result();
+  }
 }

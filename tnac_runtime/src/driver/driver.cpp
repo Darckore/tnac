@@ -80,14 +80,13 @@ namespace tnac_rt
 
   void driver::init_handlers() noexcept
   {
-    m_tnac.get_commands().on_error([this](auto&& tok, auto msg) noexcept { m_srcMgr.on_error(tok, msg); });
+    m_tnac.on_command_error([this](auto&& tok, auto msg) noexcept { m_srcMgr.on_error(tok, msg); });
 
-    m_tnac.get_eval().on_error([this](auto&& tok, auto msg) noexcept { m_srcMgr.on_error(tok, msg); });
+    m_tnac.on_semantic_error([this](auto&& tok, auto msg) noexcept { m_srcMgr.on_error(tok, msg); });
 
-    auto&& parser = m_tnac.get_parser();
-    parser.on_variable_declaration([this](auto&& sym) noexcept { store_var(sym); });
-    parser.on_parse_error([this](auto&& err) noexcept { m_srcMgr.on_parse_error(err); });
-    parser.on_command([this](auto command) noexcept { m_tnac.get_commands().on_command(std::move(command)); });
+    m_tnac.on_variable_declaration([this](auto&& sym) noexcept { store_var(sym); });
+    m_tnac.on_parse_error([this](auto&& err) noexcept { m_srcMgr.on_parse_error(err); });
+    m_tnac.on_command([this](auto command) noexcept { m_tnac.get_commands().on_command(std::move(command)); });
   }
 
   void driver::run(int argCount, char** args) noexcept
