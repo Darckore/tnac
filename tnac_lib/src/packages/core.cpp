@@ -28,8 +28,8 @@ namespace tnac::packages
 
   tnac_core::result_type tnac_core::evaluate(string_t input) noexcept
   {
-    auto parsedAst = m_parser(input);
-    m_ev(parsedAst);
+    m_parser(input);
+    m_ev(m_parser.root());
     return m_ev.last_result();
   }
 }
