@@ -266,7 +266,14 @@ namespace tnac
 
   void evaluator::visit(ast::array_expr& arr) noexcept
   {
-    utils::unused(arr);
+    auto&& elements = arr.elements();
+    const auto arrSz = elements.size();
+    auto&& newArr = m_visitor.new_array(&arr, arrSz);
+    for (auto elem : elements)
+    {
+      newArr.emplace_back(elem->value());
+    }
+    arr.eval_result(m_visitor.make_array(&arr, newArr));
   }
 
   void evaluator::visit(ast::paren_expr& paren) noexcept

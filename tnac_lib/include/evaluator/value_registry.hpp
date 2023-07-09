@@ -20,7 +20,7 @@ namespace tnac::eval
 
     using entity_id = std::uintptr_t;
 
-    using stored_val_t = std::variant<
+    using stored_val_t = std::variant <
       bool_type,
       int_type,
       float_type,
@@ -31,6 +31,9 @@ namespace tnac::eval
     >;
 
     using entity_vals  = std::unordered_map<entity_id, stored_val_t>;
+    using val_array    = array_type::value_type;
+    using array_store  = std::unordered_map<entity_id, val_array>;
+    using size_type    = val_array::size_type;
 
   public:
     CLASS_SPECIALS_NONE_CUSTOM(registry);
@@ -139,6 +142,22 @@ namespace tnac::eval
     }
 
     //
+    // Creates a new array
+    //
+    val_array& allocate_array(entity_id id, size_type prealloc) noexcept
+    {
+      UTILS_ASSERT(id != entity_id{});
+      auto [newElem, inserted] = m_arrays.try_emplace(id, val_array{});
+      auto&& res = newElem->second;
+      
+      if (!inserted)
+        res.clear();
+
+      res.reserve(prealloc);
+      return res;
+    }
+
+    //
     // Resets the stored result value
     //
     value_type reset_result() noexcept
@@ -162,5 +181,6 @@ namespace tnac::eval
     typed_store<float_type> m_floats;
 
     entity_vals m_entityValues;
+    array_store m_arrays;
   };
 }

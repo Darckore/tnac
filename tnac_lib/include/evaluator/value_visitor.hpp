@@ -164,6 +164,8 @@ namespace tnac::eval
     using enum val_ops;
     using id_param_t = detail::ent_id;
     using entity_id  = id_param_t::id_t;
+    using arr_t      = registry::val_array;
+    using size_type  = registry::size_type;
 
   public:
     CLASS_SPECIALS_NONE(value_visitor);
@@ -701,6 +703,23 @@ namespace tnac::eval
     value visit_bool_literal(bool value) noexcept
     {
       return m_registry.register_literal(value);
+    }
+
+    //
+    // Retrieves an array object allocated for the specified entity
+    //
+    arr_t& new_array(id_param_t ent, size_type size) noexcept
+    {
+      return m_registry.allocate_array(*ent, size);
+    }
+
+    //
+    // Makes an array instance based on the underlying data
+    //
+    value make_array(id_param_t ent, arr_t& data) noexcept
+    {
+      value_guard _{ m_curEntity, *ent };
+      return reg_value(array_type{ data });
     }
 
     //
