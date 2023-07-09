@@ -572,7 +572,6 @@ namespace tnac::eval
     void release_unit_array(arr_t& arr) noexcept
     {
       const auto arrEnt = *id_param_t{ &arr };
-      m_registry.erase(arrEnt);
       m_registry.release_array(arrEnt);
     }
 
