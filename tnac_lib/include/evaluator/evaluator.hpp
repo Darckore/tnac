@@ -61,6 +61,11 @@ namespace tnac
     void visit(ast::unary_expr& unary) noexcept;
 
     //
+    // Visits an array expression
+    //
+    void visit(ast::array_expr& arr) noexcept;
+
+    //
     // Visits a parenthesised expression
     //
     void visit(ast::paren_expr& paren) noexcept;

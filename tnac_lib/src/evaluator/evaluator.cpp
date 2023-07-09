@@ -264,6 +264,11 @@ namespace tnac
     m_return = true;
   }
 
+  void evaluator::visit(ast::array_expr& arr) noexcept
+  {
+    utils::unused(arr);
+  }
+
   void evaluator::visit(ast::paren_expr& paren) noexcept
   {
     if (return_path())
@@ -523,25 +528,15 @@ namespace tnac
   {
     switch (tok.m_kind)
     {
-    case token::KwTrue:
-      return m_visitor.visit_bool_literal(true);
-    case token::KwFalse:
-      return m_visitor.visit_bool_literal(false);
+    case token::KwTrue:  return m_visitor.visit_bool_literal(true);
+    case token::KwFalse: return m_visitor.visit_bool_literal(false);
+    case token::IntDec:  return m_visitor.visit_int_literal(tok.m_value, 10);
+    case token::IntBin:  return m_visitor.visit_int_literal(tok.m_value, 2);
+    case token::IntOct:  return m_visitor.visit_int_literal(tok.m_value, 8);
+    case token::IntHex:  return m_visitor.visit_int_literal(tok.m_value, 16);
+    case token::Float:   return m_visitor.visit_float_literal(tok.m_value);
 
-    case token::IntDec:
-      return m_visitor.visit_int_literal(tok.m_value, 10);
-    case token::IntBin:
-      return m_visitor.visit_int_literal(tok.m_value, 2);
-    case token::IntOct:
-      return m_visitor.visit_int_literal(tok.m_value, 8);
-    case token::IntHex:
-      return m_visitor.visit_int_literal(tok.m_value, 16);
-
-    case token::Float:
-      return m_visitor.visit_float_literal(tok.m_value);
-
-    default:
-      return {};
+    default: return {};
     }
   }
 
