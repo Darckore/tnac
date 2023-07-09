@@ -34,7 +34,8 @@ namespace tnac::eval
     UnaryPlus,
     UnaryBitwiseNot,
     LogicalNot,
-    LogicalIs
+    LogicalIs,
+    AbsoluteValue
   };
 
   namespace detail
@@ -97,6 +98,10 @@ namespace tnac::eval
     template <typename T>
     concept fully_comparable = eq_comparable<T> && rel_comparable<T>;
 
+    template <typename T>
+    concept abs_compatible = generic_type<T> &&
+      requires(T op) { eval::abs(op); };
+
     //
     // Helper object to facilitate easy casts from pointers to entity ids
     //
@@ -134,7 +139,7 @@ namespace tnac::eval
     {
       using enum val_ops;
       return utils::eq_any(op, UnaryPlus, UnaryNegation, UnaryBitwiseNot,
-                               LogicalNot, LogicalIs);
+                               LogicalNot, LogicalIs, AbsoluteValue);
     }
     constexpr auto is_binary(val_ops op) noexcept
     {
@@ -181,20 +186,17 @@ namespace tnac::eval
 
     auto unary_plus(detail::plusable auto operand) noexcept
     {
-      return visit_unary(operand, [](auto val) noexcept { return +val; });
+      return visit_unary(std::move(operand), [](auto val) noexcept { return +val; });
     }
-    template <detail::generic_type T> 
-    auto unary_plus(T) noexcept { return get_empty(); }
+    auto unary_plus(detail::generic_type auto) noexcept { return get_empty(); }
 
     auto unary_neg(detail::negatable auto operand) noexcept
     {
       return visit_unary(operand, [](auto val) noexcept { return -val; });
     }
-    template <detail::generic_type T>
-    auto unary_neg(T) noexcept { return get_empty(); }
+    auto unary_neg(detail::generic_type auto) noexcept { return get_empty(); }
 
-    template <detail::generic_type T>
-    auto bitwise_not(T operand) noexcept
+    auto bitwise_not(detail::generic_type auto operand) noexcept
     {
       if (auto intOp = get_caster<int_type>()(std::move(operand)))
         return visit_unary(*intOp, [](auto val) noexcept { return ~val; });
@@ -202,19 +204,26 @@ namespace tnac::eval
       return get_empty();
     }
 
-    template <detail::generic_type T>
-    auto logical_not(T operand) noexcept
+    auto logical_not(detail::generic_type auto operand) noexcept
     {
       auto boolOp = get_caster<bool_type>()(std::move(operand));
       return visit_unary(boolOp.value_or(false), [](auto val) noexcept { return !val; });
     }
 
-    template <detail::generic_type T>
-    auto logical_is(T operand) noexcept
+    auto logical_is(detail::generic_type auto operand) noexcept
     {
       auto boolOp = get_caster<bool_type>()(std::move(operand));
       return visit_unary(boolOp && *boolOp, [](auto val) noexcept { return val; });
     }
+
+    auto abs(detail::abs_compatible auto operand) noexcept
+    {
+      return visit_unary(std::move(operand), [](auto val) noexcept
+        {
+          return eval::abs(val);
+        });
+    }
+    auto abs(detail::generic_type auto) noexcept { return get_empty(); }
 
     //
     // Dispatches unary operations according to operator type
@@ -238,6 +247,7 @@ namespace tnac::eval
       case UnaryBitwiseNot: return bitwise_not(std::move(*val));
       case LogicalNot:      return logical_not(std::move(*val));
       case LogicalIs:       return logical_is(std::move(*val));
+      case AbsoluteValue:   return abs(std::move(*val));
 
       default: return get_empty();
       }
@@ -257,8 +267,7 @@ namespace tnac::eval
 
     // Bitwise
 
-    template <detail::generic_type L, detail::generic_type R>
-    auto bitwise_and(L lhs, R rhs) noexcept
+    auto bitwise_and(detail::generic_type auto lhs, detail::generic_type auto rhs) noexcept
     {
       auto caster = get_caster<int_type>();
       auto intL = caster(lhs);
@@ -269,8 +278,7 @@ namespace tnac::eval
       return get_empty();
     }
 
-    template <detail::generic_type L, detail::generic_type R>
-    auto bitwise_xor(L lhs, R rhs) noexcept
+    auto bitwise_xor(detail::generic_type auto lhs, detail::generic_type auto rhs) noexcept
     {
       auto caster = get_caster<int_type>();
       auto intL = caster(lhs);
@@ -281,8 +289,7 @@ namespace tnac::eval
       return get_empty();
     }
 
-    template <detail::generic_type L, detail::generic_type R>
-    auto bitwise_or(L lhs, R rhs) noexcept
+    auto bitwise_or(detail::generic_type auto lhs, detail::generic_type auto rhs) noexcept
     {
       auto caster = get_caster<int_type>();
       auto intL = caster(lhs);
@@ -295,8 +302,7 @@ namespace tnac::eval
 
     // Simple arithmetic
 
-    template <detail::addable T>
-    auto add(T lhs, T rhs) noexcept
+    auto add(detail::addable auto lhs, detail::addable auto rhs) noexcept
     {
       return visit_binary(std::move(lhs), std::move(rhs),
         [](auto l, auto r) noexcept
@@ -304,11 +310,9 @@ namespace tnac::eval
           return l + r;
         });
     }
-    template <detail::generic_type T>
-    auto add(T, T) noexcept { return get_empty(); }
+    auto add(detail::generic_type auto, detail::generic_type auto) noexcept { return get_empty(); }
 
-    template <detail::subtractable T>
-    auto sub(T lhs, T rhs) noexcept
+    auto sub(detail::subtractable auto lhs, detail::subtractable auto rhs) noexcept
     {
       return visit_binary(std::move(lhs), std::move(rhs),
         [](auto l, auto r) noexcept
@@ -316,11 +320,9 @@ namespace tnac::eval
           return l - r;
         });
     }
-    template <detail::generic_type T>
-    auto sub(T, T) noexcept { return get_empty(); }
+    auto sub(detail::generic_type auto, detail::generic_type auto) noexcept { return get_empty(); }
 
-    template <detail::multipliable T>
-    auto mul(T lhs, T rhs) noexcept
+    auto mul(detail::multipliable auto lhs, detail::multipliable auto rhs) noexcept
     {
       return visit_binary(std::move(lhs), std::move(rhs),
         [](auto l, auto r) noexcept
@@ -328,13 +330,11 @@ namespace tnac::eval
           return l * r;
         });
     }
-    template <detail::generic_type T>
-    auto mul(T, T) noexcept { return get_empty(); }
+    auto mul(detail::generic_type auto, detail::generic_type auto) noexcept { return get_empty(); }
 
-    template <detail::divisible T>
-    auto div(T lhs, T rhs) noexcept
+    auto div(detail::divisible auto lhs, detail::divisible auto rhs) noexcept
     {
-      if constexpr (is_same_noquals_v<T, int_type>)
+      if constexpr (is_same_noquals_v<decltype(lhs), int_type>)
       {
         return div(static_cast<float_type>(lhs), static_cast<float_type>(rhs));
       }
@@ -347,13 +347,11 @@ namespace tnac::eval
           });
       }
     }
-    template <detail::generic_type T>
-    auto div(T, T) noexcept { return get_empty(); }
+    auto div(detail::generic_type auto, detail::generic_type auto) noexcept { return get_empty(); }
 
     // Modulo
 
-    template <detail::fmod_divisible T>
-    auto mod(T lhs, T rhs) noexcept
+    auto mod(detail::fmod_divisible auto lhs, detail::fmod_divisible auto rhs) noexcept
     {
       return visit_binary(std::move(lhs), std::move(rhs),
         [](auto l, auto r) noexcept
@@ -361,10 +359,9 @@ namespace tnac::eval
           return std::fmod(l, r);
         });
     }
-    template <detail::modulo_divisible T>
-    auto mod(T lhs, T rhs) noexcept
+    auto mod(detail::modulo_divisible auto lhs, detail::modulo_divisible auto rhs) noexcept
     {
-      if constexpr (is_same_noquals_v<T, int_type>)
+      if constexpr (is_same_noquals_v<decltype(lhs), int_type>)
       {
         return mod(static_cast<float_type>(lhs), static_cast<float_type>(rhs));
       }
@@ -377,13 +374,11 @@ namespace tnac::eval
           });
       }
     }
-    template <detail::generic_type T>
-    auto mod(T, T) noexcept { return get_empty(); }
+    auto mod(detail::generic_type auto, detail::generic_type auto) noexcept { return get_empty(); }
 
     // Pow and root
 
-    template <detail::generic_type T>
-      requires (std::is_arithmetic_v<T>)
+    template <detail::generic_type T> requires (std::is_arithmetic_v<T>)
     auto enforce_complex(const T& l, const T& r) noexcept -> typed_value<complex_type>
     {
       auto base = static_cast<float_type>(l);
@@ -396,11 +391,9 @@ namespace tnac::eval
 
       return complex_type{ 0.0, std::pow(utils::abs(base), exp) };
     }
-    template <detail::generic_type T>
-    auto enforce_complex(const T&, const T&) noexcept -> typed_value<complex_type> { return {}; }
+    auto enforce_complex(const detail::generic_type auto&, const detail::generic_type auto&) noexcept { return typed_value<complex_type>{}; }
 
-    template <detail::pow_raisable T>
-    auto power(T base, T exp) noexcept
+    auto power(detail::pow_raisable auto base, detail::pow_raisable auto exp) noexcept
     {
       if (auto cpl = enforce_complex(base, exp))
       {
@@ -413,8 +406,7 @@ namespace tnac::eval
           return std::pow(l, r);
         });
     }
-    template <detail::generic_type T>
-    auto power(T base, T exp) noexcept
+    auto power(detail::generic_type auto base, detail::generic_type auto exp) noexcept
     {
       auto caster = get_caster<float_type>();
       auto floatL = caster(base);
@@ -425,31 +417,26 @@ namespace tnac::eval
       return get_empty();
     }
 
-    template <detail::invertible T>
-    auto root(T base, T exp) noexcept
+    auto root(detail::invertible auto base, detail::invertible auto exp) noexcept
     {
-      if constexpr (is_same_noquals_v<T, int_type>)
+      if constexpr (is_same_noquals_v<decltype(base), int_type>)
         return root(static_cast<float_type>(base), static_cast<float_type>(exp));
       else
         return power(base, eval::inv(exp));
     }
-    template <detail::generic_type T>
-    auto root(T, T) noexcept { return get_empty(); }
+    auto root(detail::generic_type auto, detail::generic_type auto) noexcept { return get_empty(); }
 
     // Relation and equality
 
-    template <detail::eq_comparable T>
-    auto equal(T lhs, T rhs, bool compareForEquality) noexcept
+    auto equal(detail::eq_comparable auto lhs, detail::eq_comparable auto rhs, bool compareForEquality) noexcept
     {
       const auto cmp = eval::eq(lhs, rhs);
       const auto res = compareForEquality ? cmp : !cmp;
       return reg_value(res);
     }
-    template <detail::generic_type T>
-    auto equal(T, T, bool) noexcept { return get_empty(); }
+    auto equal(detail::generic_type auto, detail::generic_type auto, bool) noexcept { return get_empty(); }
 
-    template <detail::rel_comparable T>
-    auto less(T lhs, T rhs) noexcept
+    auto less(detail::rel_comparable auto lhs, detail::rel_comparable auto rhs) noexcept
     {
       return visit_binary(std::move(lhs), std::move(rhs),
         [](auto l, auto r) noexcept
@@ -457,11 +444,9 @@ namespace tnac::eval
           return eval::less(l, r);
         });
     }
-    template <detail::generic_type T>
-    auto less(T, T) noexcept { return get_empty(); }
+    auto less(detail::generic_type auto, detail::generic_type auto) noexcept { return get_empty(); }
 
-    template <detail::fully_comparable T>
-    auto less_eq(T lhs, T rhs) noexcept
+    auto less_eq(detail::fully_comparable auto lhs, detail::fully_comparable auto rhs) noexcept
     {
       return visit_binary(std::move(lhs), std::move(rhs),
         [](auto l, auto r) noexcept
@@ -469,11 +454,9 @@ namespace tnac::eval
           return eval::eq(l, r) || eval::less(l, r);
         });
     }
-    template <detail::generic_type T>
-    auto less_eq(T, T) noexcept { return get_empty(); }
+    auto less_eq(detail::generic_type auto, detail::generic_type auto) noexcept { return get_empty(); }
 
-    template <detail::fully_comparable T>
-    auto greater(T lhs, T rhs) noexcept
+    auto greater(detail::fully_comparable auto lhs, detail::fully_comparable auto rhs) noexcept
     {
       return visit_binary(std::move(lhs), std::move(rhs),
         [](auto l, auto r) noexcept
@@ -481,11 +464,9 @@ namespace tnac::eval
           return !eval::eq(l, r) && !eval::less(l, r);
         });
     }
-    template <detail::generic_type T>
-    auto greater(T, T) noexcept { return get_empty(); }
+    auto greater(detail::generic_type auto, detail::generic_type auto) noexcept { return get_empty(); }
 
-    template <detail::fully_comparable T>
-    auto greater_eq(T lhs, T rhs) noexcept
+    auto greater_eq(detail::fully_comparable auto lhs, detail::fully_comparable auto rhs) noexcept
     {
       return visit_binary(std::move(lhs), std::move(rhs),
         [](auto l, auto r) noexcept
@@ -493,8 +474,7 @@ namespace tnac::eval
           return !eval::less(l, r);
         });
     }
-    template <detail::generic_type T>
-    auto greater_eq(T, T) noexcept { return get_empty(); }
+    auto greater_eq(detail::generic_type auto, detail::generic_type auto) noexcept { return get_empty(); }
 
     //
     // Dispatches binary operations according to operator type
@@ -558,8 +538,7 @@ namespace tnac::eval
     //
     // Registers the value in the registry
     //
-    template <detail::expr_result T>
-    value reg_value(T val) noexcept
+    value reg_value(detail::expr_result auto val) noexcept
     {
       if (m_curEntity != invalidEnt)
         return m_registry.register_entity(m_curEntity, std::move(val));
@@ -570,8 +549,7 @@ namespace tnac::eval
     //
     // Registers result of assignment operations
     //
-    template <detail::generic_type T>
-    value visit_assign(T rhs) noexcept
+    value visit_assign(detail::generic_type auto rhs) noexcept
     {
       return reg_value(std::move(rhs));
     }
@@ -580,8 +558,7 @@ namespace tnac::eval
     // Intermediate binary visitor
     // Dispatches the right operand according to its type
     //
-    template <detail::generic_type L>
-    value visit_binary(L lhs, value rhs, val_ops op) noexcept
+    value visit_binary(detail::generic_type auto lhs, value rhs, val_ops op) noexcept
     {
       return visit_value(rhs, [this, l = std::move(lhs), op](auto rhs) noexcept
         {

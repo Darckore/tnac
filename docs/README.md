@@ -150,15 +150,16 @@ These are the supported keywords:
 
 Expressions can include:
 
-1. Numbers
-2. Identifier names
-3. Expressions enclosed in parentheses (`(`, `)`)
-4. Unary operators `+`, `-`, `~`, `!`, `?`
-5. Binary operators `+`, `-`, `*`, `/`, `%`, `&`, `|`, `^`, `**`, `//`, `||`, `&&`, `<`, `>`, `<=`, `>=`, `==`, `!=`
-6. Assignments `=`
-7. Keywords
-8. Invocations
-9. Declarations
+- Numbers
+- Identifier names
+- Expressions enclosed in parentheses (`(`, `)`)
+- Unary operators `+`, `-`, `~`, `!`, `?`
+- Binary operators `+`, `-`, `*`, `/`, `%`, `&`, `|`, `^`, `**`, `//`, `||`, `&&`, `<`, `>`, `<=`, `>=`, `==`, `!=`
+- Assignments `=`
+- Absolute value calculations - `| <expr> |`
+- Keywords
+- Invocations
+- Declarations
 
 Multiple expressions can be chained one after another by using `:`.
 
@@ -171,6 +172,12 @@ This:
 will evaluate the 3 expressions listed one by one from the first one to the last.
 
 **Parentheses** can enclose any valid expression.
+
+**Absolute value** works with any valid expression, pretty much as paren does
+
+Examples:
+- `| -2 |` yields `2`
+- `| _cplx(3, 4) |` yields 5.0
 
 **Unary** operators can be applied to literals, invocations, identifiers, or the `_result` keyword.
 

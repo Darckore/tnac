@@ -66,6 +66,11 @@ namespace tnac
     void visit(ast::paren_expr& paren) noexcept;
 
     //
+    // Visits an abs expression
+    //
+    void visit(ast::abs_expr& abs) noexcept;
+
+    //
     // Visits a typed expression
     //
     void visit(ast::typed_expr& expr) noexcept;

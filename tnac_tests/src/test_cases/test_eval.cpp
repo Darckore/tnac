@@ -199,6 +199,24 @@ namespace tnac_tests
     check_eval("a = 10 : -a"sv, -10ll);
   }
 
+  TEST(evaluation, t_absolute)
+  {
+    using detail::check_eval;
+    using detail::check_invalid;
+    check_eval("| _true |"sv, 1ll);
+    check_eval("| _false |"sv, 0ll);
+    check_eval("| 2 |"sv, 2ll);
+    check_eval("| -2 |"sv, 2ll);
+    check_eval("| 2.0 |"sv, 2.0);
+    check_eval("| -2.0 |"sv, 2.0);
+    check_eval("| -2.0 |"sv, 2.0);
+    check_eval("| _frac(1, 2) |"sv, detail::frac{1, 2});
+    check_eval("| _frac(-1, 2) |"sv, detail::frac{1, 2});
+    check_eval("| _cplx(3, 4) |"sv, 5.0);
+    
+    check_invalid("| _fn(); + 1 |"sv);
+  }
+
   TEST(evaluation, t_log_not)
   {
     using detail::check_eval;

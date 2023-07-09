@@ -272,6 +272,16 @@ namespace tnac
     paren.eval_result(paren.internal_expr().value());
   }
 
+  void evaluator::visit(ast::abs_expr& abs) noexcept
+  {
+    if (return_path())
+      return;
+
+    auto&& intExpr = abs.expression();
+    const auto opcode = eval::val_ops::AbsoluteValue;
+    abs.eval_result(m_visitor.visit_unary(&abs, intExpr.value(), opcode));
+  }
+
   void evaluator::visit(ast::lit_expr& lit) noexcept
   {
     if (return_path())

@@ -509,6 +509,8 @@ namespace tnac::eval
     template <typename T>
     concept has_less = requires(T t) { t < t; };
 
+    template <typename T>
+    concept has_abs = requires(T t) { utils::abs(t); };
   }
 
   inline auto modulus(const complex_type& val) noexcept
@@ -584,4 +586,31 @@ namespace tnac::eval
     return modulus(lhs) < modulus(rhs);
   }
 
+
+  template <typename T>
+  auto abs(const T&) noexcept;
+
+  template <detail::has_abs T>
+  inline auto abs(const T& op) noexcept
+  {
+    return utils::abs(op);
+  }
+
+  template <>
+  inline auto abs(const bool_type& op) noexcept
+  {
+    return abs(static_cast<int_type>(op));
+  }
+
+  template <>
+  inline auto abs(const complex_type& op) noexcept
+  {
+    return modulus(op);
+  }
+
+  template <>
+  inline auto abs(const function_type& op) noexcept
+  {
+    return op;
+  }
 }
