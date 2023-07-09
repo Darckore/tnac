@@ -89,6 +89,27 @@ namespace tnac::ast
     return n.what();
   }
 
+  //
+  // Checks whether the target class inherits from ast::node
+  //
+  template <typename D>
+  concept ast_node = std::is_base_of_v<ast::node, D>;
+
+  //
+  // Mixin base for easy type definitions
+  //
+  template <ast_node N>
+  struct list
+  {
+    using elem = N;
+    using pointer = elem*;
+    using const_pointer = const elem*;
+    using reference = elem&;
+    using const_reference = const elem&;
+
+    using elem_list = std::vector<pointer>;
+  };
+
   class expr;
 
   //
@@ -140,10 +161,4 @@ namespace tnac::ast
   private:
     elem_list m_children;
   };
-
-  //
-  // Checks whether the target class inherits from ast::node
-  //
-  template <typename D>
-  concept ast_node = std::is_base_of_v<ast::node, D>;
 }

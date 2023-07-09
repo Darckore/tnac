@@ -102,6 +102,15 @@ namespace tnac_rt::out
     push_parent(1u);
   }
 
+  void ast_printer::visit(const ast::array_expr& arr) noexcept
+  {
+    const auto size = arr.elements().size();
+    indent();
+    out() << "Array expression [" << size << "]";
+    endl();
+    push_parent(size);
+  }
+
   void ast_printer::visit(const ast::paren_expr&) noexcept
   {
     indent();
@@ -168,7 +177,7 @@ namespace tnac_rt::out
     indent();
     out() << "Conditional expression";
     endl();
-    push_parent(2);
+    push_parent(2u);
   }
 
   void ast_printer::visit(const ast::pattern& ) noexcept
@@ -176,7 +185,7 @@ namespace tnac_rt::out
     indent();
     out() << "Pattern";
     endl();
-    push_parent(2);
+    push_parent(2u);
   }
 
   void ast_printer::visit(const ast::matcher& matcher) noexcept

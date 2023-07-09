@@ -289,6 +289,41 @@ namespace tnac::ast
 
 
   //
+  // Array expression
+  // Represents an array instantiation
+  //
+  class array_expr final : public list<expr>, public expr
+  {
+  private:
+    friend class builder;
+
+  public:
+    CLASS_SPECIALS_NONE(array_expr);
+
+    virtual ~array_expr() noexcept;
+
+  protected:
+    array_expr(const token& ob, elem_list elements) noexcept;
+
+  public:
+    //
+    // Returns the element list
+    // 
+    // const version
+    //
+    const elem_list& elements() const noexcept;
+
+    //
+    // Returns the element list
+    //
+    elem_list& elements() noexcept;
+
+  private:
+    elem_list m_elements;
+  };
+
+
+  //
   // Paren expression
   // Represents any expression enclosed in parentheses
   //
@@ -361,14 +396,10 @@ namespace tnac::ast
   //
   // Any invocation which has a name and a set of arguments
   //
-  class invocation : public expr
+  class invocation : public list<expr>, public expr
   {
   public:
-    using arg = expr;
-    using pointer = arg*;
-    using const_pointer = const arg*;
-
-    using arg_list = std::vector<pointer>;
+    using arg_list = elem_list;
 
   private:
     friend class builder;
@@ -438,10 +469,10 @@ namespace tnac::ast
   // Call expression
   // Represents a call to a named callable entity with an arg list
   //
-  class call_expr final : public expr
+  class call_expr final : public list<expr>, public expr
   {
   public:
-    using arg_list = invocation::arg_list;
+    using arg_list = elem_list;
 
   private:
     friend class builder;

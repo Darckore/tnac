@@ -82,6 +82,10 @@ primary-expr:
   conditional-expr
   '(' expr ')'
   abs-expr
+  array-expr
+
+array-expr:
+  '[' arg-list ']'
 
 abs-expr:
   '|' expr '|'

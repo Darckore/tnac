@@ -79,6 +79,18 @@ namespace tnac
       {
         return is_curly_open(c) || is_curly_close(c);
       }
+      constexpr auto is_bracket_open(char_t c) noexcept
+      {
+        return c == '[';
+      }
+      constexpr auto is_bracket_close(char_t c) noexcept
+      {
+        return c == ']';
+      }
+      constexpr auto is_bracket(char_t c) noexcept
+      {
+        return is_bracket_open(c) || is_bracket_close(c);
+      }
       constexpr auto is_comma(char_t c) noexcept
       {
         return c == ',';
@@ -98,6 +110,7 @@ namespace tnac
                is_semi(c)           ||
                is_paren(c)          ||
                is_curly(c)          ||
+               is_bracket(c)        ||
                is_blank(c)          ||
                is_comment(c)        ||
                is_operator(c);
@@ -548,13 +561,15 @@ namespace tnac
     auto resKind = Eol;
     switch (next)
     {
-    case ':': resKind = ExprSep;    break;
-    case '(': resKind = ParenOpen;  break;
-    case ')': resKind = ParenClose; break;
-    case '{': resKind = CurlyOpen;  break;
-    case '}': resKind = CurlyClose; break;
-    case ',': resKind = Comma;      break;
-    case ';': resKind = Semicolon;  break;
+    case ':': resKind = ExprSep;      break;
+    case '(': resKind = ParenOpen;    break;
+    case ')': resKind = ParenClose;   break;
+    case '{': resKind = CurlyOpen;    break;
+    case '}': resKind = CurlyClose;   break;
+    case '[': resKind = BracketOpen;  break;
+    case ']': resKind = BracketClose; break;
+    case ',': resKind = Comma;        break;
+    case ';': resKind = Semicolon;    break;
 
     default: resKind = Error; break;
     }

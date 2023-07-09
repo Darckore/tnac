@@ -168,6 +168,30 @@ namespace tnac::ast
   {}
 
 
+  // Array expr
+
+  array_expr::~array_expr() noexcept = default;
+
+  array_expr::array_expr(const token& ob, elem_list elements) noexcept :
+    expr{ kind::Array, ob },
+    m_elements{ std::move(elements) }
+  {
+    for (auto e : m_elements)
+    {
+      assume_ancestry(e);
+    }
+  }
+
+  const array_expr::elem_list& array_expr::elements() const noexcept
+  {
+    return m_elements;
+  }
+  array_expr::elem_list& array_expr::elements() noexcept
+  {
+    return FROM_CONST(elements);
+  }
+
+
   // Paren expr
 
   paren_expr::~paren_expr() noexcept = default;

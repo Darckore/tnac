@@ -37,6 +37,8 @@ namespace tnac_rt::out
 
     void print(const ast::unary_expr& expr) noexcept;
 
+    void print(const ast::array_expr& expr) noexcept;
+    
     void print(const ast::paren_expr& expr) noexcept;
     
     void print(const ast::abs_expr& expr) noexcept;
@@ -70,9 +72,11 @@ namespace tnac_rt::out
     void print(const ast::func_decl& decl) noexcept;
 
   private:
+    using args_t = tnac::ast::list<tnac::ast::expr>::elem_list;
+
     void print_invocation(const ast::invocation& expr) noexcept;
 
-    void print_args(const ast::invocation::arg_list& args) noexcept;
+    void print_args(const args_t& args, tnac::char_t open, tnac::char_t close) noexcept;
 
     void indent(const ast::node& cur) noexcept;
 

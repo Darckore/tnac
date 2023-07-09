@@ -297,6 +297,26 @@ namespace tnac::ast
     }
 
     //
+    // Visits an array expr
+    //
+    void visit_impl(dest<array_expr> arr) noexcept
+    {
+      if constexpr (is_top_down())
+        visit(arr);
+
+      if (preview(arr))
+      {
+        for (auto elem : arr->elements())
+        {
+          visit_root(elem);
+        }
+      }
+
+      if constexpr (is_bottom_up())
+        visit(arr);
+    }
+
+    //
     // Visits a parenthesis expression
     //
     void visit_impl(dest<paren_expr> paren) noexcept
@@ -512,6 +532,7 @@ namespace tnac::ast
       case VarDecl:    visit_impl(&cast<var_decl>(cur));    break;
       case ParamDecl:  visit_impl(&cast<param_decl>(cur));  break;
       case FuncDecl:   visit_impl(&cast<func_decl>(cur));   break;
+      case Array:      visit_impl(&cast<array_expr>(cur));  break;
       case Paren:      visit_impl(&cast<paren_expr>(cur));  break;
       case Abs:        visit_impl(&cast<abs_expr>(cur));    break;
       case Typed:      visit_impl(&cast<typed_expr>(cur));  break;

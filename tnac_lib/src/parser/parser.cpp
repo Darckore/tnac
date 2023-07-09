@@ -92,6 +92,14 @@ namespace tnac
       {
         return tok.is(token::CurlyClose);
       }
+      constexpr auto is_open_bracket(const token& tok) noexcept
+      {
+        return tok.is(token::BracketOpen);
+      }
+      constexpr auto is_close_bracket(const token& tok) noexcept
+      {
+        return tok.is(token::BracketClose);
+      }
       constexpr auto is_comma(const token& tok) noexcept
       {
         return tok.is(token::Comma);
@@ -561,6 +569,18 @@ namespace tnac
     return m_builder.make_unary(*exp, op);
   }
 
+  ast::expr* parser::array_expr() noexcept
+  {
+    auto ob = next_tok();
+    auto elements = arg_list(token::BracketClose);
+
+    if (!detail::is_close_bracket(peek_next()))
+      return error_expr(next_tok(), "Expected ']'"sv, true);
+
+    next_tok();  
+    return m_builder.make_array(ob, std::move(elements));
+  }
+
   ast::expr* parser::paren_expr() noexcept
   {
     auto op = next_tok();
@@ -605,6 +625,9 @@ namespace tnac
     if (next.is(token::KwResult))
       return m_builder.make_result(next_tok());
 
+    if (detail::is_open_bracket(next))
+      return array_expr();
+
     if (detail::is_pipe(next))
       return abs_expr();
 
@@ -647,7 +670,7 @@ namespace tnac
       return error_expr(next_tok(), "Expected argument list"sv);
 
     next_tok();
-    auto args = arg_list();
+    auto args = arg_list(token::ParenClose);
 
     if (!detail::is_close_paren(peek_next()))
       return error_expr(next_tok(), "Expected ')'"sv);
@@ -656,13 +679,13 @@ namespace tnac
     return m_builder.make_typed(kw, std::move(args));
   }
 
-  parser::expr_list parser::arg_list() noexcept
+  parser::expr_list parser::arg_list(tok_kind closing) noexcept
   {
     expr_list res;
 
     while (!peek_next().is_eol())
     {
-      if (detail::is_close_paren(peek_next()))
+      if (peek_next().is(closing))
         break;
 
       auto e = expr();
@@ -684,7 +707,7 @@ namespace tnac
     while (detail::is_open_paren(peek_next()))
     {
       next_tok();
-      auto args = arg_list();
+      auto args = arg_list(token::ParenClose);
 
       if (!detail::is_close_paren(peek_next()))
         return error_expr(next_tok(), "Expected ')'"sv, true);

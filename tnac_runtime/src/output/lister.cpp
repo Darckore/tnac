@@ -44,6 +44,7 @@ namespace tnac_rt::out
     case Assign:     print(cast<ast::assign_expr>(*root)); break;
     case Decl:       print(cast<ast::decl_expr>(*root));   break;
     case Abs:        print(cast<ast::abs_expr>(*root));    break;
+    case Array:      print(cast<ast::array_expr>(*root));  break;
     case Paren:      print(cast<ast::paren_expr>(*root));  break;
     case Typed:      print(cast<ast::typed_expr>(*root));  break;
     case Call:       print(cast<ast::call_expr>(*root));   break;
@@ -102,6 +103,11 @@ namespace tnac_rt::out
     print(&expr.operand());
   }
 
+  void lister::print(const ast::array_expr& expr) noexcept
+  {
+    print_args(expr.elements(), '[', ']');
+  }
+
   void lister::print(const ast::paren_expr& expr) noexcept
   {
     out() << "( ";
@@ -124,7 +130,7 @@ namespace tnac_rt::out
   void lister::print(const ast::call_expr& expr) noexcept
   {
     print(&expr.callable());
-    print_args(expr.args());
+    print_args(expr.args(), '(', ')');
   }
 
   void lister::print(const ast::lit_expr& expr) noexcept
@@ -283,12 +289,12 @@ namespace tnac_rt::out
   void lister::print_invocation(const ast::invocation& expr) noexcept
   {
     print_token(expr.name(), false);
-    print_args(expr.args());
+    print_args(expr.args(), '(', ')');
   }
 
-  void lister::print_args(const ast::invocation::arg_list& args) noexcept
+  void lister::print_args(const args_t& args, tnac::char_t open, tnac::char_t close) noexcept
   {
-    out() << "( ";
+    out() << open << ' ';
     const auto size = args.size();
     auto idx = std::size_t{};
     for (auto arg : args)
@@ -300,7 +306,7 @@ namespace tnac_rt::out
         out() << ", ";
     }
 
-    out() << ") ";
+    out() << close << ' ';
   }
 
   void lister::indent(const ast::node& cur) noexcept

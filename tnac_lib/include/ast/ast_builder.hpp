@@ -81,6 +81,11 @@ namespace tnac::ast
     call_expr* make_call(expr& callable, call_expr::arg_list args) noexcept;
 
     //
+    // Creates an array expr
+    //
+    array_expr* make_array(const token& ob, array_expr::elem_list elements) noexcept;
+
+    //
     // Creates a paren expression
     //
     paren_expr* make_paren(expr& e, const token& op) noexcept;

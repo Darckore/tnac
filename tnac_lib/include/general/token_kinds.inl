@@ -50,6 +50,8 @@ Comma,
 Semicolon,
 CurlyOpen,
 CurlyClose,
+BracketOpen,
+BracketClose,
 
 // Identifiers
 Identifier,

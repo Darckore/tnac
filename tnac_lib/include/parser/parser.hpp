@@ -332,6 +332,11 @@ namespace tnac
     ast::expr* unary_expr() noexcept;
 
     //
+    // Parses an array expr
+    //
+    ast::expr* array_expr() noexcept;
+
+    //
     // Parses a paren expr
     //
     ast::expr* paren_expr() noexcept;
@@ -359,7 +364,7 @@ namespace tnac
     //
     // Parses an argument list
     //
-    expr_list arg_list() noexcept;
+    expr_list arg_list(tok_kind closing) noexcept;
 
     //
     // Parses a call expression

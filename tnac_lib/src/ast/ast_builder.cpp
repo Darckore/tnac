@@ -53,6 +53,11 @@ namespace tnac::ast
     return make<call_expr>(callable, std::move(args));
   }
 
+  array_expr* builder::make_array(const token& ob, array_expr::elem_list elements) noexcept
+  {
+    return make<array_expr>(ob, std::move(elements));
+  }
+
   paren_expr* builder::make_paren(expr& e, const token& op) noexcept
   {
     return make<paren_expr>(e, op);
