@@ -564,6 +564,8 @@ namespace tnac
   ast::expr* parser::paren_expr() noexcept
   {
     auto op = next_tok();
+
+    value_guard _{ m_terminateAt, tok_kind::Eol };
     auto intExpr = expr();
 
     if (!detail::is_close_paren(peek_next()))
