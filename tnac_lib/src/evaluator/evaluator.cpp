@@ -224,32 +224,16 @@ namespace tnac
       return;
 
     auto func = expr.callable().value();
-    auto funcType = func.try_get<eval::function_type>();
-    if (!funcType)
+    if (auto arr = func.try_get<eval::array_type>())
     {
-      on_error(expr.pos(), "Expected a callable object"sv);
-      return;
+      make_arr_call(*arr, expr);
+    }
+    else
+    {
+      auto funcType = func.try_get<eval::function_type>();
+      make_call(funcType, expr.pos(), expr.args());
     }
 
-    auto callable = *funcType;
-    if (const auto paramCnt = callable->param_count(); paramCnt != expr.args().size())
-    {
-      on_error(expr.pos(), std::format("Expected {} arguments"sv, paramCnt));
-      return;
-    }
-
-    if (!m_callStack)
-    {
-      on_error(expr.pos(), "Stack overflow"sv);
-      m_callStack.clear();
-      expr.eval_result(m_visitor.get_empty());
-      return;
-    }
-
-    m_callStack.push(*callable, expr.args(), m_visitor);
-    auto funcBody = callable->declarator().definition();
-    value_guard _{ m_return };
-    (*this)(funcBody);
     auto res = m_visitor.last_result(&expr);
     expr.eval_result(res);
   }
@@ -555,6 +539,60 @@ namespace tnac
   void evaluator::make_function(semantics::function& sym) noexcept
   {
     sym.eval_result(m_visitor.make_function(&sym, eval::function_type{ sym }));
+  }
+
+  void evaluator::make_arr_call(eval::array_type arr, ast::call_expr& expr) noexcept
+  {
+    auto&& args = expr.args();
+    auto&& callRes = m_visitor.new_array(&expr, arr->size());
+
+    auto arrExpr = utils::try_cast<ast::array_expr>(&expr.callable());
+
+    const auto arrId = *eval::detail::ent_id{ &callRes };
+    for (auto idx = size_type{}; auto elem : *arr)
+    {
+      auto argFunc = elem.try_get<eval::function_type>();
+      auto callPos = arrExpr ? arrExpr->elements()[idx]->pos() : expr.pos();
+
+      make_call(argFunc, callPos, args);
+
+      const auto elemId = arrId + idx;
+      auto elemVal = m_visitor.last_result(elemId);
+      callRes.emplace_back(elemVal);
+      ++idx;
+    }
+
+    m_visitor.make_array(&expr, callRes);
+  }
+
+  void evaluator::make_call(eval::function_type* func, const token& at, ast::call_expr::arg_list& args) noexcept
+  {
+    if (!func)
+    {
+      on_error(at, "Expected a callable object"sv);
+      m_visitor.get_empty();
+      return;
+    }
+
+    auto callable = *func;
+    if (const auto paramCnt = callable->param_count(); paramCnt != args.size())
+    {
+      on_error(at, std::format("Expected {} arguments"sv, paramCnt));
+      return;
+    }
+
+    if (!m_callStack)
+    {
+      on_error(at, "Stack overflow"sv);
+      m_callStack.clear();
+      m_visitor.get_empty();
+      return;
+    }
+
+    m_callStack.push(*callable, args, m_visitor);
+    auto funcBody = callable->declarator().definition();
+    value_guard _{ m_return };
+    (*this)(funcBody);
   }
 
   bool evaluator::return_path() const noexcept

@@ -196,6 +196,16 @@ namespace tnac
     void make_function(semantics::function& sym) noexcept;
 
     //
+    // Calls the array of functions with a single expression
+    //
+    void make_arr_call(eval::array_type arr, ast::call_expr& expr) noexcept;
+
+    //
+    // Calls the specified function with the given args
+    //
+    void make_call(eval::function_type* func, const token& at, ast::call_expr::arg_list& args) noexcept;
+
+    //
     // Returns true if a return is active
     //
     bool return_path() const noexcept;
