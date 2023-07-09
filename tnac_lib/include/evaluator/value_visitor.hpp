@@ -255,6 +255,26 @@ namespace tnac::eval
       }
     }
 
+    template <>
+    value visit_unary(array_type operand, val_ops op) noexcept
+    {
+      if (utils::eq_any(op, val_ops::LogicalIs, val_ops::LogicalNot))
+      {
+        auto toBool = get_caster<bool_type>()(std::move(operand));
+        return visit_unary(toBool.value_or(false), op);
+      }
+
+      auto&& newArr = m_registry.allocate_array(m_curEntity, operand->size());
+      auto arrEnt = *id_param_t{ &newArr };
+      for (auto idx = size_type{}; auto el : *operand)
+      {
+        auto elemVal = visit_unary(arrEnt + idx, el, op);
+        newArr.emplace_back(elemVal);
+        ++idx;
+      }
+
+      return make_array(m_curEntity, newArr);
+    }
 
   private: // Binary operations
 
