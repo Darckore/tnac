@@ -11,6 +11,8 @@ namespace tnac::semantics
 
 namespace tnac::eval
 {
+  class value;
+
   using bool_type     = bool;
   using int_type      = std::intmax_t;
   using float_type    = double;
@@ -46,7 +48,6 @@ namespace tnac::eval
     {
       return m_func;
     }
-
     pointer operator->() noexcept
     {
       return FROM_CONST(operator->);
@@ -56,7 +57,6 @@ namespace tnac::eval
     {
       return *m_func;
     }
-
     reference operator*() noexcept
     {
       return FROM_CONST(operator*);
@@ -66,4 +66,41 @@ namespace tnac::eval
     pointer m_func{};
   };
 
+
+  //
+  // Array type
+  // Represents an arbitrary-sized array of values
+  //
+  class array_type final
+  {
+  public:
+    using value_type = std::vector<value>;
+    using pointer = value_type*;
+    using const_pointer = const value_type*;
+    using reference = value_type&;
+    using const_reference = const value_type&;
+
+  public:
+    CLASS_SPECIALS_NODEFAULT(array_type);
+
+    ~array_type() noexcept = default;
+
+    array_type(const_reference underlying) noexcept :
+      m_underlying{ &underlying }
+    {}
+
+  public:
+    const_pointer operator->() const noexcept
+    {
+      return m_underlying;
+    }
+
+    const_reference operator*() const noexcept
+    {
+      return *m_underlying;
+    }
+
+  private:
+    const_pointer m_underlying{};
+  };
 }

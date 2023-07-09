@@ -139,6 +139,10 @@ namespace tnac::eval
       {
         return true;
       },
+      [](array_type) noexcept -> res_type
+      {
+        return true;
+      },
       [](invalid_val_t) noexcept -> res_type
       {
         return false;
@@ -173,6 +177,10 @@ namespace tnac::eval
         return detail::to_int(v.to<float_type>());
       },
       [](function_type) noexcept -> res_type
+      {
+        return {};
+      },
+      [](array_type) noexcept -> res_type
       {
         return {};
       },
@@ -216,6 +224,10 @@ namespace tnac::eval
       {
         return {};
       },
+      [](array_type) noexcept -> res_type
+      {
+        return {};
+      },
       [](invalid_val_t) noexcept -> res_type
       {
         return float_type{};
@@ -250,6 +262,10 @@ namespace tnac::eval
       return complex_type{ v.to<float_type>() };
       },
       [](function_type) noexcept -> res_type
+      {
+        return {};
+      },
+      [](array_type) noexcept -> res_type
       {
         return {};
       },
@@ -307,6 +323,10 @@ namespace tnac::eval
       {
         return {};
       },
+      [](array_type) noexcept -> res_type
+      {
+        return {};
+      },
       [](invalid_val_t) noexcept -> res_type
       {
         return fraction_type{ 0 };
@@ -325,6 +345,23 @@ namespace tnac::eval
         return {};
       },
       [](function_type v) noexcept -> res_type
+      {
+        return v;
+      }
+    };
+  }
+
+  template <>
+  inline auto get_caster<array_type>() noexcept
+  {
+    using res_type = typed_value<array_type>;
+    return utils::visitor
+    {
+      [](auto) noexcept -> res_type
+      {
+        return {};
+      },
+      [](array_type v) noexcept -> res_type
       {
         return v;
       }
@@ -380,6 +417,17 @@ namespace tnac::eval
   struct common_type<T, invalid_val_t> : common_type<invalid_val_t, T>
   {};
 
+  // array
+
+  template <detail::expr_result T> requires (!is_same_noquals_v<T, array_type>)
+  struct common_type<array_type, T>
+  {
+    using type = array_type;
+  };
+  template <detail::expr_result T> requires (!is_same_noquals_v<T, array_type>)
+  struct common_type<T, array_type> : common_type<array_type, T>
+  {};
+
   // function
 
   template <detail::expr_result T> requires (!is_same_noquals_v<T, function_type>)
@@ -389,6 +437,14 @@ namespace tnac::eval
   };
   template <detail::expr_result T> requires (!is_same_noquals_v<T, function_type>)
   struct common_type<T, function_type> : common_type<function_type, T>
+  {};
+  template <>
+  struct common_type<function_type, array_type>
+  {
+    using type = array_type;
+  };
+  template <>
+  struct common_type<array_type, function_type> : common_type<function_type, array_type>
   {};
 
   // complex
@@ -476,7 +532,6 @@ namespace tnac::eval
   template <>
   struct common_type<bool_type, bool_type> : common_type<int_type, bool_type>
   {};
-
 
   //
   // Missing operators

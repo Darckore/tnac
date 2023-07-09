@@ -26,7 +26,8 @@ namespace tnac::eval
       float_type,
       complex_type,
       fraction_type,
-      function_type
+      function_type,
+      array_type
     >;
 
     using entity_vals  = std::unordered_map<entity_id, stored_val_t>;

@@ -26,7 +26,7 @@ namespace tnac::eval
     concept expr_result = is_any_v<T,
       bool_type, int_type, float_type,
       complex_type, fraction_type,
-      function_type>;
+      function_type, array_type>;
   }
 
   //
@@ -40,7 +40,8 @@ namespace tnac::eval
     Float,
     Complex,
     Fraction,
-    Function
+    Function,
+    Array
   };
 }
 
@@ -50,6 +51,7 @@ TYPE_TO_ID_ASSOCIATION(tnac::eval::float_type,    tnac::eval::type_id::Float);
 TYPE_TO_ID_ASSOCIATION(tnac::eval::complex_type,  tnac::eval::type_id::Complex);
 TYPE_TO_ID_ASSOCIATION(tnac::eval::fraction_type, tnac::eval::type_id::Fraction);
 TYPE_TO_ID_ASSOCIATION(tnac::eval::function_type, tnac::eval::type_id::Function);
+TYPE_TO_ID_ASSOCIATION(tnac::eval::array_type,    tnac::eval::type_id::Array);
 
 namespace tnac::eval
 {
@@ -205,6 +207,9 @@ namespace tnac::eval
 
     case Function:
       return func(val.get<function_type>());
+
+    case Array:
+      return func(val.get<array_type>());
 
     default:
       return func(invalid_val_t{});
