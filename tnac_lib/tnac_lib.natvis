@@ -138,7 +138,19 @@
       <Item Name="[value]">m_val</Item>
     </Expand>
   </Type>
-  
+
+  <Type Name="tnac::ast::cond_short">
+    <DisplayString>{m_kind,en}</DisplayString>
+    <Expand>
+      <Item Name="[cond]">*m_cond</Item>
+      <Item Name="[true]" Condition="m_true">*m_true</Item>
+      <Item Name="[true]" Condition="!m_true">"&lt;null&gt;",sb</Item>
+      <Item Name="[false]" Condition="m_false">*m_false</Item>
+      <Item Name="[false]" Condition="!m_false">"&lt;null&gt;",sb</Item>
+      <Item Name="[value]">m_val</Item>
+    </Expand>
+  </Type>
+
   <Type Name="tnac::ast::cond_expr">
     <DisplayString>{m_kind,en}</DisplayString>
     <Expand>
