@@ -104,6 +104,10 @@ namespace tnac
       {
         return tok.is(token::Arrow);
       }
+      constexpr auto is_pipe(const token& tok) noexcept
+      {
+        return tok.is(token::Pipe);
+      }
 
       constexpr auto is_expression_separator(const token& tok) noexcept
       {
@@ -521,7 +525,12 @@ namespace tnac
 
     for (;;)
     {
-      if (!detail::match(pr, peek_next()))
+      auto&& next = peek_next();
+      
+      if (next.is(m_terminateAt))
+        break;
+
+      if (!detail::match(pr, next))
         break;
 
       auto op = next_tok();
@@ -564,6 +573,20 @@ namespace tnac
     return m_builder.make_paren(*intExpr, op);
   }
 
+  ast::expr* parser::abs_expr() noexcept
+  {
+    auto op = next_tok();
+    
+    value_guard _{ m_terminateAt, tok_kind::Pipe };
+    auto intExpr = expr();
+
+    if (!detail::is_pipe(peek_next()))
+      return error_expr(peek_next(), "Expected '|'"sv);
+
+    next_tok();
+    return m_builder.make_abs(*intExpr, op);
+  }
+
   ast::expr* parser::primary_expr() noexcept
   {
     auto&& next = peek_next();
@@ -579,6 +602,9 @@ namespace tnac
 
     if (next.is(token::KwResult))
       return m_builder.make_result(next_tok());
+
+    if (detail::is_pipe(next))
+      return abs_expr();
 
     if (detail::is_open_paren(next))
       return paren_expr();

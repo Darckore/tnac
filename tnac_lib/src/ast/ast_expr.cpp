@@ -189,6 +189,27 @@ namespace tnac::ast
   }
 
 
+  // Abs expr
+
+  abs_expr::~abs_expr() noexcept = default;
+
+  abs_expr::abs_expr(expr& e, const token& op) noexcept :
+    expr{ kind::Abs, op },
+    m_expr{ &e }
+  {
+    assume_ancestry(m_expr);
+  }
+
+  const expr& abs_expr::expression() const noexcept
+  {
+    return *m_expr;
+  }
+  expr& abs_expr::expression() noexcept
+  {
+    return FROM_CONST(expression);
+  }
+
+
   // Invocation
 
   invocation::~invocation() noexcept = default;

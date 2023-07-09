@@ -81,6 +81,10 @@ primary-expr:
   anonimous-function
   conditional-expr
   '(' expr ')'
+  abs-expr
+
+abs-expr:
+  '|' expr '|'
 
 conditional-expr:
   condition cond-body ';'

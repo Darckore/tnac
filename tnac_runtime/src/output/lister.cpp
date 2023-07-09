@@ -43,6 +43,7 @@ namespace tnac_rt::out
     case Binary:     print(cast<ast::binary_expr>(*root)); break;
     case Assign:     print(cast<ast::assign_expr>(*root)); break;
     case Decl:       print(cast<ast::decl_expr>(*root));   break;
+    case Abs:        print(cast<ast::abs_expr>(*root));    break;
     case Paren:      print(cast<ast::paren_expr>(*root));  break;
     case Typed:      print(cast<ast::typed_expr>(*root));  break;
     case Call:       print(cast<ast::call_expr>(*root));   break;
@@ -103,9 +104,16 @@ namespace tnac_rt::out
 
   void lister::print(const ast::paren_expr& expr) noexcept
   {
-    out() << '(';
+    out() << "( ";
     print(&expr.internal_expr());
     out() << ") ";
+  }
+
+  void lister::print(const ast::abs_expr& expr) noexcept
+  {
+    out() << "| ";
+    print(&expr.expression());
+    out() << "| ";
   }
 
   void lister::print(const ast::typed_expr& expr) noexcept

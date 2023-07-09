@@ -75,6 +75,11 @@ namespace tnac_tests
           check_node(expr, "");
         }
 
+        void visit(const tree::abs_expr& expr) noexcept
+        {
+          check_node(expr, "");
+        }
+
         void visit(const tree::typed_expr& expr) noexcept
         {
           check_node(expr, expr.type_name().m_value);
@@ -280,6 +285,30 @@ namespace tnac_tests
       expected_node{  "+", Binary,  Paren },
       expected_node{   "", Paren,   Unary },
       expected_node{  "-", Unary,   Scope },
+    };
+
+    detail::check_tree_structute(exp, input);
+  }
+
+  TEST(parser, t_struct_abs)
+  {
+    using detail::expected_node;
+    using enum detail::node_kind;
+    constexpr auto input = "|42 + 69|"sv;
+
+    /*
+             -||
+            |
+          -'+'-
+         |     |
+        42     69
+    */
+
+    std::array exp{
+      expected_node{ "42", Literal, Binary },
+      expected_node{ "69", Literal, Binary },
+      expected_node{ "+",  Binary,  Abs },
+      expected_node{ "",   Abs,     Scope },
     };
 
     detail::check_tree_structute(exp, input);

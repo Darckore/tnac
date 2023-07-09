@@ -324,6 +324,41 @@ namespace tnac::ast
 
 
   //
+  // Abs expression
+  // Represents an absolute value any expression
+  //
+  class abs_expr final : public expr
+  {
+  private:
+    friend class builder;
+
+  public:
+    CLASS_SPECIALS_NONE(abs_expr);
+
+    virtual ~abs_expr() noexcept;
+
+  protected:
+    abs_expr(expr& e, const token& op) noexcept;
+
+  public:
+    //
+    // Returns the underlying expression
+    // 
+    // const version
+    //
+    const expr& expression() const noexcept;
+
+    //
+    // Returns the underlying expression
+    // 
+    expr& expression() noexcept;
+
+  private:
+    expr* m_expr{};
+  };
+
+
+  //
   // Any invocation which has a name and a set of arguments
   //
   class invocation : public expr

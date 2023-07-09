@@ -314,6 +314,23 @@ namespace tnac::ast
     }
 
     //
+    // Visits an abs expression
+    //
+    void visit_impl(dest<abs_expr> abs) noexcept
+    {
+      if constexpr (is_top_down())
+        visit(abs);
+
+      if (preview(abs))
+      {
+        visit_root(&abs->expression());
+      }
+
+      if constexpr (is_bottom_up())
+        visit(abs);
+    }
+
+    //
     // Visits a typed expression
     //
     void visit_impl(dest<typed_expr> typed) noexcept
@@ -496,6 +513,7 @@ namespace tnac::ast
       case ParamDecl:  visit_impl(&cast<param_decl>(cur));  break;
       case FuncDecl:   visit_impl(&cast<func_decl>(cur));   break;
       case Paren:      visit_impl(&cast<paren_expr>(cur));  break;
+      case Abs:        visit_impl(&cast<abs_expr>(cur));    break;
       case Typed:      visit_impl(&cast<typed_expr>(cur));  break;
       case Call:       visit_impl(&cast<call_expr>(cur));   break;
       case Matcher:    visit_impl(&cast<matcher>(cur));     break;

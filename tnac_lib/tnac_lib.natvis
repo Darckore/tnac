@@ -130,6 +130,14 @@
     </Expand>
   </Type>
 
+  <Type Name="tnac::ast::abs_expr">
+    <DisplayString>{m_kind,en} ({*m_expr})</DisplayString>
+    <Expand>
+      <Item Name="[expr]">*m_expr</Item>
+      <Item Name="[value]">m_val</Item>
+    </Expand>
+  </Type>
+
   <Type Name="tnac::ast::call_expr">
     <DisplayString>{m_kind,en} ({m_pos.m_value,sb})</DisplayString>
     <Expand>

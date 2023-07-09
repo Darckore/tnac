@@ -110,6 +110,14 @@ namespace tnac_rt::out
     push_parent(1u);
   }
 
+  void ast_printer::visit(const ast::abs_expr&) noexcept
+  {
+    indent();
+    out() << "Abs expression";
+    endl();
+    push_parent(1u);
+  }
+
   void ast_printer::visit(const ast::typed_expr& expr) noexcept
   {
     indent();

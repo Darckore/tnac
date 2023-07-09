@@ -337,6 +337,11 @@ namespace tnac
     ast::expr* paren_expr() noexcept;
 
     //
+    // Parses an abs expr
+    //
+    ast::expr* abs_expr() noexcept;
+
+    //
     // Parses an anonimous function expression
     //
     ast::expr* anonimous_function() noexcept;
@@ -400,5 +405,7 @@ namespace tnac
 
     err_handler_t m_errHandler{};
     cmd_handler_t m_cmdHandler{};
+
+    tok_kind m_terminateAt{ tok_kind::Eol };
   };
 }

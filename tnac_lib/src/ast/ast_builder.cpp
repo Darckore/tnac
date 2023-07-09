@@ -58,6 +58,11 @@ namespace tnac::ast
     return make<paren_expr>(e, op);
   }
 
+  abs_expr* builder::make_abs(expr& e, const token& op) noexcept
+  {
+    return make<abs_expr>(e, op);
+  }
+
   unary_expr* builder::make_unary(expr& e, const token& op) noexcept
   {
     return make<unary_expr>(e, op);
