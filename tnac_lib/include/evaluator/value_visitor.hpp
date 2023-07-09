@@ -538,6 +538,27 @@ namespace tnac::eval
       }
     }
 
+    template <>
+    value visit_binary(array_type l, array_type r, val_ops op) noexcept
+    {
+      const auto newSz = l->size() * r->size();
+      auto&& newArr = m_registry.allocate_array(m_curEntity, newSz);
+      auto arrEnt = *id_param_t{ &newArr };
+      for (auto idxl = size_type{}; auto el : *l)
+      {
+        for (auto idxr = size_type{}; auto er : *r)
+        {
+          const auto valEnt = arrEnt + idxl + idxr;
+          auto newVal = visit_binary(valEnt, el, er, op);
+          newArr.emplace_back(newVal);
+          ++idxr;
+        }
+        ++idxl;
+      }
+
+      return make_array(m_curEntity, newArr);
+    }
+
 
   private:
     //
