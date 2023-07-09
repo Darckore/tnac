@@ -265,7 +265,7 @@ namespace tnac::eval
       }
 
       auto&& newArr = m_registry.allocate_array(m_curEntity, operand->size());
-      auto arrEnt = *id_param_t{ &newArr };
+      const auto arrEnt = *id_param_t{ &newArr };
       for (auto idx = size_type{}; auto el : *operand)
       {
         auto elemVal = visit_unary(arrEnt + idx, el, op);
@@ -543,7 +543,7 @@ namespace tnac::eval
     {
       const auto newSz = l->size() * r->size();
       auto&& newArr = m_registry.allocate_array(m_curEntity, newSz);
-      auto arrEnt = *id_param_t{ &newArr };
+      const auto arrEnt = *id_param_t{ &newArr };
       for (auto idxl = size_type{}; auto el : *l)
       {
         for (auto idxr = size_type{}; auto er : *r)
@@ -559,6 +559,42 @@ namespace tnac::eval
       return make_array(m_curEntity, newArr);
     }
 
+    template <detail::generic_type T>
+    arr_t& to_unit_array(T val) noexcept
+    {
+      auto&& arr = m_registry.allocate_array(invalidEnt, 1u);
+      const auto arrEnt = *id_param_t{ &arr };
+      value_guard _{ m_curEntity, arrEnt };
+      arr.emplace_back(reg_value(std::move(val)));
+      return arr;
+    }
+
+    void release_unit_array(arr_t& arr) noexcept
+    {
+      const auto arrEnt = *id_param_t{ &arr };
+      m_registry.erase(arrEnt);
+      m_registry.release_array(arrEnt);
+    }
+
+    template <detail::generic_type T>
+      requires (!is_same_noquals_v<T, array_type>)
+    value visit_binary(array_type l, T r, val_ops op) noexcept
+    {
+      auto&& arr = to_unit_array(std::move(r));
+      auto res = visit_binary(l, array_type{ arr }, op);
+      release_unit_array(arr);
+      return res;
+    }
+
+    template <detail::generic_type T>
+      requires (!is_same_noquals_v<T, array_type>)
+    value visit_binary(T l, array_type r, val_ops op) noexcept
+    {
+      auto&& arr = to_unit_array(std::move(l));
+      auto res = visit_binary(array_type{ arr }, r, op);
+      release_unit_array(arr);
+      return res;
+    }
 
   private:
     //

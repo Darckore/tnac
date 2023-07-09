@@ -158,6 +158,14 @@ namespace tnac::eval
     }
 
     //
+    // Destroys an array allocated previously
+    //
+    void release_array(entity_id id) noexcept
+    {
+      m_arrays.erase(id);
+    }
+
+    //
     // Resets the stored result value
     //
     value_type reset_result() noexcept
