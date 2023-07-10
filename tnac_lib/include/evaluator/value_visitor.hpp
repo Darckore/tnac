@@ -544,16 +544,16 @@ namespace tnac::eval
       const auto newSz = l->size() * r->size();
       auto&& newArr = m_registry.allocate_array(m_curEntity, newSz);
       const auto arrEnt = *id_param_t{ &newArr };
-      for (auto idxl = size_type{}; auto el : *l)
+      for (auto idx = size_type{}; auto el : *l)
       {
-        for (auto idxr = size_type{}; auto er : *r)
+        for (auto er : *r)
         {
-          const auto valEnt = arrEnt + idxl + idxr;
+          const auto valEnt = arrEnt + idx;
           auto newVal = visit_binary(valEnt, el, er, op);
           newArr.emplace_back(newVal);
-          ++idxr;
+          ++idx;
         }
-        ++idxl;
+        ++idx;
       }
 
       return make_array(m_curEntity, newArr);

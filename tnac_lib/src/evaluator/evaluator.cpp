@@ -250,6 +250,9 @@ namespace tnac
 
   void evaluator::visit(ast::array_expr& arr) noexcept
   {
+    if (return_path())
+      return;
+
     auto&& elements = arr.elements();
     const auto arrSz = elements.size();
     auto&& newArr = m_visitor.new_array(&arr, arrSz);
