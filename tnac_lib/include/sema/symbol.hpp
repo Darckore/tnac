@@ -3,7 +3,7 @@
 //
 
 #pragma once
-#include "evaluator/value.hpp"
+#include "evaluator/value/value.hpp"
 #include "ast/ast_decls.hpp"
 
 namespace tnac::ast

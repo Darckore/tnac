@@ -4,7 +4,7 @@
 
 #pragma once
 #include "evaluator/evaluator.hpp"
-#include "evaluator/value_registry.hpp"
+#include "evaluator/value/value_registry.hpp"
 #include "evaluator/call_stack.hpp"
 
 namespace tnac::packages

@@ -3,8 +3,8 @@
 //
 
 #pragma once
-#include "evaluator/value.hpp"
-#include "evaluator/value_visitor.hpp"
+#include "evaluator/value/value.hpp"
+#include "evaluator/value/value_visitor.hpp"
 #include "ast/ast_nodes.hpp"
 #include "sema/symbol.hpp"
 
