@@ -546,16 +546,16 @@ namespace tnac
 
   void evaluator::make_arr_call(eval::array_type arr, ast::call_expr& expr) noexcept
   {
-    auto&& args = expr.args();
     auto&& callRes = m_visitor.new_array(&expr, arr->size());
-
-    auto arrExpr = utils::try_cast<ast::array_expr>(&expr.callable());
-
+    auto&& args = expr.args();
+    const auto argCount = args.size();
+    const auto callPos = expr.pos();
     const auto arrId = *eval::detail::ent_id{ &callRes };
     for (auto idx = size_type{}; auto elem : *arr)
     {
       auto argFunc = elem.try_get<eval::function_type>();
-      auto callPos = arrExpr ? arrExpr->elements()[idx]->pos() : expr.pos();
+      if (!argFunc || (*argFunc)->param_count() != argCount)
+        continue;
 
       make_call(argFunc, callPos, args);
 
