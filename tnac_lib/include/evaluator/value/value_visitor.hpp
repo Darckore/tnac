@@ -24,38 +24,9 @@ namespace tnac::eval
       ent_id(const void* ent) noexcept : ent_id{ reinterpret_cast<id_t>(ent) } {}
       ent_id(std::nullptr_t) noexcept :  ent_id{} {}
 
-      auto operator* () const noexcept { return value; }
+      auto operator*() const noexcept { return value; }
 
       id_t value{};
-    };
-
-    //
-    // Temporary value storage
-    //
-    class temp_store final
-    {
-    public:
-      using storage = std::vector<std::unique_ptr<temporary>>;
-
-    public:
-      CLASS_SPECIALS_NONE_CUSTOM(temp_store);
-
-      temp_store() = default;
-
-    public:
-      void init() noexcept
-      {
-        m_values.clear();
-      }
-
-      value add(expr_result auto val) noexcept
-      {
-        auto&& res = *m_values.emplace_back(std::make_unique<temporary>(std::move(val)));
-        return *res;
-      }
-
-    private:
-      storage m_values;
     };
 
     constexpr auto is_unary(val_ops op) noexcept
@@ -542,12 +513,10 @@ namespace tnac::eval
     {
       if (m_curEntity != invalidEnt)
       {
-        m_tmp.init();
         return m_registry.register_entity(m_curEntity, std::move(val));
       }
 
-      m_registry.register_entity({}, val);
-      return m_tmp.add(std::move(val));
+      return m_registry.register_entity({}, val);
     }
 
     //
@@ -752,7 +721,6 @@ namespace tnac::eval
   private:
     static constexpr auto invalidEnt = detail::ent_id::invalid_id();
     entity_id m_curEntity{ invalidEnt };
-    detail::temp_store m_tmp;
     registry& m_registry;
   };
 }
