@@ -158,12 +158,10 @@ namespace tnac::eval
       }
 
       auto&& newArr = m_registry.allocate_array(m_curEntity, operand->size());
-      const auto arrEnt = *id_param_t{ &newArr };
-      for (auto idx = size_type{}; auto el : *operand)
+      for (auto el : *operand)
       {
-        auto elemVal = visit_unary(arrEnt + idx, el, op);
-        newArr.emplace_back(elemVal);
-        ++idx;
+        auto&& elemVal = newArr.emplace_back();
+        elemVal = visit_unary(&elemVal, el, op);
       }
 
       return make_array(m_curEntity, newArr);
@@ -436,17 +434,13 @@ namespace tnac::eval
     {
       const auto newSz = l->size() * r->size();
       auto&& newArr = m_registry.allocate_array(m_curEntity, newSz);
-      const auto arrEnt = *id_param_t{ &newArr };
-      for (auto idx = size_type{}; auto el : *l)
+      for (auto el : *l)
       {
         for (auto er : *r)
         {
-          const auto valEnt = arrEnt + idx;
-          auto newVal = visit_binary(valEnt, el, er, op);
-          newArr.emplace_back(newVal);
-          ++idx;
+          auto&& newVal = newArr.emplace_back();
+          newVal = visit_binary(&newVal, el, er, op);
         }
-        ++idx;
       }
 
       return make_array(m_curEntity, newArr);
