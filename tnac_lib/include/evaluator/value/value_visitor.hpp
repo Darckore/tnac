@@ -35,7 +35,7 @@ namespace tnac::eval
     class temp_store final
     {
     public:
-      using storage = std::vector<temporary>;
+      using storage = std::vector<std::unique_ptr<temporary>>;
 
     public:
       CLASS_SPECIALS_NONE_CUSTOM(temp_store);
@@ -48,10 +48,9 @@ namespace tnac::eval
         m_values.clear();
       }
 
-      template <expr_result T>
-      value add(T val) noexcept
+      value add(expr_result auto val) noexcept
       {
-        auto&& res = m_values.emplace_back(std::move(val));
+        auto&& res = *m_values.emplace_back(std::make_unique<temporary>(std::move(val)));
         return *res;
       }
 
