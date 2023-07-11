@@ -187,9 +187,10 @@ namespace tnac::eval
       }
 
       auto&& newArr = m_registry.allocate_array(m_curEntity, operand->size());
+      const auto arrEnt = *id_param_t{ &newArr };
       for (auto idx = size_type{}; auto el : *operand)
       {
-        auto elemVal = visit_unary(el, op);
+        auto elemVal = visit_unary(arrEnt + idx, el, op);
         newArr.emplace_back(elemVal);
         ++idx;
       }
@@ -541,6 +542,7 @@ namespace tnac::eval
     {
       if (m_curEntity != invalidEnt)
       {
+        m_tmp.init();
         return m_registry.register_entity(m_curEntity, std::move(val));
       }
 
@@ -630,10 +632,12 @@ namespace tnac::eval
     //
     // Returns a resulting value from a unary expr
     //
-    value visit_unary(value val, val_ops op) noexcept
+    value visit_unary(id_param_t ent, value val, val_ops op) noexcept
     {
       if (!detail::is_unary(op))
         return get_empty();
+
+      value_guard _{ m_curEntity, *ent };
 
       return visit_value(val, [this, op](auto v) noexcept
         {
