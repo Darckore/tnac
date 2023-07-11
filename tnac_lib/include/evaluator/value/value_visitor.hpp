@@ -8,100 +8,8 @@
 
 namespace tnac::eval
 {
-  //
-  // Supported operations
-  //
-  enum class val_ops : std::uint8_t
-  {
-    InvalidOp,
-    Addition,
-    Subtraction,
-    Multiplication,
-    Division,
-    Modulo,
-    RelLess,
-    RelLessEq,
-    RelGr,
-    RelGrEq,
-    Equal,
-    NEqual,
-    BitwiseAnd,
-    BitwiseXor,
-    BitwiseOr,
-    BinaryPow,
-    BinaryRoot,
-    UnaryNegation,
-    UnaryPlus,
-    UnaryBitwiseNot,
-    LogicalNot,
-    LogicalIs,
-    AbsoluteValue
-  };
-
   namespace detail
   {
-    template <typename F, typename T>
-    concept unary_function = std::is_nothrow_invocable_v<F, T>;
-
-    template <typename F, typename T1, typename T2>
-    concept binary_function = std::is_nothrow_invocable_v<F, T1, T2>;
-
-    template <typename T>
-    concept plusable = generic_type<T> &&
-      requires(T v) { +v; };
-
-    template <typename T>
-    concept negatable = generic_type<T> &&
-      requires(T v) { -v; };
-
-    template <typename T>
-    concept addable = generic_type<T> &&
-      requires(T l, T r) { l + r; };
-
-    template <typename T>
-    concept subtractable = generic_type<T> &&
-      requires(T l, T r) { l - r; };
-
-    template <typename T>
-    concept multipliable = generic_type<T> &&
-      requires(T l, T r) { l * r; };
-
-    template <typename T>
-    concept divisible = generic_type<T> &&
-      requires(T l, T r) { l / r; };
-
-    template <typename T>
-    concept modulo_divisible = generic_type<T> &&
-      requires(T l, T r) { l % r; };
-
-    template <typename T>
-    concept fmod_divisible = generic_type<T> &&
-      !std::integral<T> &&
-      requires(T l, T r) { std::fmod(l, r); };
-
-    template <typename T>
-    concept pow_raisable = generic_type<T> &&
-      requires(T l, T r) { std::pow(l, r); };
-
-    template <typename T>
-    concept invertible = generic_type<T> &&
-      requires(T op) { eval::inv(op); };
-
-    template <typename T>
-    concept eq_comparable = generic_type<T> &&
-      requires(T l, T r) { eval::eq(l, r); };
-
-    template <typename T>
-    concept rel_comparable = generic_type<T> &&
-      requires(T l, T r) { eval::less(l, r); };
-
-    template <typename T>
-    concept fully_comparable = eq_comparable<T> && rel_comparable<T>;
-
-    template <typename T>
-    concept abs_compatible = generic_type<T> &&
-      requires(T op) { eval::abs(op); };
-
     //
     // Helper object to facilitate easy casts from pointers to entity ids
     //
@@ -110,27 +18,13 @@ namespace tnac::eval
       CLASS_SPECIALS_ALL(ent_id);
       using id_t = registry::entity_id;
 
-      static consteval auto invalid_id() noexcept
-      {
-        return ~id_t{};
-      }
+      static consteval auto invalid_id() noexcept { return ~id_t{}; }
 
-      ent_id(id_t id) noexcept :
-        value{ id }
-      {}
+      ent_id(id_t id) noexcept :         value{ id } {}
+      ent_id(const void* ent) noexcept : ent_id{ reinterpret_cast<id_t>(ent) } {}
+      ent_id(std::nullptr_t) noexcept :  ent_id{} {}
 
-      ent_id(const void* ent) noexcept :
-        ent_id{ reinterpret_cast<id_t>(ent) }
-      {}
-
-      ent_id(std::nullptr_t) noexcept :
-        ent_id{}
-      {}
-
-      auto operator* () const noexcept
-      {
-        return value;
-      }
+      auto operator* () const noexcept { return value; }
 
       id_t value{};
     };
@@ -151,7 +45,6 @@ namespace tnac::eval
                                RelLess, RelLessEq, RelGr, RelGrEq,
                                Equal, NEqual);
     }
-
   }
 
 
