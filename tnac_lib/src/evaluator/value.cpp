@@ -64,10 +64,6 @@ namespace tnac::eval
 
   // Special members
 
-  value::value(input_ptr val, type_id id) noexcept :
-    m_val{ make(val, id) }
-  {}
-
   value::operator bool() const noexcept
   {
     return id() != type_id::Invalid;

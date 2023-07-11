@@ -78,6 +78,10 @@ namespace tnac::eval
     using input_ptr = const void*;
 
   private:
+    template <detail::expr_result T>
+    using valptr = const T*;
+
+  private:
     //
     // Makes the value token from a pointer to the actual stored value
     // and type id
@@ -101,7 +105,10 @@ namespace tnac::eval
   public:
     CLASS_SPECIALS_ALL(value);
 
-    value(input_ptr val, type_id id) noexcept;
+    template <detail::expr_result T>
+    value(valptr<T> val) noexcept :
+      m_val{ make(val, utils::type_to_id_v<T>) }
+    {}
 
     //
     // Checks whether the value is valid (type id != Invalid)
@@ -217,4 +224,30 @@ namespace tnac::eval
     }
   }
 
+
+  //
+  // Stores a temporary value
+  //
+  class temporary final
+  {
+  public:
+    CLASS_SPECIALS_NOCOPY_CUSTOM(temporary);
+
+    temporary() = default;
+
+    template <detail::expr_result ValueType>
+    explicit temporary(ValueType raw) noexcept :
+      m_raw{ std::move(raw) },
+      m_value{ &std::get<ValueType>(m_raw), utils::type_to_id_v<ValueType> }
+    {}
+
+    value operator*() const noexcept
+    {
+      return m_value;
+    }
+
+  private:
+    underlying_val m_raw{};
+    value m_value{};
+  };
 }
