@@ -224,7 +224,7 @@ namespace tnac
     else
     {
       auto funcType = func.try_get<eval::function_type>();
-      make_call(funcType, expr.pos(), expr.args());
+      make_call(funcType, expr);
     }
 
     auto res = m_visitor.last_result(&expr);
@@ -545,27 +545,24 @@ namespace tnac
     auto&& callRes = m_visitor.new_array(&expr, arr->size());
     auto&& args = expr.args();
     const auto argCount = args.size();
-    const auto callPos = expr.pos();
-    const auto arrId = *eval::detail::ent_id{ &callRes };
-    for (auto idx = size_type{}; auto elem : *arr)
+
+    for (auto elem : *arr)
     {
       auto argFunc = elem.try_get<eval::function_type>();
       if (!argFunc || (*argFunc)->param_count() != argCount)
         continue;
 
-      make_call(argFunc, callPos, args);
-
-      const auto elemId = arrId + idx;
-      auto elemVal = m_visitor.last_result(elemId);
-      callRes.emplace_back(elemVal);
-      ++idx;
+      make_call(argFunc, expr);
+      auto&& elemVal = callRes.emplace_back();
+      elemVal = m_visitor.last_result(&elemVal);
     }
 
     m_visitor.make_array(&expr, callRes);
   }
 
-  void evaluator::make_call(eval::function_type* func, const token& at, ast::call_expr::arg_list& args) noexcept
+  void evaluator::make_call(eval::function_type* func, ast::call_expr& expr) noexcept
   {
+    auto&& at = expr.pos();
     if (!func)
     {
       on_error(at, "Expected a callable object"sv);
@@ -574,6 +571,7 @@ namespace tnac
     }
 
     auto callable = *func;
+    auto&& args = expr.args();
     if (const auto paramCnt = callable->param_count(); paramCnt != args.size())
     {
       on_error(at, std::format("Expected {} arguments"sv, paramCnt));

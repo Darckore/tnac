@@ -203,7 +203,7 @@ namespace tnac
     //
     // Calls the specified function with the given args
     //
-    void make_call(eval::function_type* func, const token& at, ast::call_expr::arg_list& args) noexcept;
+    void make_call(eval::function_type* func, ast::call_expr& expr) noexcept;
 
     //
     // Returns true if a return is active
