@@ -20,15 +20,7 @@ namespace tnac::eval
 
     using entity_id = std::uintptr_t;
 
-    using stored_val_t = std::variant <
-      bool_type,
-      int_type,
-      float_type,
-      complex_type,
-      fraction_type,
-      function_type,
-      array_type
-    >;
+    using stored_val_t = underlying_val;
 
     using entity_vals  = std::unordered_map<entity_id, stored_val_t>;
     using val_array    = array_type::value_type;

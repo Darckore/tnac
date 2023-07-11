@@ -23,10 +23,8 @@ namespace tnac::eval
     // Defines a valid result of expression evaluation
     //
     template <typename T>
-    concept expr_result = is_any_v<T,
-      bool_type, int_type, float_type,
-      complex_type, fraction_type,
-      function_type, array_type>;
+    concept expr_result = is_any_v<T, bool_type, int_type, float_type,
+                                      complex_type, fraction_type, function_type, array_type>;
   }
 
   //
@@ -43,6 +41,9 @@ namespace tnac::eval
     Function,
     Array
   };
+
+  using underlying_val = std::variant<bool_type, int_type, float_type,
+                                      complex_type, fraction_type, function_type, array_type>;
 }
 
 TYPE_TO_ID_ASSOCIATION(tnac::eval::bool_type,     tnac::eval::type_id::Bool);
@@ -215,4 +216,5 @@ namespace tnac::eval
       return func(invalid_val_t{});
     }
   }
+
 }
