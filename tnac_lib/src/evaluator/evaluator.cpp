@@ -188,7 +188,7 @@ namespace tnac
 
     const auto opCode = detail::conv_unary(unary.op().m_kind);
     auto val = unary.operand().value();
-    unary.eval_result(m_visitor.visit_unary(&unary, val, opCode));
+    unary.eval_result(m_visitor.visit_unary(val, opCode));
   }
 
   void evaluator::visit(ast::typed_expr& expr) noexcept
@@ -271,7 +271,7 @@ namespace tnac
 
     auto&& intExpr = abs.expression();
     const auto opcode = eval::val_ops::AbsoluteValue;
-    abs.eval_result(m_visitor.visit_unary(&abs, intExpr.value(), opcode));
+    abs.eval_result(m_visitor.visit_unary(intExpr.value(), opcode));
   }
 
   void evaluator::visit(ast::lit_expr& lit) noexcept
@@ -406,7 +406,7 @@ namespace tnac
       else if (matcher.is_unary())
       {
         const auto opcode = detail::conv_unary(matcher.pos().m_kind);
-        currentMatch = m_visitor.visit_unary(&matcher, condVal, opcode);
+        currentMatch = m_visitor.visit_unary(condVal, opcode);
       }
       else
       {
