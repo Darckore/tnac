@@ -279,6 +279,9 @@ namespace tnac
     if (return_path())
       return;
 
+    if (lit.value())
+      return;
+
     auto value = eval_token(lit.pos());
     lit.eval_result(value);
   }
