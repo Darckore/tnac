@@ -237,17 +237,15 @@ namespace tnac::eval
 
     template <detail::expr_result ValueType>
     explicit temporary(ValueType raw) noexcept :
-      m_raw{ std::move(raw) },
-      m_value{ &std::get<ValueType>(m_raw) }
+      m_raw{ std::move(raw) }
     {}
 
     value operator*() const noexcept
     {
-      return m_value;
+      return std::visit([](auto&& val) { return value{ &val }; }, m_raw);
     }
 
   private:
     underlying_val m_raw{};
-    value m_value{};
   };
 }

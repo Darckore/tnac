@@ -20,9 +20,9 @@ namespace tnac::eval
 
       static consteval auto invalid_id() noexcept { return ~id_t{}; }
 
-      ent_id(id_t id) noexcept :         value{ id } {}
+      ent_id(id_t id) noexcept         : value{ id } {}
       ent_id(const void* ent) noexcept : ent_id{ reinterpret_cast<id_t>(ent) } {}
-      ent_id(std::nullptr_t) noexcept :  ent_id{} {}
+      ent_id(std::nullptr_t) noexcept  : ent_id{} {}
 
       auto operator*() const noexcept { return value; }
 
