@@ -29,6 +29,36 @@ namespace tnac::eval
       id_t value{};
     };
 
+    //
+    // Temporary value storage
+    //
+    class temp_store final
+    {
+    public:
+      using storage = std::vector<temporary>;
+
+    public:
+      CLASS_SPECIALS_NONE_CUSTOM(temp_store);
+
+      temp_store() = default;
+
+    public:
+      void init() noexcept
+      {
+        m_values.clear();
+      }
+
+      template <expr_result T>
+      value add(T val) noexcept
+      {
+        auto&& res = m_values.emplace_back(std::move(val));
+        return *res;
+      }
+
+    private:
+      storage m_values;
+    };
+
     constexpr auto is_unary(val_ops op) noexcept
     {
       using enum val_ops;
@@ -512,9 +542,13 @@ namespace tnac::eval
     value reg_value(detail::expr_result auto val) noexcept
     {
       if (m_curEntity != invalidEnt)
+      {
+        m_tmp.init();
         return m_registry.register_entity(m_curEntity, std::move(val));
+      }
 
-      return m_registry.register_entity({}, std::move(val));
+      m_registry.register_entity({}, val);
+      return m_tmp.add(std::move(val));
     }
 
     //
@@ -719,6 +753,7 @@ namespace tnac::eval
   private:
     static constexpr auto invalidEnt = detail::ent_id::invalid_id();
     entity_id m_curEntity{ invalidEnt };
+    detail::temp_store m_tmp;
     registry& m_registry;
   };
 }

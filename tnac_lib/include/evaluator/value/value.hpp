@@ -238,7 +238,7 @@ namespace tnac::eval
     template <detail::expr_result ValueType>
     explicit temporary(ValueType raw) noexcept :
       m_raw{ std::move(raw) },
-      m_value{ &std::get<ValueType>(m_raw), utils::type_to_id_v<ValueType> }
+      m_value{ &std::get<ValueType>(m_raw) }
     {}
 
     value operator*() const noexcept
