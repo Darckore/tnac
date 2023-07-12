@@ -279,8 +279,11 @@ namespace tnac
     if (return_path())
       return;
 
-    if (lit.value())
+    if (auto litVal = lit.value())
+    {
+      m_visitor.visit_assign(nullptr, litVal);
       return;
+    }
 
     auto value = eval_token(lit.pos());
     lit.eval_result(value);
