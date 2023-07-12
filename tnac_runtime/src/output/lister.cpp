@@ -340,11 +340,7 @@ namespace tnac_rt::out
 
   void lister::print_token(const tnac::token& tok, bool addSpace) noexcept
   {
-    if (tok.m_value.starts_with('`'))
-      out() << "_fn";
-    else
-      out() << tok;
-    
+    out() << tok;
     if (addSpace)
       out() << ' ';
   }

@@ -28,6 +28,8 @@ namespace tnac::ast
     virtual ~decl() noexcept;
 
   protected:
+    decl(kind k, const token& id, const token& pos, node* def) noexcept;
+    
     decl(kind k, const token& id, node* def) noexcept;
 
     //
@@ -75,6 +77,7 @@ namespace tnac::ast
     node* m_def{};
     semantics::symbol* m_symbol{};
     token m_id{};
+    token m_pos{};
   };
 
   inline auto get_id(const decl& d) noexcept
@@ -183,7 +186,7 @@ namespace tnac::ast
     virtual ~func_decl() noexcept;
 
   protected:
-    func_decl(const token& func, scope& def, param_list params) noexcept;
+    func_decl(const token& func, const token& pos, scope& def, param_list params) noexcept;
 
   public:
     //

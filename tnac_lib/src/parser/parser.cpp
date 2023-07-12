@@ -419,12 +419,13 @@ namespace tnac
         return {};
     }
 
+    auto pos = name;
     if (name.is(token::KwFunction))
     {
       name = m_sema.contrive_name();
     }
 
-    auto funcDecl = m_builder.make_func_decl(name, *def, std::move(params));
+    auto funcDecl = m_builder.make_func_decl(name, pos, *def, std::move(params));
     m_sema.visit_decl(*funcDecl);
 
     next_tok();

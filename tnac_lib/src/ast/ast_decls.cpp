@@ -6,13 +6,18 @@ namespace tnac::ast
 
   decl::~decl() noexcept = default;
 
-  decl::decl(kind k, const token& id, node* def) noexcept :
+  decl::decl(kind k, const token& id, const token& pos, node* def) noexcept :
     node{ k },
+    m_def{ def },
     m_id{ id },
-    m_def{ def }
+    m_pos{ pos }
   {
     assume_ancestry(m_def);
   }
+
+  decl::decl(kind k, const token& id, node* def) noexcept :
+    decl{ k, id, id, def }
+  {}
 
   void decl::attach_symbol(semantics::symbol& sym) noexcept
   {
@@ -35,7 +40,7 @@ namespace tnac::ast
 
   const token& decl::pos() const noexcept
   {
-    return m_id;
+    return m_pos;
   }
 
   const semantics::symbol& decl::symbol() const noexcept
@@ -100,8 +105,8 @@ namespace tnac::ast
 
   func_decl::~func_decl() noexcept = default;
 
-  func_decl::func_decl(const token& func, scope& def, param_list params) noexcept :
-    decl{ kind::FuncDecl, func, &def },
+  func_decl::func_decl(const token& func, const token& pos, scope& def, param_list params) noexcept :
+    decl{ kind::FuncDecl, func, pos, &def },
     m_params{ std::move(params) }
   {
     for (auto p : m_params)
