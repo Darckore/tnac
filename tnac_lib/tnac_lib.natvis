@@ -24,10 +24,54 @@
       <Item Name="[value]" Condition="((m_val &amp; 0xFF00000000000000) &gt;&gt; 56) == 5">*((tnac::eval::fraction_type*)(m_val &amp; 0x00ffffffffffffff))</Item>
       <Item Name="[value]" Condition="((m_val &amp; 0xFF00000000000000) &gt;&gt; 56) == 6">*((tnac::eval::function_type*)(m_val &amp; 0x00ffffffffffffff))</Item>
       <Item Name="[value]" Condition="((m_val &amp; 0xFF00000000000000) &gt;&gt; 56) == 7">*((tnac::eval::array_type*)(m_val &amp; 0x00ffffffffffffff))</Item>
-      <Item Name="[raw]">m_val,xb</Item>
+      <Item Name="[raw]">m_val,Xb</Item>
     </Expand>
   </Type>
 
+  <Type Name="tnac::eval::value_visitor">
+    <DisplayString>Value visitor</DisplayString>
+    <Expand>
+      <Item Name="[registy]">m_registry</Item>
+      <Item Name="[entity]">m_curEntity,Xb</Item>
+    </Expand>
+  </Type>
+
+  <Type Name="tnac::eval::registry">
+    <DisplayString>Value registry</DisplayString>
+    <Expand>
+      <Item Name="[interned ints]">m_ints</Item>
+      <Item Name="[interned floats]">m_floats</Item>
+      <Item Name="[arrays]">m_arrays</Item>
+      <Item Name="[entity values]">m_entityValues</Item>
+    </Expand>
+  </Type>
+
+  <Type Name="tnac::eval::call_stack">
+    <DisplayString>Call stack</DisplayString>
+    <Expand>
+      <Item Name="[depth]">m_depth</Item>
+      <Item Name="[frames]">m_frames</Item>
+    </Expand>
+  </Type>
+
+  <Type Name="tnac::eval::detail::stack_frame">
+    <DisplayString>Frame({m_name,sb})</DisplayString>
+    <Expand>
+      <Item Name="[name]">m_name,sb</Item>
+      <Item Name="[args]">m_args</Item>
+      <Item Name="[params]">m_params</Item>
+    </Expand>
+  </Type>
+
+  <Type Name="tnac::evaluator">
+    <DisplayString Condition="m_return">Evaluator (returning)</DisplayString>
+    <DisplayString Condition="!m_return">Evaluator (normal)</DisplayString>
+    <Expand>
+      <Item Name="[value visitor]">m_visitor</Item>
+      <Item Name="[stack]">m_callStack</Item>
+      <Item Name="[on error]">m_errHandler</Item>
+    </Expand>
+  </Type>
 
   <Type Name="tnac::semantics::scope">
     <DisplayString>scope</DisplayString>
@@ -203,6 +247,13 @@
       <Item Name="[value]">m_val</Item>
     </Expand>
   </Type>
-  
-  
+
+  <Type Name="tnac::ast::decl_expr">
+    <DisplayString>{m_kind,en}({*m_decl})</DisplayString>
+    <Expand>
+      <Item Name="[declarator]">*m_decl</Item>
+      <Item Name="[value]">m_val</Item>
+    </Expand>
+  </Type>
+
 </AutoVisualizer>
