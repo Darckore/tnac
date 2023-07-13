@@ -111,6 +111,10 @@ namespace tnac::eval
       m_val{ make(val, utils::type_to_id_v<T>) }
     {}
 
+    value(invalid_val_t) noexcept :
+      m_val{}
+    {}
+
     //
     // Checks whether the value is valid (type id != Invalid)
     //
