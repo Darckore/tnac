@@ -263,24 +263,23 @@ namespace tnac
     //arr.eval_result(m_visitor.make_array(&arr, newArr));
   }
 
-  void evaluator::visit(ast::paren_expr& paren) noexcept
+  void evaluator::visit(ast::paren_expr& ) noexcept
   {
-    utils::unused(paren);
-    //if (return_path())
-    //  return;
+    if (return_path())
+      return;
 
-    //paren.eval_result(paren.internal_expr().value());
+    auto exprVal = m_visitor.fetch_next();
+    m_visitor.push_value(*exprVal);
   }
 
-  void evaluator::visit(ast::abs_expr& abs) noexcept
+  void evaluator::visit(ast::abs_expr& ) noexcept
   {
-    utils::unused(abs);
-    //if (return_path())
-    //  return;
+    if (return_path())
+      return;
 
-    //auto&& intExpr = abs.expression();
-    //const auto opcode = eval::val_ops::AbsoluteValue;
-    //abs.eval_result(m_visitor.visit_unary(&abs, intExpr.value(), opcode));
+    const auto opcode = eval::val_ops::AbsoluteValue;
+    auto operand = m_visitor.fetch_next();
+    m_visitor.visit_unary(*operand, opcode);
   }
 
   void evaluator::visit(ast::lit_expr& lit) noexcept

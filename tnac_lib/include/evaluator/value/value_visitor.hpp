@@ -621,20 +621,26 @@ namespace tnac::eval
     }
 
     //
+    // Pushes the given value to the end of the queue
+    //
+    void push_value(value val) noexcept
+    {
+      visit_value(val, [this](auto v) noexcept
+        {
+          reg_value(std::move(v));
+        });
+    }
+
+    //
     // Makes a value for an assigned-to entity
     //
     value visit_assign(id_param_t ent, value rhs) noexcept
     {
-      if (!rhs)
-      {
-        return clear_result();
-      }
-
       value_guard _{ m_curEntity, *ent };
 
       visit_value(rhs, [this](auto v) noexcept
         {
-          visit_assign(v);
+          visit_assign(std::move(v));
         });
 
       return {};
@@ -711,10 +717,9 @@ namespace tnac::eval
     //
     // Resets the last evaluation result and returns an empty value
     //
-    value clear_result() noexcept
+    void clear_result() noexcept
     {
       reg_value(eval::invalid_val_t{});
-      return {};
     }
 
 
