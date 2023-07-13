@@ -94,11 +94,6 @@ namespace tnac::eval
         res = std::move(m_inFlight.back());
         m_inFlight.pop();
       }
-      else if(m_result)
-      {
-        res = std::move(*m_result);
-        m_result.reset();
-      }
 
       return res;
     }
@@ -131,13 +126,7 @@ namespace tnac::eval
     //
     void push(detail::generic_type auto val) noexcept
     {
-      if (!m_result)
-      {
-        update_result(std::move(val));
-        return;
-      }
-
-      m_inFlight.push(std::move(*m_result));
+      m_inFlight.push(tmp_val{ val });
       update_result(std::move(val));
     }
 
