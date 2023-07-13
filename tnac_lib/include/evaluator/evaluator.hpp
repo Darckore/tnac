@@ -183,7 +183,7 @@ namespace tnac
     //
     // Evaluates a literal and returns its value
     //
-    eval::value eval_token(const token& tok) noexcept;
+    void eval_token(const token& tok) noexcept;
 
     //
     // Evaluates an assign expression and variable declarations 

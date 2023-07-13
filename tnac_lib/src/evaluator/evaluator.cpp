@@ -186,13 +186,12 @@ namespace tnac
 
   void evaluator::visit(ast::unary_expr& unary) noexcept
   {
-    utils::unused(unary);
-    //if (return_path())
-    //  return;
+    if (return_path())
+      return;
 
-    //const auto opCode = detail::conv_unary(unary.op().m_kind);
-    //auto val = unary.operand().value();
-    //unary.eval_result(m_visitor.visit_unary(&unary, val, opCode));
+    const auto opCode = detail::conv_unary(unary.op().m_kind);
+    auto val = m_visitor.fetch_next();
+    m_visitor.visit_unary(*val, opCode);
   }
 
   void evaluator::visit(ast::typed_expr& expr) noexcept
@@ -286,18 +285,10 @@ namespace tnac
 
   void evaluator::visit(ast::lit_expr& lit) noexcept
   {
-    utils::unused(lit);
-    //if (return_path())
-    //  return;
+    if (return_path())
+      return;
 
-    //if (auto litVal = lit.value())
-    //{
-    //  m_visitor.visit_assign(nullptr, litVal);
-    //  return;
-    //}
-
-    //auto value = eval_token(lit.pos());
-    //lit.eval_result(value);
+    eval_token(lit.pos());
   }
 
   void evaluator::visit(ast::id_expr& id) noexcept
@@ -538,21 +529,20 @@ namespace tnac
       m_errHandler(pos, msg);
   }
 
-  eval::value evaluator::eval_token(const token& tok) noexcept
+  void evaluator::eval_token(const token& tok) noexcept
   {
-    utils::unused(tok); return {};
-    //switch (tok.m_kind)
-    //{
-    //case token::KwTrue:  return m_visitor.visit_bool_literal(true);
-    //case token::KwFalse: return m_visitor.visit_bool_literal(false);
-    //case token::IntDec:  return m_visitor.visit_int_literal(tok.m_value, 10);
-    //case token::IntBin:  return m_visitor.visit_int_literal(tok.m_value, 2);
-    //case token::IntOct:  return m_visitor.visit_int_literal(tok.m_value, 8);
-    //case token::IntHex:  return m_visitor.visit_int_literal(tok.m_value, 16);
-    //case token::Float:   return m_visitor.visit_float_literal(tok.m_value);
+    switch (tok.m_kind)
+    {
+    case token::KwTrue:  m_visitor.visit_bool_literal(true);           break;
+    case token::KwFalse: m_visitor.visit_bool_literal(false);          break;
+    case token::IntDec:  m_visitor.visit_int_literal(tok.m_value, 10); break;
+    case token::IntBin:  m_visitor.visit_int_literal(tok.m_value, 2);  break;
+    case token::IntOct:  m_visitor.visit_int_literal(tok.m_value, 8);  break;
+    case token::IntHex:  m_visitor.visit_int_literal(tok.m_value, 16); break;
+    case token::Float:   m_visitor.visit_float_literal(tok.m_value);   break;
 
-    //default: return {};
-    //}
+    default: break;
+    }
   }
 
   void evaluator::eval_assign(semantics::symbol& sym, eval::value rhs) noexcept

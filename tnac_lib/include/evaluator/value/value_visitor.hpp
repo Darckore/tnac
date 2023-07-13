@@ -645,22 +645,24 @@ namespace tnac::eval
     //
     void visit_int_literal(string_t src, int base) noexcept
     {
-      utils::unused(src, base);
-      //auto prefix = string_t::size_type{};
-      //if (utils::eq_any(base, 2, 16))
-      //  prefix = 2u;
-      //else if (base == 8)
-      //  prefix = 1u;
+      auto prefix = string_t::size_type{};
+      if (utils::eq_any(base, 2, 16))
+        prefix = 2u;
+      else if (base == 8)
+        prefix = 1u;
 
-      //auto begin = src.data() + prefix;
-      //auto end = begin + src.length();
+      auto begin = src.data() + prefix;
+      auto end = begin + src.length();
 
-      //int_type result{};
-      //auto convRes = std::from_chars(begin, end, result, base);
-      //if (convRes.ec != std::errc{ 0 })
-      //  return clear_result();
+      int_type result{};
+      auto convRes = std::from_chars(begin, end, result, base);
+      if (convRes.ec != std::errc{ 0 })
+      {
+        clear_result();
+        return;
+      }
 
-      //return m_registry.register_literal(result);
+      reg_value(result);
     }
 
     //
@@ -668,16 +670,18 @@ namespace tnac::eval
     //
     void visit_float_literal(string_t src) noexcept
     {
-      utils::unused(src);
-      //auto begin = src.data();
-      //auto end = begin + src.length();
+      auto begin = src.data();
+      auto end = begin + src.length();
 
-      //float_type result{};
-      //auto convRes = std::from_chars(begin, end, result);
-      //if (convRes.ec != std::errc{ 0 })
-      //  return clear_result();
+      float_type result{};
+      auto convRes = std::from_chars(begin, end, result);
+      if (convRes.ec != std::errc{ 0 })
+      {
+        clear_result();
+        return;
+      }
 
-      //return m_registry.register_literal(result);
+      reg_value(result);
     }
 
     //
@@ -685,8 +689,7 @@ namespace tnac::eval
     //
     void visit_bool_literal(bool value) noexcept
     {
-      utils::unused(value);
-      // return m_registry.register_literal(value);
+      return reg_value(value);
     }
 
     //
@@ -695,6 +698,14 @@ namespace tnac::eval
     void make_array(arr_t& data) noexcept
     {
       reg_value(array_type{ data });
+    }
+
+    //
+    // Retrieves the next value from the queue of temporaries
+    //
+    temporary fetch_next() noexcept
+    {
+      return m_registry.consume();
     }
 
     //
