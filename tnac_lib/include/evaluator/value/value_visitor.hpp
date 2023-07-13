@@ -614,21 +614,22 @@ namespace tnac::eval
     //
     value visit_int_literal(string_t src, int base) noexcept
     {
-      auto prefix = string_t::size_type{};
-      if (utils::eq_any(base, 2, 16))
-        prefix = 2u;
-      else if (base == 8)
-        prefix = 1u;
+      utils::unused(src, base); return {};
+      //auto prefix = string_t::size_type{};
+      //if (utils::eq_any(base, 2, 16))
+      //  prefix = 2u;
+      //else if (base == 8)
+      //  prefix = 1u;
 
-      auto begin = src.data() + prefix;
-      auto end = begin + src.length();
+      //auto begin = src.data() + prefix;
+      //auto end = begin + src.length();
 
-      int_type result{};
-      auto convRes = std::from_chars(begin, end, result, base);
-      if (convRes.ec != std::errc{ 0 })
-        return get_empty();
+      //int_type result{};
+      //auto convRes = std::from_chars(begin, end, result, base);
+      //if (convRes.ec != std::errc{ 0 })
+      //  return get_empty();
 
-      return m_registry.register_literal(result);
+      //return m_registry.register_literal(result);
     }
 
     //
@@ -636,15 +637,16 @@ namespace tnac::eval
     //
     value visit_float_literal(string_t src) noexcept
     {
-      auto begin = src.data();
-      auto end = begin + src.length();
+      utils::unused(src); return {};
+      //auto begin = src.data();
+      //auto end = begin + src.length();
 
-      float_type result{};
-      auto convRes = std::from_chars(begin, end, result);
-      if (convRes.ec != std::errc{ 0 })
-        return get_empty();
+      //float_type result{};
+      //auto convRes = std::from_chars(begin, end, result);
+      //if (convRes.ec != std::errc{ 0 })
+      //  return get_empty();
 
-      return m_registry.register_literal(result);
+      //return m_registry.register_literal(result);
     }
 
     //
@@ -652,7 +654,8 @@ namespace tnac::eval
     //
     value visit_bool_literal(bool value) noexcept
     {
-      return m_registry.register_literal(value);
+      utils::unused(value); return {};
+      // return m_registry.register_literal(value);
     }
 
     //

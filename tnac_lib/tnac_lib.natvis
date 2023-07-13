@@ -39,8 +39,6 @@
   <Type Name="tnac::eval::registry">
     <DisplayString>Value registry</DisplayString>
     <Expand>
-      <Item Name="[interned ints]">m_ints</Item>
-      <Item Name="[interned floats]">m_floats</Item>
       <Item Name="[arrays]">m_arrays</Item>
       <Item Name="[entity values]">m_entityValues</Item>
     </Expand>
