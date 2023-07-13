@@ -82,6 +82,49 @@ namespace tnac::eval
       m_result.emplace(std::move(val));
     }
 
+    //
+    // Fetches the next value from the temporary storage
+    // If the storage is empty, gets the last result
+    //
+    tmp_val fetch() noexcept
+    {
+      tmp_val res;
+      if (!m_inFlight.empty())
+      {
+        res = std::move(m_inFlight.back());
+        m_inFlight.pop();
+      }
+      else if(m_result)
+      {
+        res = std::move(*m_result);
+        m_result.reset();
+      }
+
+      return res;
+    }
+
+    //
+    // Decreases the ref count for an array
+    //
+    void unref_array(array_type& arr) noexcept
+    {
+      auto stored = m_arrays.find(arr.id());
+      if (stored == m_arrays.end())
+        return;
+
+      auto&& controlBlock = stored->second;
+      controlBlock.unref();
+    }
+
+    //
+    // If the underlying type is a reference counted one, decreases the ref count
+    //
+    void unref(value val) noexcept
+    {
+      if (auto arr = val.try_get<array_type>())
+        unref_array(*arr);
+    }
+
   public:
     //
     // Pushes a temporary value to the queue and updates the result
@@ -103,7 +146,9 @@ namespace tnac::eval
     //
     tmp_val consume() noexcept
     {
-      return {};
+      auto res = fetch();
+      unref(*res);
+      return res;
     }
 
     //
