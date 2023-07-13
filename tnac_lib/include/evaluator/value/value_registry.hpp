@@ -7,6 +7,44 @@
 
 namespace tnac::eval
 {
+  namespace detail
+  {
+    template <typename T>
+    class ref_counted
+    {
+    public:
+      using ref_count  = std::size_t;
+      using value_type = T;
+
+    public:
+      CLASS_SPECIALS_NOCOPY(ref_counted);
+
+      ref_counted(value_type val) noexcept :
+        m_value{ std::move(val) }
+      {}
+
+      const value_type& value() const noexcept
+      {
+        return m_value;
+      }
+
+      void ref() noexcept
+      {
+        ++m_ref;
+      }
+
+      void unref() noexcept
+      {
+        if (m_ref)
+          --m_ref;
+      }
+
+    private:
+      value_type m_value;
+      ref_count m_ref{};
+    };
+  }
+
   //
   // Stores instances of values used in evaluations
   //
@@ -17,8 +55,10 @@ namespace tnac::eval
     using entity_id    = std::uintptr_t;
     using stored_val_t = underlying_val;
     using entity_vals  = std::unordered_map<entity_id, stored_val_t>;
+
     using val_array    = array_type::value_type;
-    using array_store  = std::unordered_map<entity_id, val_array>;
+    using ref_arr      = detail::ref_counted<val_array>;
+    using array_store  = std::unordered_map<entity_id, ref_arr>;
     using size_type    = val_array::size_type;
 
   public:
@@ -27,18 +67,6 @@ namespace tnac::eval
     registry() noexcept = default;
     ~registry() noexcept = default;
 
-  private:
-    //
-    // Stores a value for the given entity and returns a reference to it
-    //
-    template <detail::expr_result T>
-    value_type register_val(entity_id id, T value) noexcept
-    {
-      auto&& valStore = m_entityValues[id];
-      valStore = std::move(value);
-      return { &std::get<T>(valStore) };
-    }
-
   public:
     //
     // Registers a value for a specific entity (e.g., a binary expression)
@@ -46,7 +74,9 @@ namespace tnac::eval
     template <detail::expr_result T>
     value_type register_entity(entity_id id, T val) noexcept
     {
-      return id != entity_id{} ? register_val(id, std::move(val)) : evaluation_result();
+      auto&& valStore = m_entityValues[id];
+      valStore = std::move(val);
+      return { &std::get<T>(valStore) };
     }
 
     //
@@ -56,30 +86,6 @@ namespace tnac::eval
     {
       m_entityValues.erase(id);
       return {};
-    }
-
-    //
-    // Creates a new array
-    //
-    val_array& allocate_array(entity_id id, size_type prealloc) noexcept
-    {
-      UTILS_ASSERT(id != entity_id{});
-      auto [newElem, inserted] = m_arrays.try_emplace(id, val_array{});
-      auto&& res = newElem->second;
-      
-      if (!inserted)
-        res.clear();
-
-      res.reserve(prealloc);
-      return res;
-    }
-
-    //
-    // Destroys an array allocated previously
-    //
-    void release_array(entity_id id) noexcept
-    {
-      m_arrays.erase(id);
     }
 
     //

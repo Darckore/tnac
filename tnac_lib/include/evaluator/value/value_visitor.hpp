@@ -659,14 +659,6 @@ namespace tnac::eval
     }
 
     //
-    // Retrieves an array object allocated for the specified entity
-    //
-    arr_t& new_array(size_type size) noexcept
-    {
-      return m_registry.allocate_array({}, size);
-    }
-
-    //
     // Makes an array instance based on the underlying data
     //
     value make_array(arr_t& data) noexcept

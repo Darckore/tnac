@@ -156,10 +156,10 @@ namespace tnac_rt::out
         else if constexpr (tnac::is_same_noquals_v<vt, array_type>)
         {
           out() << "[ ";
-          for (auto arrSz = val->size(); auto elem : *val)
+          for (auto arrSz = val->size(); auto&& elem : *val)
           {
             --arrSz;
-            print_value(elem);
+            print_value(*elem);
             if (arrSz)
               out() << ", ";
           }
