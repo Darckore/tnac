@@ -62,6 +62,9 @@ namespace tnac::eval
     using array_store  = std::unordered_map<entity_id, ref_arr>;
     using size_type    = val_array::size_type;
 
+    using tmp_val   = temporary;
+    using tmp_store = std::queue<tmp_val>;
+
   public:
     CLASS_SPECIALS_NONE_CUSTOM(registry);
 
@@ -97,6 +100,9 @@ namespace tnac::eval
     }
 
   private:
+    tmp_val m_result;
+    tmp_store m_inFlight;
+
     entity_vals m_entityValues;
     array_store m_arrays;
     ent_id_list m_pendingCleanup;
