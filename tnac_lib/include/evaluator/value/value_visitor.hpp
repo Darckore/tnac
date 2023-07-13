@@ -548,11 +548,11 @@ namespace tnac::eval
     // Dispatches the instantiation call
     //
     template <detail::expr_result Obj, typename T, T... Seq>
-    void instantiate(const std::array<value, sizeof...(Seq)>& args, std::integer_sequence<T, Seq...>) noexcept
+    void instantiate(const std::array<temporary, sizeof...(Seq)>& args, std::integer_sequence<T, Seq...>) noexcept
     {
       using type_info = eval::type_info<Obj>;
       using type_gen = type_wrapper<Obj>;
-      auto instance = type_gen{}(cast_value<utils::id_to_type_t<type_info::params[Seq]>>(args[Seq])...);
+      auto instance = type_gen{}(cast_value<utils::id_to_type_t<type_info::params[Seq]>>(*args[Seq])...);
 
       if (!instance)
       {
@@ -568,14 +568,14 @@ namespace tnac::eval
     // Instantiates an object
     //
     template <detail::expr_result Obj, typename... Args>
-      requires is_all_v<value, Args...>
+      requires is_all_v<temporary, Args...>
     void instantiate(Args ...args) noexcept
     {
       using type_info = eval::type_info<Obj>;
       static constexpr auto max = type_info::maxArgs;
       static_assert(sizeof ...(Args) == max);
 
-      const std::array argList{ args... };
+      const std::array argList{ std::move(args)... };
       instantiate<Obj>(argList, std::make_index_sequence<max>{});
     }
 

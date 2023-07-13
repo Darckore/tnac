@@ -82,22 +82,33 @@ namespace tnac
           m_errHandler{ onError }
         {}
 
-        eval::value operator()(const ast::typed_expr& expr) noexcept
+        void operator()(const ast::typed_expr& expr) noexcept
         {
           if (!check_args(expr))
           {
-            return {};
+            for (auto _: expr.args())
+            {
+              utils::unused(_);
+              m_visitor.fetch_next();
+            }
+            m_visitor.push_value({});
+            return;
           }
 
-          return instantiate(expr, std::make_index_sequence<max>{});
+          instantiate(expr, std::make_index_sequence<max>{});
         }
 
       private:
         template <typename T, T... Seq>
-        eval::value instantiate(const ast::typed_expr& expr, std::integer_sequence<T, Seq...>) noexcept
+        void instantiate(const ast::typed_expr& expr, std::integer_sequence<T, Seq...>) noexcept
         {
           auto&& exprArgs = expr.args();
-          return m_visitor.instantiate<value_type>(&expr, extract(exprArgs, Seq)...);
+          std::array<eval::temporary, max> args{};
+          for (auto idx = size_type{}; idx < max; ++idx)
+          {
+            args[idx] = extract(exprArgs, idx);
+          }
+          m_visitor.instantiate<value_type>(std::move(args[Seq])...);
         }
 
         void on_error(const token& pos, string_t msg) noexcept
@@ -118,11 +129,12 @@ namespace tnac
           return false;
         }
 
-        eval::value extract(const arg_list_t& args, size_type idx) noexcept
+        eval::temporary extract(const arg_list_t& args, size_type idx) noexcept
         {
-          utils::unused(args, idx); return {};
-          //const auto count = args.size();
-          //return idx < count ? args[idx]->value() : eval::value{};
+          if (args.size() <= idx)
+            return {};
+
+          return m_visitor.fetch_next();
         }
 
       private:
@@ -195,23 +207,19 @@ namespace tnac
 
   void evaluator::visit(ast::typed_expr& expr) noexcept
   {
-    utils::unused(expr);
-    //if (return_path())
-    //  return;
+    if (return_path())
+      return;
 
-    //using enum tok_kind;
-    //eval::value val;
-    //using detail::instance;
+    using enum tok_kind;
+    using detail::instance;
 
-    //switch (expr.type_name().m_kind)
-    //{
-    //case KwComplex:  val = instance<eval::complex_type>{ m_visitor, m_errHandler }(expr);  break;
-    //case KwFraction: val = instance<eval::fraction_type>{ m_visitor, m_errHandler }(expr); break;
-    //
-    //default: UTILS_ASSERT(false); break;
-    //}
-
-    //expr.eval_result(val);
+    switch (expr.type_name().m_kind)
+    {
+    case KwComplex:  instance<eval::complex_type>{ m_visitor, m_errHandler }(expr);  break;
+    case KwFraction: instance<eval::fraction_type>{ m_visitor, m_errHandler }(expr); break;
+    
+    default: UTILS_ASSERT(false); break;
+    }
   }
 
   void evaluator::visit(ast::call_expr& expr) noexcept
