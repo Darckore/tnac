@@ -85,17 +85,18 @@ namespace tnac::eval
 
   void call_stack::pop(vis_t& visitor) noexcept
   {
-    if (m_frames.empty())
-      return;
+    utils::unused(visitor);
+    //if (m_frames.empty())
+    //  return;
 
-    auto&& cur = m_frames.back();
-    for (auto [param, arg] : utils::make_iterators(cur.params(), cur.args()))
-    {
-      visitor.remove_entity(&param);
-      visitor.remove_entity(&arg);
-    }
+    //auto&& cur = m_frames.back();
+    //for (auto [param, arg] : utils::make_iterators(cur.params(), cur.args()))
+    //{
+    //  visitor.remove_entity(&param);
+    //  visitor.remove_entity(&arg);
+    //}
 
-    m_frames.pop_back();
+    //m_frames.pop_back();
   }
 
   void call_stack::prologue(sym_t& callable, vis_t& visitor) noexcept

@@ -671,8 +671,9 @@ namespace tnac::eval
     //
     value last_result() noexcept
     {
-      auto ret = visit_assign({}, m_registry.evaluation_result());
-      return ret;
+      return {};
+      //auto ret = visit_assign({}, m_registry.evaluation_result());
+      //return ret;
     }
 
     //
@@ -680,16 +681,9 @@ namespace tnac::eval
     //
     value get_empty() noexcept
     {
-      return m_registry.reset_result();
+      return {};
     }
 
-    //
-    // Erases an entity's value from the registry
-    //
-    value remove_entity(id_param_t ent) noexcept
-    {
-      return m_registry.erase(*ent);
-    }
 
   private:
     static constexpr auto invalidEnt = detail::ent_id::invalid_id();
