@@ -520,6 +520,12 @@ namespace tnac
     //m_visitor.visit_assign(nullptr, resVal);
   }
 
+  bool evaluator::exit_child() noexcept
+  {
+    m_visitor.fetch_next();
+    return !return_path();
+  }
+
   // Private members
 
   void evaluator::on_error(const token& pos, string_t msg) noexcept

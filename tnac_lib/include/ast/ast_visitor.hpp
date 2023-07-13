@@ -28,6 +28,15 @@ namespace tnac::ast
     };
 
     //
+    // Defines a derived visitor ability to react on exit from a scope child
+    //
+    template <typename Visitor>
+    concept has_exit_child = requires(Visitor v)
+    {
+      { v.exit_child() }->std::same_as<bool>;
+    };
+
+    //
     // Defines a root node of ast which can be visited
     //
     template <typename N>
@@ -95,15 +104,41 @@ namespace tnac::ast
     void operator()(node_ptr root) noexcept
     {
       visit_root(root);
+      if (!is_scope(root))
+        exit_child();
     }
 
   private:
+    //
+    // Checks whether a node is a scope
+    //
+    bool is_scope(node_ptr n) noexcept
+    {
+      return n && n->is(node_kind::Scope);
+    }
+
     //
     // Casts itself to a reference to derived
     //
     derived_t& to_derived() noexcept
     {
       return static_cast<derived_t&>(*this);
+    }
+
+    //
+    // Is called after a child in a scope has been visited,
+    // and another one is about to be entered
+    //
+    bool exit_child() noexcept
+    {
+      if constexpr (detail::has_exit_child<derived_t>)
+      {
+        return to_derived().exit_child();
+      }
+      else
+      {
+        return true;
+      }
     }
 
     //
@@ -136,7 +171,7 @@ namespace tnac::ast
 
     //
     // If no custom preview logic is defined for this node type in the derived class,
-    // instruc the base to visit its children unconditionally
+    // instruct the base to visit its children unconditionally
     //
     template <typename Node>
     bool preview(Node*) noexcept
@@ -165,6 +200,8 @@ namespace tnac::ast
         for (auto child : s->children())
         {
           visit_root(child);
+          if (!exit_child())
+            break;
         }
       }
 

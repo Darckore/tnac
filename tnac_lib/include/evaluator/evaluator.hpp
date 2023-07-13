@@ -174,6 +174,11 @@ namespace tnac
     //
     void visit(ast::scope& scope) noexcept;
 
+    //
+    // Occurs on exit from a node child
+    //
+    bool exit_child() noexcept;
+
   private:
     //
     // Produces an evaluation error
