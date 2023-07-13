@@ -715,6 +715,14 @@ namespace tnac::eval
     }
 
     //
+    // Retrieves the last evaluation result
+    //
+    value last() noexcept
+    {
+      return m_registry.evaluation_result();
+    }
+
+    //
     // Resets the last evaluation result and returns an empty value
     //
     void clear_result() noexcept

@@ -369,26 +369,26 @@ namespace tnac
     if (!detail::is_logical(opcode))
       return true;
 
-    //auto&& lhs = expr.left();
-    //base::operator()(&lhs);
+    auto&& lhs = expr.left();
+    base::operator()(&lhs);
 
-    //auto lval = to_bool(lhs.value());
+    auto lval = to_bool(m_visitor.last());
 
-    //bool res{};
-    //if ((!lval && opcode == tok_kind::LogAnd) ||
-    //    ( lval && opcode == tok_kind::LogOr))
-    //{
-    //  res = lval;
-    //}
-    //else
-    //{
-    //  auto&& rhs = expr.right();
-    //  base::operator()(&rhs);
-    //  auto rval  = to_bool(rhs.value());
-    //  res = (opcode == tok_kind::LogAnd) ? (lval && rval) : (lval || rval);
-    //}
+    bool res{};
+    if ((!lval && opcode == tok_kind::LogAnd) ||
+        ( lval && opcode == tok_kind::LogOr))
+    {
+      res = lval;
+    }
+    else
+    {
+      auto&& rhs = expr.right();
+      base::operator()(&rhs);
+      auto rval  = to_bool(m_visitor.last());
+      res = (opcode == tok_kind::LogAnd) ? (lval && rval) : (lval || rval);
+    }
 
-    //expr.eval_result(m_visitor.visit_bool_literal(res));
+    m_visitor.visit_bool_literal(res);
     return false;
   }
 
