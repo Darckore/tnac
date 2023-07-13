@@ -74,84 +74,87 @@ namespace tnac::eval
     // Registers result of unary operations
     //
     template <detail::generic_type T, detail::unary_function<T> F>
-    value visit_unary(T val, F&& op) noexcept
+    void visit_unary(T val, F&& op) noexcept
     {
-      return reg_value(op(std::move(val)));
+      reg_value(op(std::move(val)));
     }
 
-    auto unary_plus(detail::plusable auto operand) noexcept
+    void unary_plus(detail::plusable auto operand) noexcept
     {
-      return visit_unary(std::move(operand), [](auto val) noexcept { return +val; });
+      visit_unary(std::move(operand), [](auto val) noexcept { return +val; });
     }
-    auto unary_plus(detail::generic_type auto) noexcept { return get_empty(); }
+    void unary_plus(detail::generic_type auto) noexcept { clear_result(); }
 
-    auto unary_neg(detail::negatable auto operand) noexcept
+    void unary_neg(detail::negatable auto operand) noexcept
     {
-      return visit_unary(operand, [](auto val) noexcept { return -val; });
+      visit_unary(operand, [](auto val) noexcept { return -val; });
     }
-    auto unary_neg(detail::generic_type auto) noexcept { return get_empty(); }
+    void unary_neg(detail::generic_type auto) noexcept { clear_result(); }
 
-    auto bitwise_not(detail::generic_type auto operand) noexcept
+    void bitwise_not(detail::generic_type auto operand) noexcept
     {
       if (auto intOp = get_caster<int_type>()(std::move(operand)))
-        return visit_unary(*intOp, [](auto val) noexcept { return ~val; });
+      {
+        visit_unary(*intOp, [](auto val) noexcept { return ~val; });
+        return;
+      }
 
-      return get_empty();
+      clear_result();
     }
 
-    auto logical_not(detail::generic_type auto operand) noexcept
+    void logical_not(detail::generic_type auto operand) noexcept
     {
       auto boolOp = get_caster<bool_type>()(std::move(operand));
-      return visit_unary(boolOp.value_or(false), [](auto val) noexcept { return !val; });
+      visit_unary(boolOp.value_or(false), [](auto val) noexcept { return !val; });
     }
 
-    auto logical_is(detail::generic_type auto operand) noexcept
+    void logical_is(detail::generic_type auto operand) noexcept
     {
       auto boolOp = get_caster<bool_type>()(std::move(operand));
-      return visit_unary(boolOp && *boolOp, [](auto val) noexcept { return val; });
+      visit_unary(boolOp && *boolOp, [](auto val) noexcept { return val; });
     }
 
-    auto abs(detail::abs_compatible auto operand) noexcept
+    void abs(detail::abs_compatible auto operand) noexcept
     {
-      return visit_unary(std::move(operand), [](auto val) noexcept
+      visit_unary(std::move(operand), [](auto val) noexcept
         {
           return eval::abs(val);
         });
     }
-    auto abs(detail::generic_type auto) noexcept { return get_empty(); }
+    void abs(detail::generic_type auto) noexcept { clear_result(); }
 
     //
     // Dispatches unary operations according to operator type
     //
     template <detail::generic_type T>
-    value visit_unary(T operand, val_ops op) noexcept
+    void visit_unary(T operand, val_ops op) noexcept
     {
       using op_type = common_type_t<T, T>;
       auto val = get_caster<op_type>()(std::move(operand));
       if (!val)
       {
-        UTILS_ASSERT(false);
-        return get_empty();
+        clear_result();
+        return;
       }
 
       using enum val_ops;
       switch (op)
       {
-      case UnaryNegation:   return unary_neg(std::move(*val));
-      case UnaryPlus:       return unary_plus(std::move(*val));
-      case UnaryBitwiseNot: return bitwise_not(std::move(*val));
-      case LogicalNot:      return logical_not(std::move(*val));
-      case LogicalIs:       return logical_is(std::move(*val));
-      case AbsoluteValue:   return abs(std::move(*val));
+      case UnaryNegation:   unary_neg(std::move(*val));   break;
+      case UnaryPlus:       unary_plus(std::move(*val));  break;
+      case UnaryBitwiseNot: bitwise_not(std::move(*val)); break;
+      case LogicalNot:      logical_not(std::move(*val)); break;
+      case LogicalIs:       logical_is(std::move(*val));  break;
+      case AbsoluteValue:   abs(std::move(*val));         break;
 
-      default: return get_empty();
+      default: clear_result(); break;
       }
     }
 
     template <>
-    value visit_unary(array_type operand, val_ops op) noexcept
+    void visit_unary(array_type operand, val_ops op) noexcept
     {
-      utils::unused(operand, op); return {};
+      utils::unused(operand, op);
       //if (utils::eq_any(op, val_ops::LogicalIs, val_ops::LogicalNot))
       //{
       //  auto toBool = get_caster<bool_type>()(std::move(operand));
@@ -174,121 +177,130 @@ namespace tnac::eval
     // Registers result of binary operations
     //
     template <detail::generic_type L, detail::generic_type R, detail::binary_function<L, R> F>
-    value visit_binary(L lhs, R rhs, F&& op) noexcept
+    void visit_binary(L lhs, R rhs, F&& op) noexcept
     {
-      return reg_value(op(std::move(lhs), std::move(rhs)));
+      reg_value(op(std::move(lhs), std::move(rhs)));
     }
 
     // Bitwise
 
-    auto bitwise_and(detail::generic_type auto lhs, detail::generic_type auto rhs) noexcept
+    void bitwise_and(detail::generic_type auto lhs, detail::generic_type auto rhs) noexcept
     {
       auto caster = get_caster<int_type>();
       auto intL = caster(lhs);
       auto intR = caster(rhs);
       if (intL && intR)
-        return visit_binary(*intL, *intR, [](auto l, auto r) noexcept { return l & r; });
+      {
+        visit_binary(*intL, *intR, [](auto l, auto r) noexcept { return l & r; });
+        return;
+      }
 
-      return get_empty();
+      clear_result();
     }
 
-    auto bitwise_xor(detail::generic_type auto lhs, detail::generic_type auto rhs) noexcept
+    void bitwise_xor(detail::generic_type auto lhs, detail::generic_type auto rhs) noexcept
     {
       auto caster = get_caster<int_type>();
       auto intL = caster(lhs);
       auto intR = caster(rhs);
       if (intL && intR)
-        return visit_binary(*intL, *intR, [](auto l, auto r) noexcept { return l ^ r; });
+      {
+        visit_binary(*intL, *intR, [](auto l, auto r) noexcept { return l ^ r; });
+        return;
+      }
 
-      return get_empty();
+      clear_result();
     }
 
-    auto bitwise_or(detail::generic_type auto lhs, detail::generic_type auto rhs) noexcept
+    void bitwise_or(detail::generic_type auto lhs, detail::generic_type auto rhs) noexcept
     {
       auto caster = get_caster<int_type>();
       auto intL = caster(lhs);
       auto intR = caster(rhs);
       if (intL && intR)
-        return visit_binary(*intL, *intR, [](auto l, auto r) noexcept { return l | r; });
+      {
+        visit_binary(*intL, *intR, [](auto l, auto r) noexcept { return l | r; });
+        return;
+      }
 
-      return get_empty();
+      clear_result();
     }
 
     // Simple arithmetic
 
-    auto add(detail::addable auto lhs, detail::addable auto rhs) noexcept
+    void add(detail::addable auto lhs, detail::addable auto rhs) noexcept
     {
-      return visit_binary(std::move(lhs), std::move(rhs),
+      visit_binary(std::move(lhs), std::move(rhs),
         [](auto l, auto r) noexcept
         {
           return l + r;
         });
     }
-    auto add(detail::generic_type auto, detail::generic_type auto) noexcept { return get_empty(); }
+    void add(detail::generic_type auto, detail::generic_type auto) noexcept { clear_result(); }
 
-    auto sub(detail::subtractable auto lhs, detail::subtractable auto rhs) noexcept
+    void sub(detail::subtractable auto lhs, detail::subtractable auto rhs) noexcept
     {
-      return visit_binary(std::move(lhs), std::move(rhs),
+      visit_binary(std::move(lhs), std::move(rhs),
         [](auto l, auto r) noexcept
         {
           return l - r;
         });
     }
-    auto sub(detail::generic_type auto, detail::generic_type auto) noexcept { return get_empty(); }
+    void sub(detail::generic_type auto, detail::generic_type auto) noexcept { clear_result(); }
 
-    auto mul(detail::multipliable auto lhs, detail::multipliable auto rhs) noexcept
+    void mul(detail::multipliable auto lhs, detail::multipliable auto rhs) noexcept
     {
-      return visit_binary(std::move(lhs), std::move(rhs),
+      visit_binary(std::move(lhs), std::move(rhs),
         [](auto l, auto r) noexcept
         {
           return l * r;
         });
     }
-    auto mul(detail::generic_type auto, detail::generic_type auto) noexcept { return get_empty(); }
+    void mul(detail::generic_type auto, detail::generic_type auto) noexcept { clear_result(); }
 
-    auto div(detail::divisible auto lhs, detail::divisible auto rhs) noexcept
+    void div(detail::divisible auto lhs, detail::divisible auto rhs) noexcept
     {
       if constexpr (is_same_noquals_v<decltype(lhs), int_type>)
       {
-        return div(static_cast<float_type>(lhs), static_cast<float_type>(rhs));
+        div(static_cast<float_type>(lhs), static_cast<float_type>(rhs));
       }
       else
       {
-        return visit_binary(std::move(lhs), std::move(rhs),
+        visit_binary(std::move(lhs), std::move(rhs),
           [](auto l, auto r) noexcept
           {
             return l / r;
           });
       }
     }
-    auto div(detail::generic_type auto, detail::generic_type auto) noexcept { return get_empty(); }
+    void div(detail::generic_type auto, detail::generic_type auto) noexcept { clear_result(); }
 
     // Modulo
 
-    auto mod(detail::fmod_divisible auto lhs, detail::fmod_divisible auto rhs) noexcept
+    void mod(detail::fmod_divisible auto lhs, detail::fmod_divisible auto rhs) noexcept
     {
-      return visit_binary(std::move(lhs), std::move(rhs),
+      visit_binary(std::move(lhs), std::move(rhs),
         [](auto l, auto r) noexcept
         {
           return std::fmod(l, r);
         });
     }
-    auto mod(detail::modulo_divisible auto lhs, detail::modulo_divisible auto rhs) noexcept
+    void mod(detail::modulo_divisible auto lhs, detail::modulo_divisible auto rhs) noexcept
     {
       if constexpr (is_same_noquals_v<decltype(lhs), int_type>)
       {
-        return mod(static_cast<float_type>(lhs), static_cast<float_type>(rhs));
+        mod(static_cast<float_type>(lhs), static_cast<float_type>(rhs));
       }
       else
       {
-        return visit_binary(std::move(lhs), std::move(rhs),
+        visit_binary(std::move(lhs), std::move(rhs),
           [](auto l, auto r) noexcept
           {
             return l % r;
           });
       }
     }
-    auto mod(detail::generic_type auto, detail::generic_type auto) noexcept { return get_empty(); }
+    void mod(detail::generic_type auto, detail::generic_type auto) noexcept { clear_result(); }
 
     // Pow and root
 
@@ -307,133 +319,140 @@ namespace tnac::eval
     }
     auto enforce_complex(const detail::generic_type auto&, const detail::generic_type auto&) noexcept { return typed_value<complex_type>{}; }
 
-    auto power(detail::pow_raisable auto base, detail::pow_raisable auto exp) noexcept
+    void power(detail::pow_raisable auto base, detail::pow_raisable auto exp) noexcept
     {
       if (auto cpl = enforce_complex(base, exp))
       {
-        return reg_value(*cpl);
+        reg_value(*cpl);
+        return;
       }
 
-      return visit_binary(std::move(base), std::move(exp),
+      visit_binary(std::move(base), std::move(exp),
         [](auto l, auto r) noexcept
         {
           return std::pow(l, r);
         });
     }
-    auto power(detail::generic_type auto base, detail::generic_type auto exp) noexcept
+    void power(detail::generic_type auto base, detail::generic_type auto exp) noexcept
     {
       auto caster = get_caster<float_type>();
       auto floatL = caster(base);
       auto floatR = caster(exp);
       if (floatL && floatR)
-        return power(*floatL, *floatR);
+      {
+        power(*floatL, *floatR);
+        return;
+      }
 
-      return get_empty();
+      clear_result();
     }
 
-    auto root(detail::invertible auto base, detail::invertible auto exp) noexcept
+    void root(detail::invertible auto base, detail::invertible auto exp) noexcept
     {
       if constexpr (is_same_noquals_v<decltype(base), int_type>)
-        return root(static_cast<float_type>(base), static_cast<float_type>(exp));
+        root(static_cast<float_type>(base), static_cast<float_type>(exp));
       else
-        return power(base, eval::inv(exp));
+        power(base, eval::inv(exp));
     }
-    auto root(detail::generic_type auto, detail::generic_type auto) noexcept { return get_empty(); }
+    void root(detail::generic_type auto, detail::generic_type auto) noexcept { clear_result(); }
 
     // Relation and equality
 
-    auto equal(detail::eq_comparable auto lhs, detail::eq_comparable auto rhs, bool compareForEquality) noexcept
+    void equal(detail::eq_comparable auto lhs, detail::eq_comparable auto rhs, bool compareForEquality) noexcept
     {
       const auto cmp = eval::eq(lhs, rhs);
       const auto res = compareForEquality ? cmp : !cmp;
-      return reg_value(res);
+      reg_value(res);
     }
-    auto equal(detail::generic_type auto, detail::generic_type auto, bool) noexcept { return get_empty(); }
+    void equal(detail::generic_type auto, detail::generic_type auto, bool) noexcept { clear_result(); }
 
-    auto less(detail::rel_comparable auto lhs, detail::rel_comparable auto rhs) noexcept
+    void less(detail::rel_comparable auto lhs, detail::rel_comparable auto rhs) noexcept
     {
-      return visit_binary(std::move(lhs), std::move(rhs),
+      visit_binary(std::move(lhs), std::move(rhs),
         [](auto l, auto r) noexcept
         {
           return eval::less(l, r);
         });
     }
-    auto less(detail::generic_type auto, detail::generic_type auto) noexcept { return get_empty(); }
+    void less(detail::generic_type auto, detail::generic_type auto) noexcept { clear_result(); }
 
-    auto less_eq(detail::fully_comparable auto lhs, detail::fully_comparable auto rhs) noexcept
+    void less_eq(detail::fully_comparable auto lhs, detail::fully_comparable auto rhs) noexcept
     {
-      return visit_binary(std::move(lhs), std::move(rhs),
+      visit_binary(std::move(lhs), std::move(rhs),
         [](auto l, auto r) noexcept
         {
           return eval::eq(l, r) || eval::less(l, r);
         });
     }
-    auto less_eq(detail::generic_type auto, detail::generic_type auto) noexcept { return get_empty(); }
+    void less_eq(detail::generic_type auto, detail::generic_type auto) noexcept { clear_result(); }
 
-    auto greater(detail::fully_comparable auto lhs, detail::fully_comparable auto rhs) noexcept
+    void greater(detail::fully_comparable auto lhs, detail::fully_comparable auto rhs) noexcept
     {
-      return visit_binary(std::move(lhs), std::move(rhs),
+      visit_binary(std::move(lhs), std::move(rhs),
         [](auto l, auto r) noexcept
         {
           return !eval::eq(l, r) && !eval::less(l, r);
         });
     }
-    auto greater(detail::generic_type auto, detail::generic_type auto) noexcept { return get_empty(); }
+    void greater(detail::generic_type auto, detail::generic_type auto) noexcept { clear_result(); }
 
-    auto greater_eq(detail::fully_comparable auto lhs, detail::fully_comparable auto rhs) noexcept
+    void greater_eq(detail::fully_comparable auto lhs, detail::fully_comparable auto rhs) noexcept
     {
-      return visit_binary(std::move(lhs), std::move(rhs),
+      visit_binary(std::move(lhs), std::move(rhs),
         [](auto l, auto r) noexcept
         {
           return !eval::less(l, r);
         });
     }
-    auto greater_eq(detail::generic_type auto, detail::generic_type auto) noexcept { return get_empty(); }
+    void greater_eq(detail::generic_type auto, detail::generic_type auto) noexcept { clear_result(); }
 
     //
     // Dispatches binary operations according to operator type
     //
     template <detail::generic_type L, detail::generic_type R>
-    value visit_binary(L l, R r, val_ops op) noexcept
+    void visit_binary(L l, R r, val_ops op) noexcept
     {
       using common_t = common_type_t<L, R>;
       auto caster = get_caster<common_t>();
       auto lhs = caster(std::move(l));
       auto rhs = caster(std::move(r));
       if (!lhs || !rhs)
-        return get_empty();
+      {
+        clear_result();
+        return;
+      }
 
       using enum val_ops;
       switch (op)
       {
-      case Addition:       return add(std::move(*lhs), std::move(*rhs));
-      case Subtraction:    return sub(std::move(*lhs), std::move(*rhs));
-      case Multiplication: return mul(std::move(*lhs), std::move(*rhs));
-      case Division:       return div(std::move(*lhs), std::move(*rhs));
-      case Modulo:         return mod(std::move(*lhs), std::move(*rhs));
+      case Addition:       add(std::move(*lhs), std::move(*rhs)); break;
+      case Subtraction:    sub(std::move(*lhs), std::move(*rhs)); break;
+      case Multiplication: mul(std::move(*lhs), std::move(*rhs)); break;
+      case Division:       div(std::move(*lhs), std::move(*rhs)); break;
+      case Modulo:         mod(std::move(*lhs), std::move(*rhs)); break;
 
-      case RelLess:   return less(std::move(*lhs), std::move(*rhs));
-      case RelLessEq: return less_eq(std::move(*lhs), std::move(*rhs));
-      case RelGr:     return greater(std::move(*lhs), std::move(*rhs));
-      case RelGrEq:   return greater_eq(std::move(*lhs), std::move(*rhs));
-      case Equal:     return equal(std::move(*lhs), std::move(*rhs), true);
-      case NEqual:    return equal(std::move(*lhs), std::move(*rhs), false);
+      case RelLess:   less(std::move(*lhs), std::move(*rhs));         break;
+      case RelLessEq: less_eq(std::move(*lhs), std::move(*rhs));      break;
+      case RelGr:     greater(std::move(*lhs), std::move(*rhs));      break;
+      case RelGrEq:   greater_eq(std::move(*lhs), std::move(*rhs));   break;
+      case Equal:     equal(std::move(*lhs), std::move(*rhs), true);  break;
+      case NEqual:    equal(std::move(*lhs), std::move(*rhs), false); break;
 
-      case BitwiseAnd: return bitwise_and(std::move(*lhs), std::move(*rhs));
-      case BitwiseXor: return bitwise_xor(std::move(*lhs), std::move(*rhs));
-      case BitwiseOr:  return bitwise_or(std::move(*lhs), std::move(*rhs));
+      case BitwiseAnd: bitwise_and(std::move(*lhs), std::move(*rhs)); break;
+      case BitwiseXor: bitwise_xor(std::move(*lhs), std::move(*rhs)); break;
+      case BitwiseOr:  bitwise_or(std::move(*lhs), std::move(*rhs));  break;
 
-      case BinaryPow:  return power(std::move(*lhs), std::move(*rhs));
-      case BinaryRoot: return root(std::move(*lhs), std::move(*rhs));
+      case BinaryPow:  power(std::move(*lhs), std::move(*rhs)); break;
+      case BinaryRoot: root(std::move(*lhs), std::move(*rhs));  break;
 
-      default: return get_empty();
+      default: clear_result(); break;
       }
     }
 
     template <>
-    value visit_binary(array_type l, array_type r, val_ops op) noexcept
+    void visit_binary(array_type l, array_type r, val_ops op) noexcept
     {
-      utils::unused(l, r, op); return {};
+      utils::unused(l, r, op);
       //const auto newSz = l->size() * r->size();
       //auto&& newArr = m_registry.allocate_array(m_curEntity, newSz);
       //for (auto el : *l)
@@ -463,9 +482,9 @@ namespace tnac::eval
 
     template <detail::generic_type T>
       requires (!is_same_noquals_v<T, array_type>)
-    value visit_binary(array_type l, T r, val_ops op) noexcept
+    void visit_binary(array_type l, T r, val_ops op) noexcept
     {
-      utils::unused(l, r, op); return {};
+      utils::unused(l, r, op);
       //auto arr = to_unit_array(r);
       //auto res = visit_binary(l, array_type{ arr }, op);
       //return res;
@@ -473,9 +492,9 @@ namespace tnac::eval
 
     template <detail::generic_type T>
       requires (!is_same_noquals_v<T, array_type>)
-    value visit_binary(T l, array_type r, val_ops op) noexcept
+    void visit_binary(T l, array_type r, val_ops op) noexcept
     {
-      utils::unused(l, r, op); return {};
+      utils::unused(l, r, op);
       //auto arr = to_unit_array(l);
       //auto res = visit_binary(array_type{ arr }, r, op);
       //return res;
@@ -486,41 +505,41 @@ namespace tnac::eval
     // Extracts type from value and calls the specified function
     //
     template <typename F>
-    value visit_value(value val, F&& func) noexcept
+    void visit_value(value val, F&& func) noexcept
     {
-      return on_value(val, std::forward<F>(func));
+      on_value(val, std::forward<F>(func));
     }
 
     //
     // Registers the value in the registry
     //
-    value reg_value(detail::generic_type auto val) noexcept
+    void reg_value(detail::generic_type auto val) noexcept
     {
       if (m_curEntity != invalidEnt)
       {
-        return m_registry.register_entity(m_curEntity, std::move(val));
+        m_registry.register_entity(m_curEntity, std::move(val));
       }
 
-      return m_registry.register_entity({}, val);
+      m_registry.register_entity({}, val);
     }
 
     //
     // Registers result of assignment operations
     //
-    value visit_assign(detail::generic_type auto rhs) noexcept
+    void visit_assign(detail::generic_type auto rhs) noexcept
     {
-      return reg_value(std::move(rhs));
+      reg_value(std::move(rhs));
     }
 
     //
     // Intermediate binary visitor
     // Dispatches the right operand according to its type
     //
-    value visit_binary(detail::generic_type auto lhs, value rhs, val_ops op) noexcept
+    void visit_binary(detail::generic_type auto lhs, value rhs, val_ops op) noexcept
     {
-      return visit_value(rhs, [this, l = std::move(lhs), op](auto rhs) noexcept
+      visit_value(rhs, [this, l = std::move(lhs), op](auto rhs) noexcept
         {
-          return visit_binary(std::move(l), std::move(rhs), op);
+          visit_binary(std::move(l), std::move(rhs), op);
         });
     }
 
@@ -528,16 +547,19 @@ namespace tnac::eval
     // Dispatches the instantiation call
     //
     template <detail::expr_result Obj, typename T, T... Seq>
-    value instantiate(const std::array<value, sizeof...(Seq)>& args, std::integer_sequence<T, Seq...>) noexcept
+    void instantiate(const std::array<value, sizeof...(Seq)>& args, std::integer_sequence<T, Seq...>) noexcept
     {
       using type_info = eval::type_info<Obj>;
       using type_gen = type_wrapper<Obj>;
       auto instance = type_gen{}(cast_value<utils::id_to_type_t<type_info::params[Seq]>>(args[Seq])...);
 
       if (!instance)
-        return get_empty();
+      {
+        clear_result();
+        return;
+      }
 
-      return reg_value(std::move(*instance));
+      reg_value(std::move(*instance));
     }
 
   public:
@@ -546,14 +568,14 @@ namespace tnac::eval
     //
     template <detail::expr_result Obj, typename... Args>
       requires is_all_v<value, Args...>
-    value instantiate(Args ...args) noexcept
+    void instantiate(Args ...args) noexcept
     {
       using type_info = eval::type_info<Obj>;
       static constexpr auto max = type_info::maxArgs;
       static_assert(sizeof ...(Args) == max);
 
       const std::array argList{ args... };
-      return instantiate<Obj>(argList, std::make_index_sequence<max>{});
+      instantiate<Obj>(argList, std::make_index_sequence<max>{});
     }
 
     //
@@ -562,34 +584,38 @@ namespace tnac::eval
     value make_function(id_param_t ent, function_type f) noexcept
     {
       value_guard _{ m_curEntity, *ent };
-      return reg_value(f);
+      reg_value(f);
+      return {};
     }
 
     //
-    // Returns a resulting value from a binary expr
+    // Evaluates a binary expr
     //
-    value visit_binary(value lhs, value rhs, val_ops op) noexcept
+    void visit_binary(value lhs, value rhs, val_ops op) noexcept
     {
       if (!detail::is_binary(op))
-        return get_empty();
+        clear_result();
 
-      return visit_value(lhs, [this, rhs, op](auto lhs) noexcept
+      visit_value(lhs, [this, rhs, op](auto lhs) noexcept
         {
-          return visit_binary(std::move(lhs), std::move(rhs), op);
+          visit_binary(std::move(lhs), std::move(rhs), op);
         });
     }
 
     //
-    // Returns a resulting value from a unary expr
+    // Evaluates a unary expr
     //
-    value visit_unary(value val, val_ops op) noexcept
+    void visit_unary(value val, val_ops op) noexcept
     {
       if (!detail::is_unary(op))
-        return get_empty();
+      {
+        clear_result();
+        return;
+      }
 
-      return visit_value(val, [this, op](auto v) noexcept
+      visit_value(val, [this, op](auto v) noexcept
         {
-          return visit_unary(std::move(v), op);
+          visit_unary(std::move(v), op);
         });
     }
 
@@ -599,22 +625,26 @@ namespace tnac::eval
     value visit_assign(id_param_t ent, value rhs) noexcept
     {
       if (!rhs)
-        return get_empty();
+      {
+        return clear_result();
+      }
 
       value_guard _{ m_curEntity, *ent };
 
-      return visit_value(rhs, [this](auto v) noexcept
+      visit_value(rhs, [this](auto v) noexcept
         {
-          return visit_assign(v);
+          visit_assign(v);
         });
+
+      return {};
     }
 
     //
     // Parses an integer literal value from string
     //
-    value visit_int_literal(string_t src, int base) noexcept
+    void visit_int_literal(string_t src, int base) noexcept
     {
-      utils::unused(src, base); return {};
+      utils::unused(src, base);
       //auto prefix = string_t::size_type{};
       //if (utils::eq_any(base, 2, 16))
       //  prefix = 2u;
@@ -627,7 +657,7 @@ namespace tnac::eval
       //int_type result{};
       //auto convRes = std::from_chars(begin, end, result, base);
       //if (convRes.ec != std::errc{ 0 })
-      //  return get_empty();
+      //  return clear_result();
 
       //return m_registry.register_literal(result);
     }
@@ -635,16 +665,16 @@ namespace tnac::eval
     //
     // Parses a floating point literal value from string
     //
-    value visit_float_literal(string_t src) noexcept
+    void visit_float_literal(string_t src) noexcept
     {
-      utils::unused(src); return {};
+      utils::unused(src);
       //auto begin = src.data();
       //auto end = begin + src.length();
 
       //float_type result{};
       //auto convRes = std::from_chars(begin, end, result);
       //if (convRes.ec != std::errc{ 0 })
-      //  return get_empty();
+      //  return clear_result();
 
       //return m_registry.register_literal(result);
     }
@@ -652,35 +682,26 @@ namespace tnac::eval
     //
     // Registers a boolean literal
     //
-    value visit_bool_literal(bool value) noexcept
+    void visit_bool_literal(bool value) noexcept
     {
-      utils::unused(value); return {};
+      utils::unused(value);
       // return m_registry.register_literal(value);
     }
 
     //
     // Makes an array instance based on the underlying data
     //
-    value make_array(arr_t& data) noexcept
+    void make_array(arr_t& data) noexcept
     {
-      return reg_value(array_type{ data });
-    }
-
-    //
-    // Retrieves the last evaluation result
-    //
-    value last_result() noexcept
-    {
-      return {};
-      //auto ret = visit_assign({}, m_registry.evaluation_result());
-      //return ret;
+      reg_value(array_type{ data });
     }
 
     //
     // Resets the last evaluation result and returns an empty value
     //
-    value get_empty() noexcept
+    value clear_result() noexcept
     {
+      reg_value(eval::invalid_val_t{});
       return {};
     }
 
