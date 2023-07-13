@@ -99,7 +99,15 @@ namespace tnac::eval
     }
 
     //
-    // Registers a value for a specific entity (e.g., a binary expression)
+    // Extracts the next value from the queue and returns it
+    //
+    tmp_val consume() noexcept
+    {
+      return {};
+    }
+
+    //
+    // Registers a value for a specific entity (e.g., a variable)
     //
     void register_entity(entity_id id, detail::generic_type auto val) noexcept
     {
