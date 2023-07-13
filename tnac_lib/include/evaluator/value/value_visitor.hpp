@@ -492,17 +492,9 @@ namespace tnac::eval
     }
 
     //
-    // Resets the result and returns an empty value
-    //
-    value reg_value(invalid_val_t) noexcept
-    {
-      return get_empty();
-    }
-
-    //
     // Registers the value in the registry
     //
-    value reg_value(detail::expr_result auto val) noexcept
+    value reg_value(detail::generic_type auto val) noexcept
     {
       if (m_curEntity != invalidEnt)
       {
@@ -554,13 +546,11 @@ namespace tnac::eval
     //
     template <detail::expr_result Obj, typename... Args>
       requires is_all_v<value, Args...>
-    value instantiate(id_param_t ent, Args ...args) noexcept
+    value instantiate(Args ...args) noexcept
     {
       using type_info = eval::type_info<Obj>;
       static constexpr auto max = type_info::maxArgs;
       static_assert(sizeof ...(Args) == max);
-
-      value_guard _{ m_curEntity, *ent };
 
       const std::array argList{ args... };
       return instantiate<Obj>(argList, std::make_index_sequence<max>{});
@@ -578,12 +568,10 @@ namespace tnac::eval
     //
     // Returns a resulting value from a binary expr
     //
-    value visit_binary(id_param_t ent, value lhs, value rhs, val_ops op) noexcept
+    value visit_binary(value lhs, value rhs, val_ops op) noexcept
     {
       if (!detail::is_binary(op))
         return get_empty();
-
-      value_guard _{ m_curEntity, *ent };
 
       return visit_value(lhs, [this, rhs, op](auto lhs) noexcept
         {
@@ -594,12 +582,10 @@ namespace tnac::eval
     //
     // Returns a resulting value from a unary expr
     //
-    value visit_unary(id_param_t ent, value val, val_ops op) noexcept
+    value visit_unary(value val, val_ops op) noexcept
     {
       if (!detail::is_unary(op))
         return get_empty();
-
-      value_guard _{ m_curEntity, *ent };
 
       return visit_value(val, [this, op](auto v) noexcept
         {
@@ -672,26 +658,25 @@ namespace tnac::eval
     //
     // Retrieves an array object allocated for the specified entity
     //
-    arr_t& new_array(id_param_t ent, size_type size) noexcept
+    arr_t& new_array(size_type size) noexcept
     {
-      return m_registry.allocate_array(*ent, size);
+      return m_registry.allocate_array({}, size);
     }
 
     //
     // Makes an array instance based on the underlying data
     //
-    value make_array(id_param_t ent, arr_t& data) noexcept
+    value make_array(arr_t& data) noexcept
     {
-      value_guard _{ m_curEntity, *ent };
       return reg_value(array_type{ data });
     }
 
     //
     // Retrieves the last evaluation result
     //
-    value last_result(id_param_t ent) noexcept
+    value last_result() noexcept
     {
-      auto ret = visit_assign(ent, m_registry.evaluation_result());
+      auto ret = visit_assign({}, m_registry.evaluation_result());
       return ret;
     }
 
