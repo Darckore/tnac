@@ -53,6 +53,7 @@ namespace tnac::eval
   public:
     using value_type   = value;
     using entity_id    = std::uintptr_t;
+    using ent_id_list  = std::vector<entity_id>;
     using stored_val_t = underlying_val;
     using entity_vals  = std::unordered_map<entity_id, stored_val_t>;
 
@@ -98,5 +99,6 @@ namespace tnac::eval
   private:
     entity_vals m_entityValues;
     array_store m_arrays;
+    ent_id_list m_pendingCleanup;
   };
 }
