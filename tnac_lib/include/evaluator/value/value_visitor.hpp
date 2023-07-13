@@ -151,20 +151,21 @@ namespace tnac::eval
     template <>
     value visit_unary(array_type operand, val_ops op) noexcept
     {
-      if (utils::eq_any(op, val_ops::LogicalIs, val_ops::LogicalNot))
-      {
-        auto toBool = get_caster<bool_type>()(std::move(operand));
-        return visit_unary(toBool.value_or(false), op);
-      }
+      utils::unused(operand, op); return {};
+      //if (utils::eq_any(op, val_ops::LogicalIs, val_ops::LogicalNot))
+      //{
+      //  auto toBool = get_caster<bool_type>()(std::move(operand));
+      //  return visit_unary(toBool.value_or(false), op);
+      //}
 
-      auto&& newArr = m_registry.allocate_array(m_curEntity, operand->size());
-      for (auto el : *operand)
-      {
-        auto&& elemVal = newArr.emplace_back();
-        elemVal = visit_unary(&elemVal, el, op);
-      }
+      //auto&& newArr = m_registry.allocate_array(m_curEntity, operand->size());
+      //for (auto el : *operand)
+      //{
+      //  auto&& elemVal = newArr.emplace_back();
+      //  elemVal = visit_unary(&elemVal, el, op);
+      //}
 
-      return make_array(m_curEntity, newArr);
+      //return make_array(m_curEntity, newArr);
     }
 
   private: // Binary operations
@@ -432,48 +433,52 @@ namespace tnac::eval
     template <>
     value visit_binary(array_type l, array_type r, val_ops op) noexcept
     {
-      const auto newSz = l->size() * r->size();
-      auto&& newArr = m_registry.allocate_array(m_curEntity, newSz);
-      for (auto el : *l)
-      {
-        for (auto er : *r)
-        {
-          auto&& newVal = newArr.emplace_back();
-          newVal = visit_binary(&newVal, el, er, op);
-        }
-      }
+      utils::unused(l, r, op); return {};
+      //const auto newSz = l->size() * r->size();
+      //auto&& newArr = m_registry.allocate_array(m_curEntity, newSz);
+      //for (auto el : *l)
+      //{
+      //  for (auto er : *r)
+      //  {
+      //    auto&& newVal = newArr.emplace_back();
+      //    newVal = visit_binary(&newVal, el, er, op);
+      //  }
+      //}
 
-      return make_array(m_curEntity, newArr);
+      //return make_array(m_curEntity, newArr);
     }
 
     template <detail::generic_type T>
     arr_t to_unit_array(const T& val) noexcept
     {
-      registry::val_array arr;
-      eval::value elem;
-      if constexpr (!is_same_noquals_v<T, invalid_val_t>)
-        elem = { &val };
-      
-      arr.emplace_back(elem);
-      return arr;
+      utils::unused(val); return {};
+      //registry::val_array arr;
+      //eval::value elem;
+      //if constexpr (!is_same_noquals_v<T, invalid_val_t>)
+      //  elem = { &val };
+      //
+      //arr.emplace_back(elem);
+      //return arr;
     }
 
     template <detail::generic_type T>
       requires (!is_same_noquals_v<T, array_type>)
     value visit_binary(array_type l, T r, val_ops op) noexcept
     {
-      auto arr = to_unit_array(r);
-      auto res = visit_binary(l, array_type{ arr }, op);
-      return res;
+      utils::unused(l, r, op); return {};
+      //auto arr = to_unit_array(r);
+      //auto res = visit_binary(l, array_type{ arr }, op);
+      //return res;
     }
 
     template <detail::generic_type T>
       requires (!is_same_noquals_v<T, array_type>)
     value visit_binary(T l, array_type r, val_ops op) noexcept
     {
-      auto arr = to_unit_array(l);
-      auto res = visit_binary(array_type{ arr }, r, op);
-      return res;
+      utils::unused(l, r, op); return {};
+      //auto arr = to_unit_array(l);
+      //auto res = visit_binary(array_type{ arr }, r, op);
+      //return res;
     }
 
   private:
