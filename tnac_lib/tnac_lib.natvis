@@ -130,13 +130,6 @@
     <DisplayString>{m_kind,en}</DisplayString>
   </Type>
 
-  <Type Name="tnac::ast::expr">
-    <DisplayString>{m_kind,en}</DisplayString>
-    <Expand>
-      <Item Name="[value]">m_val</Item>
-    </Expand>
-  </Type>
-
   <Type Name="tnac::ast::lit_expr">
     <DisplayString>{m_kind,en} ({m_pos.m_value,sb})</DisplayString>
   </Type>
@@ -153,7 +146,6 @@
     <Expand>
       <Item Name="[left]">*m_left</Item>
       <Item Name="[right]">*m_right</Item>
-      <Item Name="[value]">m_val</Item>
     </Expand>
   </Type>
 
@@ -161,7 +153,6 @@
     <DisplayString>{m_kind,en} ({m_pos})</DisplayString>
     <Expand>
       <Item Name="[operand]">*m_expr</Item>
-      <Item Name="[value]">m_val</Item>
     </Expand>
   </Type>
 
@@ -169,7 +160,6 @@
     <DisplayString>{m_kind,en} ({m_pos.m_value,sb})</DisplayString>
     <Expand>
       <Item Name="[symbol]">*m_sym</Item>
-      <Item Name="[value]">m_val</Item>
     </Expand>
   </Type>
 
@@ -177,7 +167,6 @@
     <DisplayString>{m_kind,en} ({*m_expr})</DisplayString>
     <Expand>
       <Item Name="[expr]">*m_expr</Item>
-      <Item Name="[value]">m_val</Item>
     </Expand>
   </Type>
 
@@ -185,7 +174,6 @@
     <DisplayString>{m_kind,en} ({*m_expr})</DisplayString>
     <Expand>
       <Item Name="[expr]">*m_expr</Item>
-      <Item Name="[value]">m_val</Item>
     </Expand>
   </Type>
 
@@ -194,7 +182,6 @@
     <Expand>
       <Item Name="[callee]">*m_callee</Item>
       <Item Name="[args]">m_args</Item>
-      <Item Name="[value]">m_val</Item>
     </Expand>
   </Type>
 
@@ -202,7 +189,6 @@
     <DisplayString>{m_kind,en}</DisplayString>
     <Expand>
       <Item Name="[elements]">m_elements</Item>
-      <Item Name="[value]">m_val</Item>
     </Expand>
   </Type>
 
@@ -214,7 +200,6 @@
       <Item Name="[true]" Condition="!m_true">"&lt;null&gt;",sb</Item>
       <Item Name="[false]" Condition="m_false">*m_false</Item>
       <Item Name="[false]" Condition="!m_false">"&lt;null&gt;",sb</Item>
-      <Item Name="[value]">m_val</Item>
     </Expand>
   </Type>
 
@@ -223,7 +208,6 @@
     <Expand>
       <Item Name="[cond]">*m_cond</Item>
       <Item Name="[body]">*m_body</Item>
-      <Item Name="[value]">m_val</Item>
     </Expand>
   </Type>
 
@@ -232,7 +216,6 @@
     <Expand>
       <Item Name="[matcher]">*m_matcher</Item>
       <Item Name="[body]">*m_body</Item>
-      <Item Name="[value]">m_val</Item>
     </Expand>
   </Type>
 
@@ -244,7 +227,6 @@
       <Item Name="[op]" Condition="!m_checked&amp;&amp;m_pos.m_kind==tnac::tok_kind::Exclamation">"!",sb</Item>
       <Item Name="[expr]" Condition="m_checked">*m_checked</Item>
       <Item Name="[expr]" Condition="m_pos.m_kind==tnac::tok_kind::CurlyOpen">"&lt;default&gt;",sb</Item>
-      <Item Name="[value]">m_val</Item>
     </Expand>
   </Type>
 
@@ -252,7 +234,6 @@
     <DisplayString>{m_kind,en}({*m_decl})</DisplayString>
     <Expand>
       <Item Name="[declarator]">*m_decl</Item>
-      <Item Name="[value]">m_val</Item>
     </Expand>
   </Type>
 

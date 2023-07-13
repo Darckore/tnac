@@ -66,20 +66,21 @@ namespace tnac::eval
 
   void call_stack::push(const sym_t& callable, const args_t& args, vis_t& visitor) noexcept
   {
-    auto&& cur = m_frames.emplace_back(callable.name());
-    cur.allocate(callable.param_count());
-    auto&& argStorage = cur.args();
-    auto&& prmStorage = cur.params();
+    utils::unused(callable, args, visitor);
+    //auto&& cur = m_frames.emplace_back(callable.name());
+    //cur.allocate(callable.param_count());
+    //auto&& argStorage = cur.args();
+    //auto&& prmStorage = cur.params();
 
-    for (auto [param, arg] : utils::make_iterators(callable.params(), args))
-    {
-      auto prmVal = param->symbol().value();
-      auto argVal = arg->value();
-      auto&& storedArg = argStorage.emplace_back();
-      auto&& storedPrm = prmStorage.emplace_back();
-      storedPrm = visitor.visit_assign(&storedPrm, prmVal);
-      storedArg = visitor.visit_assign(&storedArg, argVal);
-    }
+    //for (auto [param, arg] : utils::make_iterators(callable.params(), args))
+    //{
+    //  auto prmVal = param->symbol().value();
+    //  auto argVal = arg->value();
+    //  auto&& storedArg = argStorage.emplace_back();
+    //  auto&& storedPrm = prmStorage.emplace_back();
+    //  storedPrm = visitor.visit_assign(&storedPrm, prmVal);
+    //  storedArg = visitor.visit_assign(&storedArg, argVal);
+    //}
   }
 
   void call_stack::pop(vis_t& visitor) noexcept

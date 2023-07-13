@@ -120,8 +120,9 @@ namespace tnac
 
         eval::value extract(const arg_list_t& args, size_type idx) noexcept
         {
-          const auto count = args.size();
-          return idx < count ? args[idx]->value() : eval::value{};
+          utils::unused(args, idx); return {};
+          //const auto count = args.size();
+          //return idx < count ? args[idx]->value() : eval::value{};
         }
 
       private:

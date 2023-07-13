@@ -28,17 +28,6 @@ namespace tnac::ast
 
   public:
     //
-    // Returns the value associated with this expression
-    //
-    eval::value value() const noexcept;
-
-    //
-    // Assigns a value to this expression
-    // The evaluator sets this
-    //
-    void eval_result(eval::value val) noexcept;
-
-    //
     // Returns the first token associated with this expression
     //
     const token& pos() const noexcept;
@@ -47,7 +36,6 @@ namespace tnac::ast
     expr(kind k, const token& tok) noexcept;
 
   private:
-    eval::value m_val;
     token m_pos;
   };
 
