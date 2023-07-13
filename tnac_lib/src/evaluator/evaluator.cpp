@@ -168,20 +168,19 @@ namespace tnac
 
   void evaluator::visit(ast::binary_expr& binary) noexcept
   {
-    utils::unused(binary);
-    //if (return_path())
-    //  return;
+    if (return_path())
+      return;
 
-    //const auto opcode = binary.op().m_kind;
+    const auto opcode = binary.op().m_kind;
 
-    //// We've already calculated logical && and || at this point
-    //if (detail::is_logical(opcode))
-    //  return;
+    // We've already calculated logical && and || at this point
+    if (detail::is_logical(opcode))
+      return;
 
-    //auto left = binary.left().value();
-    //auto right = binary.right().value();
-    //const auto opCode = detail::conv_binary(opcode);
-    //binary.eval_result(m_visitor.visit_binary(&binary, left, right, opCode));
+    auto left  = m_visitor.fetch_next();
+    auto right = m_visitor.fetch_next();
+    const auto opCode = detail::conv_binary(opcode);
+    m_visitor.visit_binary(*left, *right, opCode);
   }
 
   void evaluator::visit(ast::unary_expr& unary) noexcept
@@ -363,13 +362,12 @@ namespace tnac
 
   bool evaluator::preview(ast::binary_expr& expr) noexcept
   {
-    utils::unused(expr);
-    //if (return_path())
-    //  return false;
+    if (return_path())
+      return false;
 
-    //const auto opcode = expr.op().m_kind;
-    //if (!detail::is_logical(opcode))
-    //  return true;
+    const auto opcode = expr.op().m_kind;
+    if (!detail::is_logical(opcode))
+      return true;
 
     //auto&& lhs = expr.left();
     //base::operator()(&lhs);

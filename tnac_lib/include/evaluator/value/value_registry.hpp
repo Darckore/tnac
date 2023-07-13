@@ -91,7 +91,7 @@ namespace tnac::eval
       tmp_val res;
       if (!m_inFlight.empty())
       {
-        res = std::move(m_inFlight.back());
+        res = std::move(m_inFlight.front());
         m_inFlight.pop();
       }
 
