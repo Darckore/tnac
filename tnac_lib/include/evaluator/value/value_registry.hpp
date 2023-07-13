@@ -84,19 +84,11 @@ namespace tnac::eval
     }
 
     //
-    // Resets the stored result value
-    //
-    value_type reset_result() noexcept
-    {
-      return evaluation_result();
-    }
-
-    //
     // Returns the last evaluated value
     //
     value_type evaluation_result() const noexcept
     {
-      return {};
+      return *m_result;
     }
 
   private:
