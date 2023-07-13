@@ -199,29 +199,14 @@ namespace tnac::eval
     using enum type_id;
     switch (val.id())
     {
-    case Bool:
-      return func(val.get<bool_type>());
-
-    case Int:
-      return func(val.get<int_type>());
-
-    case Float:
-      return func(val.get<float_type>());
-
-    case Complex:
-      return func(val.get<complex_type>());
-
-    case Fraction:
-      return func(val.get<fraction_type>());
-
-    case Function:
-      return func(val.get<function_type>());
-
-    case Array:
-      return func(val.get<array_type>());
-
-    default:
-      return func(invalid_val_t{});
+    case Bool:     return func(val.get<bool_type>());
+    case Int:      return func(val.get<int_type>());
+    case Float:    return func(val.get<float_type>());
+    case Complex:  return func(val.get<complex_type>());
+    case Fraction: return func(val.get<fraction_type>());
+    case Function: return func(val.get<function_type>());
+    case Array:    return func(val.get<array_type>());
+    default:       return func(invalid_val_t{});
     }
   }
 
