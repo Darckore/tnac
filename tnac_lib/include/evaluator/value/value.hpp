@@ -23,7 +23,7 @@ namespace tnac::eval
     // Defines a valid result of expression evaluation
     //
     template <typename T>
-    concept expr_result = is_any_v<T, bool_type, int_type, float_type,
+    concept expr_result = is_any_v<T, invalid_val_t, bool_type, int_type, float_type,
                                       complex_type, fraction_type, function_type, array_type>;
   }
 
@@ -42,17 +42,18 @@ namespace tnac::eval
     Array
   };
 
-  using underlying_val = std::variant<bool_type, int_type, float_type,
+  using underlying_val = std::variant<invalid_val_t, bool_type, int_type, float_type,
                                       complex_type, fraction_type, function_type, array_type>;
 }
 
-TYPE_TO_ID_ASSOCIATION(tnac::eval::bool_type,     tnac::eval::type_id::Bool);
-TYPE_TO_ID_ASSOCIATION(tnac::eval::int_type,      tnac::eval::type_id::Int);
-TYPE_TO_ID_ASSOCIATION(tnac::eval::float_type,    tnac::eval::type_id::Float);
-TYPE_TO_ID_ASSOCIATION(tnac::eval::complex_type,  tnac::eval::type_id::Complex);
-TYPE_TO_ID_ASSOCIATION(tnac::eval::fraction_type, tnac::eval::type_id::Fraction);
-TYPE_TO_ID_ASSOCIATION(tnac::eval::function_type, tnac::eval::type_id::Function);
-TYPE_TO_ID_ASSOCIATION(tnac::eval::array_type,    tnac::eval::type_id::Array);
+TYPE_TO_ID_ASSOCIATION(tnac::eval::invalid_val_t,  tnac::eval::type_id::Invalid);
+TYPE_TO_ID_ASSOCIATION(tnac::eval::bool_type,      tnac::eval::type_id::Bool);
+TYPE_TO_ID_ASSOCIATION(tnac::eval::int_type,       tnac::eval::type_id::Int);
+TYPE_TO_ID_ASSOCIATION(tnac::eval::float_type,     tnac::eval::type_id::Float);
+TYPE_TO_ID_ASSOCIATION(tnac::eval::complex_type,   tnac::eval::type_id::Complex);
+TYPE_TO_ID_ASSOCIATION(tnac::eval::fraction_type,  tnac::eval::type_id::Fraction);
+TYPE_TO_ID_ASSOCIATION(tnac::eval::function_type,  tnac::eval::type_id::Function);
+TYPE_TO_ID_ASSOCIATION(tnac::eval::array_type,     tnac::eval::type_id::Array);
 
 namespace tnac::eval
 {

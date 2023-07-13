@@ -271,16 +271,16 @@ namespace tnac::eval
 
   // array
 
-  template <detail::expr_result T> requires (!is_same_noquals_v<T, array_type>)
+  template <detail::expr_result T> requires (!is_any_v<T, array_type, invalid_val_t>)
   struct common_type<array_type, T> { using type = array_type; };
-  template <detail::expr_result T> requires (!is_same_noquals_v<T, array_type>)
+  template <detail::expr_result T> requires (!is_any_v<T, array_type, invalid_val_t>)
   struct common_type<T, array_type> : common_type<array_type, T> {};
 
   // function
 
-  template <detail::expr_result T> requires (!is_same_noquals_v<T, function_type>)
+  template <detail::expr_result T> requires (!is_any_v<T, function_type, invalid_val_t>)
   struct common_type<function_type, T> { using type = function_type; };
-  template <detail::expr_result T> requires (!is_same_noquals_v<T, function_type>)
+  template <detail::expr_result T> requires (!is_any_v<T, function_type, invalid_val_t>)
   struct common_type<T, function_type> : common_type<function_type, T> {};
   template <> struct common_type<function_type, array_type> { using type = array_type; };
   template <> struct common_type<array_type, function_type> : common_type<function_type, array_type> {};
