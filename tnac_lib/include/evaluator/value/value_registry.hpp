@@ -4,6 +4,7 @@
 
 #pragma once
 #include "evaluator/value/value.hpp"
+#include "evaluator/type_support/traits.hpp"
 
 namespace tnac::eval
 {
@@ -63,6 +64,7 @@ namespace tnac::eval
     using size_type    = val_array::size_type;
 
     using tmp_val   = temporary;
+    using val_opt   = std::optional<tmp_val>;
     using tmp_store = std::queue<tmp_val>;
 
   public:
@@ -71,16 +73,41 @@ namespace tnac::eval
     registry() noexcept = default;
     ~registry() noexcept = default;
 
+  private:
+    //
+    // Updates the last result
+    //
+    void update_result(detail::generic_type auto val) noexcept
+    {
+      m_result.emplace(std::move(val));
+    }
+
   public:
+    //
+    // Pushes a temporary value to the queue and updates the result
+    //
+    void push(detail::generic_type auto val) noexcept
+    {
+      if (!m_result)
+      {
+        update_result(std::move(val));
+        return;
+      }
+
+      m_inFlight.push(std::move(*m_result));
+      update_result(std::move(val));
+    }
+
     //
     // Registers a value for a specific entity (e.g., a binary expression)
     //
-    template <detail::expr_result T>
-    value_type register_entity(entity_id id, T val) noexcept
+    void register_entity(entity_id id, detail::generic_type auto val) noexcept
     {
+      using val_t = std::remove_cvref_t<decltype(val)>;
       auto&& valStore = m_entityValues[id];
       valStore = std::move(val);
-      return { &std::get<T>(valStore) };
+      auto tmp = value{ &std::get<val_t>(valStore) };
+      utils::unused(tmp);
     }
 
     //
@@ -88,11 +115,14 @@ namespace tnac::eval
     //
     value_type evaluation_result() const noexcept
     {
-      return *m_result;
+      if (!m_result)
+        return {};
+
+      return *(*m_result);
     }
 
   private:
-    tmp_val m_result;
+    val_opt m_result;
     tmp_store m_inFlight;
 
     entity_vals m_entityValues;

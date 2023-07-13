@@ -518,9 +518,10 @@ namespace tnac::eval
       if (m_curEntity != invalidEnt)
       {
         m_registry.register_entity(m_curEntity, std::move(val));
+        return;
       }
 
-      m_registry.register_entity({}, val);
+      m_registry.push(std::move(val));
     }
 
     //
