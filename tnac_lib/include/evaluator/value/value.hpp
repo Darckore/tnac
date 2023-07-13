@@ -132,7 +132,7 @@ namespace tnac::eval
     // The caller must ensure that the T type is correct by checking the type id
     // 
     // E.g.
-    //  if(val.id() == id_from_type<cast_to_type>)
+    //  if(val.id() == utils::type_to_id_v<cast_to_type>)
     //  {
     //    auto v = val.get<cast_to_type>();
     //  }
