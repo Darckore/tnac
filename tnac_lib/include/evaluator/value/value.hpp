@@ -219,11 +219,13 @@ namespace tnac::eval
   public:
     CLASS_SPECIALS_NOCOPY_CUSTOM(temporary);
 
-    temporary() = default;
-
     template <detail::expr_result ValueType>
     explicit temporary(ValueType raw) noexcept :
       m_raw{ std::move(raw) }
+    {}
+
+    temporary() noexcept :
+      temporary{ invalid_val_t{} }
     {}
 
     value operator*() const noexcept
