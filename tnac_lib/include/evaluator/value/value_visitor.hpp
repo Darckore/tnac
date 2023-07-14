@@ -474,9 +474,9 @@ namespace tnac::eval
     }
 
     template <detail::generic_type T>
-    arr_t to_unit_array(const T& val) noexcept
+    auto to_unit_array(const T& val) noexcept
     {
-      registry::val_array arr;
+      arr_t arr;
       arr.emplace_back(val);
       return arr;
     }
@@ -485,20 +485,16 @@ namespace tnac::eval
       requires (!is_same_noquals_v<T, array_type>)
     void visit_binary(array_type l, T r, val_ops op) noexcept
     {
-      utils::unused(l, r, op);
-      //auto arr = to_unit_array(r);
-      //auto res = visit_binary(l, array_type{ arr }, op);
-      //return res;
+      auto rhs = to_unit_array(r);
+      visit_binary(std::move(l), array_type{ rhs }, op);
     }
 
     template <detail::generic_type T>
       requires (!is_same_noquals_v<T, array_type>)
     void visit_binary(T l, array_type r, val_ops op) noexcept
     {
-      utils::unused(l, r, op);
-      //auto arr = to_unit_array(l);
-      //auto res = visit_binary(array_type{ arr }, r, op);
-      //return res;
+      auto lhs = to_unit_array(l);
+      visit_binary(array_type{ lhs }, std::move(r), op);
     }
 
   private:
