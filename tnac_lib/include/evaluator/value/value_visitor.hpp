@@ -458,32 +458,27 @@ namespace tnac::eval
     template <>
     void visit_binary(array_type l, array_type r, val_ops op) noexcept
     {
-      utils::unused(l, r, op);
-      //const auto newSz = l->size() * r->size();
-      //auto&& newArr = m_registry.allocate_array(m_curEntity, newSz);
-      //for (auto el : *l)
-      //{
-      //  for (auto er : *r)
-      //  {
-      //    auto&& newVal = newArr.emplace_back();
-      //    newVal = visit_binary(&newVal, el, er, op);
-      //  }
-      //}
+      const auto lsz = l->size();
+      const auto rsz = r->size();
+      const auto newSz = lsz * rsz;
 
-      //return make_array(m_curEntity, newArr);
+      for (auto&& el : *l)
+      {
+        for (auto&& er : *r)
+        {
+          visit_binary(*el, *er, op);
+        }
+      }
+
+      make_array(newSz);
     }
 
     template <detail::generic_type T>
     arr_t to_unit_array(const T& val) noexcept
     {
-      utils::unused(val); return {};
-      //registry::val_array arr;
-      //eval::value elem;
-      //if constexpr (!is_same_noquals_v<T, invalid_val_t>)
-      //  elem = { &val };
-      //
-      //arr.emplace_back(elem);
-      //return arr;
+      registry::val_array arr;
+      arr.emplace_back(val);
+      return arr;
     }
 
     template <detail::generic_type T>
