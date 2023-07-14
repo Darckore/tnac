@@ -241,6 +241,10 @@ namespace tnac::eval
     void push_array(arr_wrapper aw) noexcept
     {
       auto&& arr = *aw;
+      for (auto&& elem : arr)
+      {
+        ref(*elem);
+      }
       auto val = array_type{ arr, aw.id() };
       push(val);
     }
