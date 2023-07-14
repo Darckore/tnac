@@ -44,6 +44,7 @@ namespace tnac::eval
       value_type m_value;
       ref_count m_ref{};
     };
+
   }
 
   //
@@ -55,8 +56,7 @@ namespace tnac::eval
     using value_type   = value;
     using entity_id    = std::uintptr_t;
     using ent_id_list  = std::vector<entity_id>;
-    using stored_val_t = underlying_val;
-    using entity_vals  = std::unordered_map<entity_id, stored_val_t>;
+    using entity_vals  = std::unordered_map<entity_id, temporary>;
 
     using val_array    = array_type::value_type;
     using ref_arr      = detail::ref_counted<val_array>;
@@ -144,11 +144,21 @@ namespace tnac::eval
     //
     void register_entity(entity_id id, detail::generic_type auto val) noexcept
     {
-      using val_t = std::remove_cvref_t<decltype(val)>;
-      auto&& valStore = m_entityValues[id];
-      valStore = std::move(val);
-      auto tmp = value{ &std::get<val_t>(valStore) };
-      utils::unused(tmp);
+      auto&& stored = m_entityValues[id];
+      unref(*stored);
+      stored = std::move(val);
+    }
+
+    //
+    // Retrueves a stored entity value
+    //
+    value value_for(entity_id id) noexcept
+    {
+      auto item = m_entityValues.find(id);
+      if (item == m_entityValues.end())
+        return {};
+
+      return *(item->second);
     }
 
     //

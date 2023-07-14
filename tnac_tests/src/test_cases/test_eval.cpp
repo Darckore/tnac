@@ -319,55 +319,15 @@ namespace tnac_tests
 
   TEST(evaluation, t_short_circuit)
   {
-    tnac::packages::tnac_core core{ 0 };
-
-    static constexpr std::array samples {
-      "_true  && _true"sv,
-      "_true  && _false"sv,
-      "_false && _true"sv,
-      "_false && _false"sv,
-      "_true  || _true"sv,
-      "_true  || _false"sv,
-      "_false || _true"sv,
-      "_false || _false"sv
-    };
-
-    auto evaluate = [&](auto idx) noexcept
-    {
-      auto cur = core.get_parser()(samples[idx]);
-      core.get_eval()(cur);
-      return utils::try_cast<tnac::ast::binary_expr>(cur);
-    };
-
-    using val = std::optional<bool>;
-    auto idx = 0u;
-    auto check = [&idx](auto expr, val overall, val l, val r) noexcept
-    {
-      auto exprVal = detail::to_bool(expr->value());
-      EXPECT_EQ(exprVal, overall) << "Sample " << idx << " entire";
-      auto lVal    = detail::to_bool(expr->left().value());
-      EXPECT_EQ(lVal, l) << "Sample " << idx << " left";
-      auto rVal    = detail::to_bool(expr->right().value());
-      EXPECT_EQ(rVal, r) << "Sample " << idx << " right";
-      ++idx;
-    };
-
-    // _true  && _true
-    auto curNode = evaluate(0); check(curNode, true, true, true);
-    // _true  && _false
-    curNode = evaluate(1); check(curNode, false, true, false);
-    // _false && _true
-    curNode = evaluate(2); check(curNode, false, false, {});
-    // _false && _false
-    curNode = evaluate(3); check(curNode, false, false, {});
-    // _true  || _true
-    curNode = evaluate(4); check(curNode, true, true, {});
-    // _true  || _false
-    curNode = evaluate(5); check(curNode, true, true, {});
-    // _false || _true
-    curNode = evaluate(6); check(curNode, true, false, true);
-    // _false || _false
-    curNode = evaluate(7); check(curNode, false, false, false);
+    using detail::check_eval;
+    check_eval("_true  && _true"sv,  true);
+    check_eval("_true  && _false"sv, false);
+    check_eval("_false && _true"sv,  false);
+    check_eval("_false && _false"sv, false);
+    check_eval("_true  || _true"sv,  true);
+    check_eval("_true  || _false"sv, true);
+    check_eval("_false || _true"sv,  true);
+    check_eval("_false || _false"sv, false);
   }
 
   TEST(evaluation, t_binary)

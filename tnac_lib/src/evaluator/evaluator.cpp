@@ -177,19 +177,23 @@ namespace tnac
 
   void evaluator::visit(ast::assign_expr& assign) noexcept
   {
-    utils::unused(assign);
-    //if (return_path())
-    //  return;
+    if (return_path())
+      return;
 
-    //auto&& left = assign.left();
-    //if (auto assignee = utils::try_cast<ast::id_expr>(&left))
-    //{
-    //  auto&& lhs = assignee->symbol();
-    //  eval_assign(lhs, assign.right().value());
-    //  assignee->eval_result(lhs.value());
-    //}
+    auto assigned = m_visitor.fetch_next();
+    m_visitor.fetch_next(); // lhs value, we need to remove it here no matter what
 
-    //assign.eval_result(left.value());
+    auto&& left = assign.left();
+    if (auto assignee = utils::try_cast<ast::id_expr>(&left))
+    {
+      auto&& lhs = assignee->symbol();
+      eval_assign(lhs, *assigned);
+      m_visitor.push_last();
+    }
+    else
+    {
+      m_visitor.clear_result();
+    }
   }
 
   void evaluator::visit(ast::binary_expr& binary) noexcept
@@ -313,46 +317,40 @@ namespace tnac
 
   void evaluator::visit(ast::id_expr& id) noexcept
   {
-    utils::unused(id);
-    //if (return_path())
-    //  return;
+    if (return_path())
+      return;
 
-    //auto&& sym = id.symbol();
-    //auto val = sym.value();
-    //m_visitor.visit_assign(nullptr, val);
-    //id.eval_result(val);
+    auto&& sym = id.symbol();
+    m_visitor.push_value(sym.value());
   }
 
-  void evaluator::visit(ast::result_expr& res) noexcept
+  void evaluator::visit(ast::result_expr& ) noexcept
   {
-    utils::unused(res);
-    //if (return_path())
-    //  return;
+    if (return_path())
+      return;
 
-    //res.eval_result(m_visitor.last_result(&res));
+    m_visitor.push_last();
   }
 
   // Decls
 
   void evaluator::visit(ast::decl_expr& expr) noexcept
   {
-    utils::unused(expr);
-    //if (return_path())
-    //  return;
+    if (return_path())
+      return;
 
-    //auto&& sym = expr.declarator().symbol();
-    //auto val = sym.value();
-    //m_visitor.visit_assign(nullptr, val);
-    //expr.eval_result(val);
+    auto&& sym = expr.declarator().symbol();
+    auto val = sym.value();
+    m_visitor.push_value(val);
   }
 
   void evaluator::visit(ast::var_decl& decl) noexcept
   {
-    utils::unused(decl);
-    //if (return_path())
-    //  return;
+    if (return_path())
+      return;
 
-    //eval_assign(decl.symbol(), decl.initialiser().value());
+    auto assigned = m_visitor.fetch_next();
+    eval_assign(decl.symbol(), *assigned);
   }
 
   void evaluator::visit(ast::func_decl& decl) noexcept
@@ -516,7 +514,7 @@ namespace tnac
 
   bool evaluator::preview(ast::scope& scope) noexcept
   {
-    utils::unused(scope); return false;
+    utils::unused(scope); return !return_path();
     //const auto returning = return_path();
     //auto callable = try_get_callable(scope);
     //if (!callable)
@@ -577,8 +575,7 @@ namespace tnac
 
   void evaluator::eval_assign(semantics::symbol& sym, eval::value rhs) noexcept
   {
-    utils::unused(sym, rhs);
-    // sym.eval_result(m_visitor.visit_assign(&sym, rhs));
+    sym.eval_result(m_visitor.visit_assign(&sym, rhs));
   }
 
   void evaluator::make_function(semantics::function& sym) noexcept

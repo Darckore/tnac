@@ -621,7 +621,7 @@ namespace tnac::eval
     }
 
     //
-    // Pushes the given value to the top of the stack
+    // Pushes the given value to the stack
     //
     void push_value(value val) noexcept
     {
@@ -629,6 +629,14 @@ namespace tnac::eval
         {
           reg_value(std::move(v));
         });
+    }
+
+    //
+    // Pushes the last result to the stack
+    //
+    void push_last() noexcept
+    {
+      push_value(last());
     }
 
     //
@@ -643,7 +651,7 @@ namespace tnac::eval
           visit_assign(std::move(v));
         });
 
-      return {};
+      return m_registry.value_for(m_curEntity);
     }
 
     //
@@ -696,14 +704,6 @@ namespace tnac::eval
     void visit_bool_literal(bool value) noexcept
     {
       return reg_value(value);
-    }
-
-    //
-    // Makes an array instance based on the underlying data
-    //
-    void make_array(arr_t& data) noexcept
-    {
-      reg_value(array_type{ data });
     }
 
     //
