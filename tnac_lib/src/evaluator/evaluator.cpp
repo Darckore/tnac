@@ -473,36 +473,33 @@ namespace tnac
 
   bool evaluator::preview(ast::cond_short& expr) noexcept
   {
-    utils::unused(expr);
-    //if (return_path())
-    //  return false;
+    if (return_path())
+      return false;
 
-    //auto&& cond = expr.cond();
-    //base::operator()(&cond);
-    //ast::expr* winner{};
-    //if (auto condVal = cond.value(); to_bool(condVal))
-    //{
-    //  if (!expr.has_true())
-    //  {
-    //    expr.eval_result(m_visitor.visit_assign(&expr, condVal));
-    //    return false;
-    //  }
-    //  winner = &expr.on_true();
-    //}
-    //else
-    //{
-    //  if (!expr.has_false())
-    //  {
-    //    expr.eval_result(m_visitor.get_empty());
-    //    return false;
-    //  }
-    //  winner = &expr.on_false();
-    //}
+    auto&& cond = expr.cond();
+    traverse(&cond);
+    ast::expr* winner{};
+    if (auto condVal = m_visitor.fetch_next(); to_bool(*condVal))
+    {
+      if (!expr.has_true())
+      {
+        m_visitor.push_value(*condVal);
+        return false;
+      }
+      winner = &expr.on_true();
+    }
+    else
+    {
+      if (!expr.has_false())
+      {
+        m_visitor.clear_result();
+        return false;
+      }
+      winner = &expr.on_false();
+    }
 
-    //UTILS_ASSERT(winner);
-    //base::operator()(winner);
-    //expr.eval_result(m_visitor.visit_assign(&expr, winner->value()));
-
+    UTILS_ASSERT(winner);
+    traverse(winner);
     return false;
   }
 
