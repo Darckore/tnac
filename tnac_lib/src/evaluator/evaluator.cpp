@@ -231,23 +231,20 @@ namespace tnac
 
   void evaluator::visit(ast::call_expr& expr) noexcept
   {
-    utils::unused(expr);
-    //if (return_path())
-    //  return;
+    if (return_path())
+      return;
 
-    //auto func = expr.callable().value();
-    //if (auto arr = func.try_get<eval::array_type>())
-    //{
-    //  make_arr_call(*arr, expr);
-    //}
-    //else
-    //{
-    //  auto funcType = func.try_get<eval::function_type>();
-    //  make_call(funcType, expr);
-    //}
-
-    //auto res = m_visitor.last_result(&expr);
-    //expr.eval_result(res);
+    auto args = m_visitor.collect_args_locally(expr.args().size());
+    auto callee = m_visitor.fetch_next();
+    if (auto arr = (*callee).try_get<eval::array_type>())
+    {
+      make_arr_call(*arr, args, expr);
+    }
+    else
+    {
+      auto funcType = (*callee).try_get<eval::function_type>();
+      make_call(funcType, args, expr);
+    }
   }
 
   void evaluator::visit(ast::ret_expr& ) noexcept
@@ -572,9 +569,9 @@ namespace tnac
     sym.eval_result(m_visitor.make_function(&sym, eval::function_type{ sym }));
   }
 
-  void evaluator::make_arr_call(eval::array_type arr, ast::call_expr& expr) noexcept
+  void evaluator::make_arr_call(eval::array_type arr, const arr_t& args, ast::call_expr& expr) noexcept
   {
-    utils::unused(arr, expr);
+    utils::unused(arr, expr, args);
     //auto&& callRes = m_visitor.new_array(&expr, arr->size());
     //auto&& args = expr.args();
     //const auto argCount = args.size();
@@ -593,9 +590,9 @@ namespace tnac
     //m_visitor.make_array(&expr, callRes);
   }
 
-  void evaluator::make_call(eval::function_type* func, ast::call_expr& expr) noexcept
+  void evaluator::make_call(eval::function_type* func, const arr_t& args, ast::call_expr& expr) noexcept
   {
-    utils::unused(func, expr);
+    utils::unused(func, expr, args);
     //auto&& at = expr.pos();
     //if (!func)
     //{

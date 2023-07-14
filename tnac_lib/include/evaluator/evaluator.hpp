@@ -27,6 +27,7 @@ namespace tnac
     using err_handler_t = std::function<void(const token&, string_t)>;
     using arg_list_t    = ast::invocation::arg_list;
     using size_type     = arg_list_t::size_type;
+    using arr_t         = eval::value_visitor::arr_t;
 
   public:
     CLASS_SPECIALS_NONE(evaluator);
@@ -208,12 +209,12 @@ namespace tnac
     //
     // Calls the array of functions with a single expression
     //
-    void make_arr_call(eval::array_type arr, ast::call_expr& expr) noexcept;
+    void make_arr_call(eval::array_type arr, const arr_t& args, ast::call_expr& expr) noexcept;
 
     //
     // Calls the specified function with the given args
     //
-    void make_call(eval::function_type* func, ast::call_expr& expr) noexcept;
+    void make_call(eval::function_type* func, const arr_t& args, ast::call_expr& expr) noexcept;
 
     //
     // Returns true if a return is active

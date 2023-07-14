@@ -749,6 +749,19 @@ namespace tnac::eval
       m_registry.push_array(arr);
     }
 
+    //
+    // Creates a temporary local array and returns it without pushing it into
+    // the registry. The result is pre-filled with args from the current stack
+    // This is required for call expressions
+    //
+    arr_t collect_args_locally(size_type count) noexcept
+    {
+      arr_t arr;
+      arr.resize(count);
+      fill_args(arr, count);
+      return arr;
+    }
+
   private:
     static constexpr auto invalidEnt = detail::ent_id::invalid_id();
     entity_id m_curEntity{ invalidEnt };

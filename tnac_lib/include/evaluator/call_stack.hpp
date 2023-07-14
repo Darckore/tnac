@@ -28,8 +28,8 @@ namespace tnac::eval
     using func_name  = std::string_view;
     using value_list = std::vector<value>;
     using sym_t      = semantics::function;
-    using args_t     = ast::call_expr::arg_list;
     using vis_t      = eval::value_visitor;
+    using args_t     = vis_t::arr_t;
 
     using frame = detail::stack_frame;
     using stack = std::vector<frame>;
