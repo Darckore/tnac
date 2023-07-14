@@ -57,6 +57,15 @@ namespace tnac
         return utils::eq_any(tk, tok_kind::LogAnd, tok_kind::LogOr);
       }
 
+      inline auto is_direct_scope_child(const ast::node* node) noexcept
+      {
+        if (!node)
+          return false;
+
+        auto parent = node->parent();
+        return parent && parent->is(ast::node_kind::Scope);
+      }
+
       //
       // Helper object for instantiations
       //
@@ -155,8 +164,12 @@ namespace tnac
 
   void evaluator::operator()(ast::node* root) noexcept
   {
-    m_return = false;
-    base::operator()(root);
+    traverse(root);
+
+    // Remove the in-flight temporary value of the previous expression
+    // (if we're given a part of the ast rather than an entire scope)
+    if (detail::is_direct_scope_child(root))
+      exit_child();
   }
 
   // Expressions
@@ -378,7 +391,7 @@ namespace tnac
       return true;
 
     auto&& lhs = expr.left();
-    base::operator()(&lhs);
+    traverse(&lhs);
 
     auto lval = to_bool(*m_visitor.fetch_next());
 
@@ -391,7 +404,7 @@ namespace tnac
     else
     {
       auto&& rhs = expr.right();
-      base::operator()(&rhs);
+      traverse(&rhs);
       auto rval  = to_bool(*m_visitor.fetch_next());
       res = (opcode == tok_kind::LogAnd) ? (lval && rval) : (lval || rval);
     }
@@ -533,6 +546,11 @@ namespace tnac
   }
 
   // Private members
+
+  void evaluator::traverse(ast::node* root) noexcept
+  {
+    base::operator()(root);
+  }
 
   void evaluator::on_error(const token& pos, string_t msg) noexcept
   {

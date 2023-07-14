@@ -181,6 +181,11 @@ namespace tnac
 
   private:
     //
+    // Starts the traversal
+    //
+    void traverse(ast::node* root) noexcept;
+
+    //
     // Produces an evaluation error
     //
     void on_error(const token& pos, string_t msg) noexcept;
