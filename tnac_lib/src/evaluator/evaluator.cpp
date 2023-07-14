@@ -113,9 +113,10 @@ namespace tnac
         {
           auto&& exprArgs = expr.args();
           std::array<eval::temporary, max> args{};
-          for (auto idx = size_type{}; idx < max; ++idx)
+          for (auto idx = max; idx > size_type{}; --idx)
           {
-            args[idx] = extract(exprArgs, idx);
+            const auto itemIndex = idx - 1;
+            args[itemIndex] = extract(exprArgs, itemIndex);
           }
           m_visitor.instantiate<value_type>(std::move(args[Seq])...);
         }
