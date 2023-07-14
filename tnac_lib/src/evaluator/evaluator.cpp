@@ -408,65 +408,80 @@ namespace tnac
 
   bool evaluator::preview(ast::cond_expr& expr) noexcept
   {
-    utils::unused(expr);
-    //if (return_path())
-    //  return false;
+    if (return_path())
+      return false;
 
-    //auto&& cond = expr.cond();
-    //base::operator()(&cond);
-    //auto condVal = cond.value();
+    auto&& cond = expr.cond();
+    traverse(&cond);
+    auto condVal = m_visitor.fetch_next();
 
-    //ast::pattern* trueBranch{};
-    //ast::pattern* defaultBranch{};
-    //using eval::val_ops;
-    //for (auto child : expr.patterns().children())
-    //{
-    //  auto&& pattern = utils::cast<ast::pattern>(*child);
-    //  auto&& matcher = utils::cast<ast::matcher>(pattern.matcher());
-    //  eval::value currentMatch{};
-    //  if (matcher.is_default())
-    //  {
-    //    defaultBranch = &pattern;
-    //    continue;
-    //  }
-    //  else if (matcher.is_unary())
-    //  {
-    //    const auto opcode = detail::conv_unary(matcher.pos().m_kind);
-    //    currentMatch = m_visitor.visit_unary(&matcher, condVal, opcode);
-    //  }
-    //  else
-    //  {
-    //    auto&& checkedExpr = matcher.checked();
-    //    base::operator()(&checkedExpr);
-    //    auto checkedVal = checkedExpr.value();
-    //    auto opcode = matcher.has_implicit_op() ?
-    //      val_ops::Equal :
-    //      detail::conv_binary(matcher.pos().m_kind);
+    ast::pattern* trueBranch{};
+    ast::pattern* defaultBranch{};
+    using eval::val_ops;
+    for (auto child : expr.patterns().children())
+    {
+      if (!child->is(ast::node_kind::Pattern))
+      {
+        m_visitor.clear_result();
+        return false;
+      }
 
-    //    currentMatch = m_visitor.visit_binary(&matcher, condVal, checkedVal, opcode);
-    //  }
+      auto&& pattern = utils::cast<ast::pattern>(*child);
+      
+      if (!pattern.matcher().is(ast::node_kind::Matcher))
+      {
+        m_visitor.clear_result();
+        return false;
+      }
 
-    //  matcher.eval_result(currentMatch);
-    //  if (to_bool(currentMatch))
-    //  {
-    //    trueBranch = &pattern;
-    //    break;
-    //  }
-    //}
+      auto&& matcher = utils::cast<ast::matcher>(pattern.matcher());
+      
+      eval::temporary currentMatch{};
+      if (matcher.is_default())
+      {
+        defaultBranch = &pattern;
+        continue;
+      }
+      else if (matcher.is_unary())
+      {
+        const auto opcode = detail::conv_unary(matcher.pos().m_kind);
+        m_visitor.visit_unary(*condVal, opcode);
+        currentMatch = m_visitor.fetch_next();
+      }
+      else
+      {
+        auto&& checkedExpr = matcher.checked();
+        traverse(&checkedExpr);
+        auto checkedVal = m_visitor.fetch_next();
+        auto opcode = matcher.has_implicit_op() ?
+          val_ops::Equal :
+          detail::conv_binary(matcher.pos().m_kind);
 
-    //if (auto winner = (trueBranch ? trueBranch : defaultBranch))
-    //{
-    //  if (auto&& body = winner->body(); !body.children().empty())
-    //    base::operator()(&winner->body());
-    //  else
-    //    m_visitor.get_empty();
+        m_visitor.visit_binary(*condVal, *checkedVal, opcode);
+        currentMatch = m_visitor.fetch_next();
+      }
 
-    //  expr.eval_result(m_visitor.last_result(&expr));
-    //}
-    //else
-    //{
-    //  expr.eval_result(m_visitor.get_empty());
-    //}
+      if (to_bool(*currentMatch))
+      {
+        trueBranch = &pattern;
+        break;
+      }
+    }
+
+    if (auto winner = (trueBranch ? trueBranch : defaultBranch))
+    {
+      if (auto&& body = winner->body(); !body.children().empty())
+      {
+        traverse(&winner->body());
+        m_visitor.push_last();
+      }
+      else
+        m_visitor.clear_result();
+    }
+    else
+    {
+      m_visitor.clear_result();
+    }
 
     return false;
   }
