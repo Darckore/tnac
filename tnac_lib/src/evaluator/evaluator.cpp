@@ -355,22 +355,18 @@ namespace tnac
 
   void evaluator::visit(ast::func_decl& decl) noexcept
   {
-    utils::unused(decl);
-    //if (return_path())
-    //  return;
+    if (return_path())
+      return;
 
-    //auto sym = utils::try_cast<semantics::function>(&decl.symbol());
+    auto sym = utils::try_cast<semantics::function>(&decl.symbol());
 
-    //if (!sym)
-    //{
-    //  on_error(decl.pos(), "Invalid symbol type"sv);
-    //  return;
-    //}
+    if (!sym)
+    {
+      on_error(decl.pos(), "Invalid symbol type"sv);
+      return;
+    }
 
-    //if (sym->value())
-    //  return;
-
-    //make_function(*sym);
+    make_function(*sym);
   }
 
   // Previews
@@ -580,8 +576,10 @@ namespace tnac
 
   void evaluator::make_function(semantics::function& sym) noexcept
   {
-    utils::unused(sym);
-    // sym.eval_result(m_visitor.make_function(&sym, eval::function_type{ sym }));
+    if (sym.value())
+      return;
+
+    sym.eval_result(m_visitor.make_function(&sym, eval::function_type{ sym }));
   }
 
   void evaluator::make_arr_call(eval::array_type arr, ast::call_expr& expr) noexcept

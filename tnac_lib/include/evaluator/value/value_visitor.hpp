@@ -586,7 +586,7 @@ namespace tnac::eval
     {
       value_guard _{ m_curEntity, *ent };
       reg_value(f);
-      return {};
+      return m_registry.value_for(m_curEntity);
     }
 
     //
