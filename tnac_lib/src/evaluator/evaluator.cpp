@@ -165,6 +165,7 @@ namespace tnac
 
   void evaluator::operator()(ast::node* root) noexcept
   {
+    value_guard _{ m_return };
     traverse(root);
 
     // Remove the in-flight temporary value of the previous expression
@@ -261,15 +262,12 @@ namespace tnac
     //expr.eval_result(res);
   }
 
-  void evaluator::visit(ast::ret_expr& ret) noexcept
+  void evaluator::visit(ast::ret_expr& ) noexcept
   {
-    utils::unused(ret);
-    //if (return_path())
-    //  return;
+    if (return_path())
+      return;
 
-    //auto returnedVal = m_visitor.visit_assign(&ret, ret.returned_value().value());
-    //ret.eval_result(returnedVal);
-    //m_return = true;
+    m_return = true;
   }
 
   void evaluator::visit(ast::array_expr& arr) noexcept

@@ -135,6 +135,13 @@
     <DisplayString>{m_kind,en} ({m_pos.m_value,sb})</DisplayString>
   </Type>
 
+  <Type Name="tnac::ast::ret_expr">
+    <DisplayString>{m_kind,en}</DisplayString>
+    <Expand>
+      <Item Name="[expr]">m_retVal</Item>
+    </Expand>
+  </Type>
+
   <Type Name="tnac::ast::scope">
     <DisplayString>{m_kind,en}</DisplayString>
     <Expand>
