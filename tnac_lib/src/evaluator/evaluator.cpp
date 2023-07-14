@@ -501,28 +501,27 @@ namespace tnac
 
   bool evaluator::preview(ast::scope& scope) noexcept
   {
-    utils::unused(scope); return !return_path();
-    //const auto returning = return_path();
-    //auto callable = try_get_callable(scope);
-    //if (!callable)
-    //  return !returning;
+    const auto returning = return_path();
+    auto callable = try_get_callable(scope);
+    if (!callable)
+      return !returning;
 
-    //if(!returning)
-    //  m_callStack.prologue(*callable, m_visitor);
+    if(!returning)
+      m_callStack.prologue(*callable, m_visitor);
 
-    //return !returning;
+    return !returning;
   }
 
   void evaluator::visit(ast::scope& scope) noexcept
   {
-    utils::unused(scope);
-    //auto callable = try_get_callable(scope);
-    //if (!callable)
-    //  return;
+    auto callable = try_get_callable(scope);
+    if (!callable)
+      return;
 
-    //auto resVal = m_visitor.last_result(&callable->declarator());
-    //m_callStack.epilogue(*callable, m_visitor);
-    //m_visitor.visit_assign(nullptr, resVal);
+    m_visitor.push_last();
+    auto resVal = m_visitor.fetch_next();
+    m_callStack.epilogue(*callable, m_visitor);
+    m_visitor.push_value(*resVal);
   }
 
   bool evaluator::exit_child() noexcept
