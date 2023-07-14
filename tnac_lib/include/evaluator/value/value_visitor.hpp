@@ -45,6 +45,15 @@ namespace tnac::eval
                                RelLess, RelLessEq, RelGr, RelGrEq,
                                Equal, NEqual);
     }
+  
+    template <typename T>
+    concept value_container = requires (T& t)
+    {
+      typename T::value_type;
+      typename T::size_type;
+      requires std::same_as<typename T::value_type, temporary>;
+      { t[typename T::size_type{}] } -> std::same_as<temporary&>;
+    };
   }
 
 
@@ -731,8 +740,26 @@ namespace tnac::eval
     }
 
     //
-    // 
+    // Fills the specified number of arg values in the given container
     //
+    void fill_args(detail::value_container auto& args, size_type count) noexcept
+    {
+      for (auto idx = count; idx > size_type{}; --idx)
+      {
+        args[idx - 1] = fetch_next();
+      }
+    }
+
+    //
+    // Creates and registers an array
+    //
+    void make_array(size_type count) noexcept
+    {
+      auto arr = m_registry.make_array(count);
+      arr->resize(count);
+      fill_args(*arr, count);
+      m_registry.push_array(arr);
+    }
 
   private:
     static constexpr auto invalidEnt = detail::ent_id::invalid_id();

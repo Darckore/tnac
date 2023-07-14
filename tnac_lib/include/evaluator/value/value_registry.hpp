@@ -84,6 +84,15 @@ namespace tnac::eval
         return FROM_CONST(operator->);
       }
 
+      const value_type& operator*() const noexcept
+      {
+        return *m_val;
+      }
+      value_type& operator*() noexcept
+      {
+        return FROM_CONST(operator*);
+      }
+
       auto id() const noexcept
       {
         return m_id;
@@ -104,11 +113,11 @@ namespace tnac::eval
   public:
     using value_type   = value;
     using entity_id    = std::uintptr_t;
-    using ent_id_list  = std::vector<entity_id>;
     using entity_vals  = std::unordered_map<entity_id, temporary>;
 
     using val_array    = array_type::value_type;
     using ref_arr      = detail::ref_counted<val_array>;
+    using arr_wrapper  = detail::rt_wrapper<val_array>;
     using array_store  = std::unordered_map<entity_id, ref_arr>;
     using size_type    = val_array::size_type;
 
@@ -127,7 +136,9 @@ namespace tnac::eval
     //
     void update_result(detail::generic_type auto val) noexcept
     {
+      unref(*m_result);
       m_result = std::move(val);
+      ref(*m_result);
     }
 
     //
@@ -167,12 +178,6 @@ namespace tnac::eval
       auto refArr = get_array(id);
       if (!refArr)
         return;
-
-      if (!refArr->ref_count())
-      {
-        m_pendingArrays.emplace_back(id);
-        return;
-      }
 
       refArr->unref();
     }
@@ -227,8 +232,17 @@ namespace tnac::eval
       UTILS_ASSERT(ok); // This id is not taken yet
 
       auto&& result = inserted->second;
-      result.ref();
-      return detail::rt_wrapper{ result.value(), m_arrayId++ };
+      return arr_wrapper{ result.value(), m_arrayId++ };
+    }
+
+    //
+    // Registers an array from a ref counted wrapper
+    //
+    void push_array(arr_wrapper aw) noexcept
+    {
+      auto&& arr = *aw;
+      auto val = array_type{ arr, aw.id() };
+      push(val);
     }
 
     //
@@ -236,7 +250,9 @@ namespace tnac::eval
     //
     void push(detail::generic_type auto val) noexcept
     {
-      m_inFlight.push(tmp_val{ val });
+      auto tmp = tmp_val{ val };
+      ref(*tmp);
+      m_inFlight.push(std::move(tmp));
       update_result(std::move(val));
     }
 
@@ -258,6 +274,7 @@ namespace tnac::eval
       auto&& stored = m_entityValues[id];
       unref(*stored);
       stored = std::move(val);
+      ref(*stored);
     }
 
     //
@@ -287,7 +304,5 @@ namespace tnac::eval
     entity_vals m_entityValues;
     array_store m_arrays;
     size_type m_arrayId{};
-
-    ent_id_list m_pendingArrays;
   };
 }

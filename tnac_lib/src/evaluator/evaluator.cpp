@@ -113,11 +113,7 @@ namespace tnac
         {
           auto&& exprArgs = expr.args();
           std::array<eval::temporary, max> args{};
-          for (auto idx = max; idx > size_type{}; --idx)
-          {
-            const auto itemIndex = idx - 1;
-            args[itemIndex] = extract(exprArgs, itemIndex);
-          }
+          m_visitor.fill_args(args, exprArgs.size());
           m_visitor.instantiate<value_type>(std::move(args[Seq])...);
         }
 
@@ -137,14 +133,6 @@ namespace tnac
           on_error(expr.type_name(), msg);
 
           return false;
-        }
-
-        eval::temporary extract(const arg_list_t& args, size_type idx) noexcept
-        {
-          if (args.size() <= idx)
-            return {};
-
-          return m_visitor.fetch_next();
         }
 
       private:
@@ -272,18 +260,11 @@ namespace tnac
 
   void evaluator::visit(ast::array_expr& arr) noexcept
   {
-    utils::unused(arr);
-    //if (return_path())
-    //  return;
+    if (return_path())
+      return;
 
-    //auto&& elements = arr.elements();
-    //const auto arrSz = elements.size();
-    //auto&& newArr = m_visitor.new_array(&arr, arrSz);
-    //for (auto elem : elements)
-    //{
-    //  newArr.emplace_back(elem->value());
-    //}
-    //arr.eval_result(m_visitor.make_array(&arr, newArr));
+    const auto arrSz = arr.elements().size();
+    m_visitor.make_array(arrSz);
   }
 
   void evaluator::visit(ast::paren_expr& ) noexcept
