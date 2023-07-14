@@ -14,7 +14,7 @@ namespace tnac::eval
     class ref_counted
     {
     public:
-      using ref_count  = std::size_t;
+      using rc_type    = std::size_t;
       using value_type = T;
 
     public:
@@ -28,21 +28,28 @@ namespace tnac::eval
       {
         return m_value;
       }
+      value_type& value() noexcept
+      {
+        return FROM_CONST(value);
+      }
 
       void ref() noexcept
       {
         ++m_ref;
       }
-
       void unref() noexcept
       {
         if (m_ref)
           --m_ref;
       }
+      rc_type ref_count() const noexcept
+      {
+        return m_ref;
+      }
 
     private:
       value_type m_value;
-      ref_count m_ref{};
+      rc_type m_ref{};
     };
 
   }
