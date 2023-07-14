@@ -189,8 +189,8 @@ namespace tnac
     if (detail::is_logical(opcode))
       return;
 
-    auto left  = m_visitor.fetch_next();
     auto right = m_visitor.fetch_next();
+    auto left  = m_visitor.fetch_next();
     const auto opCode = detail::conv_binary(opcode);
     m_visitor.visit_binary(*left, *right, opCode);
   }
@@ -380,7 +380,7 @@ namespace tnac
     auto&& lhs = expr.left();
     base::operator()(&lhs);
 
-    auto lval = to_bool(m_visitor.last());
+    auto lval = to_bool(*m_visitor.fetch_next());
 
     bool res{};
     if ((!lval && opcode == tok_kind::LogAnd) ||
@@ -392,7 +392,7 @@ namespace tnac
     {
       auto&& rhs = expr.right();
       base::operator()(&rhs);
-      auto rval  = to_bool(m_visitor.last());
+      auto rval  = to_bool(*m_visitor.fetch_next());
       res = (opcode == tok_kind::LogAnd) ? (lval && rval) : (lval || rval);
     }
 

@@ -64,8 +64,7 @@ namespace tnac::eval
     using size_type    = val_array::size_type;
 
     using tmp_val   = temporary;
-    using val_opt   = std::optional<tmp_val>;
-    using tmp_store = std::queue<tmp_val>;
+    using tmp_store = std::stack<tmp_val>;
 
   public:
     CLASS_SPECIALS_NONE_CUSTOM(registry);
@@ -79,7 +78,7 @@ namespace tnac::eval
     //
     void update_result(detail::generic_type auto val) noexcept
     {
-      m_result.emplace(std::move(val));
+      m_result = std::move(val);
     }
 
     //
@@ -91,7 +90,7 @@ namespace tnac::eval
       tmp_val res;
       if (!m_inFlight.empty())
       {
-        res = std::move(m_inFlight.front());
+        res = std::move(m_inFlight.top());
         m_inFlight.pop();
       }
 
@@ -122,7 +121,7 @@ namespace tnac::eval
 
   public:
     //
-    // Pushes a temporary value to the queue and updates the result
+    // Pushes a temporary value to the stack and updates the result
     //
     void push(detail::generic_type auto val) noexcept
     {
@@ -131,7 +130,7 @@ namespace tnac::eval
     }
 
     //
-    // Extracts the next value from the queue and returns it
+    // Extracts the next value from the stack and returns it
     //
     tmp_val consume() noexcept
     {
@@ -157,14 +156,11 @@ namespace tnac::eval
     //
     value_type evaluation_result() const noexcept
     {
-      if (!m_result)
-        return {};
-
-      return *(*m_result);
+      return *m_result;
     }
 
   private:
-    val_opt m_result;
+    tmp_val m_result;
     tmp_store m_inFlight;
 
     entity_vals m_entityValues;

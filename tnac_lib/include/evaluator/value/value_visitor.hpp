@@ -621,7 +621,7 @@ namespace tnac::eval
     }
 
     //
-    // Pushes the given value to the end of the queue
+    // Pushes the given value to the top of the stack
     //
     void push_value(value val) noexcept
     {
@@ -707,7 +707,7 @@ namespace tnac::eval
     }
 
     //
-    // Retrieves the next value from the queue of temporaries
+    // Retrieves the next value from the stack of temporaries
     //
     temporary fetch_next() noexcept
     {

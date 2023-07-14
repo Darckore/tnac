@@ -104,19 +104,9 @@ namespace tnac::ast
     void operator()(node_ptr root) noexcept
     {
       visit_root(root);
-      if (!is_scope(root))
-        exit_child();
     }
 
   private:
-    //
-    // Checks whether a node is a scope
-    //
-    bool is_scope(node_ptr n) noexcept
-    {
-      return n && n->is(node_kind::Scope);
-    }
-
     //
     // Casts itself to a reference to derived
     //
