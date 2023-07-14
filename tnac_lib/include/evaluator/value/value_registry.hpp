@@ -10,6 +10,9 @@ namespace tnac::eval
 {
   namespace detail
   {
+    //
+    // A reference counted type wrapper
+    //
     template <typename T>
     class ref_counted
     {
@@ -50,6 +53,45 @@ namespace tnac::eval
     private:
       value_type m_value;
       rc_type m_ref{};
+    };
+
+
+    //
+    // A wrapper for returning reference counted types
+    //
+    template <typename T>
+    class rt_wrapper final
+    {
+    public:
+      using value_type = T;
+      using id_type    = std::uintptr_t;
+
+    public:
+      CLASS_SPECIALS_NODEFAULT(rt_wrapper);
+
+      rt_wrapper(value_type& val, id_type idx) noexcept :
+        m_val{ &val },
+        m_id{ idx }
+      {}
+
+    public:
+      const value_type* operator->() const noexcept
+      {
+        return m_val;
+      }
+      value_type* operator->() noexcept
+      {
+        return FROM_CONST(operator->);
+      }
+
+      auto id() const noexcept
+      {
+        return m_id;
+      }
+
+    private:
+      value_type* m_val{};
+      id_type m_id{};
     };
 
   }
@@ -105,16 +147,34 @@ namespace tnac::eval
     }
 
     //
+    // Finds an array object by id
+    //
+    ref_arr* get_array(size_type id) noexcept
+    {
+      auto stored = m_arrays.find(id);
+      if (stored == m_arrays.end())
+        return {};
+
+      return &stored->second;
+    }
+
+    //
     // Decreases the ref count for an array
     //
-    void unref_array(array_type& arr) noexcept
+    void unref_array(array_type arr) noexcept
     {
-      auto stored = m_arrays.find(arr.id());
-      if (stored == m_arrays.end())
+      const auto id = arr.id();
+      auto refArr = get_array(id);
+      if (!refArr)
         return;
 
-      auto&& controlBlock = stored->second;
-      controlBlock.unref();
+      if (!refArr->ref_count())
+      {
+        m_pendingArrays.emplace_back(id);
+        return;
+      }
+
+      refArr->unref();
     }
 
     //
@@ -122,11 +182,55 @@ namespace tnac::eval
     //
     void unref(value val) noexcept
     {
-      if (auto arr = val.try_get<array_type>())
-        unref_array(*arr);
+      on_value(val, utils::visitor
+      {
+        [this](auto&&) noexcept {},
+        [this](array_type& arr) { unref_array(arr); }
+      });
+    }
+
+    //
+    // Increases the ref count of an array
+    //
+    void ref_array(array_type arr) noexcept
+    {
+      if (auto refArr = get_array(arr.id()))
+      {
+        refArr->ref();
+      }
+    }
+
+    //
+    // If the underlying type is a reference counted one, increases the ref count
+    //
+    void ref(value val) noexcept
+    {
+      on_value(val, utils::visitor
+      {
+        [this](auto&&) noexcept {},
+        [this](array_type& arr) { ref_array(arr); }
+      });
     }
 
   public:
+    //
+    // Allocates an array object and returns a reference to it
+    //
+    auto make_array(size_type prealloc) noexcept
+    {
+      // todo: find and reuse
+      auto newArr = val_array{};
+      newArr.clear();
+      newArr.reserve(prealloc);
+
+      auto [inserted, ok] = m_arrays.emplace(m_arrayId, ref_arr{ std::move(newArr) });
+      UTILS_ASSERT(ok); // This id is not taken yet
+
+      auto&& result = inserted->second;
+      result.ref();
+      return detail::rt_wrapper{ result.value(), m_arrayId++ };
+    }
+
     //
     // Pushes a temporary value to the stack and updates the result
     //
@@ -182,6 +286,8 @@ namespace tnac::eval
 
     entity_vals m_entityValues;
     array_store m_arrays;
-    ent_id_list m_pendingCleanup;
+    size_type m_arrayId{};
+
+    ent_id_list m_pendingArrays;
   };
 }

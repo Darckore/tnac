@@ -41,7 +41,7 @@
     <Expand>
       <Item Name="[arrays]">m_arrays</Item>
       <Item Name="[entity values]">m_entityValues</Item>
-      <Item Name="[pending cleanup]">m_pendingCleanup</Item>
+      <Item Name="[arrays to delete]">m_pendingArrays</Item>
       <Item Name="[active]">m_inFlight</Item>
       <Item Name="[last result]">m_result</Item>
     </Expand>

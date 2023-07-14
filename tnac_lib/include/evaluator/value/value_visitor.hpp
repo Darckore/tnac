@@ -730,6 +730,9 @@ namespace tnac::eval
       reg_value(eval::invalid_val_t{});
     }
 
+    //
+    // 
+    //
 
   private:
     static constexpr auto invalidEnt = detail::ent_id::invalid_id();
