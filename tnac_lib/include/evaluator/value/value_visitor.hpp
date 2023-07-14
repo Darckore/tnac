@@ -163,21 +163,18 @@ namespace tnac::eval
     template <>
     void visit_unary(array_type operand, val_ops op) noexcept
     {
-      utils::unused(operand, op);
-      //if (utils::eq_any(op, val_ops::LogicalIs, val_ops::LogicalNot))
-      //{
-      //  auto toBool = get_caster<bool_type>()(std::move(operand));
-      //  return visit_unary(toBool.value_or(false), op);
-      //}
+      if (utils::eq_any(op, val_ops::LogicalIs, val_ops::LogicalNot))
+      {
+        auto toBool = get_caster<bool_type>()(std::move(operand));
+        return visit_unary(toBool.value_or(false), op);
+      }
 
-      //auto&& newArr = m_registry.allocate_array(m_curEntity, operand->size());
-      //for (auto el : *operand)
-      //{
-      //  auto&& elemVal = newArr.emplace_back();
-      //  elemVal = visit_unary(&elemVal, el, op);
-      //}
+      for (auto&& el : *operand)
+      {
+        visit_unary(*el, op);
+      }
 
-      //return make_array(m_curEntity, newArr);
+      make_array(operand->size());
     }
 
   private: // Binary operations
