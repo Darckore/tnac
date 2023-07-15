@@ -231,6 +231,27 @@ namespace tnac::eval
     }
 
     //
+    // Unreferences components of an array
+    //
+    void unref_subarrays(const val_array& arr) noexcept
+    {
+      for (auto&& elem : arr)
+      {
+        auto val = *elem;
+        unref(val);
+        if (auto arrT = val.try_get<array_type>())
+        {
+          auto subArr = get_array(arrT->id());
+          if (!subArr)
+            continue;
+
+          unref_subarrays(subArr->value());
+        }
+      }
+    }
+
+
+    //
     // Tries to find an array that could be reused to avoid creating a new one
     //
     auto find_reusable_array(size_type prealloc) noexcept
@@ -244,6 +265,7 @@ namespace tnac::eval
           continue;
 
         auto&& arr = rc.value();
+        unref_subarrays(arr);
         arr.clear();
         arr.reserve(prealloc);
         found.emplace(arr, id);
