@@ -578,6 +578,13 @@ namespace tnac
     {
       auto elemValue = *elem;
 
+      if (auto arrCallable = elemValue.try_get<eval::array_type>())
+      {
+        ++resCount;
+        make_arr_call(*arrCallable, args, expr);
+        continue;
+      }
+
       auto argFunc = elemValue.try_get<eval::function_type>();
       if (!argFunc || (*argFunc)->param_count() != argCount)
         continue;
