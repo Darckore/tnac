@@ -215,6 +215,44 @@ namespace tnac::eval
       });
     }
 
+    //
+    // Creates a new array
+    //
+    auto allocate_array(size_type prealloc) noexcept
+    {
+      auto newArr = val_array{};
+      newArr.reserve(prealloc);
+
+      auto [inserted, ok] = m_arrays.emplace(m_arrayId, ref_arr{ std::move(newArr) });
+      UTILS_ASSERT(ok); // This id is not taken yet
+
+      auto&& result = inserted->second;
+      return arr_wrapper{ result.value(), m_arrayId++ };
+    }
+
+    //
+    // Tries to find an array that could be reused to avoid creating a new one
+    //
+    auto find_reusable_array(size_type prealloc) noexcept
+    {
+      using res_t = std::optional<arr_wrapper>;
+
+      res_t found{};
+      for (auto && [id, rc] : m_arrays)
+      {
+        if (rc.ref_count())
+          continue;
+
+        auto&& arr = rc.value();
+        arr.clear();
+        arr.reserve(prealloc);
+        found.emplace(arr, id);
+        break;
+      }
+
+      return found;
+    }
+
   public:
     //
     // Locks an array to prevent it from being removed or reused while its ref count is 0
@@ -234,20 +272,17 @@ namespace tnac::eval
 
   public:
     //
-    // Allocates an array object and returns a reference to it
+    // Allocates an array object or finds a suitable one to reuse,
+    // and returns a reference to it
     //
     auto make_array(size_type prealloc) noexcept
     {
-      // todo: find and reuse
-      auto newArr = val_array{};
-      newArr.clear();
-      newArr.reserve(prealloc);
+      if (auto reuse = find_reusable_array(prealloc))
+      {
+        return *reuse;
+      }
 
-      auto [inserted, ok] = m_arrays.emplace(m_arrayId, ref_arr{ std::move(newArr) });
-      UTILS_ASSERT(ok); // This id is not taken yet
-
-      auto&& result = inserted->second;
-      return arr_wrapper{ result.value(), m_arrayId++ };
+      return allocate_array(prealloc);
     }
 
     //
