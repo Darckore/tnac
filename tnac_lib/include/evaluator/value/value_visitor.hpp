@@ -174,6 +174,7 @@ namespace tnac::eval
         visit_unary(*el, op);
       }
 
+      value_lock _{ operand, m_registry };
       make_array(operand->size());
     }
 
@@ -470,6 +471,8 @@ namespace tnac::eval
         }
       }
 
+      value_lock _l{ l, m_registry };
+      value_lock _r{ r, m_registry };
       make_array(newSz);
     }
 

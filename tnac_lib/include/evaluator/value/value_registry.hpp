@@ -174,12 +174,10 @@ namespace tnac::eval
     //
     void unref_array(array_type arr) noexcept
     {
-      const auto id = arr.id();
-      auto refArr = get_array(id);
-      if (!refArr)
-        return;
-
-      refArr->unref();
+      if (auto refArr = get_array(arr.id()))
+      {
+        refArr->unref();
+      }
     }
 
     //
@@ -215,6 +213,23 @@ namespace tnac::eval
         [this](auto&&) noexcept {},
         [this](array_type& arr) { ref_array(arr); }
       });
+    }
+
+  public:
+    //
+    // Locks an array to prevent it from being removed or reused while its ref count is 0
+    //
+    void lock(array_type arr) noexcept
+    {
+      ref_array(arr);
+    }
+
+    //
+    // Unlocks an array and makes it available for removal or reuse
+    //
+    void unlock(array_type arr) noexcept
+    {
+      unref_array(arr);
     }
 
   public:
@@ -309,4 +324,46 @@ namespace tnac::eval
     array_store m_arrays;
     size_type m_arrayId{};
   };
+
+
+  namespace detail
+  {
+    template <typename T>
+    concept lockable = generic_type<T> &&
+      requires(T t, registry& reg)
+    {
+      { reg.lock(t) }   -> std::same_as<void>;
+      { reg.unlock(t) } -> std::same_as<void>;
+    };
+  }
+
+  //
+  // A RAII wrapper which allows locking and unlocking ref counted types
+  //
+  template <detail::lockable T>
+  class value_lock final
+  {
+  public:
+    using value_type = T;
+
+  public:
+    CLASS_SPECIALS_NONE(value_lock);
+
+    value_lock(const value_type& val, registry& reg) noexcept :
+      m_reg{ reg },
+      m_value{ val }
+    {
+      m_reg.lock(m_value);
+    }
+
+    ~value_lock() noexcept
+    {
+      m_reg.unlock(m_value);
+    }
+
+  private:
+    registry& m_reg;
+    const value_type& m_value;
+  };
+
 }

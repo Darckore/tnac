@@ -64,8 +64,9 @@
   </Type>
 
   <Type Name="tnac::evaluator">
-    <DisplayString Condition="m_return">Evaluator (returning)</DisplayString>
-    <DisplayString Condition="!m_return">Evaluator (normal)</DisplayString>
+    <DisplayString Condition="m_return &amp;&amp; !m_fatal">Evaluator (returning)</DisplayString>
+    <DisplayString Condition="!m_return  &amp;&amp; !m_fatal">Evaluator (normal)</DisplayString>
+    <DisplayString Condition="m_fatal">Evaluator (error)</DisplayString>
     <Expand>
       <Item Name="[value visitor]">m_visitor</Item>
       <Item Name="[stack]">m_callStack</Item>

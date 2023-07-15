@@ -93,7 +93,7 @@ namespace tnac::eval
     {}
 
     array_type(const_reference underlying) noexcept :
-      array_type{ underlying, {} }
+      array_type{ underlying, ~id_type{} }
     {}
 
   public:
