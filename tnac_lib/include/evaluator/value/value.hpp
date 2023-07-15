@@ -23,7 +23,7 @@ namespace tnac::eval
     // Defines a valid result of expression evaluation
     //
     template <typename T>
-    concept expr_result = is_any_v<T, bool_type, int_type, float_type,
+    concept expr_result = is_any_v<T, invalid_val_t, bool_type, int_type, float_type,
                                       complex_type, fraction_type, function_type, array_type>;
   }
 
@@ -42,17 +42,18 @@ namespace tnac::eval
     Array
   };
 
-  using underlying_val = std::variant<bool_type, int_type, float_type,
+  using underlying_val = std::variant<invalid_val_t, bool_type, int_type, float_type,
                                       complex_type, fraction_type, function_type, array_type>;
 }
 
-TYPE_TO_ID_ASSOCIATION(tnac::eval::bool_type,     tnac::eval::type_id::Bool);
-TYPE_TO_ID_ASSOCIATION(tnac::eval::int_type,      tnac::eval::type_id::Int);
-TYPE_TO_ID_ASSOCIATION(tnac::eval::float_type,    tnac::eval::type_id::Float);
-TYPE_TO_ID_ASSOCIATION(tnac::eval::complex_type,  tnac::eval::type_id::Complex);
-TYPE_TO_ID_ASSOCIATION(tnac::eval::fraction_type, tnac::eval::type_id::Fraction);
-TYPE_TO_ID_ASSOCIATION(tnac::eval::function_type, tnac::eval::type_id::Function);
-TYPE_TO_ID_ASSOCIATION(tnac::eval::array_type,    tnac::eval::type_id::Array);
+TYPE_TO_ID_ASSOCIATION(tnac::eval::invalid_val_t,  tnac::eval::type_id::Invalid);
+TYPE_TO_ID_ASSOCIATION(tnac::eval::bool_type,      tnac::eval::type_id::Bool);
+TYPE_TO_ID_ASSOCIATION(tnac::eval::int_type,       tnac::eval::type_id::Int);
+TYPE_TO_ID_ASSOCIATION(tnac::eval::float_type,     tnac::eval::type_id::Float);
+TYPE_TO_ID_ASSOCIATION(tnac::eval::complex_type,   tnac::eval::type_id::Complex);
+TYPE_TO_ID_ASSOCIATION(tnac::eval::fraction_type,  tnac::eval::type_id::Fraction);
+TYPE_TO_ID_ASSOCIATION(tnac::eval::function_type,  tnac::eval::type_id::Function);
+TYPE_TO_ID_ASSOCIATION(tnac::eval::array_type,     tnac::eval::type_id::Array);
 
 namespace tnac::eval
 {
@@ -110,6 +111,10 @@ namespace tnac::eval
       m_val{ make(val, utils::type_to_id_v<T>) }
     {}
 
+    value(const invalid_val_t*) noexcept :
+      m_val{}
+    {}
+
     //
     // Checks whether the value is valid (type id != Invalid)
     //
@@ -131,7 +136,7 @@ namespace tnac::eval
     // The caller must ensure that the T type is correct by checking the type id
     // 
     // E.g.
-    //  if(val.id() == id_from_type<cast_to_type>)
+    //  if(val.id() == utils::type_to_id_v<cast_to_type>)
     //  {
     //    auto v = val.get<cast_to_type>();
     //  }
@@ -198,29 +203,14 @@ namespace tnac::eval
     using enum type_id;
     switch (val.id())
     {
-    case Bool:
-      return func(val.get<bool_type>());
-
-    case Int:
-      return func(val.get<int_type>());
-
-    case Float:
-      return func(val.get<float_type>());
-
-    case Complex:
-      return func(val.get<complex_type>());
-
-    case Fraction:
-      return func(val.get<fraction_type>());
-
-    case Function:
-      return func(val.get<function_type>());
-
-    case Array:
-      return func(val.get<array_type>());
-
-    default:
-      return func(invalid_val_t{});
+    case Bool:     return func(val.get<bool_type>());
+    case Int:      return func(val.get<int_type>());
+    case Float:    return func(val.get<float_type>());
+    case Complex:  return func(val.get<complex_type>());
+    case Fraction: return func(val.get<fraction_type>());
+    case Function: return func(val.get<function_type>());
+    case Array:    return func(val.get<array_type>());
+    default:       return func(invalid_val_t{});
     }
   }
 
@@ -233,12 +223,25 @@ namespace tnac::eval
   public:
     CLASS_SPECIALS_NOCOPY_CUSTOM(temporary);
 
-    temporary() = default;
-
-    template <detail::expr_result ValueType>
-    explicit temporary(ValueType raw) noexcept :
+    explicit temporary(detail::expr_result auto raw) noexcept :
       m_raw{ std::move(raw) }
     {}
+
+    temporary() noexcept :
+      temporary{ invalid_val_t{} }
+    {}
+
+    temporary& operator=(detail::expr_result auto raw) noexcept
+    {
+      m_raw = std::move(raw);
+      return *this;
+    }
+
+    temporary& operator=(invalid_val_t inv) noexcept
+    {
+      m_raw = inv;
+      return *this;
+    }
 
     value operator*() const noexcept
     {

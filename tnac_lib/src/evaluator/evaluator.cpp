@@ -57,6 +57,15 @@ namespace tnac
         return utils::eq_any(tk, tok_kind::LogAnd, tok_kind::LogOr);
       }
 
+      inline auto is_direct_scope_child(const ast::node* node) noexcept
+      {
+        if (!node)
+          return false;
+
+        auto parent = node->parent();
+        return parent && parent->is(ast::node_kind::Scope);
+      }
+
       //
       // Helper object for instantiations
       //
@@ -82,22 +91,30 @@ namespace tnac
           m_errHandler{ onError }
         {}
 
-        eval::value operator()(const ast::typed_expr& expr) noexcept
+        void operator()(const ast::typed_expr& expr) noexcept
         {
           if (!check_args(expr))
           {
-            return {};
+            for (auto _: expr.args())
+            {
+              utils::unused(_);
+              m_visitor.fetch_next();
+            }
+            m_visitor.push_value({});
+            return;
           }
 
-          return instantiate(expr, std::make_index_sequence<max>{});
+          instantiate(expr, std::make_index_sequence<max>{});
         }
 
       private:
         template <typename T, T... Seq>
-        eval::value instantiate(const ast::typed_expr& expr, std::integer_sequence<T, Seq...>) noexcept
+        void instantiate(const ast::typed_expr& expr, std::integer_sequence<T, Seq...>) noexcept
         {
           auto&& exprArgs = expr.args();
-          return m_visitor.instantiate<value_type>(&expr, extract(exprArgs, Seq)...);
+          std::array<eval::temporary, max> args{};
+          m_visitor.fill_args(args, exprArgs.size());
+          m_visitor.instantiate<value_type>(std::move(args[Seq])...);
         }
 
         void on_error(const token& pos, string_t msg) noexcept
@@ -118,12 +135,6 @@ namespace tnac
           return false;
         }
 
-        eval::value extract(const arg_list_t& args, size_type idx) noexcept
-        {
-          const auto count = args.size();
-          return idx < count ? args[idx]->value() : eval::value{};
-        }
-
       private:
         visitor& m_visitor;
         err_handler_t& m_errHandler;
@@ -142,8 +153,14 @@ namespace tnac
 
   void evaluator::operator()(ast::node* root) noexcept
   {
-    m_return = false;
-    base::operator()(root);
+    value_guard r_{ m_return };
+    value_guard f_{ m_fatal };
+    traverse(root);
+
+    // Remove the in-flight temporary value of the previous expression
+    // (if we're given a part of the ast rather than an entire scope)
+    if (detail::is_direct_scope_child(root))
+      exit_child();
   }
 
   // Expressions
@@ -153,15 +170,20 @@ namespace tnac
     if (return_path())
       return;
 
+    auto assigned = m_visitor.fetch_next();
+    m_visitor.fetch_next(); // lhs value, we need to remove it here no matter what
+
     auto&& left = assign.left();
     if (auto assignee = utils::try_cast<ast::id_expr>(&left))
     {
       auto&& lhs = assignee->symbol();
-      eval_assign(lhs, assign.right().value());
-      assignee->eval_result(lhs.value());
+      eval_assign(lhs, *assigned);
+      m_visitor.push_last();
     }
-
-    assign.eval_result(left.value());
+    else
+    {
+      m_visitor.clear_result();
+    }
   }
 
   void evaluator::visit(ast::binary_expr& binary) noexcept
@@ -175,10 +197,10 @@ namespace tnac
     if (detail::is_logical(opcode))
       return;
 
-    auto left = binary.left().value();
-    auto right = binary.right().value();
+    auto right = m_visitor.fetch_next();
+    auto left  = m_visitor.fetch_next();
     const auto opCode = detail::conv_binary(opcode);
-    binary.eval_result(m_visitor.visit_binary(&binary, left, right, opCode));
+    m_visitor.visit_binary(*left, *right, opCode);
   }
 
   void evaluator::visit(ast::unary_expr& unary) noexcept
@@ -187,8 +209,8 @@ namespace tnac
       return;
 
     const auto opCode = detail::conv_unary(unary.op().m_kind);
-    auto val = unary.operand().value();
-    unary.eval_result(m_visitor.visit_unary(&unary, val, opCode));
+    auto val = m_visitor.fetch_next();
+    m_visitor.visit_unary(*val, opCode);
   }
 
   void evaluator::visit(ast::typed_expr& expr) noexcept
@@ -197,18 +219,15 @@ namespace tnac
       return;
 
     using enum tok_kind;
-    eval::value val;
     using detail::instance;
 
     switch (expr.type_name().m_kind)
     {
-    case KwComplex:  val = instance<eval::complex_type>{ m_visitor, m_errHandler }(expr);  break;
-    case KwFraction: val = instance<eval::fraction_type>{ m_visitor, m_errHandler }(expr); break;
+    case KwComplex:  instance<eval::complex_type>{ m_visitor, m_errHandler }(expr);  break;
+    case KwFraction: instance<eval::fraction_type>{ m_visitor, m_errHandler }(expr); break;
     
     default: UTILS_ASSERT(false); break;
     }
-
-    expr.eval_result(val);
   }
 
   void evaluator::visit(ast::call_expr& expr) noexcept
@@ -216,28 +235,24 @@ namespace tnac
     if (return_path())
       return;
 
-    auto func = expr.callable().value();
-    if (auto arr = func.try_get<eval::array_type>())
+    auto args = m_visitor.collect_args_locally(expr.args().size());
+    auto callee = m_visitor.fetch_next();
+    if (auto arr = (*callee).try_get<eval::array_type>())
     {
-      make_arr_call(*arr, expr);
+      make_arr_call(*arr, args, expr);
     }
     else
     {
-      auto funcType = func.try_get<eval::function_type>();
-      make_call(funcType, expr);
+      auto funcType = (*callee).try_get<eval::function_type>();
+      make_call(funcType, args, expr);
     }
-
-    auto res = m_visitor.last_result(&expr);
-    expr.eval_result(res);
   }
 
-  void evaluator::visit(ast::ret_expr& ret) noexcept
+  void evaluator::visit(ast::ret_expr& ) noexcept
   {
     if (return_path())
       return;
 
-    auto returnedVal = m_visitor.visit_assign(&ret, ret.returned_value().value());
-    ret.eval_result(returnedVal);
     m_return = true;
   }
 
@@ -246,32 +261,27 @@ namespace tnac
     if (return_path())
       return;
 
-    auto&& elements = arr.elements();
-    const auto arrSz = elements.size();
-    auto&& newArr = m_visitor.new_array(&arr, arrSz);
-    for (auto elem : elements)
-    {
-      newArr.emplace_back(elem->value());
-    }
-    arr.eval_result(m_visitor.make_array(&arr, newArr));
+    const auto arrSz = arr.elements().size();
+    m_visitor.make_array(arrSz);
   }
 
-  void evaluator::visit(ast::paren_expr& paren) noexcept
+  void evaluator::visit(ast::paren_expr& ) noexcept
   {
     if (return_path())
       return;
 
-    paren.eval_result(paren.internal_expr().value());
+    auto exprVal = m_visitor.fetch_next();
+    m_visitor.push_value(*exprVal);
   }
 
-  void evaluator::visit(ast::abs_expr& abs) noexcept
+  void evaluator::visit(ast::abs_expr& ) noexcept
   {
     if (return_path())
       return;
 
-    auto&& intExpr = abs.expression();
     const auto opcode = eval::val_ops::AbsoluteValue;
-    abs.eval_result(m_visitor.visit_unary(&abs, intExpr.value(), opcode));
+    auto operand = m_visitor.fetch_next();
+    m_visitor.visit_unary(*operand, opcode);
   }
 
   void evaluator::visit(ast::lit_expr& lit) noexcept
@@ -279,14 +289,7 @@ namespace tnac
     if (return_path())
       return;
 
-    if (auto litVal = lit.value())
-    {
-      m_visitor.visit_assign(nullptr, litVal);
-      return;
-    }
-
-    auto value = eval_token(lit.pos());
-    lit.eval_result(value);
+    eval_token(lit.pos());
   }
 
   void evaluator::visit(ast::id_expr& id) noexcept
@@ -295,17 +298,15 @@ namespace tnac
       return;
 
     auto&& sym = id.symbol();
-    auto val = sym.value();
-    m_visitor.visit_assign(nullptr, val);
-    id.eval_result(val);
+    m_visitor.push_value(sym.value());
   }
 
-  void evaluator::visit(ast::result_expr& res) noexcept
+  void evaluator::visit(ast::result_expr& ) noexcept
   {
     if (return_path())
       return;
 
-    res.eval_result(m_visitor.last_result(&res));
+    m_visitor.push_last();
   }
 
   // Decls
@@ -317,8 +318,7 @@ namespace tnac
 
     auto&& sym = expr.declarator().symbol();
     auto val = sym.value();
-    m_visitor.visit_assign(nullptr, val);
-    expr.eval_result(val);
+    m_visitor.push_value(val);
   }
 
   void evaluator::visit(ast::var_decl& decl) noexcept
@@ -326,7 +326,8 @@ namespace tnac
     if (return_path())
       return;
 
-    eval_assign(decl.symbol(), decl.initialiser().value());
+    auto assigned = m_visitor.fetch_next();
+    eval_assign(decl.symbol(), *assigned);
   }
 
   void evaluator::visit(ast::func_decl& decl) noexcept
@@ -341,9 +342,6 @@ namespace tnac
       on_error(decl.pos(), "Invalid symbol type"sv);
       return;
     }
-
-    if (sym->value())
-      return;
 
     make_function(*sym);
   }
@@ -365,9 +363,9 @@ namespace tnac
       return true;
 
     auto&& lhs = expr.left();
-    base::operator()(&lhs);
+    traverse(&lhs);
 
-    auto lval = to_bool(lhs.value());
+    auto lval = to_bool(*m_visitor.fetch_next());
 
     bool res{};
     if ((!lval && opcode == tok_kind::LogAnd) ||
@@ -378,12 +376,12 @@ namespace tnac
     else
     {
       auto&& rhs = expr.right();
-      base::operator()(&rhs);
-      auto rval  = to_bool(rhs.value());
+      traverse(&rhs);
+      auto rval  = to_bool(*m_visitor.fetch_next());
       res = (opcode == tok_kind::LogAnd) ? (lval && rval) : (lval || rval);
     }
 
-    expr.eval_result(m_visitor.visit_bool_literal(res));
+    m_visitor.visit_bool_literal(res);
     return false;
   }
 
@@ -393,17 +391,31 @@ namespace tnac
       return false;
 
     auto&& cond = expr.cond();
-    base::operator()(&cond);
-    auto condVal = cond.value();
+    traverse(&cond);
+    auto condVal = m_visitor.fetch_next();
 
     ast::pattern* trueBranch{};
     ast::pattern* defaultBranch{};
     using eval::val_ops;
     for (auto child : expr.patterns().children())
     {
+      if (!child->is(ast::node_kind::Pattern))
+      {
+        m_visitor.clear_result();
+        return false;
+      }
+
       auto&& pattern = utils::cast<ast::pattern>(*child);
+      
+      if (!pattern.matcher().is(ast::node_kind::Matcher))
+      {
+        m_visitor.clear_result();
+        return false;
+      }
+
       auto&& matcher = utils::cast<ast::matcher>(pattern.matcher());
-      eval::value currentMatch{};
+      
+      eval::temporary currentMatch{};
       if (matcher.is_default())
       {
         defaultBranch = &pattern;
@@ -412,22 +424,23 @@ namespace tnac
       else if (matcher.is_unary())
       {
         const auto opcode = detail::conv_unary(matcher.pos().m_kind);
-        currentMatch = m_visitor.visit_unary(&matcher, condVal, opcode);
+        m_visitor.visit_unary(*condVal, opcode);
+        currentMatch = m_visitor.fetch_next();
       }
       else
       {
         auto&& checkedExpr = matcher.checked();
-        base::operator()(&checkedExpr);
-        auto checkedVal = checkedExpr.value();
+        traverse(&checkedExpr);
+        auto checkedVal = m_visitor.fetch_next();
         auto opcode = matcher.has_implicit_op() ?
           val_ops::Equal :
           detail::conv_binary(matcher.pos().m_kind);
 
-        currentMatch = m_visitor.visit_binary(&matcher, condVal, checkedVal, opcode);
+        m_visitor.visit_binary(*condVal, *checkedVal, opcode);
+        currentMatch = m_visitor.fetch_next();
       }
 
-      matcher.eval_result(currentMatch);
-      if (to_bool(currentMatch))
+      if (to_bool(*currentMatch))
       {
         trueBranch = &pattern;
         break;
@@ -437,15 +450,16 @@ namespace tnac
     if (auto winner = (trueBranch ? trueBranch : defaultBranch))
     {
       if (auto&& body = winner->body(); !body.children().empty())
-        base::operator()(&winner->body());
+      {
+        traverse(&winner->body());
+        m_visitor.push_last();
+      }
       else
-        m_visitor.get_empty();
-
-      expr.eval_result(m_visitor.last_result(&expr));
+        m_visitor.clear_result();
     }
     else
     {
-      expr.eval_result(m_visitor.get_empty());
+      m_visitor.clear_result();
     }
 
     return false;
@@ -457,13 +471,13 @@ namespace tnac
       return false;
 
     auto&& cond = expr.cond();
-    base::operator()(&cond);
+    traverse(&cond);
     ast::expr* winner{};
-    if (auto condVal = cond.value(); to_bool(condVal))
+    if (auto condVal = m_visitor.fetch_next(); to_bool(*condVal))
     {
       if (!expr.has_true())
       {
-        expr.eval_result(m_visitor.visit_assign(&expr, condVal));
+        m_visitor.push_value(*condVal);
         return false;
       }
       winner = &expr.on_true();
@@ -472,16 +486,14 @@ namespace tnac
     {
       if (!expr.has_false())
       {
-        expr.eval_result(m_visitor.get_empty());
+        m_visitor.clear_result();
         return false;
       }
       winner = &expr.on_false();
     }
 
     UTILS_ASSERT(winner);
-    base::operator()(winner);
-    expr.eval_result(m_visitor.visit_assign(&expr, winner->value()));
-
+    traverse(winner);
     return false;
   }
 
@@ -504,12 +516,24 @@ namespace tnac
     if (!callable)
       return;
 
-    auto resVal = m_visitor.last_result(&callable->declarator());
+    m_visitor.push_last();
+    auto resVal = m_visitor.fetch_next();
     m_callStack.epilogue(*callable, m_visitor);
-    m_visitor.visit_assign(nullptr, resVal);
+    m_visitor.push_value(*resVal);
+  }
+
+  bool evaluator::exit_child() noexcept
+  {
+    m_visitor.fetch_next();
+    return !return_path();
   }
 
   // Private members
+
+  void evaluator::traverse(ast::node* root) noexcept
+  {
+    base::operator()(root);
+  }
 
   void evaluator::on_error(const token& pos, string_t msg) noexcept
   {
@@ -517,19 +541,19 @@ namespace tnac
       m_errHandler(pos, msg);
   }
 
-  eval::value evaluator::eval_token(const token& tok) noexcept
+  void evaluator::eval_token(const token& tok) noexcept
   {
     switch (tok.m_kind)
     {
-    case token::KwTrue:  return m_visitor.visit_bool_literal(true);
-    case token::KwFalse: return m_visitor.visit_bool_literal(false);
-    case token::IntDec:  return m_visitor.visit_int_literal(tok.m_value, 10);
-    case token::IntBin:  return m_visitor.visit_int_literal(tok.m_value, 2);
-    case token::IntOct:  return m_visitor.visit_int_literal(tok.m_value, 8);
-    case token::IntHex:  return m_visitor.visit_int_literal(tok.m_value, 16);
-    case token::Float:   return m_visitor.visit_float_literal(tok.m_value);
+    case token::KwTrue:  m_visitor.visit_bool_literal(true);           break;
+    case token::KwFalse: m_visitor.visit_bool_literal(false);          break;
+    case token::IntDec:  m_visitor.visit_int_literal(tok.m_value, 10); break;
+    case token::IntBin:  m_visitor.visit_int_literal(tok.m_value, 2);  break;
+    case token::IntOct:  m_visitor.visit_int_literal(tok.m_value, 8);  break;
+    case token::IntHex:  m_visitor.visit_int_literal(tok.m_value, 16); break;
+    case token::Float:   m_visitor.visit_float_literal(tok.m_value);   break;
 
-    default: return {};
+    default: break;
     }
   }
 
@@ -540,42 +564,49 @@ namespace tnac
 
   void evaluator::make_function(semantics::function& sym) noexcept
   {
+    if (sym.value())
+      return;
+
     sym.eval_result(m_visitor.make_function(&sym, eval::function_type{ sym }));
   }
 
-  void evaluator::make_arr_call(eval::array_type arr, ast::call_expr& expr) noexcept
+  void evaluator::make_arr_call(eval::array_type arr, const arr_t& args, ast::call_expr& expr) noexcept
   {
-    auto&& callRes = m_visitor.new_array(&expr, arr->size());
-    auto&& args = expr.args();
-    const auto argCount = args.size();
-
-    for (auto elem : *arr)
+    utils::unused(arr, expr, args);
+    auto resCount = size_type{};
+    for (const auto argCount = expr.args().size(); auto&& elem : *arr)
     {
-      auto argFunc = elem.try_get<eval::function_type>();
+      auto elemValue = *elem;
+
+      if (auto arrCallable = elemValue.try_get<eval::array_type>())
+      {
+        ++resCount;
+        make_arr_call(*arrCallable, args, expr);
+        continue;
+      }
+
+      auto argFunc = elemValue.try_get<eval::function_type>();
       if (!argFunc || (*argFunc)->param_count() != argCount)
         continue;
 
-      make_call(argFunc, expr);
-      auto&& elemVal = callRes.emplace_back();
-      elemVal = m_visitor.last_result(&elemVal);
+      ++resCount;
+      make_call(argFunc, args, expr);
     }
 
-    m_visitor.make_array(&expr, callRes);
+    m_visitor.make_array(resCount);
   }
 
-  void evaluator::make_call(eval::function_type* func, ast::call_expr& expr) noexcept
+  void evaluator::make_call(eval::function_type* func, const arr_t& args, ast::call_expr& expr) noexcept
   {
     auto&& at = expr.pos();
     if (!func)
     {
       on_error(at, "Expected a callable object"sv);
-      m_visitor.get_empty();
       return;
     }
 
     auto callable = *func;
-    auto&& args = expr.args();
-    if (const auto paramCnt = callable->param_count(); paramCnt != args.size())
+    if (const auto paramCnt = callable->param_count(); paramCnt != expr.args().size())
     {
       on_error(at, std::format("Expected {} arguments"sv, paramCnt));
       return;
@@ -584,20 +615,21 @@ namespace tnac
     if (!m_callStack)
     {
       on_error(at, "Stack overflow"sv);
-      m_callStack.clear();
-      m_visitor.get_empty();
+      m_visitor.clear_result();
+      m_visitor.fetch_next();
+      m_fatal = true;
       return;
     }
 
     m_callStack.push(*callable, args, m_visitor);
     auto funcBody = callable->declarator().definition();
     value_guard _{ m_return };
-    (*this)(funcBody);
+    traverse(funcBody);
   }
 
   bool evaluator::return_path() const noexcept
   {
-    return m_return;
+    return m_return || m_fatal;
   }
 
   bool evaluator::to_bool(eval::value val) const noexcept

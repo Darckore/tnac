@@ -11,16 +11,6 @@ namespace tnac::ast
     m_pos{ tok }
   {}
 
-  eval::value expr::value() const noexcept
-  {
-    return m_val;
-  }
-
-  void expr::eval_result(eval::value val) noexcept
-  {
-    m_val = val;
-  }
-
   const token& expr::pos() const noexcept
   {
     return m_pos;

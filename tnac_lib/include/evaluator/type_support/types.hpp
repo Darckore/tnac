@@ -12,6 +12,7 @@ namespace tnac::semantics
 namespace tnac::eval
 {
   class value;
+  class temporary;
 
   using bool_type     = bool;
   using int_type      = std::intmax_t;
@@ -74,19 +75,25 @@ namespace tnac::eval
   class array_type final
   {
   public:
-    using value_type = std::vector<value>;
-    using pointer = value_type*;
-    using const_pointer = const value_type*;
-    using reference = value_type&;
+    using value_type      = std::vector<temporary>;
+    using pointer         = value_type*;
+    using const_pointer   = const value_type*;
+    using reference       = value_type&;
     using const_reference = const value_type&;
+    using id_type         = std::uintptr_t;
 
   public:
     CLASS_SPECIALS_NODEFAULT(array_type);
 
     ~array_type() noexcept = default;
 
+    array_type(const_reference underlying, id_type objId) noexcept :
+      m_underlying{ &underlying },
+      m_id{ objId }
+    {}
+
     array_type(const_reference underlying) noexcept :
-      m_underlying{ &underlying }
+      array_type{ underlying, {} }
     {}
 
   public:
@@ -100,7 +107,13 @@ namespace tnac::eval
       return *m_underlying;
     }
 
+    id_type id() const noexcept
+    {
+      return m_id;
+    }
+
   private:
     const_pointer m_underlying{};
+    id_type m_id{};
   };
 }

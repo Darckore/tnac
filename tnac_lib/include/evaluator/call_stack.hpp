@@ -25,11 +25,10 @@ namespace tnac::eval
   {
   public:
     using size_type  = std::size_t;
-    using func_name  = std::string_view;
-    using value_list = std::vector<value>;
+    using value_list = std::vector<temporary>;
     using sym_t      = semantics::function;
-    using args_t     = ast::call_expr::arg_list;
     using vis_t      = eval::value_visitor;
+    using args_t     = value_list;
 
     using frame = detail::stack_frame;
     using stack = std::vector<frame>;
@@ -45,24 +44,19 @@ namespace tnac::eval
 
   public:
     //
-    // Saves values of function parameters
+    // Saves values of function parameters and arguments
     //
     void push(const sym_t& callable, const args_t& args, vis_t& visitor) noexcept;
 
     //
-    // Removes the most recent entry from the stack
-    //
-    void pop(vis_t& visitor) noexcept;
-
-    //
     // Inits function parameters with stored temporaries
     //
-    void prologue(sym_t& callable, vis_t& visitor) noexcept;
+    void prologue(const sym_t& callable, vis_t& visitor) noexcept;
 
     //
     // Restores values of function parameters
     //
-    void epilogue(sym_t& callable, vis_t& visitor) noexcept;
+    void epilogue(const sym_t& callable, vis_t& visitor) noexcept;
 
     //
     // Clears the call stack

@@ -27,6 +27,7 @@ namespace tnac
     using err_handler_t = std::function<void(const token&, string_t)>;
     using arg_list_t    = ast::invocation::arg_list;
     using size_type     = arg_list_t::size_type;
+    using arr_t         = eval::value_visitor::arr_t;
 
   public:
     CLASS_SPECIALS_NONE(evaluator);
@@ -174,7 +175,17 @@ namespace tnac
     //
     void visit(ast::scope& scope) noexcept;
 
+    //
+    // Occurs on exit from a node child
+    //
+    bool exit_child() noexcept;
+
   private:
+    //
+    // Starts the traversal
+    //
+    void traverse(ast::node* root) noexcept;
+
     //
     // Produces an evaluation error
     //
@@ -183,7 +194,7 @@ namespace tnac
     //
     // Evaluates a literal and returns its value
     //
-    eval::value eval_token(const token& tok) noexcept;
+    void eval_token(const token& tok) noexcept;
 
     //
     // Evaluates an assign expression and variable declarations 
@@ -198,12 +209,12 @@ namespace tnac
     //
     // Calls the array of functions with a single expression
     //
-    void make_arr_call(eval::array_type arr, ast::call_expr& expr) noexcept;
+    void make_arr_call(eval::array_type arr, const arr_t& args, ast::call_expr& expr) noexcept;
 
     //
     // Calls the specified function with the given args
     //
-    void make_call(eval::function_type* func, ast::call_expr& expr) noexcept;
+    void make_call(eval::function_type* func, const arr_t& args, ast::call_expr& expr) noexcept;
 
     //
     // Returns true if a return is active
@@ -225,5 +236,6 @@ namespace tnac
     eval::call_stack& m_callStack;
     err_handler_t m_errHandler{};
     bool m_return{};
+    bool m_fatal{};
   };
 }
