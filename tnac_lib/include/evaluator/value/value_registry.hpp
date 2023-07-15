@@ -250,6 +250,20 @@ namespace tnac::eval
       }
     }
 
+    //
+    // Deallocates an array and removes it from the pool
+    //
+    void dealloc_array(size_type id) noexcept
+    {
+      auto target = m_arrays.find(id);
+      if (target == m_arrays.end())
+        return;
+
+      UTILS_ASSERT(!target->second.ref_count());
+      auto&& arr = target->second.value();
+      unref_subarrays(arr);
+      m_arrays.erase(target);
+    }
 
     //
     // Tries to find an array that could be reused to avoid creating a new one
