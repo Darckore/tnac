@@ -153,7 +153,8 @@ namespace tnac
 
   void evaluator::operator()(ast::node* root) noexcept
   {
-    value_guard _{ m_return };
+    value_guard r_{ m_return };
+    value_guard f_{ m_fatal };
     traverse(root);
 
     // Remove the in-flight temporary value of the previous expression
@@ -609,7 +610,9 @@ namespace tnac
     if (!m_callStack)
     {
       on_error(at, "Stack overflow"sv);
-      m_callStack.clear();
+      m_visitor.clear_result();
+      m_visitor.fetch_next();
+      m_fatal = true;
       return;
     }
 
@@ -621,7 +624,7 @@ namespace tnac
 
   bool evaluator::return_path() const noexcept
   {
-    return m_return;
+    return m_return || m_fatal;
   }
 
   bool evaluator::to_bool(eval::value val) const noexcept

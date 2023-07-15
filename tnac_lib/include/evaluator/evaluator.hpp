@@ -236,5 +236,6 @@ namespace tnac
     eval::call_stack& m_callStack;
     err_handler_t m_errHandler{};
     bool m_return{};
+    bool m_fatal{};
   };
 }
