@@ -573,22 +573,20 @@ namespace tnac
   void evaluator::make_arr_call(eval::array_type arr, const arr_t& args, ast::call_expr& expr) noexcept
   {
     utils::unused(arr, expr, args);
-    //auto&& callRes = m_visitor.new_array(&expr, arr->size());
-    //auto&& args = expr.args();
-    //const auto argCount = args.size();
+    auto resCount = size_type{};
+    for (const auto argCount = expr.args().size(); auto&& elem : *arr)
+    {
+      auto elemValue = *elem;
 
-    //for (auto elem : *arr)
-    //{
-    //  auto argFunc = elem.try_get<eval::function_type>();
-    //  if (!argFunc || (*argFunc)->param_count() != argCount)
-    //    continue;
+      auto argFunc = elemValue.try_get<eval::function_type>();
+      if (!argFunc || (*argFunc)->param_count() != argCount)
+        continue;
 
-    //  make_call(argFunc, expr);
-    //  auto&& elemVal = callRes.emplace_back();
-    //  elemVal = m_visitor.last_result(&elemVal);
-    //}
+      ++resCount;
+      make_call(argFunc, args, expr);
+    }
 
-    //m_visitor.make_array(&expr, callRes);
+    m_visitor.make_array(resCount);
   }
 
   void evaluator::make_call(eval::function_type* func, const arr_t& args, ast::call_expr& expr) noexcept
