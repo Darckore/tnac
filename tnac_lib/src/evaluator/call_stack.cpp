@@ -7,15 +7,15 @@ namespace tnac::eval
     class stack_frame final
     {
     public:
-      using func_name  = call_stack::func_name;
+      using func_sym   = call_stack::sym_t;
       using value_list = call_stack::value_list;
       using size_type  = call_stack::size_type;
 
     public:
-      CLASS_SPECIALS_NODEFAULT(stack_frame);
+      CLASS_SPECIALS_NODEFAULT_NOCOPY(stack_frame);
 
-      stack_frame(func_name name) noexcept :
-        m_name{ name }
+      stack_frame(const func_sym& func) noexcept :
+        m_func{ &func }
       {}
 
       value_list& args() noexcept
@@ -23,25 +23,18 @@ namespace tnac::eval
         return m_args;
       }
 
-      value_list& params() noexcept
-      {
-        return m_params;
-      }
-
       void allocate(size_type count) noexcept
       {
-        m_params.reserve(count);
         m_args.reserve(count);
       }
 
-      func_name name() const noexcept
+      auto name() const noexcept
       {
-        return m_name;
+        return m_func->name();
       }
 
     private:
-      func_name m_name;
-      value_list m_params;
+      const func_sym* m_func{};
       value_list m_args;
     };
   }
@@ -66,40 +59,33 @@ namespace tnac::eval
 
   void call_stack::push(const sym_t& callable, const args_t& args, vis_t& visitor) noexcept
   {
-    utils::unused(callable, args, visitor);
-    //auto&& cur = m_frames.emplace_back(callable.name());
-    //cur.allocate(callable.param_count());
-    //auto&& argStorage = cur.args();
-    //auto&& prmStorage = cur.params();
+    auto&& frame = m_frames.emplace_back(callable);
+    frame.allocate(args.size());
+    auto&& storedArgs = frame.args();
 
-    //for (auto [param, arg] : utils::make_iterators(callable.params(), args))
-    //{
-    //  auto prmVal = param->symbol().value();
-    //  auto argVal = arg->value();
-    //  auto&& storedArg = argStorage.emplace_back();
-    //  auto&& storedPrm = prmStorage.emplace_back();
-    //  storedPrm = visitor.visit_assign(&storedPrm, prmVal);
-    //  storedArg = visitor.visit_assign(&storedArg, argVal);
-    //}
+    // Push previous values of parameters to the stack for later
+    // We traverse them in reverse in order to place them in the natural order
+    // rather than backwards as usual
+    for (auto param : callable.params() | views::reverse)
+    {
+      auto&& prmSym = param->symbol();
+      visitor.push_value(prmSym.value());
+    }
+
+    // Push current args on the stack, also in the natural order
+    for (auto&& arg : args)
+    {
+      visitor.push_value(*arg);
+      storedArgs.emplace_back(visitor.fetch_next());
+    }
   }
 
   void call_stack::pop(vis_t& visitor) noexcept
   {
     utils::unused(visitor);
-    //if (m_frames.empty())
-    //  return;
-
-    //auto&& cur = m_frames.back();
-    //for (auto [param, arg] : utils::make_iterators(cur.params(), cur.args()))
-    //{
-    //  visitor.remove_entity(&param);
-    //  visitor.remove_entity(&arg);
-    //}
-
-    //m_frames.pop_back();
   }
 
-  void call_stack::prologue(sym_t& callable, vis_t& visitor) noexcept
+  void call_stack::prologue(const sym_t& callable, vis_t& visitor) noexcept
   {
     if (m_frames.empty())
     {
@@ -108,15 +94,14 @@ namespace tnac::eval
     }
 
     auto&& top = m_frames.back();
-    for (auto [param, arg] : utils::make_iterators(callable.params(), top.args()))
+    for (auto&& [param, arg] : utils::make_iterators(callable.params(), top.args()))
     {
       auto&& sym = param->symbol();
-      auto storedVal = visitor.visit_assign(&sym, arg);
-      sym.eval_result(storedVal);
+      sym.eval_result(visitor.visit_assign(&sym, *arg));
     }
   }
 
-  void call_stack::epilogue(sym_t& callable, vis_t& visitor) noexcept
+  void call_stack::epilogue(const sym_t& callable, vis_t& visitor) noexcept
   {
     if (m_frames.empty())
     {
@@ -124,19 +109,15 @@ namespace tnac::eval
     }
 
     auto&& top = m_frames.back();
-    for (auto [param, storedPrm] : utils::make_iterators(callable.params(), top.params()))
-    {
-      auto&& sym = param->symbol();
-      auto restoredVal = visitor.visit_assign(&sym, storedPrm);
-      sym.eval_result(restoredVal);
-    }
+    utils::unused(callable, top);
 
     pop(visitor);
   }
 
-  void call_stack::clear() noexcept
+  void call_stack::clear(vis_t& visitor) noexcept
   {
-    m_frames.clear();
+    while (!m_frames.empty())
+      pop(visitor);
   }
 
 

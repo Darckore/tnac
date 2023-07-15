@@ -592,35 +592,31 @@ namespace tnac
 
   void evaluator::make_call(eval::function_type* func, const arr_t& args, ast::call_expr& expr) noexcept
   {
-    utils::unused(func, expr, args);
-    //auto&& at = expr.pos();
-    //if (!func)
-    //{
-    //  on_error(at, "Expected a callable object"sv);
-    //  m_visitor.get_empty();
-    //  return;
-    //}
+    auto&& at = expr.pos();
+    if (!func)
+    {
+      on_error(at, "Expected a callable object"sv);
+      return;
+    }
 
-    //auto callable = *func;
-    //auto&& args = expr.args();
-    //if (const auto paramCnt = callable->param_count(); paramCnt != args.size())
-    //{
-    //  on_error(at, std::format("Expected {} arguments"sv, paramCnt));
-    //  return;
-    //}
+    auto callable = *func;
+    if (const auto paramCnt = callable->param_count(); paramCnt != expr.args().size())
+    {
+      on_error(at, std::format("Expected {} arguments"sv, paramCnt));
+      return;
+    }
 
-    //if (!m_callStack)
-    //{
-    //  on_error(at, "Stack overflow"sv);
-    //  m_callStack.clear();
-    //  m_visitor.get_empty();
-    //  return;
-    //}
+    if (!m_callStack)
+    {
+      on_error(at, "Stack overflow"sv);
+      m_callStack.clear(m_visitor);
+      return;
+    }
 
-    //m_callStack.push(*callable, args, m_visitor);
-    //auto funcBody = callable->declarator().definition();
-    //value_guard _{ m_return };
-    //(*this)(funcBody);
+    m_callStack.push(*callable, args, m_visitor);
+    auto funcBody = callable->declarator().definition();
+    value_guard _{ m_return };
+    traverse(funcBody);
   }
 
   bool evaluator::return_path() const noexcept
