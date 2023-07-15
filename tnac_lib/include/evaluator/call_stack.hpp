@@ -49,11 +49,6 @@ namespace tnac::eval
     void push(const sym_t& callable, const args_t& args, vis_t& visitor) noexcept;
 
     //
-    // Removes the most recent entry from the stack
-    //
-    void pop(vis_t& visitor) noexcept;
-
-    //
     // Inits function parameters with stored temporaries
     //
     void prologue(const sym_t& callable, vis_t& visitor) noexcept;
@@ -66,7 +61,7 @@ namespace tnac::eval
     //
     // Clears the call stack
     //
-    void clear(vis_t& visitor) noexcept;
+    void clear() noexcept;
 
   private:
     //

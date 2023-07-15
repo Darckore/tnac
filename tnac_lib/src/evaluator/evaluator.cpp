@@ -609,7 +609,7 @@ namespace tnac
     if (!m_callStack)
     {
       on_error(at, "Stack overflow"sv);
-      m_callStack.clear(m_visitor);
+      m_callStack.clear();
       return;
     }
 

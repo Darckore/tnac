@@ -80,11 +80,6 @@ namespace tnac::eval
     }
   }
 
-  void call_stack::pop(vis_t& visitor) noexcept
-  {
-    utils::unused(visitor);
-  }
-
   void call_stack::prologue(const sym_t& callable, vis_t& visitor) noexcept
   {
     if (m_frames.empty())
@@ -108,16 +103,19 @@ namespace tnac::eval
       return;
     }
 
-    auto&& top = m_frames.back();
-    utils::unused(callable, top);
+    for (auto param : callable.params())
+    {
+      auto&& sym = param->symbol();
+      auto prev = visitor.fetch_next();
+      sym.eval_result(visitor.visit_assign(&sym, *prev));
+    }
 
-    pop(visitor);
+    m_frames.pop_back();
   }
 
-  void call_stack::clear(vis_t& visitor) noexcept
+  void call_stack::clear() noexcept
   {
-    while (!m_frames.empty())
-      pop(visitor);
+    m_frames.clear();
   }
 
 
