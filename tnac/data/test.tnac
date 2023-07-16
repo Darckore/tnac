@@ -1,4 +1,6 @@
-f(a) a + 2;
-g(a) a * 2;
+sum(a, b) a + b;
+dif(a, b) |a - b|;
+mul(a, b) a * b;
+div(a, b) a / b;
 
-arr = [ [ f, g ], [ g, f ], [ f ] ]
+[ sum, [ dif, mul ], div ](42, 69)

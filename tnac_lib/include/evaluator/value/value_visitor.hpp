@@ -566,6 +566,14 @@ namespace tnac::eval
 
   public:
     //
+    // Locks the given ref counted value
+    //
+    auto lock(const detail::lockable auto& val) noexcept
+    {
+      return value_lock{ val, m_registry };
+    }
+
+    //
     // Instantiates an object
     //
     template <detail::expr_result Obj, typename... Args>

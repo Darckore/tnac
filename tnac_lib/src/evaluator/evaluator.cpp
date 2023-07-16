@@ -572,7 +572,7 @@ namespace tnac
 
   void evaluator::make_arr_call(eval::array_type arr, const arr_t& args, ast::call_expr& expr) noexcept
   {
-    utils::unused(arr, expr, args);
+    auto _ = m_visitor.lock(arr);
     auto resCount = size_type{};
     for (const auto argCount = expr.args().size(); auto&& elem : *arr)
     {
