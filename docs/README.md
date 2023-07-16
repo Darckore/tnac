@@ -22,6 +22,7 @@ I guess, I should rename it to IAPL (*"I accidentally a programming language"*) 
 - Complex numbers (via `std::complex`)
 - Ordinary fractions
 - Booleans (`bool`)
+- Arrays
 - Undefined (you can call those `null` or something similar)
 
 Types are (mostly) inter-convertible and calculated dynamically.
@@ -389,6 +390,128 @@ func()
 `This is the global scope`
 _ret func() + 1 : `evaluates to 42`
 1 `unreachable`
+```
+
+## Arrays
+
+### Basics
+
+Arrays don't have any special keywords or anything. Creating them is simple:
+```
+[
+  1,
+  2 / 4,
+  _cplx(3,4),
+  some_func(42)
+]
+```
+This will create an array of 4 elements containing an `int`, a `float`, a `complex`,
+and whatever `some_func` might return.
+
+You can also save an array to a variable:
+```
+a = [ 1, 2, 3 ]
+```
+Or create an array of arrays:
+```
+[
+  [ 1, 2 ],
+  [ 3, 4]
+]
+```
+
+Overall, arrays behave just like any other types.
+For example, they can participate in any valid expression:
+```
+[1, 2, 3] * 2
+```
+is going to result in:
+```
+[2, 4, 6]
+```
+
+Unaries also work as you'd expect:
+```
+-[1, -1, 2]
+```
+will give:
+```
+[-1, 1, -2]
+```
+
+Binaries where both operands are arrays will create larger arrays where
+the given binary operator is applied to each pair of elements:
+```
+[1, 2, 3] ** [ 3, 4 ]
+```
+will give:
+```
+[ 1, 1, 8, 16, 27, 81 ]
+```
+The resulting array's size is `<size of the lhs> * <size of the rhs>`
+
+### Array calls
+
+Let's assume, we have some functions like these:
+```
+sum(a, b) a + b;
+dif(a, b) |a - b|;
+mul(a, b) a * b;
+div(a, b) a / b;
+```
+
+Since functions are data types, we can put them in an array too:
+```
+arr = [ sum, dif ]
+```
+The above declaration will create an arry of two functions.
+Now, since there are functions there, the array itself becomes callable:
+```
+arr(2,3)
+```
+will give us:
+```
+[ 5, 1 ]
+```
+This will apply the given arguments to each function in the array
+and return an array of results.
+
+We can also do crazy things like this:
+```
+[ sum, [ dif, mul ], div ](42, 69)
+```
+which will give us:
+```
+[ 111, [ 27, 2898 ], 0.608696 ]
+```
+Any non-functions in an array participating in a call will be ignored.
+Any functions with a wrong number of params will be ignored too.
+```
+[
+  _fn(a) a + 1;,
+  0,
+  _fn(a) a * 2;,
+  _fn(a, b) a + b;
+](2)
+```
+will give us
+```
+[3, 4]
+```
+since we supply one argument, and there are two functions having one parameter in the array.
+
+On the other hand:
+```
+[
+  _fn(a) a + 1;,
+  0,
+  _fn(a) a * 2;,
+  _fn(a, b) a + b;
+](2, 3)
+```
+will return:
+```
+[ 5 ]
 ```
 
 ## Conditionals
