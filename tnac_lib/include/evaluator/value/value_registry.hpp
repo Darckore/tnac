@@ -160,7 +160,7 @@ namespace tnac::eval
     //
     // Finds an array object by id
     //
-    ref_arr* get_array(size_type id) noexcept
+    ref_arr* get_array(entity_id id) noexcept
     {
       auto stored = m_arrays.find(id);
       if (stored == m_arrays.end())
@@ -251,42 +251,22 @@ namespace tnac::eval
     }
 
     //
-    // Deallocates an array and removes it from the pool
+    // Goes through the array collection and clears the empty ones
     //
-    void dealloc_array(size_type id) noexcept
+    void cleanup_arrays() noexcept
     {
-      auto target = m_arrays.find(id);
-      if (target == m_arrays.end())
-        return;
-
-      UTILS_ASSERT(!target->second.ref_count());
-      auto&& arr = target->second.value();
-      unref_subarrays(arr);
-      m_arrays.erase(target);
-    }
-
-    //
-    // Tries to find an array that could be reused to avoid creating a new one
-    //
-    auto find_reusable_array(size_type prealloc) noexcept
-    {
-      using res_t = std::optional<arr_wrapper>;
-
-      res_t found{};
-      for (auto && [id, rc] : m_arrays)
+      for (auto arrIt = m_arrays.begin(); arrIt != m_arrays.end(); )
       {
-        if (rc.ref_count())
+        auto&& [id, arr] = *arrIt;
+        if (arr.ref_count())
+        {
+          ++arrIt;
           continue;
+        }
 
-        auto&& arr = rc.value();
-        unref_subarrays(arr);
-        arr.clear();
-        arr.reserve(prealloc);
-        found.emplace(arr, id);
-        break;
+        unref_subarrays(arr.value());
+        arrIt = m_arrays.erase(arrIt);
       }
-
-      return found;
     }
 
   public:
@@ -308,16 +288,11 @@ namespace tnac::eval
 
   public:
     //
-    // Allocates an array object or finds a suitable one to reuse,
-    // and returns a reference to it
+    // Allocates an array object and returns a reference to it
     //
     auto make_array(size_type prealloc) noexcept
     {
-      if (auto reuse = find_reusable_array(prealloc))
-      {
-        return *reuse;
-      }
-
+      cleanup_arrays();
       return allocate_array(prealloc);
     }
 

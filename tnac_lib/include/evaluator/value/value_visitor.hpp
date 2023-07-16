@@ -169,12 +169,12 @@ namespace tnac::eval
         return visit_unary(toBool.value_or(false), op);
       }
 
+      value_lock _{ operand, m_registry };
       for (auto&& el : *operand)
       {
         visit_unary(*el, op);
       }
 
-      value_lock _{ operand, m_registry };
       make_array(operand->size());
     }
 
@@ -463,6 +463,9 @@ namespace tnac::eval
       const auto rsz = r->size();
       const auto newSz = lsz * rsz;
 
+      value_lock _l{ l, m_registry };
+      value_lock _r{ r, m_registry };
+
       for (auto&& el : *l)
       {
         for (auto&& er : *r)
@@ -471,8 +474,6 @@ namespace tnac::eval
         }
       }
 
-      value_lock _l{ l, m_registry };
-      value_lock _r{ r, m_registry };
       make_array(newSz);
     }
 
