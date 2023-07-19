@@ -716,6 +716,30 @@ namespace tnac::eval
     }
 
     //
+    // Registers an imaginary 'i' value
+    //
+    void visit_i() noexcept
+    {
+      return reg_value(complex_type{ 0, 1 });
+    }
+
+    //
+    // Registers the value of pi
+    //
+    void visit_pi() noexcept
+    {
+      return reg_value(std::numbers::pi_v<float_type>);
+    }
+
+    //
+    // Registers the value of pi
+    //
+    void visit_e() noexcept
+    {
+      return reg_value(std::numbers::e_v<float_type>);
+    }
+
+    //
     // Retrieves the next value from the stack of temporaries
     //
     temporary fetch_next() noexcept

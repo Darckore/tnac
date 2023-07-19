@@ -156,6 +156,9 @@ literal-expr:
   number
   _true
   _false
+  _i
+  _pi
+  _e
 
 anonimous-function:
   _fn func-params func-body

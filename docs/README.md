@@ -139,13 +139,35 @@ Keywords are reserved names. They follow the rules for identifiers, except they 
 
 These are the supported keywords:
 
+Type instantiations:
 - `_cplx`
 - `_frac`
+
+Anonimous function decl:
 - `_fn`
+
+Result expression:
 - `_result`
+
+Return expression:
 - `_ret`
-- `_true`
-- `_false`
+
+Constants:
+- `_true` - boolean `true`
+- `_false` - boolean `false`
+- `_i` - imaginary unit `i`
+- `_pi` - the value of `pi`
+- `_e` - the value of `e`
+
+Note: the `_i` constant can be used to construct complex numbers indirectly.
+This:
+```
+_cplx(1, 2)
+```
+is exactly the same as this:
+```
+1 + 2*_i
+```
 
 ### Expressions
 

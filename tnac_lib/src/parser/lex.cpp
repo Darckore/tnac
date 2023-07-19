@@ -185,6 +185,9 @@ namespace tnac
           { "ret",    tok_kind::KwRet },
           { "true",   tok_kind::KwTrue },
           { "false",  tok_kind::KwFalse },
+          { "i",      tok_kind::KwI },
+          { "pi",     tok_kind::KwPi },
+          { "e",      tok_kind::KwE },
         };
 
         constexpr auto err = tok_kind::Error;

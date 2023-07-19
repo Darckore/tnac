@@ -3,6 +3,18 @@
 
 namespace tnac_tests
 {
+  TEST(evaluation, t_constants)
+  {
+    using detail::check_eval;
+    using cplx = detail::cplx;
+
+    check_eval("_true"sv, true);
+    check_eval("_false"sv, false);
+    check_eval("_i"sv, cplx{ 0, 1 });
+    check_eval("_pi"sv, std::numbers::pi);
+    check_eval("_e"sv, std::numbers::e);
+  }
+
   TEST(evaluation, t_basic_add)
   {
     using detail::check_eval;

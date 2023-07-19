@@ -553,6 +553,9 @@ namespace tnac
     {
     case token::KwTrue:  m_visitor.visit_bool_literal(true);           break;
     case token::KwFalse: m_visitor.visit_bool_literal(false);          break;
+    case token::KwI:     m_visitor.visit_i();                          break;
+    case token::KwPi:    m_visitor.visit_pi();                         break;
+    case token::KwE:     m_visitor.visit_e();                          break;
     case token::IntDec:  m_visitor.visit_int_literal(tok.m_value, 10); break;
     case token::IntBin:  m_visitor.visit_int_literal(tok.m_value, 2);  break;
     case token::IntOct:  m_visitor.visit_int_literal(tok.m_value, 8);  break;
