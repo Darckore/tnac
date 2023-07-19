@@ -171,13 +171,12 @@ namespace tnac
       return;
 
     auto assigned = m_visitor.fetch_next();
-    auto prev     = m_visitor.fetch_next();
+    m_visitor.fetch_next(); // removing the lhs from the stack here
 
     auto&& left = assign.left();
     if (auto assignee = utils::try_cast<ast::id_expr>(&left))
     {
       auto&& lhs = assignee->symbol();
-      m_callStack.store_var(lhs, std::move(prev));
       eval_assign(lhs, *assigned);
       m_visitor.push_last();
     }
