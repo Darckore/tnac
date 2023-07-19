@@ -171,12 +171,13 @@ namespace tnac
       return;
 
     auto assigned = m_visitor.fetch_next();
-    m_visitor.fetch_next(); // lhs value, we need to remove it here no matter what
+    auto prev     = m_visitor.fetch_next();
 
     auto&& left = assign.left();
     if (auto assignee = utils::try_cast<ast::id_expr>(&left))
     {
       auto&& lhs = assignee->symbol();
+      m_callStack.store_var(lhs, std::move(prev));
       eval_assign(lhs, *assigned);
       m_visitor.push_last();
     }
@@ -327,7 +328,13 @@ namespace tnac
       return;
 
     auto assigned = m_visitor.fetch_next();
-    eval_assign(decl.symbol(), *assigned);
+    auto&& sym = decl.symbol();
+    auto prev = eval::on_value(sym.value(), [this](auto&& val) noexcept
+      {
+        return eval::temporary{ val };
+      });
+    m_callStack.store_var(sym, std::move(prev));
+    eval_assign(sym, *assigned);
   }
 
   void evaluator::visit(ast::func_decl& decl) noexcept

@@ -27,6 +27,7 @@ namespace tnac::eval
     using size_type  = std::size_t;
     using value_list = std::vector<temporary>;
     using sym_t      = semantics::function;
+    using var_t      = semantics::symbol;
     using vis_t      = eval::value_visitor;
     using args_t     = value_list;
 
@@ -43,6 +44,11 @@ namespace tnac::eval
     explicit operator bool() const noexcept;
 
   public:
+    //
+    // Saves previous variable value in the current stack frame on assignment
+    //
+    void store_var(var_t& sym, temporary prev) noexcept;
+
     //
     // Saves values of function parameters and arguments
     //

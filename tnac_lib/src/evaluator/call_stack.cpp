@@ -10,6 +10,9 @@ namespace tnac::eval
       using func_sym   = call_stack::sym_t;
       using value_list = call_stack::value_list;
       using size_type  = call_stack::size_type;
+      using entity_ref = call_stack::var_t&;
+      using entity_id  = call_stack::var_t*;
+      using var_values = std::unordered_map<entity_id, temporary>;
 
     public:
       CLASS_SPECIALS_NODEFAULT_NOCOPY(stack_frame);
@@ -21,6 +24,19 @@ namespace tnac::eval
       value_list& args() noexcept
       {
         return m_args;
+      }
+
+      void save_value_for(entity_ref ent, temporary prev) noexcept
+      {
+        m_prevVars[&ent] = std::move(prev);
+      }
+
+      void reapply_vars(value_visitor& vis) noexcept
+      {
+        for (auto&& [sym, val] : m_prevVars)
+        {
+          sym->eval_result(vis.visit_assign(sym, *val));
+        }
       }
 
       void allocate(size_type count) noexcept
@@ -36,6 +52,7 @@ namespace tnac::eval
     private:
       const func_sym* m_func{};
       value_list m_args;
+      var_values m_prevVars;
     };
   }
 
@@ -56,6 +73,15 @@ namespace tnac::eval
 
 
   // Public members
+
+  void call_stack::store_var(var_t& sym, temporary prev) noexcept
+  {
+    if (m_frames.empty())
+      return;
+
+    auto&& frame = m_frames.back();
+    frame.save_value_for(sym, std::move(prev));
+  }
 
   void call_stack::push(const sym_t& callable, const args_t& args, vis_t& visitor) noexcept
   {
@@ -110,6 +136,8 @@ namespace tnac::eval
       sym.eval_result(visitor.visit_assign(&sym, *prev));
     }
 
+    auto&& frame = m_frames.back();
+    frame.reapply_vars(visitor);
     m_frames.pop_back();
   }
 
