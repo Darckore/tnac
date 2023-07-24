@@ -1,484 +1,427 @@
 #include "test_cases/test_common.hpp"
-#include "evaluator/evaluator.hpp"
 
 namespace tnac_tests
 {
+  namespace
+  {
+    using vc = value_checker;
+  }
+
   TEST(evaluation, t_constants)
   {
-    using detail::check_eval;
-    using cplx = detail::cplx;
-
-    check_eval("_true"sv, true);
-    check_eval("_false"sv, false);
-    check_eval("_i"sv, cplx{ 0, 1 });
-    check_eval("_pi"sv, std::numbers::pi);
-    check_eval("_e"sv, std::numbers::e);
+    vc::check("_true"sv, true);
+    vc::check("_false"sv, false);
+    vc::check("_i"sv, cplx{ 0, 1 });
+    vc::check("_pi"sv, std::numbers::pi);
+    vc::check("_e"sv, std::numbers::e);
   }
 
   TEST(evaluation, t_basic_add)
   {
-    using detail::check_eval;
-    using cplx = detail::cplx;
-    using frac = detail::frac;
-
     // Int
-    check_eval("_true + 1"sv, 2ll);
-    check_eval("1 + 2"sv, 3ll);
-    check_eval("1 + 2.0"sv, 3.0);
-    check_eval("1 + _cplx(1, 2)"sv, cplx{ 2.0, 2.0 });
-    check_eval("_cplx(1, 2) + 2"sv, cplx{ 3.0, 2.0 });
-    check_eval("2 + _frac(1, 2)"sv, frac{ 5, 2 });
-    check_eval("_frac(1, 2) + 2"sv, frac{ 5, 2 });
+    vc::check("_true + 1"sv, 2ll);
+    vc::check("1 + 2"sv, 3ll);
+    vc::check("1 + 2.0"sv, 3.0);
+    vc::check("1 + _cplx(1, 2)"sv, cplx{ 2.0, 2.0 });
+    vc::check("_cplx(1, 2) + 2"sv, cplx{ 3.0, 2.0 });
+    vc::check("2 + _frac(1, 2)"sv, frac{ 5, 2 });
+    vc::check("_frac(1, 2) + 2"sv, frac{ 5, 2 });
 
     // Float
-    check_eval("_true + 41.0"sv, 42.0);
-    check_eval("4.0 + 5.0"sv, 9.0);
-    check_eval("4.0 + 5"sv, 9.0);
-    check_eval("4.0 + _cplx(1.0, 6)"sv, cplx{ 5.0, 6.0 });
-    check_eval("_cplx(2.0, 6) + 5.0"sv, cplx{ 7.0, 6.0 });
-    check_eval("4.0 + _frac(1, 2)"sv, 4.5);
-    check_eval("_frac(3, 6) + 5.0"sv, 5.5);
+    vc::check("_true + 41.0"sv, 42.0);
+    vc::check("4.0 + 5.0"sv, 9.0);
+    vc::check("4.0 + 5"sv, 9.0);
+    vc::check("4.0 + _cplx(1.0, 6)"sv, cplx{ 5.0, 6.0 });
+    vc::check("_cplx(2.0, 6) + 5.0"sv, cplx{ 7.0, 6.0 });
+    vc::check("4.0 + _frac(1, 2)"sv, 4.5);
+    vc::check("_frac(3, 6) + 5.0"sv, 5.5);
 
     // Complex
-    check_eval("_true + _cplx(4, 4)"sv, cplx{ 5.0, 4.0 });
-    check_eval("_cplx(7, 10) + _cplx(10, 11)"sv, cplx{ 17.0, 21.0 });
-    check_eval("_cplx(7, 10) + _frac(5, 10)"sv, cplx{ 7.5, 10.0 });
+    vc::check("_true + _cplx(4, 4)"sv, cplx{ 5.0, 4.0 });
+    vc::check("_cplx(7, 10) + _cplx(10, 11)"sv, cplx{ 17.0, 21.0 });
+    vc::check("_cplx(7, 10) + _frac(5, 10)"sv, cplx{ 7.5, 10.0 });
 
     // Fraction
-    check_eval("_frac(1,2) + _frac(1,3)"sv, frac{ 5, 6 });
+    vc::check("_frac(1,2) + _frac(1,3)"sv, frac{ 5, 6 });
   }
 
   TEST(evaluation, t_basic_sub)
   {
-    using detail::check_eval;
-    using cplx = detail::cplx;
-    using frac = detail::frac;
-
     // Int
-    check_eval("_false - 1"sv, -1ll);
-    check_eval("1 - 2"sv, -1ll);
-    check_eval("1 - 2.0"sv, -1.0);
-    check_eval("1 - _cplx(1, 2)"sv, cplx{ 0.0, -2.0 });
-    check_eval("_cplx(1, 2) - 2"sv, cplx{ -1.0, 2.0 });
-    check_eval("2 - _frac(1, 2)"sv, frac{ 3, 2 });
-    check_eval("_frac(1, 2) - 2"sv, frac{ 3, 2, -1 });
+    vc::check("_false - 1"sv, -1ll);
+    vc::check("1 - 2"sv, -1ll);
+    vc::check("1 - 2.0"sv, -1.0);
+    vc::check("1 - _cplx(1, 2)"sv, cplx{ 0.0, -2.0 });
+    vc::check("_cplx(1, 2) - 2"sv, cplx{ -1.0, 2.0 });
+    vc::check("2 - _frac(1, 2)"sv, frac{ 3, 2 });
+    vc::check("_frac(1, 2) - 2"sv, frac{ 3, 2, -1 });
 
     // Float
-    check_eval("42.0 - _true"sv, 41.0);
-    check_eval("4.0 - 5.0"sv, -1.0);
-    check_eval("6.0 - 5"sv, 1.0);
-    check_eval("4.0 - _cplx(1.0, 6)"sv, cplx{ 3.0, -6.0 });
-    check_eval("_cplx(2.0, 6) - 5.0"sv, cplx{ -3.0, 6.0 });
-    check_eval("4.0 - _frac(1, 2)"sv, 3.5);
-    check_eval("_frac(3, 6) - 5.0"sv, -4.5);
+    vc::check("42.0 - _true"sv, 41.0);
+    vc::check("4.0 - 5.0"sv, -1.0);
+    vc::check("6.0 - 5"sv, 1.0);
+    vc::check("4.0 - _cplx(1.0, 6)"sv, cplx{ 3.0, -6.0 });
+    vc::check("_cplx(2.0, 6) - 5.0"sv, cplx{ -3.0, 6.0 });
+    vc::check("4.0 - _frac(1, 2)"sv, 3.5);
+    vc::check("_frac(3, 6) - 5.0"sv, -4.5);
 
     // Complex
-    check_eval("_cplx(7, 10) - _true"sv, cplx{ 6.0, 10.0 });
-    check_eval("_cplx(7, 11) - _cplx(10, 11)"sv, cplx{ -3.0, 0.0 });
-    check_eval("_cplx(7, 10) - _frac(5, 10)"sv, cplx{ 6.5, 10.0 });
+    vc::check("_cplx(7, 10) - _true"sv, cplx{ 6.0, 10.0 });
+    vc::check("_cplx(7, 11) - _cplx(10, 11)"sv, cplx{ -3.0, 0.0 });
+    vc::check("_cplx(7, 10) - _frac(5, 10)"sv, cplx{ 6.5, 10.0 });
 
     // Fraction
-    check_eval("_frac(1,2) - _frac(1,3)"sv, frac{ 1, 6 });
+    vc::check("_frac(1,2) - _frac(1,3)"sv, frac{ 1, 6 });
   }
 
   TEST(evaluation, t_basic_mul)
   {
-    using detail::check_eval;
-    using cplx = detail::cplx;
-    using frac = detail::frac;
-
     // Int
-    check_eval("1 * 2"sv, 2ll);
-    check_eval("1 * 2.0"sv, 2.0);
-    check_eval("1 * _cplx(1, 2)"sv, cplx{ 1.0, 2.0 });
-    check_eval("_cplx(1, 2) * 2"sv, cplx{ 2.0, 4.0 });
-    check_eval("2 * _frac(1, 2)"sv, frac{ 1, 1 });
-    check_eval("_frac(1, 2) * 2"sv, frac{ 1, 1 });
+    vc::check("1 * 2"sv, 2ll);
+    vc::check("1 * 2.0"sv, 2.0);
+    vc::check("1 * _cplx(1, 2)"sv, cplx{ 1.0, 2.0 });
+    vc::check("_cplx(1, 2) * 2"sv, cplx{ 2.0, 4.0 });
+    vc::check("2 * _frac(1, 2)"sv, frac{ 1, 1 });
+    vc::check("_frac(1, 2) * 2"sv, frac{ 1, 1 });
 
     // Float
-    check_eval("4.0 * 5.0"sv, 20.0);
-    check_eval("6.0 * 5"sv, 30.0);
-    check_eval("4.0 * _cplx(1.0, 6)"sv, cplx{ 4.0, 24.0 });
-    check_eval("_cplx(2.0, 6) * 5.0"sv, cplx{ 10.0, 30.0 });
-    check_eval("4.0 * _frac(1, 2)"sv, 2.0);
-    check_eval("_frac(3, 6) * 5.0"sv, 2.5);
+    vc::check("4.0 * 5.0"sv, 20.0);
+    vc::check("6.0 * 5"sv, 30.0);
+    vc::check("4.0 * _cplx(1.0, 6)"sv, cplx{ 4.0, 24.0 });
+    vc::check("_cplx(2.0, 6) * 5.0"sv, cplx{ 10.0, 30.0 });
+    vc::check("4.0 * _frac(1, 2)"sv, 2.0);
+    vc::check("_frac(3, 6) * 5.0"sv, 2.5);
 
     // Complex
-    check_eval("_cplx(7, 11) * _cplx(10, 11)"sv, cplx{ -51.0, 187.0 });
-    check_eval("_cplx(7, 10) * _frac(5, 10)"sv, cplx{ 3.5, 5.0 });
+    vc::check("_cplx(7, 11) * _cplx(10, 11)"sv, cplx{ -51.0, 187.0 });
+    vc::check("_cplx(7, 10) * _frac(5, 10)"sv, cplx{ 3.5, 5.0 });
 
     // Fraction
-    check_eval("_frac(1,2) * _frac(1,3)"sv, frac{ 1, 6 });
+    vc::check("_frac(1,2) * _frac(1,3)"sv, frac{ 1, 6 });
   }
 
   TEST(evaluation, t_basic_div)
   {
-    using detail::check_eval;
-    using cplx = detail::cplx;
-    using frac = detail::frac;
-    static constexpr auto inf = std::numeric_limits<tnac::eval::float_type>::infinity();
-
     // Int
-    check_eval("2 / 2"sv, 1.0);
-    check_eval("1 / 0"sv, inf);
-    check_eval("1 / _cplx(1, 2)"sv, cplx{ 0.2, -0.4 });
-    check_eval("_cplx(1, 2) / 2"sv, cplx{ 0.5, 1.0 });
-    check_eval("2 / _frac(1, 2)"sv, frac{ 4, 1 });
-    check_eval("_frac(1, 2) / 2"sv, frac{ 1, 4 });
+    vc::check("2 / 2"sv, 1.0);
+    vc::check("1 / 0"sv, vc::infinity());
+    vc::check("1 / _cplx(1, 2)"sv, cplx{ 0.2, -0.4 });
+    vc::check("_cplx(1, 2) / 2"sv, cplx{ 0.5, 1.0 });
+    vc::check("2 / _frac(1, 2)"sv, frac{ 4, 1 });
+    vc::check("_frac(1, 2) / 2"sv, frac{ 1, 4 });
 
     // Float
-    check_eval("4.0 / 5.0"sv, 0.8);
-    check_eval("6.0 / 5"sv, 1.2);
-    check_eval("4.0 / _cplx(2.0, 4)"sv, cplx{ 0.4, -0.8 });
-    check_eval("_cplx(2.0, 6) / 5.0"sv, cplx{ 0.4, 1.2 });
-    check_eval("4.0 / _frac(1, 2)"sv, 8.0);
-    check_eval("_frac(3, 6) / 5.0"sv, 0.1);
+    vc::check("4.0 / 5.0"sv, 0.8);
+    vc::check("6.0 / 5"sv, 1.2);
+    vc::check("4.0 / _cplx(2.0, 4)"sv, cplx{ 0.4, -0.8 });
+    vc::check("_cplx(2.0, 6) / 5.0"sv, cplx{ 0.4, 1.2 });
+    vc::check("4.0 / _frac(1, 2)"sv, 8.0);
+    vc::check("_frac(3, 6) / 5.0"sv, 0.1);
 
     // Complex
-    check_eval("_cplx(-51, 187) / _cplx(10, 11)"sv, cplx{ 7.0, 11.0 });
-    check_eval("_cplx(7, 10) / _frac(5, 10)"sv, cplx{ 14.0, 20.0 });
+    vc::check("_cplx(-51, 187) / _cplx(10, 11)"sv, cplx{ 7.0, 11.0 });
+    vc::check("_cplx(7, 10) / _frac(5, 10)"sv, cplx{ 14.0, 20.0 });
 
     // Fraction
-    check_eval("_frac(1,2) / _frac(1,3)"sv, frac{ 3, 2 });
+    vc::check("_frac(1,2) / _frac(1,3)"sv, frac{ 3, 2 });
   }
 
   TEST(evaluation, t_basic_mod)
   {
-    using detail::check_eval;
-    using cplx = detail::cplx;
-    using frac = detail::frac;
-    static constexpr auto nan = std::numeric_limits<tnac::eval::float_type>::quiet_NaN();
-
     // Int
-    check_eval("2 % 2"sv, 0.0);
-    check_eval("1 % 0"sv, nan);
-    check_eval("1 % _cplx(1, 2)"sv, cplx{ 1.0, 0.0 });
-    check_eval("_cplx(1, 2) % 2"sv, cplx{ -1.0, 0.0 });
-    check_eval("_frac(1, 1) % _cplx(1, 2)"sv, cplx{ 1.0, 0.0 });
-    check_eval("_cplx(1, 2) % _frac(2, 1)"sv, cplx{ -1.0, 0.0 });
+    vc::check("2 % 2"sv, 0.0);
+    vc::check("1 % 0"sv, vc::nan());
+    vc::check("1 % _cplx(1, 2)"sv, cplx{ 1.0, 0.0 });
+    vc::check("_cplx(1, 2) % 2"sv, cplx{ -1.0, 0.0 });
+    vc::check("_frac(1, 1) % _cplx(1, 2)"sv, cplx{ 1.0, 0.0 });
+    vc::check("_cplx(1, 2) % _frac(2, 1)"sv, cplx{ -1.0, 0.0 });
 
     // Float
-    check_eval("4.0 % 5.0"sv, 4.0);
-    check_eval("6.0 % 5"sv, 1.0);
-    check_eval("4.0 % _cplx(2.0, 4)"sv, cplx{ 0.0, 2.0 });
-    check_eval("_cplx(2.0, 6) % 5.0"sv, cplx{ 2.0, 1.0 });
-    check_eval("_frac(4, 1) % _cplx(2.0, 4)"sv, cplx{ 0.0, 2.0 });
-    check_eval("_cplx(2.0, 6) % _frac(5, 1)"sv, cplx{ 2.0, 1.0 });
+    vc::check("4.0 % 5.0"sv, 4.0);
+    vc::check("6.0 % 5"sv, 1.0);
+    vc::check("4.0 % _cplx(2.0, 4)"sv, cplx{ 0.0, 2.0 });
+    vc::check("_cplx(2.0, 6) % 5.0"sv, cplx{ 2.0, 1.0 });
+    vc::check("_frac(4, 1) % _cplx(2.0, 4)"sv, cplx{ 0.0, 2.0 });
+    vc::check("_cplx(2.0, 6) % _frac(5, 1)"sv, cplx{ 2.0, 1.0 });
 
     // Complex
-    check_eval("_cplx(26, 120) % _cplx(37, 226)"sv, cplx{ -11.0, -106.0 });
+    vc::check("_cplx(26, 120) % _cplx(37, 226)"sv, cplx{ -11.0, -106.0 });
 
     // Fraction
-    check_eval("_frac(5, 1) % _frac(3, 1)"sv, 2.0);
+    vc::check("_frac(5, 1) % _frac(3, 1)"sv, 2.0);
   }
 
   TEST(evaluation, t_basic_pow)
   {
-    using detail::check_eval;
-    using cplx = detail::cplx;
-    using frac = detail::frac;
+    vc::check("2 ** 2"sv, 4.0);
+    vc::check("1 ** 0"sv, 1.0);
+    vc::check("1 ** _cplx(1, 2)"sv, cplx{ 1.0, 0.0 });
+    vc::check("_frac(1, 1) ** _cplx(1, 2)"sv, cplx{ 1.0, 0.0 });
+    vc::check("4.0 ** 5.0"sv, 1024.0);
+    vc::check("6.0 ** 5"sv, 7776.0);
+    vc::check("_frac(8, 2) ** _frac(1, 2)"sv, 2.0);
 
-    check_eval("2 ** 2"sv, 4.0);
-    check_eval("1 ** 0"sv, 1.0);
-    check_eval("1 ** _cplx(1, 2)"sv, cplx{ 1.0, 0.0 });
-    check_eval("_frac(1, 1) ** _cplx(1, 2)"sv, cplx{ 1.0, 0.0 });
-    check_eval("4.0 ** 5.0"sv, 1024.0);
-    check_eval("6.0 ** 5"sv, 7776.0);
-    check_eval("_frac(8, 2) ** _frac(1, 2)"sv, 2.0);
-
-    check_eval("-1 ** 0.5"sv, cplx{ 0.0, 1.0 });
-    check_eval("-4 // 2"sv,   cplx{ 0.0, 2.0 });
-    check_eval("-4 // -2"sv,  cplx{ 0.0, 0.5 });
+    vc::check("-1 ** 0.5"sv, cplx{ 0.0, 1.0 });
+    vc::check("-4 // 2"sv,   cplx{ 0.0, 2.0 });
+    vc::check("-4 // -2"sv,  cplx{ 0.0, 0.5 });
   }
 
   TEST(evaluation, t_literal)
   {
-    using detail::check_eval;
-    check_eval("2"sv, 2ll);
-    check_eval("0b101"sv, 5ll);
-    check_eval("010"sv, 8ll);
-    check_eval("0xff"sv, 255ll);
-    check_eval("42.69"sv, 42.69);
+    vc::check("2"sv, 2ll);
+    vc::check("0b101"sv, 5ll);
+    vc::check("010"sv, 8ll);
+    vc::check("0xff"sv, 255ll);
+    vc::check("42.69"sv, 42.69);
   }
 
   TEST(evaluation, t_unary)
   {
-    using detail::check_eval;
-    check_eval("-2"sv, -2ll);
-    check_eval("+42.69"sv, 42.69);
-    check_eval("-(2 + 3)"sv, -5ll);
-    check_eval("-(2/4)"sv, -0.5);
-    check_eval("a = 10 : -a"sv, -10ll);
+    vc::check("-2"sv, -2ll);
+    vc::check("+42.69"sv, 42.69);
+    vc::check("-(2 + 3)"sv, -5ll);
+    vc::check("-(2/4)"sv, -0.5);
+    vc::check("a = 10 : -a"sv, -10ll);
   }
 
   TEST(evaluation, t_absolute)
   {
-    using detail::check_eval;
-    using detail::check_invalid;
-    check_eval("| _true |"sv, 1ll);
-    check_eval("| _false |"sv, 0ll);
-    check_eval("| 2 |"sv, 2ll);
-    check_eval("| -2 |"sv, 2ll);
-    check_eval("| 2.0 |"sv, 2.0);
-    check_eval("| -2.0 |"sv, 2.0);
-    check_eval("| -2.0 |"sv, 2.0);
-    check_eval("| _frac(1, 2) |"sv, detail::frac{1, 2});
-    check_eval("| _frac(-1, 2) |"sv, detail::frac{1, 2});
-    check_eval("| _cplx(3, 4) |"sv, 5.0);
+    vc::check("| _true |"sv, 1ll);
+    vc::check("| _false |"sv, 0ll);
+    vc::check("| 2 |"sv, 2ll);
+    vc::check("| -2 |"sv, 2ll);
+    vc::check("| 2.0 |"sv, 2.0);
+    vc::check("| -2.0 |"sv, 2.0);
+    vc::check("| -2.0 |"sv, 2.0);
+    vc::check("| _frac(1, 2) |"sv, detail::frac{1, 2});
+    vc::check("| _frac(-1, 2) |"sv, detail::frac{1, 2});
+    vc::check("| _cplx(3, 4) |"sv, 5.0);
     
-    check_invalid("| _fn(); + 1 |"sv);
+    vc::check("| _fn(); + 1 |"sv);
   }
 
   TEST(evaluation, t_log_not)
   {
-    using detail::check_eval;
-    check_eval("!_false"sv, true);
-    check_eval("!_true"sv,  false);
-    check_eval("!0"sv,  true);
-    check_eval("!42"sv, false);
-    check_eval("!0.0"sv, true);
-    check_eval("!(-42.69)"sv, false);
-    check_eval("!_frac(0, 42)"sv, true);
-    check_eval("!_frac(1, 42)"sv, false);
-    check_eval("!_cplx(0, 0)"sv, true);
-    check_eval("!_cplx(0, 1)"sv, false);
-    check_eval("!_cplx(1, 0)"sv, false);
-    check_eval("f() ; !f"sv, false);
+    vc::check("!_false"sv, true);
+    vc::check("!_true"sv,  false);
+    vc::check("!0"sv,  true);
+    vc::check("!42"sv, false);
+    vc::check("!0.0"sv, true);
+    vc::check("!(-42.69)"sv, false);
+    vc::check("!_frac(0, 42)"sv, true);
+    vc::check("!_frac(1, 42)"sv, false);
+    vc::check("!_cplx(0, 0)"sv, true);
+    vc::check("!_cplx(0, 1)"sv, false);
+    vc::check("!_cplx(1, 0)"sv, false);
+    vc::check("f() ; !f"sv, false);
   }
 
   TEST(evaluation, t_log_is)
   {
-    using detail::check_eval;
-    check_eval("?_false"sv, false);
-    check_eval("?_true"sv, true);
-    check_eval("?0"sv, false);
-    check_eval("?42"sv, true);
-    check_eval("?0.0"sv, false);
-    check_eval("?(-42.69)"sv, true);
-    check_eval("?_frac(0, 42)"sv, false);
-    check_eval("?_frac(1, 42)"sv, true);
-    check_eval("?_cplx(0, 0)"sv, false);
-    check_eval("?_cplx(0, 1)"sv, true);
-    check_eval("?_cplx(1, 0)"sv, true);
-    check_eval("f() ; ?f"sv, true);
+    vc::check("?_false"sv, false);
+    vc::check("?_true"sv, true);
+    vc::check("?0"sv, false);
+    vc::check("?42"sv, true);
+    vc::check("?0.0"sv, false);
+    vc::check("?(-42.69)"sv, true);
+    vc::check("?_frac(0, 42)"sv, false);
+    vc::check("?_frac(1, 42)"sv, true);
+    vc::check("?_cplx(0, 0)"sv, false);
+    vc::check("?_cplx(0, 1)"sv, true);
+    vc::check("?_cplx(1, 0)"sv, true);
+    vc::check("f() ; ?f"sv, true);
   }
 
   TEST(evaluation, t_bitwise)
   {
-    using detail::check_eval;
-    using detail::check_invalid;
+    vc::check("~2"sv, (~2ll));
+    vc::check("~2.0"sv, (~2ll));
+    vc::check("~(4/2)"sv, (~2ll));
+    vc::check("~2.02"sv);
+    vc::check("~(3/2)"sv);
 
-    check_eval("~2"sv, (~2ll));
-    check_eval("~2.0"sv, (~2ll));
-    check_eval("~(4/2)"sv, (~2ll));
-    check_invalid("~2.02"sv);
-    check_invalid("~(3/2)"sv);
+    vc::check("2 & 3"sv, 2ll & 3ll);
+    vc::check("2 ^ 3"sv, 2ll ^ 3ll);
+    vc::check("2 | 3"sv, 2ll | 3ll);
 
-    check_eval("2 & 3"sv, 2ll & 3ll);
-    check_eval("2 ^ 3"sv, 2ll ^ 3ll);
-    check_eval("2 | 3"sv, 2ll | 3ll);
-
-    check_eval("42 - 40 & 3"sv, 2ll & 3ll);
-    check_eval("120 / 60 ^ 3"sv, 2ll ^ 3ll);
-    check_eval("2 | 9 / 3"sv, 2ll | 3ll);
+    vc::check("42 - 40 & 3"sv, 2ll & 3ll);
+    vc::check("120 / 60 ^ 3"sv, 2ll ^ 3ll);
+    vc::check("2 | 9 / 3"sv, 2ll | 3ll);
   }
 
   TEST(evaluation, t_comparisons)
   {
-    using detail::check_eval;
-    using detail::check_invalid;
-
     // Eq
 
-    check_eval("2 == 2"sv, true);
-    check_eval("2 == 3"sv, false);
-    check_eval("2 == 2.0"sv, true);
-    check_eval("2 == _cplx(_frac(4, 2))"sv, true);
-    check_eval("_true == _cplx(_frac(2, 2))"sv, true);
+    vc::check("2 == 2"sv, true);
+    vc::check("2 == 3"sv, false);
+    vc::check("2 == 2.0"sv, true);
+    vc::check("2 == _cplx(_frac(4, 2))"sv, true);
+    vc::check("_true == _cplx(_frac(2, 2))"sv, true);
 
     // Not eq
 
-    check_eval("2 != 2"sv, false);
-    check_eval("2 != 3"sv, true);
-    check_eval("2 != 2.0"sv, false);
-    check_eval("2 != _cplx(_frac(4, 2))"sv, false);
-    check_eval("_true != _cplx(_frac(2, 2))"sv, false);
+    vc::check("2 != 2"sv, false);
+    vc::check("2 != 3"sv, true);
+    vc::check("2 != 2.0"sv, false);
+    vc::check("2 != _cplx(_frac(4, 2))"sv, false);
+    vc::check("_true != _cplx(_frac(2, 2))"sv, false);
 
     // Rel
 
-    check_eval("1 < 2"sv, true);
-    check_eval("2 > 1"sv, true);
-    check_eval("2 < 2"sv, false);
-    check_eval("2 <= 2"sv, true);
-    check_eval("2 > 2"sv, false);
-    check_eval("2 >= 2"sv, true);
+    vc::check("1 < 2"sv, true);
+    vc::check("2 > 1"sv, true);
+    vc::check("2 < 2"sv, false);
+    vc::check("2 <= 2"sv, true);
+    vc::check("2 > 2"sv, false);
+    vc::check("2 >= 2"sv, true);
 
 
     // Funcs
     
-    check_eval("f(); f == f"sv, true);
-    check_eval("f1(); f2(); f1 == f2"sv, false);
-    check_invalid("f(); f < 1"sv);
-    check_invalid("f1(); f2(); f1 < f2"sv);
+    vc::check("f(); f == f"sv, true);
+    vc::check("f1(); f2(); f1 == f2"sv, false);
+    vc::check("f(); f < 1"sv);
+    vc::check("f1(); f2(); f1 < f2"sv);
 
     // Weird
 
-    check_eval("2 > 3 < _true"sv, true);
-    check_eval("1 == 2 == 0"sv, true);
-    check_eval("2 > 3 == _cplx(3, 4) < _frac(10, 6)"sv, true);
+    vc::check("2 > 3 < _true"sv, true);
+    vc::check("1 == 2 == 0"sv, true);
+    vc::check("2 > 3 == _cplx(3, 4) < _frac(10, 6)"sv, true);
 
   }
 
   TEST(evaluation, t_arr_eq)
   {
-    using detail::check_eval;
-
-    check_eval("a = [1,2,3] : b = a : a == b"sv, true);
-    check_eval("a = [1,2,3] : b = a : a != b"sv, false);
-    check_eval("[1,2,3] == [1,2,3]"sv, true);
-    check_eval("[1,2,3] != [1,2,3]"sv, false);
-    check_eval("[1,2,3] != [1,2,4]"sv, true);
-    check_eval("[1,2,3] == [1,2,4]"sv, false);
-    check_eval("[1,2] != [1,2,4]"sv, true);
-    check_eval("[1,2] == [1,2,4]"sv, false);
-    check_eval("[1.0,2.0] == [1,2]"sv, true);
-    check_eval("[1.0,2.0] != [1,2]"sv, false);
-    check_eval("[1, [2, 3], 4] == [1, [2, 3], 4]"sv, true);
-    check_eval("[1, [2, 3], 4] != [1, [2, 3], 4]"sv, false);
+    vc::check("a = [1,2,3] : b = a : a == b"sv, true);
+    vc::check("a = [1,2,3] : b = a : a != b"sv, false);
+    vc::check("[1,2,3] == [1,2,3]"sv, true);
+    vc::check("[1,2,3] != [1,2,3]"sv, false);
+    vc::check("[1,2,3] != [1,2,4]"sv, true);
+    vc::check("[1,2,3] == [1,2,4]"sv, false);
+    vc::check("[1,2] != [1,2,4]"sv, true);
+    vc::check("[1,2] == [1,2,4]"sv, false);
+    vc::check("[1.0,2.0] == [1,2]"sv, true);
+    vc::check("[1.0,2.0] != [1,2]"sv, false);
+    vc::check("[1, [2, 3], 4] == [1, [2, 3], 4]"sv, true);
+    vc::check("[1, [2, 3], 4] != [1, [2, 3], 4]"sv, false);
   }
 
   TEST(evaluation, t_arr_less)
   {
-    using detail::check_eval;
-
-    check_eval("a = [1,2,3] : b = a : a < b"sv, false);
-    check_eval("[1,2,3] < [1,2,3]"sv, false);
-    check_eval("[1,2,3] < [1,2,4]"sv, true);
-    check_eval("[1,2,4] < [1,2,3]"sv, false);
-    check_eval("[1,2] < [1,2,4]"sv, true);
-    check_eval("[1,2,4] < [1,2]"sv, false);
-    check_eval("[1.0,2.0] < [1,2]"sv, false);
-    check_eval("[1, [2, 3], 4] < [1, [2, 3], 4]"sv, false);
-    check_eval("[1, [2, 3], 4, 1] < [1, [2, 3], 4]"sv, false);
-    check_eval("[1, [2, 3], 4] < [1, [2, 3, 5], 4]"sv, true);
+    vc::check("a = [1,2,3] : b = a : a < b"sv, false);
+    vc::check("[1,2,3] < [1,2,3]"sv, false);
+    vc::check("[1,2,3] < [1,2,4]"sv, true);
+    vc::check("[1,2,4] < [1,2,3]"sv, false);
+    vc::check("[1,2] < [1,2,4]"sv, true);
+    vc::check("[1,2,4] < [1,2]"sv, false);
+    vc::check("[1.0,2.0] < [1,2]"sv, false);
+    vc::check("[1, [2, 3], 4] < [1, [2, 3], 4]"sv, false);
+    vc::check("[1, [2, 3], 4, 1] < [1, [2, 3], 4]"sv, false);
+    vc::check("[1, [2, 3], 4] < [1, [2, 3, 5], 4]"sv, true);
   }
 
   TEST(evaluation, t_arr_less_eq)
   {
-    using detail::check_eval;
-
-    check_eval("a = [1,2,3] : b = a : a <= b"sv, true);
-    check_eval("[1,2,3] <= [1,2,3]"sv, true);
-    check_eval("[1,2,3] <= [1,2,4]"sv, true);
-    check_eval("[1,2,4] <= [1,2,3]"sv, false);
-    check_eval("[1,2] <= [1,2,4]"sv, true);
-    check_eval("[1,2,4] <= [1,2]"sv, false);
-    check_eval("[1.0,2.0] <= [1,2]"sv, true);
-    check_eval("[1, [2, 3], 4] <= [1, [2, 3], 4]"sv, true);
-    check_eval("[1, [2, 3], 4, 1] <= [1, [2, 3], 4]"sv, false);
-    check_eval("[1, [2, 3], 4] <= [1, [2, 3, 5], 4]"sv, true);
+    vc::check("a = [1,2,3] : b = a : a <= b"sv, true);
+    vc::check("[1,2,3] <= [1,2,3]"sv, true);
+    vc::check("[1,2,3] <= [1,2,4]"sv, true);
+    vc::check("[1,2,4] <= [1,2,3]"sv, false);
+    vc::check("[1,2] <= [1,2,4]"sv, true);
+    vc::check("[1,2,4] <= [1,2]"sv, false);
+    vc::check("[1.0,2.0] <= [1,2]"sv, true);
+    vc::check("[1, [2, 3], 4] <= [1, [2, 3], 4]"sv, true);
+    vc::check("[1, [2, 3], 4, 1] <= [1, [2, 3], 4]"sv, false);
+    vc::check("[1, [2, 3], 4] <= [1, [2, 3, 5], 4]"sv, true);
   }
 
   TEST(evaluation, t_arr_greater)
   {
-    using detail::check_eval;
-
-    check_eval("a = [1,2,3] : b = a : a > b"sv, false);
-    check_eval("[1,2,3] > [1,2,3]"sv, false);
-    check_eval("[1,2,3] > [1,2,4]"sv, false);
-    check_eval("[1,2,4] > [1,2,3]"sv, true);
-    check_eval("[1,2] > [1,2,4]"sv, false);
-    check_eval("[1,2,4] > [1,2]"sv, true);
-    check_eval("[1.0,2.0] > [1,2]"sv, false);
-    check_eval("[1, [2, 3], 4] > [1, [2, 3], 4]"sv, false);
-    check_eval("[1, [2, 3], 4, 1] > [1, [2, 3], 4]"sv, true);
-    check_eval("[1, [2, 3], 4] > [1, [2, 3, 5], 4]"sv, false);
+    vc::check("a = [1,2,3] : b = a : a > b"sv, false);
+    vc::check("[1,2,3] > [1,2,3]"sv, false);
+    vc::check("[1,2,3] > [1,2,4]"sv, false);
+    vc::check("[1,2,4] > [1,2,3]"sv, true);
+    vc::check("[1,2] > [1,2,4]"sv, false);
+    vc::check("[1,2,4] > [1,2]"sv, true);
+    vc::check("[1.0,2.0] > [1,2]"sv, false);
+    vc::check("[1, [2, 3], 4] > [1, [2, 3], 4]"sv, false);
+    vc::check("[1, [2, 3], 4, 1] > [1, [2, 3], 4]"sv, true);
+    vc::check("[1, [2, 3], 4] > [1, [2, 3, 5], 4]"sv, false);
   }
 
   TEST(evaluation, t_arr_greater_eq)
   {
-    using detail::check_eval;
-
-    check_eval("a = [1,2,3] : b = a : a >= b"sv, true);
-    check_eval("[1,2,3] >= [1,2,3]"sv, true);
-    check_eval("[1,2,3] >= [1,2,4]"sv, false);
-    check_eval("[1,2,4] >= [1,2,3]"sv, true);
-    check_eval("[1,2] >= [1,2,4]"sv, false);
-    check_eval("[1,2,4] >= [1,2]"sv, true);
-    check_eval("[1.0,2.0] >= [1,2]"sv, true);
-    check_eval("[1, [2, 3], 4] >= [1, [2, 3], 4]"sv, true);
-    check_eval("[1, [2, 3], 4, 1] >= [1, [2, 3], 4]"sv, true);
-    check_eval("[1, [2, 3], 4] >= [1, [2, 3, 5], 4]"sv, false);
+    vc::check("a = [1,2,3] : b = a : a >= b"sv, true);
+    vc::check("[1,2,3] >= [1,2,3]"sv, true);
+    vc::check("[1,2,3] >= [1,2,4]"sv, false);
+    vc::check("[1,2,4] >= [1,2,3]"sv, true);
+    vc::check("[1,2] >= [1,2,4]"sv, false);
+    vc::check("[1,2,4] >= [1,2]"sv, true);
+    vc::check("[1.0,2.0] >= [1,2]"sv, true);
+    vc::check("[1, [2, 3], 4] >= [1, [2, 3], 4]"sv, true);
+    vc::check("[1, [2, 3], 4, 1] >= [1, [2, 3], 4]"sv, true);
+    vc::check("[1, [2, 3], 4] >= [1, [2, 3, 5], 4]"sv, false);
   }
 
   TEST(evaluation, t_short_circuit)
   {
-    using detail::check_eval;
-    check_eval("_true  && _true"sv,  true);
-    check_eval("_true  && _false"sv, false);
-    check_eval("_false && _true"sv,  false);
-    check_eval("_false && _false"sv, false);
-    check_eval("_true  || _true"sv,  true);
-    check_eval("_true  || _false"sv, true);
-    check_eval("_false || _true"sv,  true);
-    check_eval("_false || _false"sv, false);
+    vc::check("_true  && _true"sv,  true);
+    vc::check("_true  && _false"sv, false);
+    vc::check("_false && _true"sv,  false);
+    vc::check("_false && _false"sv, false);
+    vc::check("_true  || _true"sv,  true);
+    vc::check("_true  || _false"sv, true);
+    vc::check("_false || _true"sv,  true);
+    vc::check("_false || _false"sv, false);
   }
 
   TEST(evaluation, t_binary)
   {
-    using detail::check_eval;
-    check_eval("2 * 2"sv, 4ll);
-    check_eval("1.5 + 2 * 3"sv, 7.5);
-    check_eval("128 - 127 - 1"sv, 0ll);
-    check_eval("1.5 * 2 + 6 / 3"sv, 5.0);
-    check_eval("-2--3"sv, 1ll);
+    vc::check("2 * 2"sv, 4ll);
+    vc::check("1.5 + 2 * 3"sv, 7.5);
+    vc::check("128 - 127 - 1"sv, 0ll);
+    vc::check("1.5 * 2 + 6 / 3"sv, 5.0);
+    vc::check("-2--3"sv, 1ll);
   }
 
   TEST(evaluation, t_variable)
   {
-    using detail::check_eval;
-    check_eval("a = 10 : a * 2"sv, 20ll);
-    check_eval("a = 10 : a = a * a + a"sv, 110ll);
-    check_eval("a = 2 : b = a + 2.5 : c = a + b"sv, 6.5);
-    check_eval("a = 2 * 3 + 4 + 5"sv, 15ll);
-    check_eval("var123 = 2.5 * 3.5 : var123"sv, 8.75);
+    vc::check("a = 10 : a * 2"sv, 20ll);
+    vc::check("a = 10 : a = a * a + a"sv, 110ll);
+    vc::check("a = 2 : b = a + 2.5 : c = a + b"sv, 6.5);
+    vc::check("a = 2 * 3 + 4 + 5"sv, 15ll);
+    vc::check("var123 = 2.5 * 3.5 : var123"sv, 8.75);
   }
 
   TEST(evaluation, t_result)
   {
-    using detail::check_eval;
-    check_eval("2 + 2 : _result"sv, 4ll);
-    check_eval("2 + 2 : -_result"sv, -4ll);
-    check_eval("2 + 2 : _result + 3 : _result"sv, 7ll);
-    check_eval("5 * _result"sv, 25ll);
-    check_eval("10 : _result * (_result + 2)"sv, 120ll);
+    vc::check("2 + 2 : _result"sv, 4ll);
+    vc::check("2 + 2 : -_result"sv, -4ll);
+    vc::check("2 + 2 : _result + 3 : _result"sv, 7ll);
+    vc::check("5 * _result"sv, 25ll);
+    vc::check("10 : _result * (_result + 2)"sv, 120ll);
   }
 
   TEST(evaluation, t_func_call)
   {
-    using detail::check_eval;
-    check_eval("func(a, b) a * b; func(2, 5)"sv, 10ll);
-    check_eval("func(x) x; 1 + func(1) + _result"sv, 4ll);
-    check_eval("func(x) in(x) x + 1; x + in(x); func(1)"sv, 3ll);
-    check_eval("f() k(a, b) a + b; k; a = f(): a(10, 11)"sv, 21ll);
-    check_eval("f() 10; k(x) x() + 5; k(f)"sv, 15ll);
-    check_eval("f() k(a) a * 3;; f()(3) + f()(5)"sv, 24ll);
-    check_eval("f() _fn(a) a * 3;; f()(3) + f()(5)"sv, 24ll);
+    vc::check("func(a, b) a * b; func(2, 5)"sv, 10ll);
+    vc::check("func(x) x; 1 + func(1) + _result"sv, 4ll);
+    vc::check("func(x) in(x) x + 1; x + in(x); func(1)"sv, 3ll);
+    vc::check("f() k(a, b) a + b; k; a = f(): a(10, 11)"sv, 21ll);
+    vc::check("f() 10; k(x) x() + 5; k(f)"sv, 15ll);
+    vc::check("f() k(a) a * 3;; f()(3) + f()(5)"sv, 24ll);
+    vc::check("f() _fn(a) a * 3;; f()(3) + f()(5)"sv, 24ll);
   }
 
   TEST(evaluation, t_overflow)
   {
-    using detail::parse_helper;
-    parse_helper ph;
-    tnac::eval::registry reg;
-    tnac::eval::call_stack cs{ 1 };
-    tnac::evaluator ev{ reg, cs };
-    ev.on_error([](auto&&, auto msg) noexcept
+    auto core = get_tnac(1);
+    core.on_semantic_error([](auto&&, auto msg) noexcept
       {
         EXPECT_EQ(msg, "Stack overflow"sv);
       });
 
-    ph.parser("f() f(); f()"sv);
-    ev(ph.parser.root());
+    core.evaluate("f() f(); f()"sv);
   }
 }

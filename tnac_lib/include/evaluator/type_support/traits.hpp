@@ -394,6 +394,15 @@ namespace tnac::eval
   template <typename T> auto eq(const T&, const T&) noexcept;
   template <detail::has_eq T> inline auto eq(const T& lhs, const T& rhs) noexcept
   {
+    if constexpr (is_same_noquals_v<T, float_type>)
+    {
+      if (std::isinf(lhs) && std::isinf(rhs))
+        return true;
+
+      if (std::isnan(lhs) && std::isnan(rhs))
+        return true;
+    }
+
     return utils::eq(lhs, rhs);
   }
   template <> inline auto eq(const complex_type& lhs, const complex_type& rhs) noexcept

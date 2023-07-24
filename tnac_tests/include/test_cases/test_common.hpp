@@ -139,6 +139,7 @@ namespace tnac_tests
   namespace pkg  = tnac::packages;
   using tree::node_kind;
   using tnac::string_t;
+  using tnac::buf_t;
   using tnac::tok_kind;
   using tnac::ast::node_kind;
   using cplx = tnac::eval::complex_type;
@@ -155,6 +156,7 @@ namespace tnac_tests
   {
     return pkg::tnac_core{ stackSz };
   }
+
 
   //
   // Lexer
@@ -187,6 +189,7 @@ namespace tnac_tests
       EXPECT_TRUE(tok.is(tk)) << "Failed token: " << tok.m_value;
     }
   }
+
 
   //
   // Parser
@@ -269,7 +272,7 @@ namespace tnac_tests
     }
 
   public:
-    CLASS_SPECIALS_NODEFAULT(tree_checker);
+    CLASS_SPECIALS_NONE(tree_checker);
 
     tree_checker(test_data expected) noexcept :
       m_data{ expected },
@@ -391,4 +394,120 @@ namespace tnac_tests
   };
 
   using expected_node = tree_checker::expected_node;
+
+
+  //
+  // Evaluator
+  //
+
+  template <typename T>
+  concept testable = tnac::eval::detail::generic_type<T>;
+
+  class value_checker final
+  {
+  public:
+    using value_type = tnac::eval::value;
+
+  public:
+    CLASS_SPECIALS_NONE_CUSTOM(value_checker);
+
+    static constexpr auto infinity() noexcept
+    {
+      return std::numeric_limits<tnac::eval::float_type>::infinity();
+    }
+    static constexpr auto nan() noexcept
+    {
+      return std::numeric_limits<tnac::eval::float_type>::quiet_NaN();
+    }
+
+    static auto from_file(string_t fname) noexcept
+    {
+      return value_checker{ fname };
+    }
+
+    template <testable T>
+    static void verify(tnac::eval::value val, T expected) noexcept
+    {
+      if constexpr (tnac::is_same_noquals_v<T, tnac::eval::invalid_val_t>)
+      {
+        ASSERT_TRUE(!val);
+      }
+      else
+      {
+        tnac::eval::on_value(val, [expected](auto val) noexcept
+          {
+            using expected_t = decltype(val);
+            if constexpr (tnac::is_same_noquals_v<expected_t, tnac::eval::invalid_val_t>)
+            {
+              ASSERT_TRUE(false) << "Undefined value detected";
+            }
+            else if constexpr (!tnac::is_same_noquals_v<expected_t, T>)
+            {
+              ASSERT_TRUE(false) << "Wrong value type";
+            }
+            else
+            {
+              using tnac::eval::eq;
+              ASSERT_TRUE(eq(expected, val)) << "expected: " << expected << " got: " << val;
+            }
+          });
+      }
+    }
+
+    template <testable T>
+    static void check(string_t input, T expected) noexcept
+    {
+      value_checker checker{};
+      auto res = checker(input);
+      verify(res, std::move(expected));
+    }
+
+    static void check(string_t input) noexcept
+    {
+      check(input, tnac::eval::invalid_val_t{});
+    }
+
+  private:
+    value_checker() noexcept :
+      m_tnac{ 128 }
+    {}
+
+    value_checker(string_t fname) noexcept :
+      value_checker{}
+    {
+      read_file(fname);
+    }
+
+  public:
+    value_type operator()(string_t input) noexcept
+    {
+      return core().evaluate(input);
+    }
+
+  private:
+    void read_file(string_t fname) noexcept
+    {
+      fsys::path fn{ fname };
+
+      std::error_code errc;
+      fn = fsys::absolute(fn, errc);
+      ASSERT_FALSE(static_cast<bool>(errc)) << "Bad file name " << fname;
+      std::ifstream in{ fn.string() };
+      ASSERT_TRUE(static_cast<bool>(in));
+      in.seekg(0, std::ios::end);
+      m_buffer.reserve(in.tellg());
+      in.seekg(0, std::ios::beg);
+      using it = std::istreambuf_iterator<tnac::buf_t::value_type>;
+      m_buffer.assign(it{ in }, it{});
+    }
+
+    pkg::tnac_core& core() noexcept
+    {
+      return m_tnac;
+    }
+
+  private:
+    pkg::tnac_core m_tnac;
+    buf_t m_buffer;
+  };
 }

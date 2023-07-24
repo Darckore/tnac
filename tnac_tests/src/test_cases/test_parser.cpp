@@ -159,7 +159,7 @@ namespace tnac_tests
     tree_checker::check_tree_structute(exp, input);
   }
 
-  TEST(parser, t_struct_seq_binary)
+  TEST(parser, t_struct_seq_binary) // :3
   {
     constexpr auto input = "128 - 127-1"sv;
 
