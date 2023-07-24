@@ -448,6 +448,17 @@ namespace tnac::eval
           return eval::eq(l, r) || eval::less(l, r);
         });
     }
+    void less_eq(array_type lhs, array_type rhs) noexcept
+    {
+      less(lhs, rhs);
+      if (to_bool(*fetch_next()))
+      {
+        reg_value(true);
+        return;
+      }
+      equal(std::move(lhs), std::move(rhs), true);
+      reg_value(to_bool(*fetch_next()));
+    }
     void less_eq(detail::generic_type auto, detail::generic_type auto) noexcept { clear_result(); }
 
     void greater(detail::fully_comparable auto lhs, detail::fully_comparable auto rhs) noexcept
@@ -490,6 +501,17 @@ namespace tnac::eval
         {
           return !eval::less(l, r);
         });
+    }
+    void greater_eq(array_type lhs, array_type rhs) noexcept
+    {
+      greater(lhs, rhs);
+      if (to_bool(*fetch_next()))
+      {
+        reg_value(true);
+        return;
+      }
+      equal(std::move(lhs), std::move(rhs), true);
+      reg_value(to_bool(*fetch_next()));
     }
     void greater_eq(detail::generic_type auto, detail::generic_type auto) noexcept { clear_result(); }
 
