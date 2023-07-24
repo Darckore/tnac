@@ -363,6 +363,22 @@ namespace tnac_tests
     check_eval("[1, [2, 3], 4] < [1, [2, 3, 5], 4]"sv, true);
   }
 
+  TEST(evaluation, t_arr_greater)
+  {
+    using detail::check_eval;
+
+    check_eval("a = [1,2,3] : b = a : a > b"sv, false);
+    check_eval("[1,2,3] > [1,2,3]"sv, false);
+    check_eval("[1,2,3] > [1,2,4]"sv, false);
+    check_eval("[1,2,4] > [1,2,3]"sv, true);
+    check_eval("[1,2] > [1,2,4]"sv, false);
+    check_eval("[1,2,4] > [1,2]"sv, true);
+    check_eval("[1.0,2.0] > [1,2]"sv, false);
+    check_eval("[1, [2, 3], 4] > [1, [2, 3], 4]"sv, false);
+    check_eval("[1, [2, 3], 4, 1] > [1, [2, 3], 4]"sv, true);
+    check_eval("[1, [2, 3], 4] > [1, [2, 3, 5], 4]"sv, false);
+  }
+
   TEST(evaluation, t_short_circuit)
   {
     using detail::check_eval;
