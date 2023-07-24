@@ -342,7 +342,14 @@ namespace tnac_tests
         return;
       }
 
-      for (auto& checked = *cv; auto && [c, e] : utils::make_iterators(*checked, *expected))
+      auto&& checked = *cv;
+      if (checked->size() != expected->size())
+      {
+        FAIL() << "Wrong size. Expected: " << checked->size() << " got: " << expected->size();
+        return;
+      }
+
+      for (auto&& [c, e] : utils::make_iterators(*checked, *expected))
       {
         auto checkedVal  = *c;
         auto expectedVal = *e;
