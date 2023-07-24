@@ -45,6 +45,11 @@ namespace tnac::eval
                                RelLess, RelLessEq, RelGr, RelGrEq,
                                Equal, NEqual);
     }
+    constexpr auto is_comparison(val_ops op) noexcept
+    {
+      using enum val_ops;
+      return utils::eq_any(op, RelLess, RelLessEq, RelGr, RelGrEq, Equal, NEqual);
+    }
   
     template <typename T>
     concept value_container = requires (T& t)
@@ -371,6 +376,35 @@ namespace tnac::eval
       const auto res = compareForEquality ? cmp : !cmp;
       reg_value(res);
     }
+    void equal(array_type lhs, array_type rhs, bool compareForEquality) noexcept
+    {
+      auto&& l = *lhs;
+      auto&& r = *rhs;
+
+      if (compareForEquality && &l == &r)
+      {
+        reg_value(true);
+        return;
+      }
+      if (l.size() != r.size())
+      {
+        reg_value(!compareForEquality);
+        return;
+      }
+
+      for (auto&& [le, re] : utils::make_iterators(l, r))
+      {
+        visit_binary(*le, *re, val_ops::Equal);
+        const auto cmp = to_bool(*fetch_next());
+        if (!cmp)
+        {
+          reg_value(compareForEquality ? false : true);
+          return;
+        }
+      }
+
+      reg_value(compareForEquality);
+    }
     void equal(detail::generic_type auto, detail::generic_type auto, bool) noexcept { clear_result(); }
 
     void less(detail::rel_comparable auto lhs, detail::rel_comparable auto rhs) noexcept
@@ -459,6 +493,20 @@ namespace tnac::eval
     template <>
     void visit_binary(array_type l, array_type r, val_ops op) noexcept
     {
+      if (detail::is_comparison(op))
+      {
+        switch (op)
+        {
+        case RelLess:   less(std::move(l), std::move(r));         break;
+        case RelLessEq: less_eq(std::move(l), std::move(r));      break;
+        case RelGr:     greater(std::move(l), std::move(r));      break;
+        case RelGrEq:   greater_eq(std::move(l), std::move(r));   break;
+        case Equal:     equal(std::move(l), std::move(r), true);  break;
+        case NEqual:    equal(std::move(l), std::move(r), false); break;
+        }
+        return;
+      }
+
       const auto lsz = l->size();
       const auto rsz = r->size();
       const auto newSz = lsz * rsz;

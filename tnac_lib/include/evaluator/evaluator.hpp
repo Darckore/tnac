@@ -222,11 +222,6 @@ namespace tnac
     bool return_path() const noexcept;
 
     //
-    // Converts a value to bool
-    //
-    bool to_bool(eval::value val) const noexcept;
-
-    //
     // Extracts a function symbol from a scope
     //
     semantics::function* try_get_callable(ast::scope& scope) const noexcept;

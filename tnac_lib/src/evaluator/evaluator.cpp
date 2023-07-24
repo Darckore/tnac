@@ -641,13 +641,6 @@ namespace tnac
     return m_return || m_fatal;
   }
 
-  bool evaluator::to_bool(eval::value val) const noexcept
-  {
-    auto resVal = eval::cast_value<eval::bool_type>(val);
-    UTILS_ASSERT(resVal.has_value());
-    return *resVal;
-  }
-
   semantics::function* evaluator::try_get_callable(ast::scope& scope) const noexcept
   {
     using semantics::sym_kind;

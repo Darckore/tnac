@@ -249,6 +249,12 @@ namespace tnac::eval
   template <detail::expr_result T>
   auto cast_value(value val) noexcept { return on_value(val, get_caster<T>()); };
 
+  inline auto to_bool(value val) noexcept
+  {
+    auto resVal = cast_value<bool_type>(val);
+    UTILS_ASSERT(resVal.has_value());
+    return *resVal;
+  }
 
   //
   // Common type
