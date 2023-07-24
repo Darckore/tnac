@@ -225,6 +225,9 @@ namespace tnac
     {
     case KwComplex:  instance<eval::complex_type>{ m_visitor, m_errHandler }(expr);  break;
     case KwFraction: instance<eval::fraction_type>{ m_visitor, m_errHandler }(expr); break;
+    case KwInt:      instance<eval::int_type>{ m_visitor, m_errHandler }(expr); break;
+    case KwFloat:    instance<eval::float_type>{ m_visitor, m_errHandler }(expr); break;
+    case KwBool:     instance<eval::bool_type>{ m_visitor, m_errHandler }(expr); break;
     
     default: UTILS_ASSERT(false); break;
     }

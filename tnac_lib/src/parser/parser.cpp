@@ -129,7 +129,8 @@ namespace tnac
 
       constexpr auto is_type_keyword(const token& tok) noexcept
       {
-        return tok.is_any(token::KwComplex, token::KwFraction);
+        using enum tok_kind;
+        return tok.is_any(KwComplex, KwFraction, KwInt, KwFloat, KwBool);
       }
 
       auto is_error_expr(const ast::expr& expr) noexcept

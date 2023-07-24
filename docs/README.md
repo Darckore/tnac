@@ -142,6 +142,9 @@ These are the supported keywords:
 Type instantiations:
 - `_cplx`
 - `_frac`
+- `_int`
+- `_flt`
+- `_bool`
 
 Anonimous function decl:
 - `_fn`
