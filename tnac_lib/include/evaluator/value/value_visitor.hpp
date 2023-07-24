@@ -415,6 +415,29 @@ namespace tnac::eval
           return eval::less(l, r);
         });
     }
+    void less(array_type lhs, array_type rhs) noexcept
+    {
+      auto&& l = *lhs;
+      auto&& r = *rhs;
+      if (&l == &r)
+      {
+        reg_value(false);
+        return;
+      }
+
+      for (auto&& [lv, rv] : utils::make_iterators(l, r))
+      {
+        visit_binary(*lv, *rv, val_ops::RelLess);
+        const auto cmp = to_bool(*fetch_next());
+        if (cmp)
+        {
+          reg_value(true);
+          return;
+        }
+      }
+
+      reg_value(l.size() < r.size());
+    }
     void less(detail::generic_type auto, detail::generic_type auto) noexcept { clear_result(); }
 
     void less_eq(detail::fully_comparable auto lhs, detail::fully_comparable auto rhs) noexcept
