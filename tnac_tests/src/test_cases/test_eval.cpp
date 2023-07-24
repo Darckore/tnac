@@ -458,4 +458,72 @@ namespace tnac_tests
 
     vc::check("[7, [1, 2, 3], [4.0, 1 + 2*_i]]"sv, builder.to_array_type(outer));
   }
+
+  TEST(evaluation, t_arr_unary)
+  {
+    array_builder builder;
+    auto&& arr = builder.add(2);
+    arr.emplace_back(-42ll);
+    arr.emplace_back(-69.0);
+
+    vc::check("-[42, 69.0]"sv, builder.to_array_type(arr));
+  }
+
+  TEST(evaluation, t_arr_binary_scalar)
+  {
+    array_builder builder;
+    auto&& arr = builder.add(2);
+    arr.emplace_back(42ll);
+    arr.emplace_back(69.0);
+
+    vc::check("[40, 67.0] + 2"sv, builder.to_array_type(arr));
+  }
+
+  TEST(evaluation, t_arr_binary_arr)
+  {
+    array_builder builder;
+    auto&& arr = builder.add(4);
+    arr.emplace_back(4.0);
+    arr.emplace_back(8.0);
+    arr.emplace_back(9.0);
+    arr.emplace_back(27.0);
+
+    vc::check("[2, 3] ** [2, 3]"sv, builder.to_array_type(arr));
+  }
+
+  TEST(evaluation, t_arr_abs)
+  {
+    array_builder builder;
+    auto&& arr = builder.add(2);
+    arr.emplace_back(42ll);
+    arr.emplace_back(5.0);
+
+    vc::check("|[-42, 3 + 4*_i]|"sv, builder.to_array_type(arr));
+  }
+
+  TEST(evaluation, t_arr_call)
+  {
+    array_builder builder;
+    auto&& arr = builder.add(2);
+    arr.emplace_back(12ll);
+    arr.emplace_back(20ll);
+
+    vc::check("[ _fn(x) x + 2;, _fn(x) x * 2; ](10)"sv, builder.to_array_type(arr));
+  }
+
+  TEST(evaluation, t_arr_complex_call)
+  {
+    array_builder builder;
+    
+    auto&& inner = builder.add(2);
+    inner.emplace_back(20ll);
+    inner.emplace_back(8ll);
+
+    auto&& arr = builder.add(2);
+    arr.emplace_back(12ll);
+    arr.emplace_back(builder.to_array_type(inner));
+
+    vc::check("[ _fn(x) x + 2;, [ _fn(x) x * 2;, _fn(x) x - 2; ] ](10)"sv, builder.to_array_type(arr));
+  }
+
 }
