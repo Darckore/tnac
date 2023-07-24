@@ -424,4 +424,38 @@ namespace tnac_tests
 
     core.evaluate("f() f(); f()"sv);
   }
+
+  TEST(evaluation, t_plain_arr)
+  {
+    array_builder builder;
+    auto&& arr = builder.add(5);
+    arr.emplace_back(1ll);
+    arr.emplace_back(42ll);
+    arr.emplace_back(2.3);
+    arr.emplace_back(cplx{ 3, 4 });
+    arr.emplace_back(frac{ 1, 2 });
+    
+    vc::check("[1, 42, 2.3, 3 + 4*_i, _frac(1,2)]"sv, builder.to_array_type(arr));
+  }
+
+  TEST(evaluation, t_complex_arr)
+  {
+    array_builder builder;
+    
+    auto&& inner1 = builder.add(3);
+    inner1.emplace_back(1ll);
+    inner1.emplace_back(2ll);
+    inner1.emplace_back(3ll);
+
+    auto&& inner2 = builder.add(2);
+    inner2.emplace_back(4.0);
+    inner2.emplace_back(cplx{ 1, 2 });
+
+    auto&& outer = builder.add(3);
+    outer.emplace_back(7ll);
+    outer.emplace_back(builder.to_array_type(inner1));
+    outer.emplace_back(builder.to_array_type(inner2));
+
+    vc::check("[7, [1, 2, 3], [4.0, 1 + 2*_i]]"sv, builder.to_array_type(outer));
+  }
 }

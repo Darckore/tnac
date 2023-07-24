@@ -16,11 +16,18 @@ namespace tnac_tests
   using tnac::ast::node_kind;
   using cplx = tnac::eval::complex_type;
   using frac = tnac::eval::fraction_type;
+  using arr  = tnac::eval::array_type;
+  using func = tnac::eval::function_type;
 
   inline testing::Message& operator<<(testing::Message& msg, const frac& f) noexcept
   {
     if (f.sign() < 0) msg << '-';
     msg << f.num() << ',' << f.denom();
+    return msg;
+  }
+  inline testing::Message& operator<<(testing::Message& msg, const func& f) noexcept
+  {
+    msg << "function(" << f->name() << ')';
     return msg;
   }
 
@@ -326,6 +333,26 @@ namespace tnac_tests
       }
     }
 
+    static void verify(tnac::eval::value val, arr expected) noexcept
+    {
+      auto cv = val.try_get<tnac::eval::array_type>();
+      if (!cv)
+      {
+        FAIL() << "Checked value is not an array";
+        return;
+      }
+
+      for (auto& checked = *cv; auto && [c, e] : utils::make_iterators(*checked, *expected))
+      {
+        auto checkedVal  = *c;
+        auto expectedVal = *e;
+        tnac::eval::on_value(expectedVal, [checkedVal](auto expVal) noexcept
+          {
+            verify(checkedVal, std::move(expVal));
+          });
+      }
+    }
+
     template <testable T>
     static void check(string_t input, T expected) noexcept
     {
@@ -436,4 +463,39 @@ namespace tnac_tests
   {
     verify_program(fname, tnac::eval::invalid_val_t{});
   }
+
+
+  //
+  // Arrays
+  //
+
+  class array_builder final
+  {
+  public:
+    using value_type = tnac::eval::array_type;
+    using arr_t      = value_type::value_type;
+    using arr_store  = std::forward_list<arr_t>;
+
+  public:
+    CLASS_SPECIALS_NONE_CUSTOM(array_builder);
+
+    array_builder() noexcept = default;
+
+  public:
+    arr_t& add(std::size_t prealloc) noexcept
+    {
+      auto&& arr = m_arrays.emplace_front();
+      arr.reserve(prealloc);
+      return arr;
+    }
+
+    value_type to_array_type(arr_t& arr) noexcept
+    {
+      return { arr, ~std::size_t{} };
+    }
+
+  private:
+    arr_store m_arrays;
+  };
+
 }
