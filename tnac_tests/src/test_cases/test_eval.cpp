@@ -193,8 +193,8 @@ namespace tnac_tests
     vc::check("| 2.0 |"sv, 2.0);
     vc::check("| -2.0 |"sv, 2.0);
     vc::check("| -2.0 |"sv, 2.0);
-    vc::check("| _frac(1, 2) |"sv, detail::frac{1, 2});
-    vc::check("| _frac(-1, 2) |"sv, detail::frac{1, 2});
+    vc::check("| _frac(1, 2) |"sv, frac{1, 2});
+    vc::check("| _frac(-1, 2) |"sv, frac{1, 2});
     vc::check("| _cplx(3, 4) |"sv, 5.0);
     
     vc::check("| _fn(); + 1 |"sv);
