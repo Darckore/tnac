@@ -1,44 +1,7 @@
-#include "parser/lex.hpp"
+#include "test_cases/test_common.hpp"
 
 namespace tnac_tests
 {
-  namespace detail
-  {
-    namespace
-    {
-      using tnac::string_t;
-      using tnac::tok_kind;
-
-      void all_same(string_t input, tok_kind kind)
-      {
-        tnac::lex lex;
-        lex(input);
-
-        for (;;)
-        {
-          auto tok = lex.next();
-          if (tok.is_eol())
-            break;
-
-          EXPECT_TRUE(tok.is(kind)) << "Failed token: " << tok.m_value;
-        }
-      }
-
-      template <std::size_t N>
-      void check_tokens(string_t input, const std::array<tok_kind, N>& tokArr) noexcept
-      {
-        tnac::lex lex;
-        lex(input);
-
-        for (auto tk : tokArr)
-        {
-          auto tok = lex.next();
-          EXPECT_TRUE(tok.is(tk)) << "Failed token: " << tok.m_value;
-        }
-      }
-    }
-  }
-
   TEST(lexer, t_token_list)
   {
     constexpr auto input = "= + - ~ * / && & ^ || | ** // ! ? == != < > <= >= -> : , ; ( ) { } [ ] _true _false 1 01 0b1 0x1 1.0 id #cmd"sv;
@@ -55,7 +18,6 @@ namespace tnac_tests
       Eol, Eol, Eol
     };
 
-    using detail::check_tokens;
     check_tokens(input, testArr);
   }
 
@@ -72,7 +34,6 @@ namespace tnac_tests
       Comma, Semicolon, Float
     };
 
-    using detail::check_tokens;
     check_tokens(input, testArr);
   }
 
@@ -85,7 +46,6 @@ namespace tnac_tests
     constexpr auto floats  = "0.0 0.00000 0.1 0023.3450 13456.0"sv;
 
     using enum tnac::tok_kind;
-    using detail::all_same;
     all_same(binInts, IntBin);
     all_same(octInts, IntOct);
     all_same(decInts, IntDec);
@@ -98,7 +58,6 @@ namespace tnac_tests
     constexpr auto failures = "0. .1 08 1.2.3 0xabcdr 0xab.c 0b111.1 0b 0x 0b2 256a"sv;
 
     using enum tnac::tok_kind;
-    using detail::all_same;
     all_same(failures, Error);
   }
 
@@ -107,7 +66,6 @@ namespace tnac_tests
     constexpr auto input = "'one' 'and two  ' 'and 3 & 4 @$' '' '            '"sv;
 
     using enum tnac::tok_kind;
-    using detail::all_same;
     all_same(input, String);
   }
 
@@ -116,7 +74,6 @@ namespace tnac_tests
     constexpr auto input = "'this string has no end"sv;
 
     using enum tnac::tok_kind;
-    using detail::all_same;
     all_same(input, Error);
   }
 
@@ -124,7 +81,6 @@ namespace tnac_tests
   {
     constexpr auto ids = "a var_001 x____111__v long_identifier_name_of_doom"sv;
     using enum tnac::tok_kind;
-    using detail::all_same;
     all_same(ids, Identifier);
   }
 
@@ -140,7 +96,6 @@ namespace tnac_tests
       KwI, KwPi, KwE
     };
 
-    using detail::check_tokens;
     check_tokens(input, testArr);
   }
 

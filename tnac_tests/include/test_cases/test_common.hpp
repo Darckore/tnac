@@ -128,3 +128,54 @@ namespace tnac_tests
     }
   }
 }
+
+namespace tnac_tests
+{
+  namespace tree = tnac::ast;
+  namespace pkg  = tnac::packages;
+  using tree::node_kind;
+  using tnac::string_t;
+  using tnac::tok_kind;
+  using cplx = tnac::eval::complex_type;
+  using frac = tnac::eval::fraction_type;
+
+  inline testing::Message& operator<<(testing::Message& msg, const frac& f) noexcept
+  {
+    if (f.sign() < 0) msg << '-';
+    msg << f.num() << ',' << f.denom();
+    return msg;
+  }
+
+  inline void all_same(string_t input, tok_kind kind)
+  {
+    tnac::lex lex;
+    lex(input);
+
+    for (;;)
+    {
+      auto tok = lex.next();
+      if (tok.is_eol())
+        break;
+
+      EXPECT_TRUE(tok.is(kind)) << "Failed token: " << tok.m_value;
+    }
+  }
+  
+  template <std::size_t N>
+  void check_tokens(string_t input, const std::array<tok_kind, N>& tokArr) noexcept
+  {
+    tnac::lex lex;
+    lex(input);
+
+    for (auto tk : tokArr)
+    {
+      auto tok = lex.next();
+      EXPECT_TRUE(tok.is(tk)) << "Failed token: " << tok.m_value;
+    }
+  }
+
+  inline pkg::tnac_core get_tnac(std::size_t stackSz = 0) noexcept
+  {
+    return pkg::tnac_core{ stackSz };
+  }
+}
