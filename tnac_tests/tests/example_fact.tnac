@@ -5,5 +5,3 @@ factorial(arg)
     {}       ->  arg * factorial(arg - 1) ;
   ;
 ;
-
-factorial(10)

@@ -11,7 +11,25 @@ namespace tnac_tests
 
   TEST(program, t_example_fact)
   {
-    verify_program(TEST_EXAMPLE(_fact), 3628800ll);
+    auto vc = read_program(TEST_EXAMPLE(_fact), true);
+    std::array expected{
+      std::pair{ "factorial(0)"sv,        1ll },
+      std::pair{ "factorial(1)"sv,        1ll },
+      std::pair{ "factorial(2)"sv,        2ll },
+      std::pair{ "factorial(3)"sv,        6ll },
+      std::pair{ "factorial(4)"sv,       24ll },
+      std::pair{ "factorial(5)"sv,      120ll },
+      std::pair{ "factorial(6)"sv,      720ll },
+      std::pair{ "factorial(7)"sv,     5040ll },
+      std::pair{ "factorial(8)"sv,    40320ll },
+      std::pair{ "factorial(9)"sv,   362880ll },
+      std::pair{ "factorial(10)"sv, 3628800ll },
+    };
+
+    for (auto&& [input, val] : expected)
+    {
+      vc(input, val);
+    }
   }
 
   TEST(program, t_example_ret)

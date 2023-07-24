@@ -292,9 +292,9 @@ namespace tnac_tests
       return std::numeric_limits<tnac::eval::float_type>::quiet_NaN();
     }
 
-    static auto from_file(string_t fname) noexcept
+    static auto from_file(string_t fname, bool doEval = false) noexcept
     {
-      return value_checker{ fname };
+      return value_checker{ fname, doEval };
     }
 
     template <testable T>
@@ -356,10 +356,12 @@ namespace tnac_tests
       m_tnac.on_semantic_error(on_eval_error);
     }
 
-    value_checker(string_t fname) noexcept :
+    value_checker(string_t fname, bool doEval = false) noexcept :
       value_checker{}
     {
       read_file(fname);
+      if (doEval)
+        eval(m_buffer);
     }
 
   public:
@@ -418,15 +420,15 @@ namespace tnac_tests
     buf_t m_buffer;
   };
 
-  inline auto read_file(string_t fname) noexcept
+  inline auto read_program(string_t fname, bool doEval = false) noexcept
   {
-    return value_checker::from_file(fname);
+    return value_checker::from_file(fname, doEval);
   }
 
   template <testable T>
   inline void verify_program(string_t fname, T expected) noexcept
   {
-    auto vc = read_file(fname);
+    auto vc = read_program(fname);
     vc(std::move(expected));
   }
 
