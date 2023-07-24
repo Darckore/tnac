@@ -1,0 +1,6 @@
+sum(a, b) a + b;
+dif(a, b) |a - b|;
+mul(a, b) a * b;
+div(a, b) a / b;
+
+[ sum, [ dif, mul ], div ](42, 69)

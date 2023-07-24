@@ -66,4 +66,22 @@ namespace tnac_tests
   {
     verify_program(TEST_EXAMPLE(5), 210ll);
   }
+
+  TEST(program, t_example6)
+  {
+    array_builder builder;
+    constexpr auto op1 = 42ll;
+    constexpr auto op2 = 69ll;
+
+    auto&& inner = builder.add(2);
+    inner.emplace_back(op2 - op1);
+    inner.emplace_back(op2 * op1);
+
+    auto&& arr = builder.add(3);
+    arr.emplace_back(op1 + op2);
+    arr.emplace_back(builder.to_array_type(inner));
+    arr.emplace_back(static_cast<double>(op1) / op2);
+
+    verify_program(TEST_EXAMPLE(6), builder.to_array_type(arr));
+  }
 }
