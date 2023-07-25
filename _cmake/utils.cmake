@@ -49,7 +49,7 @@ function(set_build_opts TARGET_NAME EXCLUDED_FILES)
 
   if(MSVC)
     target_compile_options(${TARGET_NAME} PRIVATE /W4 /WX /JMC $<$<CONFIG:RELEASE>:/GL /Ot /Oi>)
-    target_link_options(${TARGET_NAME} PRIVATE $<$<CONFIG:RELEASE>:/LTCG>)
+    target_link_options(${TARGET_NAME} PRIVATE $<$<CONFIG:RELEASE>:/LTCG> /STACK:8388608)
     set_target_properties( ${TARGET_NAME} PROPERTIES
                            VS_DEBUGGER_WORKING_DIRECTORY "$<TARGET_FILE_DIR:${TARGET_NAME}>")
     set_property(SOURCE ${EXCLUDED_FILES} PROPERTY VS_SETTINGS "ExcludedFromBuild=true")

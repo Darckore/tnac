@@ -36,7 +36,7 @@ namespace tnac_rt
   // Special members
 
   driver::driver(int argCount, char** args) noexcept :
-    m_tnac{ 128 } // todo: configurable
+    m_tnac{ 7000 } // todo: configurable
   {
     set_terminate_handlers();
     init_handlers();
