@@ -32,6 +32,30 @@ namespace tnac_tests
     }
   }
 
+  TEST(program, t_example_fib)
+  {
+    auto vc = read_program(TEST_EXAMPLE(_fib), true);
+    std::array expected{
+      std::pair{ "fib(-1)"sv, -1ll },
+      std::pair{ "fib(0)"sv,   0ll },
+      std::pair{ "fib(1)"sv,   1ll },
+      std::pair{ "fib(2)"sv,   1ll },
+      std::pair{ "fib(3)"sv,   2ll },
+      std::pair{ "fib(4)"sv,   3ll },
+      std::pair{ "fib(5)"sv,   5ll },
+      std::pair{ "fib(6)"sv,   8ll },
+      std::pair{ "fib(7)"sv,  13ll },
+      std::pair{ "fib(8)"sv,  21ll },
+      std::pair{ "fib(9)"sv,  34ll },
+      std::pair{ "fib(10)"sv, 55ll },
+    };
+
+    for (auto&& [input, val] : expected)
+    {
+      vc(input, val);
+    }
+  }
+
   TEST(program, t_example_ret)
   {
     verify_program(TEST_EXAMPLE(_ret), 42ll);
