@@ -189,7 +189,7 @@ namespace tnac_rt::out
     if (auto&& patterns = expr.patterns(); !patterns.children().empty())
     {
       endl();
-      tnac::value_guard _{ m_indent };
+      VALUE_GUARD(m_indent);
       ++m_indent;
       print(patterns);
       indent(*expr.parent());
@@ -210,7 +210,7 @@ namespace tnac_rt::out
     endl();
     if (auto&& body = expr.body(); !body.children().empty())
     {
-      tnac::value_guard _{ m_indent };
+      VALUE_GUARD(m_indent);
       ++m_indent;
       print(body);
       indent(*expr.parent());
@@ -271,7 +271,7 @@ namespace tnac_rt::out
     if (auto&& body = decl.body(); !body.children().empty())
     {
       endl();
-      tnac::value_guard _{ m_indent };
+      VALUE_GUARD(m_indent);
       ++m_indent;
       print(body);
       --m_indent;

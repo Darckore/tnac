@@ -205,13 +205,13 @@ namespace tnac_rt
         m_srcMgr.on_error(arg, "Unknown parameter"sv);
     }
 
-    tnac::value_guard _{ m_state.numBase, base };
+    VALUE_GUARD(m_state.numBase, base);
     print_result();
   }
 
   void driver::list_code(command c) noexcept
   {
-    tnac::value_guard _{ m_io.out };
+    VALUE_GUARD(m_io.out);
     if (c.arg_count())
     {
       try_redirect_output(c[size_type{}]);
@@ -242,7 +242,7 @@ namespace tnac_rt
     };
 
     auto ast = toPrint(c);
-    tnac::value_guard _{ m_io.out };
+    VALUE_GUARD(m_io.out);
     if (c.arg_count())
     {
       try_redirect_output(c[size_type{}]);
@@ -255,7 +255,7 @@ namespace tnac_rt
 
   void driver::print_vars(command c) noexcept
   {
-    tnac::value_guard _{ m_io.out };
+    VALUE_GUARD(m_io.out);
     if (c.arg_count())
     {
       try_redirect_output(c[size_type{}]);

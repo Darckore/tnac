@@ -153,8 +153,8 @@ namespace tnac
 
   void evaluator::operator()(ast::node* root) noexcept
   {
-    value_guard r_{ m_return };
-    value_guard f_{ m_fatal };
+    VALUE_GUARD(m_return);
+    VALUE_GUARD(m_fatal);
     traverse(root);
 
     // Remove the in-flight temporary value of the previous expression
@@ -635,7 +635,7 @@ namespace tnac
 
     m_callStack.push(*callable, args, m_visitor);
     auto funcBody = callable->declarator().definition();
-    value_guard _{ m_return };
+    VALUE_GUARD(m_return);
     traverse(funcBody);
   }
 

@@ -89,7 +89,7 @@ namespace tnac_rt::out
   {
     m_out = &os;
 
-    tnac::value_guard _{ m_base, base };
+    VALUE_GUARD(m_base, base);
     print_value(val);
   }
 
