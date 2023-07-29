@@ -20,6 +20,12 @@ namespace tnac_rt
 
   void src_manager::on_error(const tnac::token& tok, tnac::string_t msg) noexcept
   {
+    if (tok.is_eol())
+    {
+      err() << msg << '\n';
+      return;
+    }
+
     auto tokenPos = token_pos(tok);
 
     err() << '\n' << tokenPos.m_line << '\n';
