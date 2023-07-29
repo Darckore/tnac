@@ -175,6 +175,7 @@ namespace tnac_rt
 
   void driver::print_result() noexcept
   {
+    out() << "Evaluation result: ";
     out::value_printer vp;
     vp(m_tnac.get_eval().last_result(), m_state.numBase, out());
     out() << '\n';
@@ -358,8 +359,7 @@ namespace tnac_rt
     if (interactive && ast != parser.root())
     {
       ev(ast);
+      print_result();
     }
-
-    print_result();
   }
 }
