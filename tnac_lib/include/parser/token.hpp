@@ -27,7 +27,7 @@ namespace tnac
       return m_kind == k;
     }
 
-    template <typename... KINDS> requires(utils::detail::all_same<kind, KINDS...>)
+    template <typename... KINDS> requires(utils::all_same<kind, KINDS...>)
       constexpr auto is_any(KINDS... kinds) const noexcept
     {
       return ((is(kinds)) || ...);

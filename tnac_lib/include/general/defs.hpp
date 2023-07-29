@@ -20,7 +20,7 @@ namespace tnac
     {
       using t1 = nocvref<T1>;
       using t2 = nocvref<T2>;
-      static constexpr auto value = std::is_same_v<t1, t2>;
+      static constexpr auto value = std::same_as<t1, t2>;
     };
 
     template <typename First, typename ...Others>

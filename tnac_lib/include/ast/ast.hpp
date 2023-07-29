@@ -61,7 +61,7 @@ namespace tnac::ast
     //
     // Checks whether the node is of one of the specified kinds
     //
-    template <typename... KINDS> requires(utils::detail::all_same<kind, KINDS...>)
+    template <typename... KINDS> requires(utils::all_same<kind, KINDS...>)
     auto is_any(KINDS... kinds) const noexcept
     {
       return ((is(kinds)) || ...);
