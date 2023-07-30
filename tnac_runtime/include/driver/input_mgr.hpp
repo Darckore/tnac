@@ -1,5 +1,5 @@
 //
-// Source manager
+// Input manager
 //
 
 #pragma once

@@ -27,4 +27,8 @@ namespace tnac::packages
     return FROM_CONST(root);
   }
 
+  source_manager& parser::get_src_mgr() noexcept
+  {
+    return m_srcMgr;
+  }
 }

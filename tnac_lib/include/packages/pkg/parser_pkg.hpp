@@ -7,6 +7,7 @@
 #include "parser/parser.hpp"
 #include "ast/ast_builder.hpp"
 #include "sema/sema.hpp"
+#include "src_mgr/source_manager.hpp"
 
 namespace tnac::packages
 {
@@ -43,6 +44,11 @@ namespace tnac::packages
     //
     ast_root root() noexcept;
 
+    //
+    // Returns the source manager
+    //
+    source_manager& get_src_mgr() noexcept;
+
   public: // callbacks
     //
     // tnac::parser::on_error
@@ -75,5 +81,6 @@ namespace tnac::packages
     ast::builder m_builder;
     sema m_sema;
     tnac::parser m_parser;
+    source_manager m_srcMgr;
   };
 }
