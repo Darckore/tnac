@@ -8,12 +8,6 @@
 
 namespace tnac_rt
 {
-  namespace detail
-  {
-    template <typename T>
-    concept ast_printer = std::is_base_of_v<tnac::ast::const_top_down_visitor<T>, T>;
-  }
-
   //
   // Manages the input buffer and reports errors
   //
