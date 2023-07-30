@@ -4,7 +4,6 @@
 
 #pragma once
 #include "ast/ast_nodes.hpp"
-#include "ast/ast_visitor.hpp"
 
 namespace tnac_rt
 {
@@ -27,7 +26,7 @@ namespace tnac_rt
     {}
 
     input(buf_t buf) noexcept :
-      input{ std::move(buf), path_t{ "*interactive*" }}
+      input{ std::move(buf), path_t{ "*interactive*" } }
     {}
 
   public:
