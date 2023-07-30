@@ -58,9 +58,14 @@ namespace tnac::src
     return hash(path());
   }
 
-  source_manager& file::src_mgr() noexcept
+  source_manager& file::src_mgr() const noexcept
   {
     return *m_mgr;
+  }
+
+  location file::make_location() const noexcept
+  {
+    return { path(), src_mgr() };
   }
 
 

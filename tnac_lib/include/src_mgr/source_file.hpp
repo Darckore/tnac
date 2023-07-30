@@ -77,11 +77,12 @@ namespace tnac::src
     //
     // Returns the associated source manager
     //
-    source_manager& src_mgr() noexcept;
+    source_manager& src_mgr() const noexcept;
 
     //
     // Creates an associated source location
     //
+    location make_location() const noexcept;
 
   private:
     //
