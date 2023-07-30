@@ -9,41 +9,46 @@
 namespace tnac_rt
 {
   //
+  // The input data stored inside the source manager's collection
+  //
+  class input final
+  {
+  public:
+    using buf_t  = tnac::buf_t;
+    using str_t  = tnac::string_t;
+    using path_t = fsys::path;
+
+  public:
+    CLASS_SPECIALS_NONE(input);
+
+    input(buf_t buf, path_t inFile) noexcept :
+      m_buffer{ std::move(buf) },
+      m_file{ std::move(inFile) }
+    {}
+
+    input(buf_t buf) noexcept :
+      input{ std::move(buf), path_t{ "*interactive*" }}
+    {}
+
+  public:
+    str_t buffer() const noexcept
+    {
+      return m_buffer;
+    }
+
+  private:
+    buf_t m_buffer;
+    path_t m_file;
+  };
+
+  //
   // Manages the input buffer and reports errors
   //
   class src_manager final
   {
   public:
-    //
-    // Location of a token in input
-    // Contains a source line and offset
-    //
-    struct tok_loc
-    {
-      tnac::string_t m_line{};
-      std::size_t    m_offset{};
-    };
-
-    struct stored_input
-    {
-      tnac::buf_t m_buf;
-      std::uintptr_t m_begin{};
-      std::uintptr_t m_end{};
-
-      void init_range() noexcept
-      {
-        m_begin = reinterpret_cast<std::uintptr_t>(m_buf.data());
-        m_end   = m_begin + static_cast<std::uintptr_t>(m_buf.size());
-      }
-
-      bool in_buffer(const tnac::token& tok) const noexcept
-      {
-        const auto tokPos = reinterpret_cast<std::uintptr_t>(tok.m_value.data());
-        return utils::in_range(tokPos, m_begin, m_end);
-      }
-    };
-
-    using input_storage = std::unordered_map<std::uint32_t, stored_input>;
+    using stored_input  = tnac_rt::input;
+    using input_storage = std::unordered_map<std::uint32_t, input>;
 
   public:
     CLASS_SPECIALS_NONE_CUSTOM(src_manager);
@@ -78,16 +83,6 @@ namespace tnac_rt
     // Returns a reference to the err stream
     //
     out_stream& err() noexcept;
-
-    //
-    // Gets input by token
-    //
-    tnac::string_t input_by(const tnac::token& tok) noexcept;
-
-    //
-    // Retrieves token position from input
-    //
-    tok_loc token_pos(const tnac::token& tok) noexcept;
 
   private:
     input_storage m_input;
