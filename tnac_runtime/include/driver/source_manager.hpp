@@ -24,7 +24,7 @@ namespace tnac_rt
     // Location of a token in input
     // Contains a source line and offset
     //
-    struct src_loc
+    struct tok_loc
     {
       tnac::string_t m_line{};
       std::size_t    m_offset{};
@@ -100,7 +100,7 @@ namespace tnac_rt
     //
     // Retrieves token position from input
     //
-    src_loc token_pos(const tnac::token& tok) noexcept;
+    tok_loc token_pos(const tnac::token& tok) noexcept;
 
   private:
     input_storage m_input;

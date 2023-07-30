@@ -107,7 +107,7 @@ namespace tnac_rt
     return ret;
   }
 
-  src_manager::src_loc src_manager::token_pos(const tnac::token& tok) noexcept
+  src_manager::tok_loc src_manager::token_pos(const tnac::token& tok) noexcept
   {
     using sz_t = std::uintptr_t;
     auto toInt = [](auto ptr) noexcept
