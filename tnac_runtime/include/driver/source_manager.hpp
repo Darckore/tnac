@@ -27,8 +27,6 @@ namespace tnac_rt
     struct stored_input
     {
       tnac::buf_t m_buf;
-      tnac::ast::node* m_node{};
-
       std::uintptr_t m_begin{};
       std::uintptr_t m_end{};
 
@@ -74,11 +72,6 @@ namespace tnac_rt
     // Handler for parse errors
     //
     void on_parse_error(const tnac::ast::error_expr& err) noexcept;
-
-    //
-    // Retrieves the last parsed ast
-    //
-    const tnac::ast::node* last_parsed() noexcept;
 
   private:
     //

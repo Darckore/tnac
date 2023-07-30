@@ -49,6 +49,7 @@ namespace tnac_rt
     {
       int  numBase{ 10 };
       bool running{};
+      tnac::ast::node* lastParsed{};
 
       explicit operator bool() const noexcept
       {

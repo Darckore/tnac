@@ -211,7 +211,7 @@ namespace tnac_rt
 
       auto&& second = c[size_type{ 1 }];
       if (second.m_value == "current"sv)
-        return m_srcMgr.last_parsed();
+        return m_state.lastParsed;
 
       m_srcMgr.on_error(second, "Unknown parameter"sv);
       return parser.root();
@@ -323,7 +323,11 @@ namespace tnac_rt
     auto&& parser = m_tnac.get_parser();
     auto&& ev = m_tnac.get_eval();
     auto ast = parser(inputData.m_buf);
-    inputData.m_node = ast;
+    
+    if (ast && ast->parent())
+    {
+      m_state.lastParsed = ast;
+    }
     
     if (!interactive)
     {
