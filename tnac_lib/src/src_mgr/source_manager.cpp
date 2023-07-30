@@ -27,10 +27,9 @@ namespace tnac
     return &iter->second;
   }
 
-  src::loc_wrapper source_manager::register_location(src::location& loc) noexcept
+  src::loc_wrapper source_manager::register_location(const src::location& loc) noexcept
   {
-    // todo: actual recording
-    return src::loc_wrapper{ loc };
+    return src::loc_wrapper{ m_locations.emplace_front(loc) };
   }
 
 }

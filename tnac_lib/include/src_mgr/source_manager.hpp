@@ -20,6 +20,7 @@ namespace tnac
 
     using load_res   = std::expected<file_t*, std::error_code>;
     using file_store = std::unordered_map<hash_t, file_t>;
+    using loc_store  = std::forward_list<src::location>;
 
   public:
     CLASS_SPECIALS_NONE_CUSTOM(source_manager);
@@ -37,9 +38,10 @@ namespace tnac
     //
     // Registers a source location object and returns a wrapper to it
     //
-    src::loc_wrapper register_location(src::location& loc) noexcept;
+    src::loc_wrapper register_location(const src::location& loc) noexcept;
 
   private:
     file_store m_files;
+    loc_store  m_locations;
   };
 }
