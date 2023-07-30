@@ -67,6 +67,11 @@ namespace tnac_rt
     stored_input& input(tnac::buf_t in) noexcept;
 
     //
+    // Reads input from a file and stores it
+    //
+    stored_input* from_file(tnac::string_t fname) noexcept;
+
+    //
     // Prints an error message by token pos
     //
     void on_error(const tnac::token& tok, tnac::string_t msg) noexcept;

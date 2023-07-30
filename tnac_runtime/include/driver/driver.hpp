@@ -31,6 +31,7 @@ namespace tnac_rt
     using var_collection = std::vector<variable_ptr>;
     using command        = tnac::ast::command;
     using size_type      = command::size_type;
+    using input_t        = src_manager::stored_input;
 
     using core = tnac::packages::tnac_core;
 
@@ -180,7 +181,7 @@ namespace tnac_rt
     //
     // Parses input and executes commands
     //
-    void parse(tnac::buf_t input, bool interactive) noexcept;
+    void parse(input_t& inputData, bool interactive) noexcept;
 
   private:
     src_manager m_srcMgr;

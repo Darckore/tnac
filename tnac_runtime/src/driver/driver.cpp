@@ -113,32 +113,8 @@ namespace tnac_rt
 
   void driver::run(tnac::string_t fileName) noexcept
   {
-    fsys::path fn{ fileName };
-
-    std::error_code errc;
-    fn = fsys::absolute(fn, errc);
-    if (errc)
-    {
-      err() << "Path '" << fn.string() << "' is invalid. " << errc.message() << '\n';
-      return;
-    }
-
-    tnac::buf_t buf;
-    std::ifstream in{ fn.string() };
-    if (!in)
-    {
-      err() << "Unable to open the input file\n";
-      return;
-    }
-
-    in.seekg(0, std::ios::end);
-    buf.reserve(in.tellg());
-    in.seekg(0, std::ios::beg);
-
-    using it = std::istreambuf_iterator<tnac::buf_t::value_type>;
-    buf.assign(it{ in }, it{});
-
-    parse(std::move(buf), false);
+    if(auto input = m_srcMgr.from_file(fileName))
+      parse(*input, false);
   }
 
   void driver::run_interactive() noexcept
@@ -156,7 +132,7 @@ namespace tnac_rt
         continue;
       }
 
-      parse(std::move(input), true);
+      parse(m_srcMgr.input(std::move(input)), true);
       input = {};
     }
   }
@@ -342,9 +318,8 @@ namespace tnac_rt
     m_vars.push_back(&var);
   }
 
-  void driver::parse(tnac::buf_t input, bool interactive) noexcept
+  void driver::parse(input_t& inputData, bool interactive) noexcept
   {
-    auto&& inputData = m_srcMgr.input(std::move(input));
     auto&& parser = m_tnac.get_parser();
     auto&& ev = m_tnac.get_eval();
     auto ast = parser(inputData.m_buf);

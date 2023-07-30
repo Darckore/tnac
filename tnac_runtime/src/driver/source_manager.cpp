@@ -18,6 +18,34 @@ namespace tnac_rt
     return inputData;
   }
 
+  src_manager::stored_input* src_manager::from_file(tnac::string_t fname) noexcept
+  {
+    fsys::path fn{ fname };
+    std::error_code errc;
+    fn = fsys::absolute(fn, errc);
+    if (errc)
+    {
+      err() << "Path '" << fn.string() << "' is invalid. " << errc.message() << '\n';
+      return {};
+    }
+
+    tnac::buf_t buf;
+    std::ifstream in{ fn.string() };
+    if (!in)
+    {
+      err() << "Unable to open the input file '" << fn.string() << "'\n";
+      return {};
+    }
+
+    in.seekg(0, std::ios::end);
+    buf.reserve(in.tellg());
+    in.seekg(0, std::ios::beg);
+
+    using it = std::istreambuf_iterator<tnac::buf_t::value_type>;
+    buf.assign(it{ in }, it{});
+    return &input(std::move(buf));
+  }
+
   void src_manager::on_error(const tnac::token& tok, tnac::string_t msg) noexcept
   {
     if (tok.is_eol())
