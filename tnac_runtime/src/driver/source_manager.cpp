@@ -12,9 +12,7 @@ namespace tnac_rt
 
   src_manager::stored_input& src_manager::input(tnac::buf_t in) noexcept
   {
-    m_prevIdx = m_inputIdx;
-    auto newItem = m_input.emplace(m_inputIdx++, std::move(in));
-    return newItem.first->second;
+    return store(std::move(in));
   }
 
   src_manager::stored_input* src_manager::from_file(tnac::string_t fname) noexcept
@@ -42,7 +40,7 @@ namespace tnac_rt
 
     using it = std::istreambuf_iterator<tnac::buf_t::value_type>;
     buf.assign(it{ in }, it{});
-    return &input(std::move(buf));
+    return &store(std::move(buf), std::move(fn));
   }
 
   void src_manager::on_error(const tnac::token& tok, tnac::string_t msg) noexcept

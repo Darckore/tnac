@@ -84,9 +84,18 @@ namespace tnac_rt
     //
     out_stream& err() noexcept;
 
+    //
+    // Stores the input and returns a reference to it
+    //
+    template <typename ...Args>
+    stored_input& store(Args&& ...args) noexcept
+    {
+      auto newItem = m_input.try_emplace(m_inputIdx++, std::forward<Args>(args)...);
+      return newItem.first->second;
+    }
+
   private:
     input_storage m_input;
-    std::uint32_t m_prevIdx{};
     std::uint32_t m_inputIdx{};
 
     out_stream* m_err{ &std::cerr };
