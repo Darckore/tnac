@@ -20,6 +20,8 @@ namespace tnac::packages
     using ast_ptr        = tnac::parser::pointer;
     using ast_root       = tnac::parser::root_ptr;
     using const_ast_root = tnac::parser::const_root_ptr;
+    
+    using loc = tnac::parser::loc;
 
   public:
     CLASS_SPECIALS_NONE_CUSTOM(parser);
@@ -33,6 +35,11 @@ namespace tnac::packages
     // Redirects to tnac::parser::operator()
     //
     ast_ptr operator()(string_t input) noexcept;
+
+    //
+    // Redirects to tnac::parser::operator()
+    //
+    ast_ptr operator()(string_t input, loc srcLoc) noexcept;
 
     //
     // Redirects to tnac::parser::root() const

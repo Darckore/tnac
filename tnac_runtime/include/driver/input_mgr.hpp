@@ -61,6 +61,15 @@ namespace tnac_rt
       return std::visit(vis, m_stored);
     }
 
+    file_t* try_get_file() noexcept
+    {
+      auto fptr = std::get_if<file_t*>(&m_stored);
+      if (!fptr)
+        return {};
+
+      return *fptr;
+    }
+
   private:
     value_type m_stored{};
   };

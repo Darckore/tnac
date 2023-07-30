@@ -4,6 +4,7 @@
 
 #pragma once
 #include "parser/token.hpp"
+#include "src_mgr/source_location.hpp"
 
 namespace tnac
 {
@@ -18,11 +19,13 @@ namespace tnac
 
     using token_opt = std::optional<token>;
 
+    using loc = src::location;
+
   public:
     CLASS_SPECIALS_NONE_CUSTOM(lex);
 
-    ~lex() noexcept = default;
-    lex() = default;
+    ~lex() noexcept;
+    lex() noexcept;
 
   public:
     //
@@ -40,6 +43,16 @@ namespace tnac
     // Previews the next token
     //
     const token& peek() noexcept;
+
+    //
+    // Accepts a source location object for the current source file
+    //
+    void attach_loc(loc& srcLoc) noexcept;
+
+    //
+    // Drops the previously saved location
+    //
+    void detach_loc() noexcept;
 
   private:
     //
@@ -170,5 +183,6 @@ namespace tnac
     buf_iterator m_from{};
     buf_iterator m_to{};
     token_opt m_preview{};
+    loc* m_srcLocation{};
   };
 }

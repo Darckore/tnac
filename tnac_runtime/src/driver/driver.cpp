@@ -323,7 +323,10 @@ namespace tnac_rt
   {
     auto&& parser = m_tnac.get_parser();
     auto&& ev = m_tnac.get_eval();
-    auto ast = parser(inputData.buffer());
+    auto inputFile = inputData.try_get_file();
+    auto ast = inputFile ?
+      parser(inputData.buffer(), inputFile->make_location()) :
+      parser(inputData.buffer());
     
     if (ast && ast->parent())
     {

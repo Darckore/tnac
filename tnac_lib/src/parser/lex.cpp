@@ -206,6 +206,12 @@ namespace tnac
     }
   }
 
+  // Special members
+
+  lex::~lex() noexcept = default;
+
+  lex::lex() noexcept = default;
+
 
   // Public members
 
@@ -268,6 +274,16 @@ namespace tnac
     }
 
     return consume(Error);
+  }
+
+  void lex::attach_loc(loc& srcLoc) noexcept
+  {
+    m_srcLocation = &srcLoc;
+  }
+
+  void lex::detach_loc() noexcept
+  {
+    m_srcLocation = {};
   }
 
 

@@ -104,6 +104,8 @@ namespace tnac
     using expr_list = root_type::elem_list;
     using param_list = ast::func_decl::param_list;
 
+    using loc = src::location;
+
     using prec = detail::op_precedence;
 
     using err_handler_t = std::function<void(const ast::error_expr&)>;
@@ -163,6 +165,11 @@ namespace tnac
     // Call root to the get the entire AST
     //
     pointer operator()(string_t str) noexcept;
+
+    //
+    // Parses the input string and provides a source location to the lexer
+    //
+    pointer operator()(string_t str, loc srcLoc) noexcept;
 
     //
     // Returns the root node of the entire AST, which is,

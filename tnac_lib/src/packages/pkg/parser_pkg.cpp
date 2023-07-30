@@ -18,6 +18,11 @@ namespace tnac::packages
     return m_parser(input);
   }
 
+  parser::ast_ptr parser::operator()(string_t input, loc srcLoc) noexcept
+  {
+    return m_parser(input, srcLoc);
+  }
+
   parser::const_ast_root parser::root() const noexcept
   {
     return m_parser.root();
