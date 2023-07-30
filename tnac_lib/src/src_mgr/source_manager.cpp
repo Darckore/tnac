@@ -15,7 +15,7 @@ namespace tnac
 
   source_manager::load_res source_manager::load(path_t path) noexcept
   {
-    file_t file{ path };
+    file_t file{ path, *this };
     if (!file)
       return std::unexpected{ err::file_not_found() };
 

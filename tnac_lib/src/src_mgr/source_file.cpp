@@ -17,8 +17,9 @@ namespace tnac::src
 
   file::~file() noexcept = default;
 
-  file::file(path_t path) noexcept :
-    m_path{ canonise(std::move(path)) }
+  file::file(path_t path, source_manager& mgr) noexcept :
+    m_path{ canonise(std::move(path)) },
+    m_mgr{ &mgr }
   {}
 
   file::operator bool() const noexcept
@@ -50,6 +51,11 @@ namespace tnac::src
   file::hash_t file::hash() const noexcept
   {
     return fsys::hash_value(path());
+  }
+
+  source_manager& file::src_mgr() noexcept
+  {
+    return *m_mgr;
   }
 
 

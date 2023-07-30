@@ -16,6 +16,10 @@ namespace tnac::src::err
   }
 }
 
+namespace tnac
+{
+  class source_manager;
+}
 
 namespace tnac::src
 {
@@ -40,7 +44,7 @@ namespace tnac::src
 
     ~file() noexcept;
 
-    explicit file(path_t path) noexcept;
+    file(path_t path, source_manager& mgr) noexcept;
 
     //
     // Checks whether the physical file exists at the specified path
@@ -63,6 +67,11 @@ namespace tnac::src
     //
     hash_t hash() const noexcept;
 
+    //
+    // Returns the associated source manager
+    //
+    source_manager& src_mgr() noexcept;
+
   private:
     //
     // Allows checking whether the file exists
@@ -77,5 +86,6 @@ namespace tnac::src
   private:
     path_t m_path{};
     buf_t m_buffer;
+    source_manager* m_mgr{};
   };
 }
