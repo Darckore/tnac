@@ -3,6 +3,7 @@
 //
 
 #pragma once
+#include "src_mgr/source_location.hpp"
 
 namespace tnac::src::err
 {
@@ -32,6 +33,12 @@ namespace tnac::src
     using path_t     = fsys::path;
     using hash_t     = std::size_t;
     using contents_t = std::expected<string_t, std::error_code>;
+
+  public:
+    //
+    // Hashes a path
+    //
+    static hash_t hash(const path_t& path) noexcept;
 
   private:
     //
@@ -71,6 +78,10 @@ namespace tnac::src
     // Returns the associated source manager
     //
     source_manager& src_mgr() noexcept;
+
+    //
+    // Creates an associated source location
+    //
 
   private:
     //

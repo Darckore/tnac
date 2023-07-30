@@ -4,6 +4,11 @@ namespace tnac::src
 {
   // Statics
 
+  file::hash_t file::hash(const path_t& path) noexcept
+  {
+    return fsys::hash_value(path);
+  }
+
   file::path_t file::canonise(path_t src) noexcept
   {
     std::error_code errc;
@@ -50,7 +55,7 @@ namespace tnac::src
 
   file::hash_t file::hash() const noexcept
   {
-    return fsys::hash_value(path());
+    return hash(path());
   }
 
   source_manager& file::src_mgr() noexcept

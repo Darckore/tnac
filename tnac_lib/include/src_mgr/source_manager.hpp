@@ -34,6 +34,11 @@ namespace tnac
     //
     load_res load(path_t path) noexcept;
 
+    //
+    // Registers a source location object and returns a wrapper to it
+    //
+    src::loc_wrapper register_location(src::location& loc) noexcept;
+
   private:
     file_store m_files;
   };
