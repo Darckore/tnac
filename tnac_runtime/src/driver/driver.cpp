@@ -80,12 +80,12 @@ namespace tnac_rt
 
   void driver::init_handlers() noexcept
   {
-    m_tnac.on_command_error([this](auto&& tok, auto msg) noexcept { m_srcMgr.on_error(tok, msg); });
+    m_tnac.on_command_error([this](auto&& tok, auto msg) noexcept { m_inpMgr.on_error(tok, msg); });
 
-    m_tnac.on_semantic_error([this](auto&& tok, auto msg) noexcept { m_srcMgr.on_error(tok, msg); });
+    m_tnac.on_semantic_error([this](auto&& tok, auto msg) noexcept { m_inpMgr.on_error(tok, msg); });
 
     m_tnac.on_variable_declaration([this](auto&& sym) noexcept { store_var(sym); });
-    m_tnac.on_parse_error([this](auto&& err) noexcept { m_srcMgr.on_parse_error(err); });
+    m_tnac.on_parse_error([this](auto&& err) noexcept { m_inpMgr.on_parse_error(err); });
     m_tnac.on_command([this](auto command) noexcept { m_tnac.get_commands().on_command(std::move(command)); });
   }
 
@@ -113,7 +113,7 @@ namespace tnac_rt
 
   void driver::run(tnac::string_t fileName) noexcept
   {
-    if(auto input = m_srcMgr.from_file(fileName))
+    if(auto input = m_inpMgr.from_file(fileName))
       parse(*input, false);
   }
 
@@ -132,7 +132,7 @@ namespace tnac_rt
         continue;
       }
 
-      parse(m_srcMgr.input(std::move(input)), true);
+      parse(m_inpMgr.input(std::move(input)), true);
       input = {};
     }
   }
@@ -178,7 +178,7 @@ namespace tnac_rt
       else if (argName == hex)
         base = 16;
       else
-        m_srcMgr.on_error(arg, "Unknown parameter"sv);
+        m_inpMgr.on_error(arg, "Unknown parameter"sv);
     }
 
     VALUE_GUARD(m_state.numBase, base);
@@ -213,7 +213,7 @@ namespace tnac_rt
       if (second.m_value == "current"sv)
         return m_state.lastParsed;
 
-      m_srcMgr.on_error(second, "Unknown parameter"sv);
+      m_inpMgr.on_error(second, "Unknown parameter"sv);
       return parser.root();
     };
 
@@ -274,7 +274,7 @@ namespace tnac_rt
     m_io.outFile.open(outPath);
     if (!m_io.outFile)
     {
-      m_srcMgr.on_error(pathTok, "Failed to open output file"sv);
+      m_inpMgr.on_error(pathTok, "Failed to open output file"sv);
       return;
     }
 

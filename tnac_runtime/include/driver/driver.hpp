@@ -4,7 +4,7 @@
 
 #pragma once
 #include "packages/core.hpp"
-#include "driver/source_manager.hpp"
+#include "driver/input_mgr.hpp"
 
 namespace tnac_rt
 {
@@ -31,7 +31,7 @@ namespace tnac_rt
     using var_collection = std::vector<variable_ptr>;
     using command        = tnac::ast::command;
     using size_type      = command::size_type;
-    using input_t        = src_manager::stored_input;
+    using input_t        = input_mgr::stored_input;
 
     using core = tnac::packages::tnac_core;
 
@@ -185,7 +185,7 @@ namespace tnac_rt
     void parse(input_t& inputData, bool interactive) noexcept;
 
   private:
-    src_manager m_srcMgr;
+    input_mgr m_inpMgr;
     var_collection m_vars;
     core m_tnac;
     io m_io{};

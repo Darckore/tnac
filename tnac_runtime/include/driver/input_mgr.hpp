@@ -8,7 +8,7 @@
 namespace tnac_rt
 {
   //
-  // The input data stored inside the source manager's collection
+  // The input data stored inside the input manager's collection
   //
   class input final
   {
@@ -26,7 +26,7 @@ namespace tnac_rt
     {}
 
     input(buf_t buf) noexcept :
-      input{ std::move(buf), path_t{ "*interactive*" } }
+      input{ std::move(buf), path_t{ "*repl*" } }
     {}
 
   public:
@@ -43,18 +43,18 @@ namespace tnac_rt
   //
   // Manages the input buffer and reports errors
   //
-  class src_manager final
+  class input_mgr final
   {
   public:
     using stored_input  = tnac_rt::input;
     using input_storage = std::unordered_map<std::uint32_t, input>;
 
   public:
-    CLASS_SPECIALS_NONE_CUSTOM(src_manager);
+    CLASS_SPECIALS_NONE_CUSTOM(input_mgr);
 
-    ~src_manager() noexcept;
+    ~input_mgr() noexcept;
 
-    src_manager() noexcept;
+    input_mgr() noexcept;
 
   public:
     //
