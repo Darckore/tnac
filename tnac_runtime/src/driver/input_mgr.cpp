@@ -6,7 +6,9 @@ namespace tnac_rt
 
   input_mgr::~input_mgr() noexcept = default;
 
-  input_mgr::input_mgr() noexcept = default;
+  input_mgr::input_mgr(src_mgr& mgr) noexcept :
+    m_srcMgr{ mgr }
+  {}
 
   // Public members
 
@@ -17,30 +19,23 @@ namespace tnac_rt
 
   input_mgr::stored_input* input_mgr::from_file(tnac::string_t fname) noexcept
   {
-    fsys::path fn{ fname };
-    std::error_code errc;
-    fn = fsys::absolute(fn, errc);
-    if (errc)
+    auto loadRes = m_srcMgr.load(fname);
+    if (!loadRes)
     {
-      err() << "Path '" << fn.string() << "' is invalid. " << errc.message() << '\n';
+      err() << "Unable to load file '" << fname << "': "
+            << loadRes.error().message() << '\n';
       return {};
     }
 
-    tnac::buf_t buf;
-    std::ifstream in{ fn.string() };
-    if (!in)
+    auto file = *loadRes;
+    if (auto fileCont = file->get_contents(); !fileCont)
     {
-      err() << "Unable to open the input file '" << fn.string() << "'\n";
+      err() << "Unable to read data from file '" << fname << "': "
+            << loadRes.error().message() << '\n';
       return {};
     }
 
-    in.seekg(0, std::ios::end);
-    buf.reserve(in.tellg());
-    in.seekg(0, std::ios::beg);
-
-    using it = std::istreambuf_iterator<tnac::buf_t::value_type>;
-    buf.assign(it{ in }, it{});
-    return &store(std::move(buf), std::move(fn));
+    return &store(file);
   }
 
   void input_mgr::on_error(const tnac::token& tok, tnac::string_t msg) noexcept

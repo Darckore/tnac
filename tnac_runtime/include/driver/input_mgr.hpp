@@ -4,9 +4,21 @@
 
 #pragma once
 #include "ast/ast_nodes.hpp"
+#include "src_mgr/source_manager.hpp"
 
 namespace tnac_rt
 {
+  namespace detail
+  {
+    using input_value = std::variant<tnac::buf_t, tnac::src::file*>;
+
+    template <typename T>
+    concept source = requires(T t)
+    {
+      input_value{ std::move(t) };
+    };
+  }
+
   //
   // The input data stored inside the input manager's collection
   //
@@ -15,29 +27,42 @@ namespace tnac_rt
   public:
     using buf_t  = tnac::buf_t;
     using str_t  = tnac::string_t;
-    using path_t = fsys::path;
+    using file_t = tnac::src::file;
+
+    using value_type = std::variant<buf_t, file_t*>;
 
   public:
     CLASS_SPECIALS_NONE(input);
 
-    input(buf_t buf, path_t inFile) noexcept :
-      m_buffer{ std::move(buf) },
-      m_file{ std::move(inFile) }
+    input(buf_t buf) noexcept :
+      m_stored{ std::move(buf) }
     {}
 
-    input(buf_t buf) noexcept :
-      input{ std::move(buf), path_t{ "*repl*" } }
-    {}
+    input(file_t* file) noexcept :
+      m_stored{ file }
+    {
+      UTILS_ASSERT(static_cast<bool>(file));
+    }
 
   public:
     str_t buffer() const noexcept
     {
-      return m_buffer;
+      constexpr utils::visitor vis
+      {
+        [](const buf_t& buf) noexcept
+        {
+          return str_t{ buf };
+        },
+        [](file_t* file) noexcept
+        {
+          return *file->get_contents();
+        }
+      };
+      return std::visit(vis, m_stored);
     }
 
   private:
-    buf_t m_buffer;
-    path_t m_file;
+    value_type m_stored{};
   };
 
   //
@@ -48,13 +73,14 @@ namespace tnac_rt
   public:
     using stored_input  = tnac_rt::input;
     using input_storage = std::unordered_map<std::uint32_t, input>;
+    using src_mgr       = tnac::source_manager;
 
   public:
-    CLASS_SPECIALS_NONE_CUSTOM(input_mgr);
+    CLASS_SPECIALS_NONE(input_mgr);
 
     ~input_mgr() noexcept;
 
-    input_mgr() noexcept;
+    explicit input_mgr(src_mgr& mgr) noexcept;
 
   public:
     //
@@ -86,15 +112,16 @@ namespace tnac_rt
     //
     // Stores the input and returns a reference to it
     //
-    template <typename ...Args>
-    stored_input& store(Args&& ...args) noexcept
+    template <detail::source Src>
+    stored_input& store(Src&& src) noexcept
     {
-      auto newItem = m_input.try_emplace(m_inputIdx++, std::forward<Args>(args)...);
+      auto newItem = m_input.try_emplace(m_inputIdx++, std::forward<Src>(src));
       return newItem.first->second;
     }
 
   private:
     input_storage m_input;
+    src_mgr& m_srcMgr;
     std::uint32_t m_inputIdx{};
 
     out_stream* m_err{ &std::cerr };

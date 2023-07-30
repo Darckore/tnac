@@ -36,10 +36,20 @@ namespace tnac::src
 
     if(!read())
     {
-      return std::unexpected{ std::make_error_code(std::errc::no_such_file_or_directory) };
+      return std::unexpected{ err::file_not_found() };
     }
 
     return m_buffer;
+  }
+
+  const file::path_t& file::path() const noexcept
+  {
+    return m_path;
+  }
+
+  file::hash_t file::hash() const noexcept
+  {
+    return fsys::hash_value(path());
   }
 
 

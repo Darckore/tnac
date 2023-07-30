@@ -185,10 +185,11 @@ namespace tnac_rt
     void parse(input_t& inputData, bool interactive) noexcept;
 
   private:
-    input_mgr m_inpMgr;
-    var_collection m_vars;
     core m_tnac;
     io m_io{};
     state m_state{};
+
+    input_mgr m_inpMgr;
+    var_collection m_vars;
   };
 }

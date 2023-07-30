@@ -4,6 +4,19 @@
 
 #pragma once
 
+namespace tnac::src::err
+{
+  inline auto file_not_found() noexcept
+  {
+    return std::make_error_code(std::errc::no_such_file_or_directory);
+  }
+  inline auto duplicate_file() noexcept
+  {
+    return std::make_error_code(std::errc::file_exists);
+  }
+}
+
+
 namespace tnac::src
 {
   //
@@ -13,6 +26,7 @@ namespace tnac::src
   {
   public:
     using path_t     = fsys::path;
+    using hash_t     = std::size_t;
     using contents_t = std::expected<string_t, std::error_code>;
 
   private:
@@ -39,7 +53,16 @@ namespace tnac::src
     //
     contents_t get_contents() noexcept;
 
-    
+    //
+    // Returns the file path
+    //
+    const path_t& path() const noexcept;
+
+    //
+    // Returns the hash value for the underlying path
+    //
+    hash_t hash() const noexcept;
+
   private:
     //
     // Allows checking whether the file exists
