@@ -67,7 +67,8 @@ pow-expr:
   pow-expr pow-operator unary-expr
 
 unary-expr:
-  unary-operator call-expr
+  call-expr
+  unary-operator unary-expr
 
 call-expr:
   primary-expr

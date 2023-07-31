@@ -575,7 +575,7 @@ namespace tnac
       return call_expr();
 
     auto op = next_tok();
-    auto exp = call_expr();
+    auto exp = unary_expr();
     return m_builder.make_unary(*exp, op);
   }
 
