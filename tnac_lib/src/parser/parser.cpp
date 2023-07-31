@@ -523,17 +523,13 @@ namespace tnac
     if (!detail::is_assign(peek_next()))
       return lhs;
 
-    if (!lhs->is(ast::node::Identifier))
+    if (auto id = utils::try_cast<ast::id_expr>(lhs); !id)
     {
-      auto err = error_expr(lhs->pos(), "Expected a single identifier"sv, true);
-      return err;
+      lhs = error_expr(lhs->pos(), "Expected a single identifier"sv);
     }
-
-    if (auto&& sym = utils::cast<ast::id_expr>(*lhs).symbol();
-              !detail::is_assignable(sym))
+    else if(!detail::is_assignable(id->symbol()))
     {
-      auto err = error_expr(lhs->pos(), "Expected an assignable object"sv);
-      lhs = err;
+      lhs = error_expr(lhs->pos(), "Expected an assignable object"sv);
     }
 
     auto op = next_tok();
