@@ -52,6 +52,11 @@ namespace tnac::src
     bool is_dummy() const noexcept;
 
     //
+    // Sets line and column numbers to the specified values
+    //
+    void set(line_num l, line_pos c) noexcept;
+
+    //
     // Increments line number
     //
     void add_line() noexcept;

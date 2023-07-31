@@ -83,6 +83,8 @@ namespace tnac_rt
     using stored_input  = tnac_rt::input;
     using input_storage = std::unordered_map<std::uint32_t, input>;
     using src_mgr       = tnac::source_manager;
+    using loc_t         = tnac::src::location;
+    using loc_wrapper   = tnac::src::loc_wrapper;
 
   public:
     CLASS_SPECIALS_NONE(input_mgr);
@@ -114,6 +116,11 @@ namespace tnac_rt
 
   private:
     //
+    // Prints location info
+    //
+    void print_location(loc_wrapper at) noexcept;
+
+    //
     // Returns a reference to the err stream
     //
     out_stream& err() noexcept;
@@ -122,16 +129,19 @@ namespace tnac_rt
     // Stores the input and returns a reference to it
     //
     template <detail::source Src>
-    stored_input& store(Src&& src) noexcept
+    stored_input& store(input_storage& storage, Src&& src) noexcept
     {
-      auto newItem = m_input.try_emplace(m_inputIdx++, std::forward<Src>(src));
+      auto&& idx = &storage == &m_input ? m_inputIdx : m_fileIdx;
+      auto newItem = storage.try_emplace(idx++, std::forward<Src>(src));
       return newItem.first->second;
     }
 
   private:
     input_storage m_input;
+    input_storage m_files;
     src_mgr& m_srcMgr;
     std::uint32_t m_inputIdx{};
+    std::uint32_t m_fileIdx{};
 
     out_stream* m_err{ &std::cerr };
   };

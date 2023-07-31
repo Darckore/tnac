@@ -30,6 +30,12 @@ namespace tnac::src
     return !(m_path && m_mgr);
   }
 
+  void location::set(line_num l, line_pos c) noexcept
+  {
+    m_lineNumber = l;
+    m_column = c;
+  }
+
   void location::add_line() noexcept
   {
     ++m_lineNumber;
