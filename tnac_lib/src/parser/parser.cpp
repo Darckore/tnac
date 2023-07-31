@@ -386,7 +386,6 @@ namespace tnac
     else
     {
       init = error_expr(op, "Expected initialisation"sv);
-      next_tok();
     }
 
     auto varDecl = m_builder.make_var_decl(name, *init);
