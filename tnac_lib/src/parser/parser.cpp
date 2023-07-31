@@ -740,6 +740,9 @@ namespace tnac
     UTILS_ASSERT(detail::is_open_curly(peek_next()));
     next_tok();
 
+    if(auto&& next = peek_next(); detail::is_close_curly(next))
+      return error_expr(next_tok(), "Condition can't be empty"sv);
+    
     auto c = expr();
 
     if (!detail::is_close_curly(peek_next()))
