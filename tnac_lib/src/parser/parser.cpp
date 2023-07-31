@@ -238,20 +238,10 @@ namespace tnac
     if (!detail::is_command_name(cmdName))
       return;
 
-    if (!m_cmdHandler)
-    {
-      to_expr_end();
-      
-      if(consumeSeparator)
-        next_tok();
-
-      return;
-    }
-
     next_tok();
     auto argList = command_args(consumeSeparator);
     ast::command cmd{ cmdName, std::move(argList) };
-    m_cmdHandler(std::move(cmd));
+    if(m_cmdHandler) m_cmdHandler(std::move(cmd));
   }
 
   ast::command::arg_list parser::command_args(bool consumeSeparator) noexcept
@@ -289,11 +279,6 @@ namespace tnac
   token parser::next_tok() noexcept
   {
     return m_lex.next();
-  }
-
-  void parser::to_expr_end() noexcept
-  {
-    skip_to(tok_kind::ExprSep);
   }
 
   ast::expr* parser::error_expr(token pos, string_t msg) noexcept

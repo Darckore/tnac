@@ -258,12 +258,6 @@ namespace tnac
     }
 
     //
-    // Skips to either the expression separator ':', or EOL
-    // Used to produce errors
-    //
-    void to_expr_end() noexcept;
-
-    //
     // Produces an invalid expression for error recovery
     //
     ast::expr* error_expr(token pos, string_t msg) noexcept;
