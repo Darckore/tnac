@@ -323,10 +323,6 @@ namespace tnac
       if (has_implicit_separator(*e))
         continue;
 
-      // postpone to the caller
-      if (scopeLvl == scope_level::Nested)
-        break;
-
       // invalid expressions might be in the middle of other expressions
       if(e->is_valid())
         res.push_back(error_expr(next, "Expected ':' or EOL"sv));
