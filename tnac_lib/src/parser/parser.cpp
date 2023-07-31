@@ -661,11 +661,11 @@ namespace tnac
       if (!sym)
         return error_expr(next_tok(), "Undefined identifier"sv);
 
-      auto name = next_tok();
-      return m_builder.make_id(name, *sym);
+      return m_builder.make_id(next_tok(), *sym);
     }
 
-    return error_expr(next, "Expected expression"sv, true);
+    auto err = next_tok();
+    return error_expr(err, "Expected expression"sv);
   }
 
   ast::expr* parser::anonimous_function() noexcept
