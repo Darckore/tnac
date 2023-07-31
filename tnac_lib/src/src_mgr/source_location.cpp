@@ -3,6 +3,15 @@
 
 namespace tnac::src
 {
+  // Statics
+
+  location& location::dummy() noexcept
+  {
+    static location dummyLoc;
+    return dummyLoc;
+  }
+
+
   // Special members
 
   location::~location() noexcept = default;
@@ -12,8 +21,14 @@ namespace tnac::src
     m_mgr{ &mgr }
   {}
 
+  location::location() noexcept = default;
 
   // Public members
+
+  bool location::is_dummy() const noexcept
+  {
+    return !(m_path && m_mgr);
+  }
 
   void location::add_line() noexcept
   {
@@ -37,21 +52,29 @@ namespace tnac::src
 
   source_manager& location::src_mgr() noexcept
   {
+    UTILS_ASSERT(!is_dummy());
     return *m_mgr;
   }
 
   location::path_ref location::file() const noexcept
   {
+    UTILS_ASSERT(!is_dummy());
     return *m_path;
   }
 
   location::hash_t location::file_id() const noexcept
   {
+    if (is_dummy())
+      return hash_t{};
+
     return file::hash(file());
   }
 
   loc_wrapper location::record() noexcept
   {
+    if (is_dummy())
+      return loc_wrapper{ *this };
+
     return src_mgr().register_location(*this);
   }
 }

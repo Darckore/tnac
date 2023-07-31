@@ -28,13 +28,29 @@ namespace tnac::src
     using line_pos = std::uint32_t;
 
   public:
-    CLASS_SPECIALS_NODEFAULT(location);
+    //
+    // Retrieves a reference to the static dummy location object
+    //
+    static location& dummy() noexcept;
+
+  public:
+    CLASS_SPECIALS_ALL_CUSTOM(location);
 
     ~location() noexcept;
 
     location(path_ref path, source_manager& mgr) noexcept;
 
+  private:
+    location() noexcept;
+
   public:
+    //
+    // Checks whether the specified location is "dummy",
+    // that is, it has only line and column numbers, and doesn't
+    // refer to any valid path
+    //
+    bool is_dummy() const noexcept;
+
     //
     // Increments line number
     //
@@ -98,6 +114,11 @@ namespace tnac::src
     {}
 
   public:
+    explicit operator bool() const noexcept
+    {
+      return !m_loc->is_dummy();
+    }
+
     const location& operator*() const noexcept
     {
       return *m_loc;
