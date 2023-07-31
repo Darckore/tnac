@@ -33,6 +33,7 @@ namespace tnac::src
   void location::add_line() noexcept
   {
     ++m_lineNumber;
+    m_column = {};
   }
 
   void location::add_col() noexcept

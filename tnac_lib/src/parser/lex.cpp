@@ -283,7 +283,7 @@ namespace tnac
 
   void lex::detach_loc() noexcept
   {
-    m_srcLocation = {};
+    m_srcLocation = &loc::dummy();
   }
 
 
@@ -625,4 +625,8 @@ namespace tnac
     m_preview.reset();
   }
 
+  lex::loc& lex::src_loc() noexcept
+  {
+    return *m_srcLocation;
+  }
 }

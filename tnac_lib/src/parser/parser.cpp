@@ -199,7 +199,7 @@ namespace tnac
     return res;
   }
 
-  parser::pointer parser::operator()(string_t str, loc srcLoc) noexcept
+  parser::pointer parser::operator()(string_t str, loc& srcLoc) noexcept
   {
     m_lex.attach_loc(srcLoc);
     auto res = operator()(str);

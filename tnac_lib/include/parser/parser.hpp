@@ -169,7 +169,7 @@ namespace tnac
     //
     // Parses the input string and provides a source location to the lexer
     //
-    pointer operator()(string_t str, loc srcLoc) noexcept;
+    pointer operator()(string_t str, loc& srcLoc) noexcept;
 
     //
     // Returns the root node of the entire AST, which is,

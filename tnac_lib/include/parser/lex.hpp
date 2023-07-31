@@ -14,7 +14,7 @@ namespace tnac
   class lex final
   {
   public:
-    using value_type = string_t;
+    using value_type   = string_t;
     using buf_iterator = string_t::iterator;
 
     using token_opt = std::optional<token>;
@@ -178,11 +178,16 @@ namespace tnac
     //
     void clear_preview() noexcept;
 
+    //
+    // Gets a reference to the attached source location
+    //
+    loc& src_loc() noexcept;
+
   private:
     value_type m_buf;
     buf_iterator m_from{};
     buf_iterator m_to{};
     token_opt m_preview{};
-    loc* m_srcLocation{};
+    loc* m_srcLocation{ &loc::dummy() };
   };
 }
