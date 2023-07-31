@@ -162,7 +162,7 @@ namespace tnac
     // The result is supposed to be used in immediate mode where expressions
     // are meant to be processed one by one
     // 
-    // Call root to the get the entire AST
+    // Call root to get the entire AST
     //
     pointer operator()(string_t str) noexcept;
 
