@@ -241,23 +241,6 @@ namespace tnac
     token next_tok() noexcept;
 
     //
-    // Skips to one of the specified token kinds
-    //
-    template <typename ...Kinds>
-      requires (static_cast<bool>(sizeof ...(Kinds)) && is_all_v<tok_kind, Kinds...>)
-    void skip_to(Kinds ...kinds) noexcept
-    {
-      for (;;)
-      {
-        auto next = peek_next();
-        if (next.is_eol() || next.is_any(kinds...))
-          break;
-
-        next_tok();
-      }
-    }
-
-    //
     // Produces an invalid expression for error recovery
     //
     ast::expr* error_expr(token pos, string_t msg) noexcept;

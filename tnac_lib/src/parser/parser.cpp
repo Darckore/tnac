@@ -411,6 +411,7 @@ namespace tnac
 
     if (!detail::is_close_paren(peek_next()))
       return {};
+    next_tok();
 
     for (auto param : params)
     {
@@ -426,8 +427,6 @@ namespace tnac
 
     auto funcDecl = m_builder.make_func_decl(name, pos, *def, std::move(params));
     m_sema.visit_decl(*funcDecl);
-
-    next_tok();
 
     if (detail::is_semi(peek_next()))
     {
@@ -451,16 +450,21 @@ namespace tnac
 
   ast::param_decl* parser::param_decl() noexcept
   {
-    auto name = next_tok();
+    auto name = peek_next();
     ast::expr* opt{};
 
     if (!name.is_identifier())
     {
+      expr();
       opt = error_expr(name, "Expected identifier"sv);
     }
     else if (auto sym = m_sema.find(name.value(), true))
     {
       opt = error_expr(name, "Function parameter redifinition"sv);
+    }
+    else
+    {
+      next_tok();
     }
 
     return m_builder.make_param_decl(name, opt);
@@ -478,9 +482,7 @@ namespace tnac
       auto paramDecl = param_decl();
       res.push_back(paramDecl);
 
-      if (paramDecl->definition())
-        skip_to(tok_kind::Comma, tok_kind::ParenClose);
-      else
+      if (!paramDecl->definition())
         m_sema.visit_decl(*paramDecl);
 
       auto&& next = peek_next();
@@ -756,7 +758,7 @@ namespace tnac
     ast::expr* onTrue{};
     ast::expr* onFalse{};
     
-    if (auto&& next = peek_next(); !detail::is_comma(peek_next()) &&
+    if (auto&& next = peek_next(); !detail::is_comma(next) &&
                                    !detail::is_close_curly(next))
     {
       onTrue = expr();
@@ -771,13 +773,14 @@ namespace tnac
       }
       else
       {
-        onFalse = error_expr(next_tok(), "Expected ','"sv);
-        skip_to(token::ExprSep, token::CurlyClose, token::Eol);
+        auto err = peek_next();
+        expr();
+        onFalse = error_expr(err, "Expected ','"sv);
       }
     }
 
-    if (!detail::is_close_curly(peek_next()))
-      return error_expr(next_tok(), "Expected '}'"sv);
+    if (auto&& next = peek_next(); !detail::is_close_curly(next))
+      return error_expr(next, "Expected '}'"sv);
 
     next_tok();
     return m_builder.make_short_cond(condExpr, onTrue, onFalse, scope);
