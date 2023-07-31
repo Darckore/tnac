@@ -124,18 +124,28 @@ namespace tnac_tests
       expectedErr = errMsg;
       stop = false;
 
+      errCount = {};
       core.get_parser()(input);
 
       expectedErr = {};
       stop = false;
+      ASSERT_TRUE(errCount > 0u) << "Got no errors for input: " << input;
+      
+      // todo: think of a better way to handle this:
+      //if (errCount > 1u)
+      //{
+      //  FAIL() << "Got " << errCount << " errors for input " << input;
+      //}
     }
 
   private:
     inline static string_t expectedErr{};
     inline static bool stop{};
+    inline static unsigned errCount{};
 
     static void on_error(const tree::error_expr& err) noexcept
     {
+      ++errCount;
       if (stop) return;
 
       if (err.message() == expectedErr)

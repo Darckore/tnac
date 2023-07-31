@@ -524,8 +524,8 @@ namespace tnac_tests
   TEST(parser, t_errors)
   {
     tree_checker::check_error("2 + "sv, "Expected expression"sv);
-    tree_checker::check_error("--2"sv, "Expected expression"sv);
     tree_checker::check_error("1 + 1 2"sv, "Expected ':' or EOL"sv);
+    tree_checker::check_error("f() 1 + 1 2;"sv, "Expected ':' or EOL"sv);
     tree_checker::check_error("a"sv, "Expected initialisation"sv);
     tree_checker::check_error("a + 2"sv, "Expected initialisation"sv);
     tree_checker::check_error("1 + 1 = 2"sv, "Expected a single identifier"sv);
