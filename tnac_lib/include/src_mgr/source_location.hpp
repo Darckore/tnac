@@ -57,6 +57,12 @@ namespace tnac::src
     void set(line_num l, line_pos c) noexcept;
 
     //
+    // Decrements column number by the specified amout
+    // will not go past 0
+    //
+    void decr_column_by(line_pos delta) noexcept;
+
+    //
     // Increments line number
     //
     void add_line() noexcept;

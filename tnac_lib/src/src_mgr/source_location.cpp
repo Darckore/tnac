@@ -36,6 +36,17 @@ namespace tnac::src
     m_column = c;
   }
 
+  void location::decr_column_by(line_pos delta) noexcept
+  {
+    if (m_column < delta)
+    {
+      m_column = {};
+      return;
+    }
+
+    m_column -= delta;
+  }
+
   void location::add_line() noexcept
   {
     ++m_lineNumber;
