@@ -43,6 +43,10 @@ namespace tnac
 
         return is_in_range(c, ops.begin(), ops.end());
       }
+      constexpr auto is_newline(char_t c) noexcept
+      {
+        return c == '\n';
+      }
       constexpr auto is_blank(char_t c) noexcept
       {
         constexpr std::array blanks{
@@ -217,10 +221,14 @@ namespace tnac
 
   void lex::operator()(string_t buf) noexcept
   {
-    m_buf = utils::ltrim(buf);
+    clear_preview();
+    m_buf = buf;
     m_from = m_buf.begin();
     m_to   = m_from;
-    clear_preview();
+    while (good() && detail::is_separator(peek_char()))
+      advance();
+
+    collapse();
   }
 
   token lex::next() noexcept
@@ -606,8 +614,14 @@ namespace tnac
 
   void lex::advance() noexcept
   {
-    if(good())
-      ++m_to;
+    if (!good()) return;
+
+    if (detail::is_newline(peek_char()))
+      src_loc().add_line();
+    else
+      src_loc().add_col();
+
+    ++m_to;
   }
 
   void lex::collapse() noexcept
