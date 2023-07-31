@@ -347,7 +347,7 @@ namespace tnac
 
       // invalid expressions might be in the middle of other expressions
       if(e->is_valid())
-        res.push_back(error_expr(next, "Expected ':' or EOL"sv, true));
+        res.push_back(error_expr(next, "Expected ':' or EOL"sv));
     }
 
     return res;
