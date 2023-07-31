@@ -266,7 +266,7 @@ namespace tnac
     //
     // Produces an invalid expression for error recovery
     //
-    ast::expr* error_expr(token pos, string_t msg, bool skipRest = false) noexcept;
+    ast::expr* error_expr(token pos, string_t msg) noexcept;
 
     //
     // Parses a list of expressions

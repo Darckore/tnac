@@ -296,11 +296,8 @@ namespace tnac
     skip_to(tok_kind::ExprSep);
   }
 
-  ast::expr* parser::error_expr(token pos, string_t msg, bool skipRest /*= false*/) noexcept
+  ast::expr* parser::error_expr(token pos, string_t msg) noexcept
   {
-    if (skipRest)
-      to_expr_end();
-
     auto errExpr = m_builder.make_error(pos, msg);
 
     if (m_errHandler)
@@ -727,7 +724,7 @@ namespace tnac
       auto args = arg_list(token::ParenClose);
 
       if (!detail::is_close_paren(peek_next()))
-        return error_expr(next_tok(), "Expected ')'"sv, true);
+        return error_expr(next_tok(), "Expected ')'"sv);
 
       next_tok();
       res = m_builder.make_call(*res, std::move(args));
@@ -768,7 +765,7 @@ namespace tnac
   ast::expr* parser::cond_short(ast::expr& condExpr, ast::scope& scope) noexcept
   {
     if (!detail::is_open_curly(peek_next()))
-      return error_expr(next_tok(), "Expected '{'"sv, true);
+      return error_expr(next_tok(), "Expected '{'"sv);
 
     next_tok();
     ast::expr* onTrue{};
@@ -795,7 +792,7 @@ namespace tnac
     }
 
     if (!detail::is_close_curly(peek_next()))
-      return error_expr(next_tok(), "Expected '}'"sv, true);
+      return error_expr(next_tok(), "Expected '}'"sv);
 
     next_tok();
     return m_builder.make_short_cond(condExpr, onTrue, onFalse, scope);
