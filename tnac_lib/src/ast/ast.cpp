@@ -36,10 +36,6 @@ namespace tnac::ast
 
   void node::make_invalid() noexcept
   {
-    // Global scope is always valid even if it contains errors
-    if (is(kind::Scope) && !parent())
-      return;
-
     m_valid = false;
   }
 
