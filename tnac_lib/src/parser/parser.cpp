@@ -591,9 +591,10 @@ namespace tnac
     auto elements = arg_list(token::BracketClose);
 
     if (!detail::is_close_bracket(peek_next()))
-      return error_expr(next_tok(), "Expected ']'"sv, true);
+      elements.push_back(error_expr(next_tok(), "Expected ']'"sv));
+    else
+      next_tok();
 
-    next_tok();  
     return m_builder.make_array(ob, std::move(elements));
   }
 
