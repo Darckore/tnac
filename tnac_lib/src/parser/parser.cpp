@@ -8,54 +8,54 @@ namespace tnac
   {
     namespace
     {
-      constexpr auto is_unary_op(const token& tok) noexcept
+       auto is_unary_op(const token& tok) noexcept
       {
         return tok.is_any(token::Plus, token::Minus, token::Tilde,
                           token::Exclamation, token::Question);
       }
-      constexpr auto is_add_op(const token& tok) noexcept
+       auto is_add_op(const token& tok) noexcept
       {
         return tok.is_any(token::Plus, token::Minus);
       }
-      constexpr auto is_mul_op(const token& tok) noexcept
+       auto is_mul_op(const token& tok) noexcept
       {
         return tok.is_any(token::Asterisk, token::Slash, token::Percent);
       }
-      constexpr auto is_pow_op(const token& tok) noexcept
+       auto is_pow_op(const token& tok) noexcept
       {
         return tok.is_any(token::Pow, token::Root);
       }
-      constexpr auto is_assign(const token& tok) noexcept
+       auto is_assign(const token& tok) noexcept
       {
         return tok.is_any(token::Assign);
       }
-      constexpr auto is_init(const token& tok) noexcept
+       auto is_init(const token& tok) noexcept
       {
         return tok.is(token::Assign);
       }
-      constexpr auto is_relational(const token& tok) noexcept
+       auto is_relational(const token& tok) noexcept
       {
         return tok.is_any(token::Less, token::LessEq,
                           token::Greater, token::GreaterEq);
       }
-      constexpr auto is_eq_comparison(const token& tok) noexcept
+       auto is_eq_comparison(const token& tok) noexcept
       {
         return tok.is_any(token::Eq, token::NotEq);
       }
-      constexpr auto is_pattern_matcher(const token& tok) noexcept
+       auto is_pattern_matcher(const token& tok) noexcept
       {
         return is_eq_comparison(tok) || is_relational(tok);
       }
-      constexpr auto is_pattern_unary(const token& tok) noexcept
+       auto is_pattern_unary(const token& tok) noexcept
       {
         return tok.is_any(token::Exclamation, token::Question);
       }
-      constexpr auto is_logical(const token& tok) noexcept
+       auto is_logical(const token& tok) noexcept
       {
         return tok.is_any(token::LogAnd, token::LogOr);
       }
 
-      constexpr auto match(op_precedence prec, const token& tok) noexcept
+       auto match(op_precedence prec, const token& tok) noexcept
       {
         using enum op_precedence::prec;
         switch (*prec)
@@ -76,58 +76,58 @@ namespace tnac
         }
       }
 
-      constexpr auto is_open_paren(const token& tok) noexcept
+       auto is_open_paren(const token& tok) noexcept
       {
         return tok.is(token::ParenOpen);
       }
-      constexpr auto is_close_paren(const token& tok) noexcept
+       auto is_close_paren(const token& tok) noexcept
       {
         return tok.is(token::ParenClose);
       }
-      constexpr auto is_open_curly(const token& tok) noexcept
+       auto is_open_curly(const token& tok) noexcept
       {
         return tok.is(token::CurlyOpen);
       }
-      constexpr auto is_close_curly(const token& tok) noexcept
+       auto is_close_curly(const token& tok) noexcept
       {
         return tok.is(token::CurlyClose);
       }
-      constexpr auto is_open_bracket(const token& tok) noexcept
+       auto is_open_bracket(const token& tok) noexcept
       {
         return tok.is(token::BracketOpen);
       }
-      constexpr auto is_close_bracket(const token& tok) noexcept
+       auto is_close_bracket(const token& tok) noexcept
       {
         return tok.is(token::BracketClose);
       }
-      constexpr auto is_comma(const token& tok) noexcept
+       auto is_comma(const token& tok) noexcept
       {
         return tok.is(token::Comma);
       }
-      constexpr auto is_semi(const token& tok) noexcept
+       auto is_semi(const token& tok) noexcept
       {
         return tok.is(token::Semicolon);
       }
-      constexpr auto is_arrow(const token& tok) noexcept
+       auto is_arrow(const token& tok) noexcept
       {
         return tok.is(token::Arrow);
       }
-      constexpr auto is_pipe(const token& tok) noexcept
+       auto is_pipe(const token& tok) noexcept
       {
         return tok.is(token::Pipe);
       }
 
-      constexpr auto is_expression_separator(const token& tok) noexcept
+       auto is_expression_separator(const token& tok) noexcept
       {
         return tok.is(token::ExprSep);
       }
 
-      constexpr auto is_command_name(const token& tok) noexcept
+       auto is_command_name(const token& tok) noexcept
       {
         return tok.is(token::Command);
       }
 
-      constexpr auto is_type_keyword(const token& tok) noexcept
+       auto is_type_keyword(const token& tok) noexcept
       {
         using enum tok_kind;
         return tok.is_any(KwComplex, KwFraction, KwInt, KwFloat, KwBool);
@@ -379,7 +379,7 @@ namespace tnac
     if (!next.is_identifier())
       return {};
 
-    if (m_sema.find(next.m_value))
+    if (m_sema.find(next.value()))
       return {};
 
     return var_decl(next_tok());
@@ -466,7 +466,7 @@ namespace tnac
     {
       opt = error_expr(name, "Expected identifier"sv);
     }
-    else if (auto sym = m_sema.find(name.m_value, true))
+    else if (auto sym = m_sema.find(name.value(), true))
     {
       opt = error_expr(name, "Function parameter redifinition"sv);
     }
@@ -649,7 +649,7 @@ namespace tnac
 
     if (next.is(token::Identifier))
     {
-      auto sym = m_sema.find(next.m_value);
+      auto sym = m_sema.find(next.value());
 
       if (!sym)
         return error_expr(next_tok(), "Undefined identifier"sv);

@@ -43,7 +43,7 @@ namespace tnac::ast
 
   string_t command::name() const noexcept
   {
-    return pos().m_value;
+    return pos().value();
   }
 
   command::size_type command::arg_count() const noexcept

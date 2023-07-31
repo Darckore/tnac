@@ -52,7 +52,7 @@ namespace tnac_tests
       if (tok.is_eol())
         break;
 
-      EXPECT_TRUE(tok.is(kind)) << "Failed token: " << tok.m_value;
+      EXPECT_TRUE(tok.is(kind)) << "Failed token: " << tok.value();
     }
   }
   
@@ -65,7 +65,7 @@ namespace tnac_tests
     for (auto tk : tokArr)
     {
       auto tok = lex.next();
-      EXPECT_TRUE(tok.is(tk)) << "Failed token: " << tok.m_value;
+      EXPECT_TRUE(tok.is(tk)) << "Failed token: " << tok.value();
     }
   }
 
@@ -111,7 +111,7 @@ namespace tnac_tests
           if (nodeKind == kind)
           {
             auto&& tok = static_cast<tree::expr&>(*ast).pos();
-            EXPECT_TRUE(input.starts_with(tok.m_value));
+            EXPECT_TRUE(input.starts_with(tok.value()));
           }
         }
       }
@@ -166,7 +166,7 @@ namespace tnac_tests
 
     void visit(const tree::assign_expr& expr) noexcept
     {
-      check_node(expr, expr.op().m_value);
+      check_node(expr, expr.op().value());
     }
 
     void visit(const tree::decl_expr& expr) noexcept
@@ -191,12 +191,12 @@ namespace tnac_tests
 
     void visit(const tree::binary_expr& expr) noexcept
     {
-      check_node(expr, expr.op().m_value);
+      check_node(expr, expr.op().value());
     }
 
     void visit(const tree::unary_expr& expr) noexcept
     {
-      check_node(expr, expr.op().m_value);
+      check_node(expr, expr.op().value());
     }
 
     void visit(const tree::paren_expr& expr) noexcept
@@ -211,7 +211,7 @@ namespace tnac_tests
 
     void visit(const tree::typed_expr& expr) noexcept
     {
-      check_node(expr, expr.type_name().m_value);
+      check_node(expr, expr.type_name().value());
     }
 
     void visit(const tree::call_expr& expr) noexcept
@@ -221,7 +221,7 @@ namespace tnac_tests
 
     void visit(const tree::lit_expr& expr) noexcept
     {
-      check_node(expr, expr.pos().m_value);
+      check_node(expr, expr.pos().value());
     }
 
     void visit(const tree::id_expr& expr) noexcept
@@ -236,7 +236,7 @@ namespace tnac_tests
 
     void visit(const tree::result_expr& expr) noexcept
     {
-      check_node(expr, expr.pos().m_value);
+      check_node(expr, expr.pos().value());
     }
 
     void visit(const tree::error_expr& expr) noexcept
@@ -375,11 +375,11 @@ namespace tnac_tests
   private:
     static void on_eval_error(const tnac::token& tok, string_t msg) noexcept
     {
-      FAIL() << "Eval error " << msg << " at " << tok.m_value;
+      FAIL() << "Eval error " << msg << " at " << tok.value();
     }
     static void on_parse_error(const tnac::ast::error_expr& err) noexcept
     {
-      FAIL() << "Parse error " << err.message() << " at " << err.pos().m_value;
+      FAIL() << "Parse error " << err.message() << " at " << err.pos().value();
     }
 
   private:

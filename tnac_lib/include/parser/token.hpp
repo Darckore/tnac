@@ -54,33 +54,39 @@ namespace tnac
       return m_value;
     }
 
-    constexpr auto is(kind k) const noexcept
+    kind what() const noexcept
     {
-      return m_kind == k;
+      return m_kind;
+    }
+
+    auto is(kind k) const noexcept
+    {
+      return what() == k;
     }
 
     template <typename... KINDS> requires(utils::all_same<kind, KINDS...>)
-    constexpr auto is_any(KINDS... kinds) const noexcept
+    auto is_any(KINDS... kinds) const noexcept
     {
       return ((is(kinds)) || ...);
     }
 
-    constexpr auto is_eol() const noexcept
+    auto is_eol() const noexcept
     {
       return is(Eol);
     }
 
-    constexpr auto is_literal() const noexcept
+    auto is_literal() const noexcept
     {
       return is_any(IntBin, IntOct, IntDec, IntHex, Float,
                     KwTrue, KwFalse, KwI, KwPi, KwE);
     }
 
-    constexpr auto is_identifier() const noexcept
+    auto is_identifier() const noexcept
     {
       return is(Identifier);
     }
 
+  private:
     string_t m_value;
     loc m_loc;
     kind m_kind{ Error };

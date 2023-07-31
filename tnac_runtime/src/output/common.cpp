@@ -73,7 +73,7 @@ namespace tnac_rt::out
 
   std::ostream& operator<<(std::ostream& out, const tnac::token& tok) noexcept
   {
-    out << tok.m_value;
+    out << tok.value();
     return out;
   }
 

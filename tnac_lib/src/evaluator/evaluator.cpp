@@ -191,7 +191,7 @@ namespace tnac
     if (return_path())
       return;
 
-    const auto opcode = binary.op().m_kind;
+    const auto opcode = binary.op().what();
 
     // We've already calculated logical && and || at this point
     if (detail::is_logical(opcode))
@@ -208,7 +208,7 @@ namespace tnac
     if (return_path())
       return;
 
-    const auto opCode = detail::conv_unary(unary.op().m_kind);
+    const auto opCode = detail::conv_unary(unary.op().what());
     auto val = m_visitor.fetch_next();
     m_visitor.visit_unary(*val, opCode);
   }
@@ -221,7 +221,7 @@ namespace tnac
     using enum tok_kind;
     using detail::instance;
 
-    switch (expr.type_name().m_kind)
+    switch (expr.type_name().what())
     {
     case KwComplex:  instance<eval::complex_type>{ m_visitor, m_errHandler }(expr);  break;
     case KwFraction: instance<eval::fraction_type>{ m_visitor, m_errHandler }(expr); break;
@@ -367,7 +367,7 @@ namespace tnac
     if (return_path())
       return false;
 
-    const auto opcode = expr.op().m_kind;
+    const auto opcode = expr.op().what();
     if (!detail::is_logical(opcode))
       return true;
 
@@ -432,7 +432,7 @@ namespace tnac
       }
       else if (matcher.is_unary())
       {
-        const auto opcode = detail::conv_unary(matcher.pos().m_kind);
+        const auto opcode = detail::conv_unary(matcher.pos().what());
         m_visitor.visit_unary(*condVal, opcode);
         currentMatch = m_visitor.fetch_next();
       }
@@ -443,7 +443,7 @@ namespace tnac
         auto checkedVal = m_visitor.fetch_next();
         auto opcode = matcher.has_implicit_op() ?
           val_ops::Equal :
-          detail::conv_binary(matcher.pos().m_kind);
+          detail::conv_binary(matcher.pos().what());
 
         m_visitor.visit_binary(*condVal, *checkedVal, opcode);
         currentMatch = m_visitor.fetch_next();
@@ -552,18 +552,18 @@ namespace tnac
 
   void evaluator::eval_token(const token& tok) noexcept
   {
-    switch (tok.m_kind)
+    switch (tok.what())
     {
     case token::KwTrue:  m_visitor.visit_bool_literal(true);           break;
     case token::KwFalse: m_visitor.visit_bool_literal(false);          break;
     case token::KwI:     m_visitor.visit_i();                          break;
     case token::KwPi:    m_visitor.visit_pi();                         break;
     case token::KwE:     m_visitor.visit_e();                          break;
-    case token::IntDec:  m_visitor.visit_int_literal(tok.m_value, 10); break;
-    case token::IntBin:  m_visitor.visit_int_literal(tok.m_value, 2);  break;
-    case token::IntOct:  m_visitor.visit_int_literal(tok.m_value, 8);  break;
-    case token::IntHex:  m_visitor.visit_int_literal(tok.m_value, 16); break;
-    case token::Float:   m_visitor.visit_float_literal(tok.m_value);   break;
+    case token::IntDec:  m_visitor.visit_int_literal(tok.value(), 10); break;
+    case token::IntBin:  m_visitor.visit_int_literal(tok.value(), 2);  break;
+    case token::IntOct:  m_visitor.visit_int_literal(tok.value(), 8);  break;
+    case token::IntHex:  m_visitor.visit_int_literal(tok.value(), 16); break;
+    case token::Float:   m_visitor.visit_float_literal(tok.value());   break;
 
     default: break;
     }

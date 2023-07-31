@@ -26,7 +26,7 @@ namespace tnac::ast
 
   string_t decl::name() const noexcept
   {
-    return m_id.m_value;
+    return m_id.value();
   }
 
   const node* decl::definition() const noexcept

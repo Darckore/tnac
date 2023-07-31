@@ -198,7 +198,7 @@ namespace tnac_rt::out
     }
     else if (matcher.is_unary())
     {
-      out() << '{' << matcher.pos().m_value << '}';
+      out() << '{' << matcher.pos().value() << '}';
       endl();
     }
     else if (matcher.has_implicit_op())
@@ -210,7 +210,7 @@ namespace tnac_rt::out
     else
     {
       push_parent(1);
-      out() << '{' << matcher.pos().m_value << '}';
+      out() << '{' << matcher.pos().value() << '}';
       endl();
     }
   }

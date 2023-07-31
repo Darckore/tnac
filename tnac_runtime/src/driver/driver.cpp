@@ -169,7 +169,7 @@ namespace tnac_rt
     if (c.arg_count())
     {
       auto&& arg     = c[size_type{}];
-      auto argName = arg.m_value;
+      auto argName = arg.value();
       if (argName == bin)
         base = 2;
       else if (argName == oct)
@@ -211,7 +211,7 @@ namespace tnac_rt
         return parser.root();
 
       auto&& second = c[size_type{ 1 }];
-      if (second.m_value == "current"sv)
+      if (second.value() == "current"sv)
         return m_state.lastParsed;
 
       m_inpMgr.on_error(second, "Unknown parameter"sv);
@@ -268,10 +268,10 @@ namespace tnac_rt
 
   void driver::try_redirect_output(const tnac::token& pathTok) noexcept
   {
-    if (pathTok.m_value.empty())
+    if (pathTok.value().empty())
       return;
 
-    fsys::path outPath{ pathTok.m_value };
+    fsys::path outPath{ pathTok.value() };
     m_io.outFile.open(outPath);
     if (!m_io.outFile)
     {

@@ -67,7 +67,7 @@ namespace tnac::ast
 
   string_t id_expr::name() const noexcept
   {
-    return pos().m_value;
+    return pos().value();
   }
 
   const semantics::symbol& id_expr::symbol() const noexcept
