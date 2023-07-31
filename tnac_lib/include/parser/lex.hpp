@@ -72,6 +72,12 @@ namespace tnac
     void ffwd() noexcept;
 
     //
+    // Moves forward until a non-blank character is encountered
+    // and collapses the from iterator
+    //
+    void skip_spaces() noexcept;
+
+    //
     // Skips comments
     // Returns false if EOL is reached
     //

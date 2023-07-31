@@ -225,10 +225,7 @@ namespace tnac
     m_buf = buf;
     m_from = m_buf.begin();
     m_to   = m_from;
-    while (good() && detail::is_blank(peek_char()))
-      advance();
-
-    collapse();
+    skip_spaces();
   }
 
   token lex::next() noexcept
@@ -319,19 +316,7 @@ namespace tnac
     sloc.decr_column_by(static_cast<loc::line_pos>(tokLen));
     token res{ tokVal, kind, sloc.record() };
 
-    while (good())
-    {
-      const auto c = peek_char();
-      if (detail::is_blank(c))
-      {
-        advance();
-        continue;
-      }
-
-      break;
-    }
-
-    collapse();
+    skip_spaces();
     m_preview = res;
     return *m_preview;
   }
@@ -351,6 +336,14 @@ namespace tnac
         
       advance();
     }
+  }
+
+  void lex::skip_spaces() noexcept
+  {
+    while (good() && detail::is_blank(peek_char()))
+      advance();
+    
+    collapse();
   }
 
   bool lex::skip_comment() noexcept
