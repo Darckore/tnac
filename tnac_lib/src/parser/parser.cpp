@@ -499,7 +499,7 @@ namespace tnac
         continue;
       }
 
-      if (next.is_eol() || detail::is_close_paren(next))
+      if (!detail::is_comma(next))
         break;
     }
 
