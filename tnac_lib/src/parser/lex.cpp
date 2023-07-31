@@ -225,7 +225,7 @@ namespace tnac
     m_buf = buf;
     m_from = m_buf.begin();
     m_to   = m_from;
-    while (good() && detail::is_separator(peek_char()))
+    while (good() && detail::is_blank(peek_char()))
       advance();
 
     collapse();
@@ -314,7 +314,7 @@ namespace tnac
       tokVal.remove_suffix(1);
     }
 
-    token res{ .m_value{ tokVal }, .m_kind{ kind } };
+    token res{ tokVal, kind, src_loc().record() };
 
     while (good())
     {

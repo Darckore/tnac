@@ -249,7 +249,7 @@ namespace tnac::ast
   private:
     expr* m_left{};
     expr* m_right{};
-    token m_op{};
+    token m_op;
   };
 
 

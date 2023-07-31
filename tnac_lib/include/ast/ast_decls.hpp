@@ -76,8 +76,8 @@ namespace tnac::ast
   private:
     node* m_def{};
     semantics::symbol* m_symbol{};
-    token m_id{};
-    token m_pos{};
+    token m_id;
+    token m_pos;
   };
 
   inline auto get_id(const decl& d) noexcept
