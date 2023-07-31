@@ -341,7 +341,13 @@ namespace tnac
       if (has_implicit_separator(*e))
         continue;
 
-      res.push_back(error_expr(next, "Expected ':' or EOL"sv, true));
+      // postpone to the caller
+      if (scopeLvl == scope_level::Nested)
+        break;
+
+      // invalid expressions might be in the middle of other expressions
+      if(e->is_valid())
+        res.push_back(error_expr(next, "Expected ':' or EOL"sv, true));
     }
 
     return res;
@@ -401,7 +407,9 @@ namespace tnac
     }
     else
     {
-      init = error_expr(op, "Expected initialisation"sv, true);
+      next_tok();
+      init = error_expr(op, "Expected initialisation"sv);
+      expr();
     }
 
     auto varDecl = m_builder.make_var_decl(name, *init);
@@ -450,10 +458,12 @@ namespace tnac
     {
       body.push_back(error_expr(last, "Expected ';' at function definition end"sv));
     }
+    else
+    {
+      next_tok();
+    }
 
-    next_tok();
     def->adopt(std::move(body));
-
     return funcDecl;
   }
 

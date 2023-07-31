@@ -88,6 +88,8 @@ namespace tnac_rt::out
 
     void indent() noexcept;
 
+    void invalid_mark(const ast::node& n) noexcept;
+
     void endl() noexcept;
 
     out_stream& out() noexcept;

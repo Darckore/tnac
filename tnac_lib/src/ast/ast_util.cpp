@@ -9,7 +9,9 @@ namespace tnac::ast
   error_expr::error_expr(const token& tok, string_t msg) noexcept :
     expr{ kind::Error, tok },
     m_errMsg{ msg }
-  {}
+  {
+    make_invalid();
+  }
 
   const token& error_expr::at() const noexcept
   {

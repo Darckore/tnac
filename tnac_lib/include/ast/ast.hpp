@@ -67,7 +67,22 @@ namespace tnac::ast
       return ((is(kinds)) || ...);
     }
 
+    //
+    // Checks whether the current node is valid (doesn't contain errors)
+    //
+    bool is_valid() const noexcept;
+
   protected:
+    //
+    // Makes this node ivalid
+    //
+    void make_invalid() noexcept;
+
+    //
+    // Makes this node invalid if the given child is invalid
+    //
+    void make_invalid_if(node* child) noexcept;
+
     //
     // Assigns a parent. Called from non-terminal nodes which
     // can have children
@@ -82,6 +97,7 @@ namespace tnac::ast
   private:
     node* m_parent{};
     kind m_kind{ Error };
+    bool m_valid{ true };
   };
 
   inline auto get_id(const node& n) noexcept

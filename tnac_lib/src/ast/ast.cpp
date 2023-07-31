@@ -29,6 +29,29 @@ namespace tnac::ast
     return what() == k;
   }
 
+  bool node::is_valid() const noexcept
+  {
+    return m_valid;
+  }
+
+  void node::make_invalid() noexcept
+  {
+    // Global scope is always valid even if it contains errors
+    if (is(kind::Scope) && !parent())
+      return;
+
+    m_valid = false;
+  }
+
+  void node::make_invalid_if(node* child) noexcept
+  {
+    if (!is_valid())
+      return;
+
+    if (child && !child->is_valid())
+      make_invalid();
+  }
+
   void node::make_child_of(node* parent) noexcept
   {
     m_parent = parent;
@@ -36,6 +59,7 @@ namespace tnac::ast
 
   void node::assume_ancestry(node* child) noexcept
   {
+    make_invalid_if(child);
     if (!child)
       return;
 
