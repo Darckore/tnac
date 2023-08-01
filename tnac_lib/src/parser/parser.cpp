@@ -716,7 +716,7 @@ namespace tnac
       auto args = arg_list(token::ParenClose);
 
       if (!detail::is_close_paren(peek_next()))
-        return error_expr(next_tok(), "Expected ')'"sv);
+        return error_expr(peek_next(), "Expected ')'"sv);
 
       next_tok();
       res = m_builder.make_call(*res, std::move(args));
