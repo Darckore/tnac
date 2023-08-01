@@ -676,7 +676,7 @@ namespace tnac
     UTILS_ASSERT(peek_next().is(token::KwFunction));
     auto kw = next_tok();
     auto funcDecl = func_decl(kw);
-    if (!funcDecl)
+    if (!funcDecl->is_valid())
       return error_expr(kw, "Invalid anonimous function definition"sv);
 
     return m_builder.make_decl_expr(*funcDecl);
