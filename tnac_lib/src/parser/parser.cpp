@@ -460,6 +460,12 @@ namespace tnac
     else
     {
       next_tok();
+      if (!peek_next().is_any(token::Comma, token::ParenClose))
+      {
+        next_tok();
+        expr();
+        opt = error_expr(name, "Expression is not allowed here"sv);
+      }
     }
 
     return m_builder.make_param_decl(name, opt);
