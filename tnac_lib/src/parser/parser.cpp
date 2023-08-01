@@ -454,6 +454,7 @@ namespace tnac
     }
     else if (auto sym = m_sema.find(name.value(), true))
     {
+      next_tok();
       opt = error_expr(name, "Function parameter redifinition"sv);
     }
     else
