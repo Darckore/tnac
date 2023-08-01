@@ -342,6 +342,9 @@ namespace tnac
     if(!decl)
       return assign_expr();
 
+    if (!decl->is_valid())
+      return error_expr(decl->pos(), "Invalid declaration"sv);
+
     return m_builder.make_decl_expr(*decl);
   }
 
@@ -407,12 +410,6 @@ namespace tnac
       return {};
     next_tok();
 
-    for (auto param : params)
-    {
-      if (param->definition())
-        return {};
-    }
-
     auto pos = name;
     if (name.is(token::KwFunction))
     {
@@ -420,7 +417,8 @@ namespace tnac
     }
 
     auto funcDecl = m_builder.make_func_decl(name, pos, *def, std::move(params));
-    m_sema.visit_decl(*funcDecl);
+    if (funcDecl->is_valid())
+      m_sema.visit_decl(*funcDecl);
 
     if (detail::is_semi(peek_next()))
     {
