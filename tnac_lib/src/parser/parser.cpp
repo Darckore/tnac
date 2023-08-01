@@ -406,9 +406,15 @@ namespace tnac
 
     auto params = formal_params();
 
-    if (!detail::is_close_paren(peek_next()))
-      return {};
-    next_tok();
+    if (auto&& cp = peek_next(); !detail::is_close_paren(cp))
+    {
+      auto opt = error_expr(cp, "Expected ')'"sv);
+      params.push_back(m_builder.make_param_decl(cp, opt));
+    }
+    else
+    {
+      next_tok();
+    }
 
     auto pos = name;
     if (name.is(token::KwFunction))
@@ -458,7 +464,7 @@ namespace tnac
     else
     {
       next_tok();
-      if (!peek_next().is_any(token::Comma, token::ParenClose))
+      if (!peek_next().is_any(token::Comma, token::ParenClose, token::Semicolon))
       {
         next_tok();
         expr();
