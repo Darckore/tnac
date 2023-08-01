@@ -11,7 +11,7 @@ namespace tnac
       auto is_unary_op(const token& tok) noexcept
       {
         return tok.is_any(token::Plus, token::Minus, token::Tilde,
-          token::Exclamation, token::Question);
+                          token::Exclamation, token::Question);
       }
       auto is_add_op(const token& tok) noexcept
       {
@@ -131,6 +131,18 @@ namespace tnac
       {
         using enum tok_kind;
         return tok.is_any(KwComplex, KwFraction, KwInt, KwFloat, KwBool);
+      }
+
+      auto is_expr_starter(const token& tok) noexcept
+      {
+        return tok.is_literal() ||
+               tok.is_identifier() ||
+               is_type_keyword(tok) ||
+               is_open_paren(tok) ||
+               is_open_bracket(tok) ||
+               is_open_curly(tok) ||
+               is_pipe(tok) ||
+               is_unary_op(tok);
       }
 
       auto is_error_expr(const ast::expr& expr) noexcept
@@ -464,9 +476,11 @@ namespace tnac
     else
     {
       next_tok();
-      if (!peek_next().is_any(token::Comma, token::ParenClose, token::Semicolon))
+      if (auto&& next = peek_next(); !next.is_any(token::Comma, token::ParenClose, token::Semicolon))
       {
-        next_tok();
+        if(!detail::is_expr_starter(next))
+          next_tok();
+
         expr();
         opt = error_expr(name, "Expression is not allowed here"sv);
       }
