@@ -15,7 +15,8 @@ namespace tnac_rt
   input_mgr::stored_input& input_mgr::input(tnac::buf_t in) noexcept
   {
     loc_t::dummy().set(m_inputIdx, 0);
-    return store(m_input, std::move(in));
+    auto newItem = m_input.try_emplace(m_inputIdx++, std::move(in));
+    return newItem.first->second;
   }
 
   input_mgr::stored_input* input_mgr::from_file(tnac::string_t fname) noexcept
@@ -36,7 +37,9 @@ namespace tnac_rt
       return {};
     }
 
-    return &store(m_files, file);
+    const auto key = file->hash();
+    auto newItem = m_files.try_emplace(key, file);
+    return &newItem.first->second;
   }
 
   void input_mgr::on_error(const tnac::token& tok, tnac::string_t msg) noexcept
@@ -44,6 +47,7 @@ namespace tnac_rt
     auto loc = tok.at();
     print_location(loc);
     err() << ": " << msg << '\n';
+    print_line(loc);
   }
 
   void input_mgr::on_parse_error(const tnac::ast::error_expr& error) noexcept
@@ -62,6 +66,56 @@ namespace tnac_rt
       err() << "REPL";
 
     err() << ">:" << (at->line() + 1) << ':' << (at->col() + 1);
+  }
+
+  void input_mgr::print_line(loc_wrapper at) noexcept
+  {
+    auto line = get_line(at);
+    if (line.empty())
+      return;
+
+    err() << line << '\n';
+    for (auto idx = at->col(); idx > 0; --idx)
+      err() << ' ';
+    
+    err() << "^\n";
+  }
+
+  tnac::string_t input_mgr::get_line(loc_wrapper at) noexcept
+  {
+    if (!at)
+      return get_repl(at);
+
+    return get_line_from_file(at);
+  }
+
+  tnac::string_t input_mgr::get_repl(loc_wrapper at) noexcept
+  {
+    auto line = m_input.find(at->line());
+    if (line == m_input.end())
+      return {};
+
+    return line->second.buffer();
+  }
+
+  tnac::string_t input_mgr::get_line_from_file(loc_wrapper at) noexcept
+  {
+    auto key = at->file_id();
+    auto file = m_files.find(key);
+    if (file == m_files.end())
+      return {};
+
+    auto buf = file->second.buffer();
+    using line_num = loc_t::line_num;
+    const auto targetLine = at->line();
+    for (auto idx = line_num{}; auto line : utils::split(buf, "\n"))
+    {
+      if (idx == targetLine)
+        return line;
+      ++idx;
+    }
+
+    return {};
   }
 
   out_stream& input_mgr::err() noexcept
