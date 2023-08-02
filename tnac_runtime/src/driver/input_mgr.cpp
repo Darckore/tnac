@@ -55,12 +55,13 @@ namespace tnac_rt
 
   void input_mgr::print_location(loc_wrapper at) noexcept
   {
+    err() << '<';
     if (at)
       err() << at->file().string();
     else
       err() << "REPL";
 
-    err() << " <" << (at->line() + 1) << ": " << (at->col() + 1) << '>';
+    err() << ">:" << (at->line() + 1) << ':' << (at->col() + 1);
   }
 
   out_stream& input_mgr::err() noexcept
