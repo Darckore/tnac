@@ -122,10 +122,10 @@ namespace tnac_rt
 
   void driver::print_result() noexcept
   {
-    out() << "Evaluation result: ";
+    out() << "\nEvaluation result: ";
     out::value_printer vp;
     vp(m_tnac.get_eval().last_result(), m_state.numBase, out());
-    out() << '\n';
+    out() << "\n\n";
   }
 
   void driver::print_result(command c) noexcept
@@ -159,13 +159,17 @@ namespace tnac_rt
   void driver::list_code(command c) noexcept
   {
     VALUE_GUARD(m_io.out);
+    auto wrapInLines = true;
     if (c.arg_count())
     {
+      wrapInLines = false;
       try_redirect_output(c[size_type{}]);
     }
 
     out::lister ls;
+    if (wrapInLines) out() << '\n';
     ls(m_tnac.get_parser().root(), out());
+    if (wrapInLines) out() << '\n';
     end_redirect();
   }
 
@@ -190,34 +194,47 @@ namespace tnac_rt
 
     auto ast = toPrint(c);
     VALUE_GUARD(m_io.out);
+    auto wrapInLines = true;
     if (c.arg_count())
     {
+      wrapInLines = false;
       try_redirect_output(c[size_type{}]);
     }
 
     out::ast_printer pr;
+    if (wrapInLines) out() << '\n';
     pr(ast, out());
+    if (wrapInLines) out() << '\n';
     end_redirect();
   }
 
   void driver::print_vars(command c) noexcept
   {
     VALUE_GUARD(m_io.out);
+    auto wrapInLines = true;
     if (c.arg_count())
     {
+      wrapInLines = false;
       try_redirect_output(c[size_type{}]);
     }
 
     if (m_vars.empty())
+    {
+      if (wrapInLines) out() << '\n';
       out() << "<none>\n";
+      if (wrapInLines) out() << '\n';
+      return;
+    }
 
     out::value_printer vp;
+    if (wrapInLines) out() << '\n';
     for (auto var : m_vars)
     {
       out() << var->name() << " : ";
       vp(var->value(), 10, out());
       out() << '\n';
     }
+    if (wrapInLines) out() << '\n';
     end_redirect();
   }
 

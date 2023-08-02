@@ -90,6 +90,14 @@ namespace tnac_rt::out
 
     void invalid_mark(const ast::node& n) noexcept;
 
+    void location_info(src::loc_wrapper loc) noexcept;
+
+    void additional_info(const ast::node& n) noexcept;
+    
+    void additional_info(const ast::expr& e) noexcept;
+    
+    void additional_info(const ast::decl& d) noexcept;
+
     void endl() noexcept;
 
     out_stream& out() noexcept;

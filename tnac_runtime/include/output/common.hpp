@@ -8,7 +8,8 @@
 
 namespace tnac_rt::out
 {
-  namespace ast = tnac::ast;
+  namespace ast  = tnac::ast;
+  namespace src  = tnac::src;
   namespace eval = tnac::eval;
 
   //
