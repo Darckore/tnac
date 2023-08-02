@@ -53,6 +53,11 @@ namespace tnac::src
     m_column -= delta;
   }
 
+  void location::incr_column_by(line_pos delta) noexcept
+  {
+    m_column += delta;
+  }
+
   void location::add_line() noexcept
   {
     ++m_lineNumber;

@@ -69,6 +69,11 @@ namespace tnac::src
     void decr_column_by(line_pos delta) noexcept;
 
     //
+    // Inrements column number by the specified amout
+    //
+    void incr_column_by(line_pos delta) noexcept;
+
+    //
     // Increments line number
     //
     void add_line() noexcept;

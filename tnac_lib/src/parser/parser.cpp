@@ -192,6 +192,7 @@ namespace tnac
 
   parser::pointer parser::operator()(string_t str) noexcept
   {
+    m_lastConsumed.reset();
     m_lex(str);
 
     if (!m_root)
@@ -290,7 +291,16 @@ namespace tnac
 
   token parser::next_tok() noexcept
   {
-    return m_lex.next();
+    m_lastConsumed = m_lex.next();
+    return *m_lastConsumed;
+  }
+
+  const token& parser::last_tok(const token& dummy) noexcept
+  {
+    if (!m_lastConsumed)
+      return dummy;
+
+    return *m_lastConsumed;
   }
 
   ast::expr* parser::error_expr(token pos, string_t msg) noexcept
@@ -335,9 +345,9 @@ namespace tnac
       if (has_implicit_separator(*e))
         continue;
 
-      // invalid expressions might be in the middle of other expressions
+      // Invalid expressions might be in the middle of other expressions
       if(e->is_valid())
-        res.push_back(error_expr(next, "Expected ':' or EOL"sv));
+        res.push_back(error_expr(last_tok(next).get_after(), "Expected ':' or EOL"sv));
     }
 
     return res;

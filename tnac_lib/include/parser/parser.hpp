@@ -94,22 +94,22 @@ namespace tnac
   class parser final
   {
   public:
-    using value_type = ast::node;
-    using pointer = value_type*;
+    using value_type    = ast::node;
+    using pointer       = value_type*;
     using const_pointer = const value_type*;
 
-    using root_type = ast::scope;
-    using root_ptr = root_type*;
+    using root_type      = ast::scope;
+    using root_ptr       = root_type*;
     using const_root_ptr = const root_type*;
-    using expr_list = root_type::elem_list;
-    using param_list = ast::func_decl::param_list;
+    using expr_list      = root_type::elem_list;
+    using param_list     = ast::func_decl::param_list;
 
-    using loc = src::location;
+    using loc     = src::location;
+    using tok_opt = lex::token_opt;
 
     using prec = detail::op_precedence;
 
     using err_handler_t = std::function<void(const ast::error_expr&)>;
-
     using cmd_handler_t = std::function<void(ast::command)>;
 
   private:
@@ -239,6 +239,11 @@ namespace tnac
     // Consumes and returns the next token
     //
     token next_tok() noexcept;
+
+    //
+    // Returns the last saved token, or the provided dummy one
+    //
+    const token& last_tok(const token& dummy) noexcept;
 
     //
     // Produces an invalid expression for error recovery
@@ -391,6 +396,7 @@ namespace tnac
     ast::builder& m_builder;
     sema& m_sema;
     root_ptr m_root{};
+    tok_opt m_lastConsumed{};
 
     err_handler_t m_errHandler{};
     cmd_handler_t m_cmdHandler{};

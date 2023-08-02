@@ -44,6 +44,14 @@ namespace tnac
     }
 
   public:
+    token get_after() const noexcept
+    {
+      const auto delta = static_cast<src::location::line_pos>(m_value.length());
+      auto location = *m_loc;
+      location.incr_column_by(delta);
+      return { m_value, Error, location.record() };
+    }
+
     loc at() const noexcept
     {
       return m_loc;
