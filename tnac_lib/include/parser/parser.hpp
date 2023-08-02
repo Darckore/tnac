@@ -125,6 +125,15 @@ namespace tnac
     };
 
     //
+    // Helper that is used to instruct error_expr on the location it should be using
+    //
+    enum class err_pos : std::uint8_t
+    {
+      Current,
+      Last
+    };
+
+    //
     // Helper type to manage scopes RAII-way
     //
     class scope_guard
@@ -248,7 +257,7 @@ namespace tnac
     //
     // Produces an invalid expression for error recovery
     //
-    ast::expr* error_expr(token pos, string_t msg) noexcept;
+    ast::expr* error_expr(const token& pos, string_t msg, err_pos at) noexcept;
 
     //
     // Parses a list of expressions
