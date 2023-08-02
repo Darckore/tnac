@@ -4,6 +4,13 @@
 
 #pragma once
 
+#define TNAC_BAD_PLATFORM static_assert(false, "Platform not supported");
+
+#if _WIN64
+#define TNAC_WINDOWS 1
+#else
+#endif
+
 namespace tnac
 {
   using buf_t    = std::string;

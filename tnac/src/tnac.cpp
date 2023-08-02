@@ -1,7 +1,7 @@
-#include "driver/driver.hpp"
+#include "driver/entry.hpp"
 
 int main(int argc, char** argv)
 {
-  tnac_rt::driver driver{ argc, argv };
+  tnac_rt::execute(argc, argv);
   return 0;
 }
