@@ -375,25 +375,33 @@ namespace tnac_rt::out
     default_style();
   }
 
+  void lister::reset_style() noexcept
+  {
+    colours::clear_clr(out());
+    colours::add_clr(out(), colours::clr::White, false);
+  }
   void lister::id_style() noexcept
   {
     if (!m_styles) return;
+    reset_style();
     colours::add_clr(out(), colours::clr::Green, true);
   }
   void lister::kw_style() noexcept
   {
     if (!m_styles) return;
+    reset_style();
     colours::add_clr(out(), colours::clr::Cyan, true);
   }
   void lister::lit_style() noexcept
   {
     if (!m_styles) return;
-    colours::add_clr(out(), colours::clr::Yellow, false);
+    reset_style();
+    colours::add_clr(out(), colours::clr::Yellow, true);
   }
   void lister::default_style() noexcept
   {
     if (!m_styles) return;
-    colours::add_clr(out(), colours::clr::White, false);
+    reset_style();
   }
 
 }

@@ -90,6 +90,7 @@ namespace tnac_rt::out
 
     void print_token(const tnac::token& tok, bool addSpace) noexcept;
 
+    void reset_style() noexcept;
     void id_style() noexcept;
     void kw_style() noexcept;
     void lit_style() noexcept;
