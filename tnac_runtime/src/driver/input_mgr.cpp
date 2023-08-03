@@ -46,7 +46,8 @@ namespace tnac_rt
   {
     auto loc = tok.at();
     print_location(loc);
-    err() << ": " << msg << '\n';
+    print_error();
+    err() << msg << '\n';
     print_line(loc);
   }
 
@@ -79,6 +80,19 @@ namespace tnac_rt
       err() << ' ';
     
     err() << "^\n";
+  }
+
+  void input_mgr::print_error() noexcept
+  {
+#if TNAC_WINDOWS
+    err() << "\x1b[31m";
+#endif
+
+    err() << " error: ";
+
+#if TNAC_WINDOWS
+    err() << "\x1b[39m";
+#endif
   }
 
   tnac::string_t input_mgr::get_line(loc_wrapper at) noexcept

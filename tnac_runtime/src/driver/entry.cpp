@@ -37,7 +37,7 @@
 #endif
 
 #if TNAC_WINDOWS
-  #define TNAC_RUN(ARGC, ARGV) __try { go(ARGC, ARGV); } \
+  #define TNAC_RUN(ARGC, ARGV) __try { init_console(); go(ARGC, ARGV); } \
                                __except (EXCEPTION_EXECUTE_HANDLER) { on_seh(GetExceptionCode()); }
 #else
   #define TNAC_RUN(ARGC, ARGV)
@@ -79,6 +79,18 @@ namespace tnac_rt
     }
 
 #if TNAC_WINDOWS
+    void init_console()
+    {
+      auto console = GetStdHandle(STD_OUTPUT_HANDLE);
+      if (console == INVALID_HANDLE_VALUE)
+        return;
+
+      if (DWORD mode = 0; GetConsoleMode(console, &mode))
+      {
+        SetConsoleMode(console, mode | ENABLE_VIRTUAL_TERMINAL_PROCESSING);
+      }
+    }
+
     [[noreturn]] void on_seh(unsigned err) noexcept
     {
       std::cerr << "Fatal error " << std::hex << err << '\n';

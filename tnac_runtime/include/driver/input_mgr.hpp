@@ -127,6 +127,11 @@ namespace tnac_rt
     void print_line(loc_wrapper at) noexcept;
 
     //
+    // Prints the error mark
+    //
+    void print_error() noexcept;
+
+    //
     // Retrieves a line from input by location
     //
     tnac::string_t get_line(loc_wrapper at) noexcept;
