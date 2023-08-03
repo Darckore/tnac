@@ -1,5 +1,70 @@
 #include "driver/input_mgr.hpp"
 
+namespace tnac_rt::colours
+{
+  namespace
+  {
+    enum class clr : std::uint8_t
+    {
+      Default,
+      Red,
+      Yellow,
+      Green,
+      Blue,
+      White
+    };
+
+#if TNAC_WINDOWS
+    //
+    // https://learn.microsoft.com/en-us/windows/console/console-virtual-terminal-sequences
+    //
+
+    void with_colour(std::ostream& out, clr c) noexcept
+    {
+      using enum clr;
+      switch (c)
+      {
+      case Red:    out << "\x1b[31m"; break;
+      case Green:  out << "\x1b[32m"; break;
+      case Yellow: out << "\x1b[33m"; break;
+      case Blue:   out << "\x1b[34m"; break;
+      case White:  out << "\x1b[37m"; break;
+      default:                        break;
+      }
+    }
+
+    void add_clr(std::ostream& out, clr c, bool bold) noexcept
+    {
+      with_colour(out, c);
+      if (bold)
+      {
+        out << "\x1b[1m";
+      }
+    }
+
+    void clear_clr(std::ostream& out) noexcept
+    {
+      out << "\x1b[m";
+    }
+#else
+    void with_colour(std::ostream& out, clr c) noexcept
+    {
+      utils::unused(out, c);
+    }
+
+    void add_clr(std::ostream& out, clr c, bool bold) noexcept
+    {
+      utils::unused(out, c, bold);
+    }
+
+    void clear_clr(std::ostream& out) noexcept
+    {
+      utils::unused(out);
+    }
+#endif
+  }
+}
+
 namespace tnac_rt
 {
   // Special members
@@ -24,6 +89,7 @@ namespace tnac_rt
     auto loadRes = m_srcMgr.load(fname);
     if (!loadRes)
     {
+      print_error();
       err() << "Unable to load file '" << fname << "': "
             << loadRes.error().message() << '\n';
       return {};
@@ -32,6 +98,7 @@ namespace tnac_rt
     auto file = *loadRes;
     if (auto fileCont = file->get_contents(); !fileCont)
     {
+      print_error();
       err() << "Unable to read data from file '" << fname << "': "
             << loadRes.error().message() << '\n';
       return {};
@@ -47,7 +114,10 @@ namespace tnac_rt
     auto loc = tok.at();
     print_location(loc);
     print_error();
+
+    colours::add_clr(err(), colours::clr::Default, true);
     err() << msg << '\n';
+    colours::clear_clr(err());
     print_line(loc);
   }
 
@@ -75,24 +145,20 @@ namespace tnac_rt
     if (line.empty())
       return;
 
+    colours::add_clr(err(), colours::clr::White, false);
     err() << line << '\n';
     for (auto idx = at->col(); idx > 0; --idx)
       err() << ' ';
     
     err() << "^\n";
+    colours::clear_clr(err());
   }
 
   void input_mgr::print_error() noexcept
   {
-#if TNAC_WINDOWS
-    err() << "\x1b[31m";
-#endif
-
+    colours::add_clr(err(), colours::clr::Red, true);
     err() << " error: ";
-
-#if TNAC_WINDOWS
-    err() << "\x1b[39m";
-#endif
+    colours::clear_clr(err());
   }
 
   tnac::string_t input_mgr::get_line(loc_wrapper at) noexcept

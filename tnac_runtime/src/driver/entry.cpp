@@ -33,14 +33,14 @@
   #include <windowsx.h>
   #include <eh.h>
 #else
-  TNAC_BAD_PLATFORM
+  //TNAC_BAD_PLATFORM
 #endif
 
 #if TNAC_WINDOWS
   #define TNAC_RUN(ARGC, ARGV) __try { init_console(); go(ARGC, ARGV); } \
                                __except (EXCEPTION_EXECUTE_HANDLER) { on_seh(GetExceptionCode()); }
 #else
-  #define TNAC_RUN(ARGC, ARGV)
+  #define TNAC_RUN(ARGC, ARGV) go(ARGC, ARGV)
 #endif
 
 namespace tnac_rt
