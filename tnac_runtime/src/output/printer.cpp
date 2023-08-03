@@ -1,4 +1,5 @@
 #include "output/printer.hpp"
+#include "output/formatting.hpp"
 
 namespace tnac_rt::out
 {
@@ -27,10 +28,16 @@ namespace tnac_rt::out
     operator()(node, out());
   }
 
+  void ast_printer::enable_styles() noexcept
+  {
+    m_styles = true;
+  }
+
+
   void ast_printer::visit(const ast::scope& scope) noexcept
   {
     indent();
-    out() << "<scope>";
+    node_designator("<scope>"sv);
     additional_info(scope);
     endl();
     push_parent(scope.children().size());
@@ -39,7 +46,7 @@ namespace tnac_rt::out
   void ast_printer::visit(const ast::assign_expr& expr) noexcept
   {
     indent();
-    out() << "Assign expression";
+    node_designator("Assign expression"sv);
     print_token(expr.op());
     additional_info(expr);
     endl();
@@ -49,7 +56,7 @@ namespace tnac_rt::out
   void ast_printer::visit(const ast::decl_expr& expr) noexcept
   {
     indent();
-    out() << "Declaration ";
+    node_designator("Declaration "sv);
     auto&& decl = expr.declarator();
 
     if (decl.is(ast::node::VarDecl))
@@ -65,7 +72,9 @@ namespace tnac_rt::out
 
   void ast_printer::visit(const ast::var_decl& decl) noexcept
   {
-    out() << " <VarName: " << decl.name() << '>';
+    out() << " <VarName: "; 
+    node_value(decl.name()); 
+    out() << '>';
     additional_info(decl);
     endl();
   }
@@ -73,14 +82,18 @@ namespace tnac_rt::out
   void ast_printer::visit(const ast::param_decl& decl) noexcept
   {
     indent();
-    out() << " <Function parameter: " << decl.name() << '>';
+    out() << " <Function parameter: "; 
+    node_value(decl.name());
+    out() << '>';
     additional_info(decl);
     endl();
   }
 
   void ast_printer::visit(const ast::func_decl& decl) noexcept
   {
-    out() << "<FuncName: " << decl.name() << '>';
+    out() << "<FuncName: ";
+    node_value(decl.name());
+    out() << '>';
     additional_info(decl);
     endl();
   }
@@ -89,9 +102,8 @@ namespace tnac_rt::out
   {
     indent();
     auto&& op = expr.op();
-    out() << "Binary expression";
-
-    print_token(op);
+    node_designator("Binary expression"sv);
+    print_token_styled(op);
     additional_info(expr);
     endl();
 
@@ -101,8 +113,8 @@ namespace tnac_rt::out
   void ast_printer::visit(const ast::unary_expr& expr) noexcept
   {
     indent();
-    out() << "Unary expression";
-    print_token(expr.op());
+    node_designator("Unary expression"sv);
+    print_token_styled(expr.op());
     additional_info(expr);
     endl();
     push_parent(1u);
@@ -112,7 +124,12 @@ namespace tnac_rt::out
   {
     const auto size = arr.elements().size();
     indent();
-    out() << "Array expression [" << size << "]";
+    node_designator("Array expression "sv);
+    out() << '[';
+    if(m_styles) colours::add_clr(out(), colours::clr::Green, true);
+    out() << size;
+    if (m_styles) colours::clear_clr(out());
+    out() << "] ";
     additional_info(arr);
     endl();
     push_parent(size);
@@ -121,7 +138,7 @@ namespace tnac_rt::out
   void ast_printer::visit(const ast::paren_expr& expr) noexcept
   {
     indent();
-    out() << "Paren expression";
+    node_designator("Paren expression"sv);
     additional_info(expr);
     endl();
     push_parent(1u);
@@ -130,7 +147,7 @@ namespace tnac_rt::out
   void ast_printer::visit(const ast::abs_expr& expr) noexcept
   {
     indent();
-    out() << "Abs expression";
+    node_designator("Abs expression"sv);
     additional_info(expr);
     endl();
     push_parent(1u);
@@ -139,7 +156,7 @@ namespace tnac_rt::out
   void ast_printer::visit(const ast::typed_expr& expr) noexcept
   {
     indent();
-    out() << "Typed expression";
+    node_designator("Typed expression"sv);
     print_token(expr.type_name());
     additional_info(expr);
     endl();
@@ -149,7 +166,7 @@ namespace tnac_rt::out
   void ast_printer::visit(const ast::call_expr& expr) noexcept
   {
     indent();
-    out() << "Call expression";
+    node_designator("Call expression"sv);
     additional_info(expr);
     endl();
     push_parent(expr.args().size() + 1);
@@ -158,7 +175,7 @@ namespace tnac_rt::out
   void ast_printer::visit(const ast::cond_short& expr) noexcept
   {
     indent();
-    out() << "Short conditional";
+    node_designator("Short conditional"sv);
 
     auto childCount = 1u;
     const auto hasTrue  = expr.has_true();
@@ -169,13 +186,13 @@ namespace tnac_rt::out
 
     if (hasTrue)
     {
-      out() << "has true";
+      node_value("has-true"sv);
       ++childCount;
     }
     if (hasFalse)
     {
       if (hasTrue) out() << ", ";
-      out() << "has false";
+      node_value("has-false"sv);
       ++childCount;
     }
 
@@ -187,7 +204,7 @@ namespace tnac_rt::out
   void ast_printer::visit(const ast::cond_expr& cond) noexcept
   {
     indent();
-    out() << "Conditional expression";
+    node_designator("Conditional expression"sv);
     additional_info(cond);
     endl();
     push_parent(2u);
@@ -196,7 +213,7 @@ namespace tnac_rt::out
   void ast_printer::visit(const ast::pattern& pat) noexcept
   {
     indent();
-    out() << "Pattern";
+    node_designator("Pattern"sv);
     additional_info(pat);
     endl();
     push_parent(2u);
@@ -207,21 +224,27 @@ namespace tnac_rt::out
     indent();
     if (matcher.is_default())
     {
-      out() << "default";
+      node_value("default"sv);
     }
     else if (matcher.is_unary())
     {
-      out() << '{' << matcher.pos().value() << '}';
+      out() << '{';
+      node_value(matcher.pos().value());
+      out() << '}';
     }
     else if (matcher.has_implicit_op())
     {
       push_parent(1);
-      out() << "{==}";
+      out() << '{'; 
+      node_value("=="sv);
+      out() << '}';
     }
     else
     {
       push_parent(1);
-      out() << '{' << matcher.pos().value() << '}';
+      out() << '{'; 
+      node_value(matcher.pos().value());
+      out() << '}';
     }
 
     additional_info(matcher);
@@ -231,8 +254,8 @@ namespace tnac_rt::out
   void ast_printer::visit(const ast::lit_expr& expr) noexcept
   {
     indent();
-    out() << "Literal expression";
-    print_token(expr.pos());
+    node_designator("Literal expression"sv);
+    print_token_styled(expr.pos());
     additional_info(expr);
     endl();
   }
@@ -240,7 +263,10 @@ namespace tnac_rt::out
   void ast_printer::visit(const ast::id_expr& expr) noexcept
   {
     indent();
-    out() << "Id expression '" << expr.name() << "' ";
+    node_designator("Id expression "sv);
+    out() << '\'';
+    node_value(expr.name());
+    out() << "' ";
     additional_info(expr);
     endl();
   }
@@ -248,7 +274,7 @@ namespace tnac_rt::out
   void ast_printer::visit(const ast::result_expr& expr) noexcept
   {
     indent();
-    out() << "Last eval result ";
+    node_designator("Last eval result "sv);
     additional_info(expr);
     endl();
   }
@@ -256,7 +282,7 @@ namespace tnac_rt::out
   void ast_printer::visit(const ast::ret_expr& expr) noexcept
   {
     indent();
-    out() << "Ret expression";
+    node_designator("Ret expression"sv);
     additional_info(expr);
     endl();
     push_parent(1u);
@@ -266,7 +292,9 @@ namespace tnac_rt::out
   {
     indent();
     auto msg = expr.message();
-    out() << "Error '" << msg << "' at";
+    failure_condition("Error '"sv);
+    failure_condition(msg); 
+    failure_condition("' at"sv);
     location_info(expr.at().at());
     endl();
   }
@@ -337,15 +365,38 @@ namespace tnac_rt::out
     }
   }
 
+  void ast_printer::node_designator(tnac::string_t str) noexcept
+  {
+    if (m_styles) colours::add_clr(out(), colours::clr::White, true);
+    out() << str;
+    if (m_styles) colours::clear_clr(out());
+  }
+
+  void ast_printer::failure_condition(tnac::string_t str) noexcept
+  {
+    if (m_styles) colours::add_clr(out(), colours::clr::Red, true);
+    out() << str;
+    if (m_styles) colours::clear_clr(out());
+  }
+
+  void ast_printer::node_value(tnac::string_t str) noexcept
+  {
+    if (m_styles) colours::add_clr(out(), colours::clr::Green, true);
+    out() << str;
+    if (m_styles) colours::clear_clr(out());
+  }
+
   void ast_printer::invalid_mark(const ast::node& n) noexcept
   {
     if (!n.is_valid())
-      out() << " has-errors";
+      failure_condition(" has-errors");
   }
 
   void ast_printer::location_info(src::loc_wrapper loc) noexcept
   {
+    if (m_styles) colours::add_clr(out(), colours::clr::White, false);
     out() << " <" << (loc->line() + 1) << ':' << (loc->col() + 1) << '>';
+    if (m_styles) colours::clear_clr(out());
   }
 
   void ast_printer::additional_info(const ast::node& n) noexcept
@@ -378,6 +429,19 @@ namespace tnac_rt::out
   void ast_printer::print_token(const tnac::token& tok) noexcept
   {
     out() << " '" << tok << "' ";
+  }
+
+  void ast_printer::print_token_styled(const tnac::token& tok) noexcept
+  {
+    if (!m_styles)
+    {
+      print_token(tok);
+      return;
+    }
+
+    out() << " '"; 
+    node_value(tok.value());
+    out() << "' ";
   }
 
   void ast_printer::print_value(eval::value v) noexcept

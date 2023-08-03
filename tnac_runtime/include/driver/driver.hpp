@@ -43,6 +43,11 @@ namespace tnac_rt
       out_stream* err{ &std::cerr };
 
       std::ofstream outFile{};
+
+      bool is_in_cout() const noexcept
+      {
+        return out == &std::cout;
+      }
     };
     
     struct state

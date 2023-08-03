@@ -1,6 +1,7 @@
 #include "driver/driver.hpp"
 #include "output/printer.hpp"
 #include "output/lister.hpp"
+#include "output/formatting.hpp"
 
 namespace tnac_rt
 {
@@ -124,7 +125,9 @@ namespace tnac_rt
   {
     out() << "\nEvaluation result: ";
     out::value_printer vp;
+    colours::add_clr(out(), colours::clr::White, true);
     vp(m_tnac.get_eval().last_result(), m_state.numBase, out());
+    colours::clear_clr(out());
     out() << "\n\n";
   }
 
@@ -202,6 +205,7 @@ namespace tnac_rt
     }
 
     out::ast_printer pr;
+    if (m_io.is_in_cout()) pr.enable_styles();
     if (wrapInLines) out() << '\n';
     pr(ast, out());
     if (wrapInLines) out() << '\n';
