@@ -558,6 +558,14 @@ namespace tnac::eval
       }
     }
 
+    template <detail::generic_type T>
+    auto to_unit_array(const T& val) noexcept
+    {
+      arr_t arr;
+      arr.emplace_back(val);
+      return arr;
+    }
+
     template <>
     void visit_binary(array_type l, array_type r, val_ops op) noexcept
     {
@@ -575,9 +583,12 @@ namespace tnac::eval
         return;
       }
 
+      static auto unitArr = []() noexcept { arr_t ret; ret.emplace_back(int_type{}); return ret; }();
       const auto lsz = l->size();
+      if (!lsz) l = array_type{ unitArr };
       const auto rsz = r->size();
-      const auto newSz = lsz * rsz;
+      if (!rsz) r = array_type{ unitArr };
+      const auto newSz = (lsz && rsz) ? lsz * rsz : std::max(lsz, rsz);
 
       value_lock _l{ l, m_registry };
       value_lock _r{ r, m_registry };
@@ -591,14 +602,6 @@ namespace tnac::eval
       }
 
       make_array(newSz);
-    }
-
-    template <detail::generic_type T>
-    auto to_unit_array(const T& val) noexcept
-    {
-      arr_t arr;
-      arr.emplace_back(val);
-      return arr;
     }
 
     template <detail::generic_type T>
