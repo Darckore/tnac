@@ -13,6 +13,7 @@ namespace tnac_rt::colours
     Yellow,
     Green,
     Blue,
+    Cyan,
     White
   };
 

@@ -1,5 +1,6 @@
 #include "output/lister.hpp"
 #include "parser/parser.hpp"
+#include "output/formatting.hpp"
 
 namespace tnac_rt::out
 {
@@ -14,12 +15,19 @@ namespace tnac_rt::out
   void lister::operator()(const ast::node* node, out_stream& os) noexcept
   {
     m_out = &os;
+    default_style();
     print(node);
+    if (m_styles) colours::clear_clr(out());
   }
 
   void lister::operator()(const ast::node* node) noexcept
   {
     operator()(node, out());
+  }
+
+  void lister::enable_styles() noexcept
+  {
+    m_styles = true;
   }
 
   // Private members
@@ -72,6 +80,11 @@ namespace tnac_rt::out
     {
       print(child);
       ++idx;
+      if (child->is(ast::node_kind::Error))
+      {
+        endl();
+        continue;
+      }
 
       if (idx != size && !tnac::has_implicit_separator(*child))
         out() << ':';
@@ -156,7 +169,9 @@ namespace tnac_rt::out
 
   void lister::print(const ast::error_expr& expr) noexcept
   {
-    out() << "Error '" << expr.message() << "' ";
+    if(m_styles) colours::add_clr(out(), colours::clr::Red, true);
+    out() << "`" << expr.message() << "` ";
+    default_style();
   }
 
   void lister::print(const ast::cond_short& expr) noexcept
@@ -247,7 +262,9 @@ namespace tnac_rt::out
 
   void lister::print(const ast::param_decl& decl) noexcept
   {
+    id_style();
     out() << decl.name();
+    default_style();
   }
 
   void lister::print(const ast::func_decl& decl) noexcept
@@ -338,11 +355,45 @@ namespace tnac_rt::out
     return *m_out;
   }
 
-  void lister::print_token(const tnac::token& tok, bool addSpace) noexcept
+  void lister::print_token_plain(const tnac::token& tok, bool addSpace) noexcept
   {
     out() << tok;
     if (addSpace)
       out() << ' ';
+  }
+
+  void lister::print_token(const tnac::token& tok, bool addSpace) noexcept
+  {
+    if (tok.is_keyword())
+      kw_style();
+    else if (tok.is_literal())
+      lit_style();
+    else if (tok.is_identifier())
+      id_style();
+
+    print_token_plain(tok, addSpace);
+    default_style();
+  }
+
+  void lister::id_style() noexcept
+  {
+    if (!m_styles) return;
+    colours::add_clr(out(), colours::clr::Green, true);
+  }
+  void lister::kw_style() noexcept
+  {
+    if (!m_styles) return;
+    colours::add_clr(out(), colours::clr::Cyan, true);
+  }
+  void lister::lit_style() noexcept
+  {
+    if (!m_styles) return;
+    colours::add_clr(out(), colours::clr::Yellow, false);
+  }
+  void lister::default_style() noexcept
+  {
+    if (!m_styles) return;
+    colours::add_clr(out(), colours::clr::White, false);
   }
 
 }

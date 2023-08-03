@@ -83,6 +83,23 @@ namespace tnac
       return is(Eol);
     }
 
+    auto is_keyword() const noexcept
+    {
+      return is_any(KwResult,
+                    KwFunction,
+                    KwComplex,
+                    KwFraction,
+                    KwInt,
+                    KwFloat,
+                    KwBool,
+                    KwRet,
+                    KwTrue,
+                    KwFalse,
+                    KwI,
+                    KwE,
+                    KwPi);
+    }
+
     auto is_literal() const noexcept
     {
       return is_any(IntBin, IntOct, IntDec, IntHex, Float,

@@ -24,6 +24,8 @@ namespace tnac_rt::out
 
     void operator()(const ast::node* node) noexcept;
 
+    void enable_styles() noexcept;
+
   private:
     void print(const ast::node* root) noexcept;
 
@@ -84,11 +86,19 @@ namespace tnac_rt::out
 
     out_stream& out() noexcept;
 
+    void print_token_plain(const tnac::token& tok, bool addSpace) noexcept;
+
     void print_token(const tnac::token& tok, bool addSpace) noexcept;
+
+    void id_style() noexcept;
+    void kw_style() noexcept;
+    void lit_style() noexcept;
+    void default_style() noexcept;
 
   private:
     out_stream* m_out{ &std::cout };
     static constexpr auto spacesPerIndent = std::size_t{ 2 };
     std::size_t m_indent{};
+    bool m_styles{};
   };
 }

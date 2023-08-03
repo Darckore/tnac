@@ -170,6 +170,7 @@ namespace tnac_rt
     }
 
     out::lister ls;
+    if (m_io.is_in_cout()) ls.enable_styles();
     if (wrapInLines) out() << '\n';
     ls(m_tnac.get_parser().root(), out());
     if (wrapInLines) out() << '\n';

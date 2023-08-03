@@ -16,6 +16,7 @@ namespace tnac_rt::colours
     case Green:  out << "\x1b[32m"; break;
     case Yellow: out << "\x1b[33m"; break;
     case Blue:   out << "\x1b[34m"; break;
+    case Cyan:   out << "\x1b[36m"; break;
     case White:  out << "\x1b[37m"; break;
     default:                        break;
     }
