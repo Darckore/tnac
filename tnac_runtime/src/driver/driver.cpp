@@ -231,12 +231,18 @@ namespace tnac_rt
       return;
     }
 
+    const auto styles = m_io.is_in_cout();
     out::value_printer vp;
     if (wrapInLines) out() << '\n';
     for (auto var : m_vars)
     {
-      out() << var->name() << " : ";
+      if (styles) colours::add_clr(out(), colours::clr::Cyan, false);
+      out() << var->name();
+      if (styles) colours::clear_clr(out());
+      out() << " : ";
+      if (styles) colours::add_clr(out(), colours::clr::Yellow, true);
       vp(var->value(), 10, out());
+      if (styles) colours::clear_clr(out());
       out() << '\n';
     }
     if (wrapInLines) out() << '\n';

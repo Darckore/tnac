@@ -126,7 +126,7 @@ namespace tnac_rt::out
     indent();
     node_designator("Array expression "sv);
     out() << '[';
-    if(m_styles) colours::add_clr(out(), colours::clr::Cyan, true);
+    if(m_styles) colours::add_clr(out(), colours::clr::Cyan, false);
     out() << size;
     if (m_styles) colours::clear_clr(out());
     out() << "] ";
@@ -381,7 +381,7 @@ namespace tnac_rt::out
 
   void ast_printer::node_value(tnac::string_t str) noexcept
   {
-    if (m_styles) colours::add_clr(out(), colours::clr::Cyan, true);
+    if (m_styles) colours::add_clr(out(), colours::clr::Cyan, false);
     out() << str;
     if (m_styles) colours::clear_clr(out());
   }

@@ -390,7 +390,7 @@ namespace tnac_rt::out
   {
     if (!m_styles) return;
     reset_style();
-    colours::add_clr(out(), colours::clr::Cyan, true);
+    colours::add_clr(out(), colours::clr::Cyan, false);
   }
   void lister::lit_style() noexcept
   {
