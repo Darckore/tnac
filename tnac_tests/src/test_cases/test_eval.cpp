@@ -164,6 +164,11 @@ namespace tnac_tests
     vc::check("-1 ** 0.5"sv, cplx{ 0.0, 1.0 });
     vc::check("-4 // 2"sv,   cplx{ 0.0, 2.0 });
     vc::check("-4 // -2"sv,  cplx{ 0.0, 0.5 });
+
+    vc::check("-1 ** (1/3)"sv, -1.0);
+    vc::check("-8 ** (1/3)"sv, -2.0);
+    vc::check("-8 // 3"sv, -2.0);
+    vc::check("-8 // -3"sv, -0.5);
   }
 
   TEST(evaluation, t_literal)

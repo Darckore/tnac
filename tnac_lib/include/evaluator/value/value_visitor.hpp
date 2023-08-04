@@ -331,11 +331,31 @@ namespace tnac::eval
     }
     auto enforce_complex(const detail::generic_type auto&, const detail::generic_type auto&) noexcept { return typed_value<complex_type>{}; }
 
+    template <detail::generic_type T> requires (std::is_arithmetic_v<T>)
+    auto neg_root(const T& l, const T& r) noexcept -> typed_value<float_type>
+    {
+      auto base = static_cast<float_type>(l);
+      if (base > 0.0 || utils::eq(base, 0.0))
+        return {};
+
+      auto exp = static_cast<float_type>(r);
+      if (const auto mod2 = std::fmod(utils::inv(exp), 2.0); utils::eq(mod2, 0.0))
+        return {};
+
+      return -std::pow(utils::abs(base), exp);
+    }
+    auto neg_root(const detail::generic_type auto&, const detail::generic_type auto&) noexcept { return typed_value<float_type>{}; }
+
     void power(detail::pow_raisable auto base, detail::pow_raisable auto exp) noexcept
     {
       if (auto cpl = enforce_complex(base, exp))
       {
         reg_value(*cpl);
+        return;
+      }
+      else if (auto neg = neg_root(base, exp))
+      {
+        reg_value(*neg);
         return;
       }
 
