@@ -8,7 +8,7 @@ namespace tnac_rt
   // Special members
 
   driver::driver(int argCount, char** args) noexcept :
-    m_tnac{ 7000 }, // todo: configurable
+    m_tnac{ 2000 }, // todo: configurable
     m_inpMgr{ m_tnac.get_parser().get_src_mgr() }
   {
     init_handlers();
