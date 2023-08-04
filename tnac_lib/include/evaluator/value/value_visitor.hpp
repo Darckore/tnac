@@ -324,10 +324,14 @@ namespace tnac::eval
         return {};
 
       auto exp = static_cast<float_type>(r);
-      if (const auto mod2 = std::fmod(utils::inv(exp), 2.0); !utils::eq(mod2, 0.0))
+      const auto root = utils::inv(exp);
+      const auto square = 2.0;
+      if (const auto mod2 = std::fmod(root, square); !utils::eq(mod2, 0.0))
         return {};
 
-      return complex_type{ 0.0, std::pow(utils::abs(base), exp) };
+      const auto remainder = utils::inv(root / square);
+      const auto res = complex_type{ 0.0, std::pow(utils::abs(base), utils::inv(square)) };
+      return utils::eq(remainder, 1.0) ? res : std::pow(res, remainder);
     }
     auto enforce_complex(const detail::generic_type auto&, const detail::generic_type auto&) noexcept { return typed_value<complex_type>{}; }
 
