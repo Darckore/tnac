@@ -145,6 +145,11 @@ namespace tnac_rt
     //
     void print_vars(command c) noexcept;
 
+    //
+    // Prints variable scope
+    //
+    void print_var_scope(variable_ref var, bool styles) noexcept;
+
   private: // Utility
     //
     // Returns a reference to the in stream

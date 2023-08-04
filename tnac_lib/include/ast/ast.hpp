@@ -72,6 +72,36 @@ namespace tnac::ast
     //
     bool is_valid() const noexcept;
 
+    //
+    // Climbs the tree until the specified kind of node is encountered
+    // Returns nullptr is reached the root
+    // 
+    // const version
+    //
+    template <kind K>
+    auto climb() const noexcept
+    {
+      using res_type = decltype(utils::try_cast<K>(this));
+      auto top = this;
+      while (top)
+      {
+        auto res = utils::try_cast<K>(top);
+        if (res) return res;
+        top = top->parent();
+      }
+      return res_type{};
+    }
+
+    //
+    // Climbs the tree until the specified kind of node is encountered
+    // Returns nullptr is reached the root
+    // 
+    template <kind K>
+    auto climb() noexcept
+    {
+      return FROM_CONST(template climb<K>);
+    }
+
   protected:
     //
     // Makes this node ivalid

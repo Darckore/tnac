@@ -239,8 +239,9 @@ namespace tnac_rt
       if (styles) colours::add_clr(out(), colours::clr::Cyan, false);
       out() << var->name();
       if (styles) colours::clear_clr(out());
-      out() << " : ";
-      if (styles) colours::add_clr(out(), colours::clr::Yellow, true);
+      print_var_scope(*var, styles);
+      out() << " = ";
+      if (styles) colours::add_clr(out(), colours::clr::White, true);
       vp(var->value(), 10, out());
       if (styles) colours::clear_clr(out());
       out() << '\n';
@@ -248,6 +249,28 @@ namespace tnac_rt
     if (wrapInLines) out() << '\n';
     end_redirect();
   }
+
+  void driver::print_var_scope(variable_ref var, bool styles) noexcept
+  {
+    auto owner = var.owner_scope().m_node;
+    if (!owner)
+      return;
+
+    auto enclosing = owner->parent();
+
+    using enum tnac::ast::node_kind;
+    out() << " in <";
+    if (styles) colours::add_clr(out(), colours::clr::Yellow, false);
+    if (!enclosing)
+      out() << "global";
+    else if (auto fd = enclosing->climb<FuncDecl>())
+      out() << "function '" << fd->name() << '\'';
+    else
+      out() << "local";
+    if (styles) colours::clear_clr(out());
+    out() << '>';
+  }
+
 
   // Utility
   
