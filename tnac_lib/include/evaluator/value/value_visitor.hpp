@@ -330,8 +330,9 @@ namespace tnac::eval
         return {};
 
       const auto remainder = utils::inv(root / square);
-      const auto res = complex_type{ 0.0, std::pow(utils::abs(base), utils::inv(square)) };
-      return utils::eq(remainder, 1.0) ? res : std::pow(res, remainder);
+      const auto res   = complex_type{ 0.0, std::pow(utils::abs(base), utils::inv(square)) };
+      const auto intrm = utils::eq(utils::abs(remainder), 1.0) ? res : std::pow(res, remainder);
+      return (remainder > 0.0) ? intrm : eval::inv(intrm);
     }
     auto enforce_complex(const detail::generic_type auto&, const detail::generic_type auto&) noexcept { return typed_value<complex_type>{}; }
 
