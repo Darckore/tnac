@@ -94,9 +94,14 @@ namespace tnac_rt
     void init_handlers() noexcept;
 
     //
-    // Parses the command line and launched the driver in the selected the run mode
+    // Parses the command line and launches the driver in the selected run mode
     //
     void run(int argCount, char** args) noexcept;
+
+    //
+    // Compiles the specified file into bytecode
+    //
+    void compile(tnac::string_t fileName, bool optimise) noexcept;
 
     //
     // Reads input from file, parses it, and prints the result

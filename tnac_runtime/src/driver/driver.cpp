@@ -69,18 +69,42 @@ namespace tnac_rt
       return;
     }
 
-    run(args[1]);
-
     bool interactive{};
+    bool compile{};
+    bool optimise{};
     for (auto argIdx = 2; argIdx < argCount; ++argIdx)
     {
       tnac::string_t arg = args[argIdx];
       if (arg == "-i")
         interactive = true;
+      else if (arg == "-c")
+        compile = true;
+      else if (arg == "-O")
+        optimise = true;
     }
+
+    if (optimise && !compile)
+    {
+      err() << "<Command line> ";
+      colours::add_clr(err(), colours::clr::Red, true);
+      err() << "error: ";
+      colours::clear_clr(err());
+      err() << "-O requires -c to be specified\n";
+    }
+
+    if (compile)
+      this->compile(args[1], optimise);
+    else
+      run(args[1]);
 
     if (interactive)
       run_interactive();
+  }
+
+  void driver::compile(tnac::string_t fileName, bool optimise) noexcept
+  {
+    if (auto input = m_inpMgr.from_file(fileName))
+      utils::unused(input, optimise); // todo: compiler
   }
 
   void driver::run(tnac::string_t fileName) noexcept
