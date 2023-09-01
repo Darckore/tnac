@@ -7,7 +7,8 @@ namespace tnac::packages
   tnac_core::~tnac_core() noexcept = default;
 
   tnac_core::tnac_core(size_type stackSize) noexcept :
-    m_ev{ stackSize }
+    m_ev{ stackSize },
+    m_compiler{ stackSize }
   {}
 
 
@@ -16,6 +17,10 @@ namespace tnac::packages
   parser& tnac_core::get_parser() noexcept
   {
     return m_parser;
+  }
+  compiler& tnac_core::get_compiler() noexcept
+  {
+    return m_compiler;
   }
   evaluator& tnac_core::get_eval() noexcept
   {

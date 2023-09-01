@@ -63,27 +63,26 @@ namespace tnac_rt
 
   void driver::run(int argCount, char** args) noexcept
   {
+    m_state = {};
+
     if (argCount < 2)
     {
       run_interactive();
       return;
     }
 
-    bool interactive{};
-    bool compile{};
-    bool optimise{};
     for (auto argIdx = 2; argIdx < argCount; ++argIdx)
     {
       tnac::string_t arg = args[argIdx];
       if (arg == "-i")
-        interactive = true;
+        m_state.interactive = true;
       else if (arg == "-c")
-        compile = true;
+        m_state.compile = true;
       else if (arg == "-O")
-        optimise = true;
+        m_state.optimise = true;
     }
 
-    if (optimise && !compile)
+    if (m_state.optimise && !m_state.compile)
     {
       err() << "<Command line> ";
       colours::add_clr(err(), colours::clr::Red, true);
@@ -92,31 +91,30 @@ namespace tnac_rt
       err() << "-O requires -c to be specified\n";
     }
 
-    if (compile)
-      this->compile(args[1], optimise);
-    else
-      run(args[1]);
-
-    if (interactive)
-      run_interactive();
-  }
-
-  void driver::compile(tnac::string_t fileName, bool optimise) noexcept
-  {
-    if (auto input = m_inpMgr.from_file(fileName))
-      utils::unused(input, optimise); // todo: compiler
+    run(args[1]);
   }
 
   void driver::run(tnac::string_t fileName) noexcept
   {
-    if(auto input = m_inpMgr.from_file(fileName))
-      parse(*input, false);
+    auto input = m_inpMgr.from_file(fileName);
+    if (!input)
+      return;
+
+    // Initial parsing of the input file (must be non-interactive)
+    {
+      VALUE_GUARD(m_state.interactive, false);
+      parse(*input);
+    }
+
+    if (m_state.interactive)
+      run_interactive();
   }
 
   void driver::run_interactive() noexcept
   {
     tnac::buf_t input;
     m_state.start();
+    m_state.interactive = true;
 
     while (m_state)
     {
@@ -128,7 +126,7 @@ namespace tnac_rt
         continue;
       }
 
-      parse(m_inpMgr.input(std::move(input)), true);
+      parse(m_inpMgr.input(std::move(input)));
       input = {};
     }
   }
@@ -364,10 +362,23 @@ namespace tnac_rt
     m_vars.push_back(&var);
   }
 
-  void driver::parse(input_t& inputData, bool interactive) noexcept
+  void driver::process(tnac::ast::node* root) noexcept
+  {
+    auto&& ev       = m_tnac.get_eval();
+    auto&& compiler = m_tnac.get_compiler();
+
+    if (!m_state.compile)
+    {
+      ev(root);
+      return;
+    }
+
+    compiler(root);
+  }
+
+  void driver::parse(input_t& inputData) noexcept
   {
     auto&& parser = m_tnac.get_parser();
-    auto&& ev = m_tnac.get_eval();
     auto inputFile = inputData.try_get_file();
     auto ast = inputFile ?
       parser(inputData.buffer(), inputFile->make_location()) :
@@ -378,15 +389,13 @@ namespace tnac_rt
       m_state.lastParsed = ast;
     }
     
-    if (!interactive)
+    if (!m_state.interactive)
     {
-      ast = parser.root();
-      ev(ast);
+      process(parser.root());
     }
-
-    if (interactive && ast != parser.root())
+    else if (ast != parser.root())
     {
-      ev(ast);
+      process(ast);
       print_result();
     }
   }

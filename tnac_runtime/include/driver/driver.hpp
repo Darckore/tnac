@@ -52,8 +52,13 @@ namespace tnac_rt
     
     struct state
     {
+      CLASS_SPECIALS_ALL(state);
+
       int  numBase{ 10 };
       bool running{};
+      bool interactive{};
+      bool compile{};
+      bool optimise{};
       tnac::ast::node* lastParsed{};
 
       explicit operator bool() const noexcept
@@ -97,11 +102,6 @@ namespace tnac_rt
     // Parses the command line and launches the driver in the selected run mode
     //
     void run(int argCount, char** args) noexcept;
-
-    //
-    // Compiles the specified file into bytecode
-    //
-    void compile(tnac::string_t fileName, bool optimise) noexcept;
 
     //
     // Reads input from file, parses it, and prints the result
@@ -195,9 +195,14 @@ namespace tnac_rt
     void store_var(variable_ref var) noexcept;
 
     //
+    // Processes the parsed code
+    //
+    void process(tnac::ast::node* root) noexcept;
+
+    //
     // Parses input and executes commands
     //
-    void parse(input_t& inputData, bool interactive) noexcept;
+    void parse(input_t& inputData) noexcept;
 
   private:
     core m_tnac;
