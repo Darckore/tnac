@@ -148,7 +148,10 @@ namespace tnac_rt
     out() << "\nEvaluation result: ";
     out::value_printer vp;
     colours::add_clr(out(), colours::clr::White, true);
-    vp(m_tnac.get_eval().last_result(), m_state.numBase, out());
+    if(!m_state.compile)
+      vp(m_tnac.get_eval().last_result(), m_state.numBase, out());
+    else
+      vp(m_tnac.get_compiler().last_result(), m_state.numBase, out());
     colours::clear_clr(out());
     out() << "\n\n";
   }
