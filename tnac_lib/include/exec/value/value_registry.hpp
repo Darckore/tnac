@@ -113,7 +113,7 @@ namespace tnac::eval
   public:
     using value_type   = value;
     using entity_id    = std::uintptr_t;
-    using entity_vals  = std::unordered_map<entity_id, temporary>;
+    using entity_vals  = std::unordered_map<entity_id, stored_value>;
 
     using val_array    = array_type::value_type;
     using ref_arr      = detail::ref_counted<val_array>;
@@ -121,7 +121,7 @@ namespace tnac::eval
     using array_store  = std::unordered_map<entity_id, ref_arr>;
     using size_type    = val_array::size_type;
 
-    using tmp_val   = temporary;
+    using tmp_val   = stored_value;
     using tmp_store = std::stack<tmp_val>;
 
   public:

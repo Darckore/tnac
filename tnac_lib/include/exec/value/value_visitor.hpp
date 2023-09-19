@@ -56,8 +56,8 @@ namespace tnac::eval
     {
       typename T::value_type;
       typename T::size_type;
-      requires std::same_as<typename T::value_type, temporary>;
-      { t[typename T::size_type{}] } -> std::same_as<temporary&>;
+      requires std::same_as<typename T::value_type, stored_value>;
+      { t[typename T::size_type{}] } -> std::same_as<stored_value&>;
     };
   }
 
@@ -693,7 +693,7 @@ namespace tnac::eval
     // Dispatches the instantiation call
     //
     template <detail::expr_result Obj, typename T, T... Seq>
-    void instantiate(const std::array<temporary, sizeof...(Seq)>& args, std::integer_sequence<T, Seq...>) noexcept
+    void instantiate(const std::array<stored_value, sizeof...(Seq)>& args, std::integer_sequence<T, Seq...>) noexcept
     {
       using type_info = eval::type_info<Obj>;
       using type_gen = type_wrapper<Obj>;
@@ -721,7 +721,7 @@ namespace tnac::eval
     // Instantiates an object
     //
     template <detail::expr_result Obj, typename... Args>
-      requires is_all_v<temporary, Args...>
+      requires is_all_v<stored_value, Args...>
     void instantiate(Args ...args) noexcept
     {
       using type_info = eval::type_info<Obj>;
@@ -886,7 +886,7 @@ namespace tnac::eval
     //
     // Retrieves the next value from the stack of temporaries
     //
-    temporary fetch_next() noexcept
+    stored_value fetch_next() noexcept
     {
       return m_registry.consume();
     }

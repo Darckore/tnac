@@ -12,7 +12,7 @@ namespace tnac::eval
       using size_type  = call_stack::size_type;
       using entity_ref = call_stack::var_t&;
       using entity_id  = call_stack::var_t*;
-      using var_values = std::unordered_map<entity_id, temporary>;
+      using var_values = std::unordered_map<entity_id, stored_value>;
 
     public:
       CLASS_SPECIALS_NODEFAULT_NOCOPY(stack_frame);
@@ -26,7 +26,7 @@ namespace tnac::eval
         return m_args;
       }
 
-      void save_value_for(entity_ref ent, temporary prev) noexcept
+      void save_value_for(entity_ref ent, stored_value prev) noexcept
       {
         m_prevVars[&ent] = std::move(prev);
       }
@@ -74,7 +74,7 @@ namespace tnac::eval
 
   // Public members
 
-  void call_stack::store_var(var_t& sym, temporary prev) noexcept
+  void call_stack::store_var(var_t& sym, stored_value prev) noexcept
   {
     if (m_frames.empty())
       return;

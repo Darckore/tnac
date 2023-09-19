@@ -112,7 +112,7 @@ namespace tnac
         void instantiate(const ast::typed_expr& expr, std::integer_sequence<T, Seq...>) noexcept
         {
           auto&& exprArgs = expr.args();
-          std::array<eval::temporary, max> args{};
+          std::array<eval::stored_value, max> args{};
           m_visitor.fill_args(args, exprArgs.size());
           m_visitor.instantiate<value_type>(std::move(args[Seq])...);
         }
@@ -333,7 +333,7 @@ namespace tnac
     auto&& sym = decl.symbol();
     auto prev = eval::on_value(sym.value(), [this](auto&& val) noexcept
       {
-        return eval::temporary{ val };
+        return eval::stored_value{ val };
       });
     m_callStack.store_var(sym, std::move(prev));
     eval_assign(sym, *assigned);
@@ -424,7 +424,7 @@ namespace tnac
 
       auto&& matcher = utils::cast<ast::matcher>(pattern.matcher());
       
-      eval::temporary currentMatch{};
+      eval::stored_value currentMatch{};
       if (matcher.is_default())
       {
         defaultBranch = &pattern;

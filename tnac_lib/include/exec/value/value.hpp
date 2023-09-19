@@ -216,28 +216,28 @@ namespace tnac::eval
 
 
   //
-  // Stores a temporary value
+  // Stores a value
   //
-  class temporary final
+  class stored_value final
   {
   public:
-    CLASS_SPECIALS_NOCOPY_CUSTOM(temporary);
+    CLASS_SPECIALS_NOCOPY_CUSTOM(stored_value);
 
-    explicit temporary(detail::expr_result auto raw) noexcept :
+    explicit stored_value(detail::expr_result auto raw) noexcept :
       m_raw{ std::move(raw) }
     {}
 
-    temporary() noexcept :
-      temporary{ invalid_val_t{} }
+    stored_value() noexcept :
+      stored_value{ invalid_val_t{} }
     {}
 
-    temporary& operator=(detail::expr_result auto raw) noexcept
+    stored_value& operator=(detail::expr_result auto raw) noexcept
     {
       m_raw = std::move(raw);
       return *this;
     }
 
-    temporary& operator=(invalid_val_t inv) noexcept
+    stored_value& operator=(invalid_val_t inv) noexcept
     {
       m_raw = inv;
       return *this;

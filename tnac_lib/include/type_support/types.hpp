@@ -12,7 +12,7 @@ namespace tnac::semantics
 namespace tnac::eval
 {
   class value;
-  class temporary;
+  class stored_value;
 
   using bool_type     = bool;
   using int_type      = std::intmax_t;
@@ -75,7 +75,7 @@ namespace tnac::eval
   class array_type final
   {
   public:
-    using value_type      = std::vector<temporary>;
+    using value_type      = std::vector<stored_value>;
     using pointer         = value_type*;
     using const_pointer   = const value_type*;
     using reference       = value_type&;

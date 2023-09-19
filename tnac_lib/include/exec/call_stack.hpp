@@ -25,7 +25,7 @@ namespace tnac::eval
   {
   public:
     using size_type  = std::size_t;
-    using value_list = std::vector<temporary>;
+    using value_list = std::vector<stored_value>;
     using sym_t      = semantics::function;
     using var_t      = semantics::symbol;
     using vis_t      = eval::value_visitor;
@@ -47,7 +47,7 @@ namespace tnac::eval
     //
     // Saves previous variable value in the current stack frame on assignment
     //
-    void store_var(var_t& sym, temporary prev) noexcept;
+    void store_var(var_t& sym, stored_value prev) noexcept;
 
     //
     // Saves values of function parameters and arguments
