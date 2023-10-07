@@ -3,6 +3,21 @@
 #include "output/lister.hpp"
 #include "output/formatting.hpp"
 
+
+namespace tnac_rt
+{
+  // Special members
+
+  driver::~driver() noexcept = default;
+
+  driver::driver(int argCount, char** args) noexcept
+  {
+    utils::unused(argCount, args);
+  }
+}
+
+
+#if 0
 namespace tnac_rt
 {
   // Special members
@@ -403,3 +418,4 @@ namespace tnac_rt
     }
   }
 }
+#endif
