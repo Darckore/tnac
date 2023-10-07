@@ -4,7 +4,7 @@
 
 #pragma once
 
-namespace tnac_rt::colours
+namespace tnac_rt::fmt
 {
   enum class clr : std::uint8_t
   {

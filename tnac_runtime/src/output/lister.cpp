@@ -17,7 +17,7 @@ namespace tnac_rt::out
     m_out = &os;
     default_style();
     print(node);
-    if (m_styles) colours::clear_clr(out());
+    if (m_styles) fmt::clear_clr(out());
   }
 
   void lister::operator()(const ast::node* node) noexcept
@@ -169,7 +169,7 @@ namespace tnac_rt::out
 
   void lister::print(const ast::error_expr& expr) noexcept
   {
-    if(m_styles) colours::add_clr(out(), colours::clr::BoldRed);
+    if(m_styles) fmt::add_clr(out(), fmt::clr::BoldRed);
     out() << "`" << expr.message() << "` ";
     default_style();
   }
@@ -377,26 +377,26 @@ namespace tnac_rt::out
 
   void lister::reset_style() noexcept
   {
-    colours::clear_clr(out());
-    colours::add_clr(out(), colours::clr::White);
+    fmt::clear_clr(out());
+    fmt::add_clr(out(), fmt::clr::White);
   }
   void lister::id_style() noexcept
   {
     if (!m_styles) return;
     reset_style();
-    colours::add_clr(out(), colours::clr::BoldGreen);
+    fmt::add_clr(out(), fmt::clr::BoldGreen);
   }
   void lister::kw_style() noexcept
   {
     if (!m_styles) return;
     reset_style();
-    colours::add_clr(out(), colours::clr::Cyan);
+    fmt::add_clr(out(), fmt::clr::Cyan);
   }
   void lister::lit_style() noexcept
   {
     if (!m_styles) return;
     reset_style();
-    colours::add_clr(out(), colours::clr::BoldYellow);
+    fmt::add_clr(out(), fmt::clr::BoldYellow);
   }
   void lister::default_style() noexcept
   {

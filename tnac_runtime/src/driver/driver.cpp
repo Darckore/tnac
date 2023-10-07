@@ -46,7 +46,7 @@ namespace tnac_rt
   void driver::on_cli_error(tnac::string_t msg) noexcept
   {
     err() << "<Command line> ";
-    colours::print(err(), colours::clr::BoldRed, "error: ");
+    fmt::print(err(), fmt::clr::BoldRed, "error: ");
     err() << msg << '\n';
   }
 
