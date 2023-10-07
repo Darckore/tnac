@@ -126,7 +126,7 @@ namespace tnac_rt::out
     indent();
     node_designator("Array expression "sv);
     out() << '[';
-    if(m_styles) colours::add_clr(out(), colours::clr::Cyan, false);
+    if(m_styles) colours::add_clr(out(), colours::clr::Cyan);
     out() << size;
     if (m_styles) colours::clear_clr(out());
     out() << "] ";
@@ -367,21 +367,21 @@ namespace tnac_rt::out
 
   void ast_printer::node_designator(tnac::string_t str) noexcept
   {
-    if (m_styles) colours::add_clr(out(), colours::clr::White, true);
+    if (m_styles) colours::add_clr(out(), colours::clr::BoldWhite);
     out() << str;
     if (m_styles) colours::clear_clr(out());
   }
 
   void ast_printer::failure_condition(tnac::string_t str) noexcept
   {
-    if (m_styles) colours::add_clr(out(), colours::clr::Red, true);
+    if (m_styles) colours::add_clr(out(), colours::clr::BoldRed);
     out() << str;
     if (m_styles) colours::clear_clr(out());
   }
 
   void ast_printer::node_value(tnac::string_t str) noexcept
   {
-    if (m_styles) colours::add_clr(out(), colours::clr::Cyan, false);
+    if (m_styles) colours::add_clr(out(), colours::clr::Cyan);
     out() << str;
     if (m_styles) colours::clear_clr(out());
   }
@@ -394,7 +394,7 @@ namespace tnac_rt::out
 
   void ast_printer::location_info(src::loc_wrapper loc) noexcept
   {
-    if (m_styles) colours::add_clr(out(), colours::clr::White, false);
+    if (m_styles) colours::add_clr(out(), colours::clr::White);
     out() << " <" << (loc->line() + 1) << ':' << (loc->col() + 1) << '>';
     if (m_styles) colours::clear_clr(out());
   }

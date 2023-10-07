@@ -169,7 +169,7 @@ namespace tnac_rt::out
 
   void lister::print(const ast::error_expr& expr) noexcept
   {
-    if(m_styles) colours::add_clr(out(), colours::clr::Red, true);
+    if(m_styles) colours::add_clr(out(), colours::clr::BoldRed);
     out() << "`" << expr.message() << "` ";
     default_style();
   }
@@ -378,25 +378,25 @@ namespace tnac_rt::out
   void lister::reset_style() noexcept
   {
     colours::clear_clr(out());
-    colours::add_clr(out(), colours::clr::White, false);
+    colours::add_clr(out(), colours::clr::White);
   }
   void lister::id_style() noexcept
   {
     if (!m_styles) return;
     reset_style();
-    colours::add_clr(out(), colours::clr::Green, true);
+    colours::add_clr(out(), colours::clr::BoldGreen);
   }
   void lister::kw_style() noexcept
   {
     if (!m_styles) return;
     reset_style();
-    colours::add_clr(out(), colours::clr::Cyan, false);
+    colours::add_clr(out(), colours::clr::Cyan);
   }
   void lister::lit_style() noexcept
   {
     if (!m_styles) return;
     reset_style();
-    colours::add_clr(out(), colours::clr::Yellow, true);
+    colours::add_clr(out(), colours::clr::BoldYellow);
   }
   void lister::default_style() noexcept
   {

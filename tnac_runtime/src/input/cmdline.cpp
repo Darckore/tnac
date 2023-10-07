@@ -53,5 +53,7 @@ namespace tnac_rt
   {
     if (arg == "-i"sv)
       m_state.m_interactive = true;
+    else
+      error("Unknown cli arg");
   }
 }

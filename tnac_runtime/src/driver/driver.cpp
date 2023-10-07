@@ -3,7 +3,6 @@
 #include "output/lister.hpp"
 #include "output/formatting.hpp"
 
-
 namespace tnac_rt
 {
   // Special members
@@ -12,6 +11,8 @@ namespace tnac_rt
 
   driver::driver(int argCount, char** args) noexcept
   {
+    set_callbacks();
+
     m_settings.parse(argCount, args);
   }
 
@@ -19,11 +20,34 @@ namespace tnac_rt
   // Public members
 
 
-  // Private members
+  // Private members (IO)
+  
+  in_stream& driver::in() noexcept
+  {
+    return *m_io.in;
+  }
+  out_stream& driver::out() noexcept
+  {
+    return *m_io.out;
+  }
+  out_stream& driver::err() noexcept
+  {
+    return *m_io.err;
+  }
+
+
+  // Private members (Callbacks)
+
+  void driver::set_callbacks() noexcept
+  {
+    m_settings.on_error([this](tnac::string_t msg) noexcept { on_cli_error(msg); });
+  }
 
   void driver::on_cli_error(tnac::string_t msg) noexcept
   {
-    utils::unused(msg);
+    err() << "<Command line> ";
+    colours::print(err(), colours::clr::BoldRed, "error: ");
+    err() << msg << '\n';
   }
 
 }

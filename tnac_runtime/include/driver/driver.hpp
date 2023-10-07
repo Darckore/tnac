@@ -13,6 +13,14 @@ namespace tnac_rt
   //
   class driver final
   {
+  private:
+    struct io
+    {
+      in_stream*  in{ &std::cin };
+      out_stream* out{ &std::cout };
+      out_stream* err{ &std::cerr };
+    };
+
   public:
     CLASS_SPECIALS_NONE(driver);
 
@@ -20,10 +28,18 @@ namespace tnac_rt
 
     driver(int argCount, char** args) noexcept;
 
+  private: // IO
+    in_stream& in() noexcept;
+    out_stream& out() noexcept;
+    out_stream& err() noexcept;
+
   private: // Callbacks
+    void set_callbacks() noexcept;
+
     void on_cli_error(tnac::string_t msg) noexcept;
 
   private:
+    io m_io{};
     cmdline m_settings;
   };
 }
