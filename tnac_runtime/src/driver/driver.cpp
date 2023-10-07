@@ -10,10 +10,22 @@ namespace tnac_rt
 
   driver::~driver() noexcept = default;
 
-  driver::driver(int argCount, char** args) noexcept
+  driver::driver(int argCount, char** args) noexcept :
+    m_settings{ argCount, args }
   {
-    utils::unused(argCount, args);
   }
+
+
+  // Public members
+
+
+  // Private members
+
+  void driver::on_cli_error(tnac::string_t msg) noexcept
+  {
+    utils::unused(msg);
+  }
+
 }
 
 

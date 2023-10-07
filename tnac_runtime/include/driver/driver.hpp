@@ -3,6 +3,7 @@
 //
 
 #pragma once
+#include "input/cmdline.hpp"
 
 namespace tnac_rt
 {
@@ -18,6 +19,12 @@ namespace tnac_rt
     ~driver() noexcept;
 
     driver(int argCount, char** args) noexcept;
+
+  private: // Callbacks
+    void on_cli_error(tnac::string_t msg) noexcept;
+
+  private:
+    cmdline m_settings;
   };
 }
 
