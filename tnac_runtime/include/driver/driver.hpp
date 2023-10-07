@@ -3,6 +3,25 @@
 //
 
 #pragma once
+
+namespace tnac_rt
+{
+  //
+  // System driver
+  // Reads input and evaluates expressions
+  //
+  class driver final
+  {
+  public:
+    CLASS_SPECIALS_NONE(driver);
+
+    ~driver() noexcept;
+
+    driver(int argCount, char** args) noexcept;
+  };
+}
+
+#if 0
 #include "packages/core.hpp"
 #include "driver/input_mgr.hpp"
 
@@ -213,3 +232,4 @@ namespace tnac_rt
     var_collection m_vars;
   };
 }
+#endif
