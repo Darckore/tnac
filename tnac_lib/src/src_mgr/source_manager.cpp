@@ -20,11 +20,8 @@ namespace tnac
       return std::unexpected{ err::file_not_found() };
 
     const auto hash = file.hash();
-    auto [iter, success] = m_files.try_emplace(hash, std::move(file));
-    if (!success)
-      return std::unexpected{ err::duplicate_file() };
-
-    return &iter->second;
+    auto emplaceRes = m_files.try_emplace(hash, std::move(file));
+    return &emplaceRes.first->second;
   }
 
   src::loc_wrapper source_manager::register_location(const src::location& loc) noexcept

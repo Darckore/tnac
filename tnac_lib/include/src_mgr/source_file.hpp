@@ -11,10 +11,6 @@ namespace tnac::src::err
   {
     return std::make_error_code(std::errc::no_such_file_or_directory);
   }
-  inline auto duplicate_file() noexcept
-  {
-    return std::make_error_code(std::errc::file_exists);
-  }
 }
 
 namespace tnac
