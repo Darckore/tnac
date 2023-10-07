@@ -11,13 +11,6 @@ namespace tnac::src
     return dummyLoc;
   }
 
-  loc_wrapper location::rec_internal(const location& loc) noexcept
-  {
-    using loc_store = std::forward_list<location>;
-    static loc_store locs;
-    return src::loc_wrapper{ locs.emplace_front(loc) };
-  }
-
   // Special members
 
   location::~location() noexcept = default;
@@ -102,7 +95,7 @@ namespace tnac::src
   loc_wrapper location::record() noexcept
   {
     if (is_dummy())
-      return rec_internal(*this);
+      return loc_wrapper { *this };
 
     return src_mgr().register_location(*this);
   }

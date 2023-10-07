@@ -33,12 +33,6 @@ namespace tnac::src
     //
     static location& dummy() noexcept;
 
-  private:
-    //
-    // Records the current location in internal static storage
-    //
-    static loc_wrapper rec_internal(const location& loc) noexcept;
-
   public:
     CLASS_SPECIALS_ALL_CUSTOM(location);
 
