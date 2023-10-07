@@ -6,17 +6,38 @@ namespace tnac_rt
 
   cmdline::~cmdline() noexcept = default;
 
-  cmdline::cmdline(int argCount, char** args) noexcept
-  {
-    parse(argCount, args);
-  }
+  cmdline::cmdline() noexcept = default;
 
 
   // Public members
 
+  void cmdline::parse(int argCount, char** args) noexcept
+  {
+    m_state = {};
+
+    if (argCount < 2)
+    {
+      m_state.m_interactive = true;
+      return;
+    }
+
+    m_state.m_inputFile = args[1];
+
+    for (auto argIdx = 2; argIdx < argCount; ++argIdx)
+    {
+      tnac::string_t arg = args[argIdx];
+      consume(arg);
+    }
+  }
+
+  cmdline::name_t cmdline::run_on() const noexcept
+  {
+    return m_state.m_inputFile;
+  }
+
   bool cmdline::interactive() const noexcept
   {
-    return m_interactive;
+    return m_state.m_interactive;
   }
 
 
@@ -31,23 +52,6 @@ namespace tnac_rt
   void cmdline::consume(tnac::string_t arg) noexcept
   {
     if (arg == "-i"sv)
-      m_interactive = true;
-  }
-
-  void cmdline::parse(int argCount, char** args) noexcept
-  {
-    if (argCount < 2)
-    {
-      m_interactive = true;
-      return;
-    }
-
-    m_inputFile = args[1];
-
-    for (auto argIdx = 2; argIdx < argCount; ++argIdx)
-    {
-      tnac::string_t arg = args[argIdx];
-      consume(arg);
-    }
+      m_state.m_interactive = true;
   }
 }

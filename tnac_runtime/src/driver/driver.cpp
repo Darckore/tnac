@@ -10,9 +10,9 @@ namespace tnac_rt
 
   driver::~driver() noexcept = default;
 
-  driver::driver(int argCount, char** args) noexcept :
-    m_settings{ argCount, args }
+  driver::driver(int argCount, char** args) noexcept
   {
+    m_settings.parse(argCount, args);
   }
 
 

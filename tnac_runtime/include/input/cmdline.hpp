@@ -24,11 +24,11 @@ namespace tnac_rt
     using err_handler_t = std::move_only_function<void(tnac::string_t) noexcept>;
 
   public:
-    CLASS_SPECIALS_NONE(cmdline);
+    CLASS_SPECIALS_NONE_CUSTOM(cmdline);
 
     ~cmdline() noexcept;
 
-    cmdline(int argCount, char** args) noexcept;
+    cmdline() noexcept;
 
   public:
     //
@@ -40,6 +40,19 @@ namespace tnac_rt
       m_errHandler = std::forward<F>(f);
     }
 
+    //
+    // Parses the command line
+    //
+    void parse(int argCount, char** args) noexcept;
+
+    //
+    // Returns the input file name
+    //
+    name_t run_on() const noexcept;
+
+    //
+    // Reports the state of the -i flag
+    //
     bool interactive() const noexcept;
 
   private:
@@ -54,14 +67,15 @@ namespace tnac_rt
     //
     void consume(tnac::string_t arg) noexcept;
 
-    //
-    // Parses the command line
-    //
-    void parse(int argCount, char** args) noexcept;
-
   private:
     err_handler_t m_errHandler{};
-    name_t m_inputFile;
-    flags_t m_interactive : 1{};
+
+    struct state
+    {
+      name_t m_inputFile;
+      flags_t m_interactive : 1{};
+    };
+
+    state m_state{};
   };
 }
