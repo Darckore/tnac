@@ -27,7 +27,7 @@ namespace tnac::packages
     //
     // Redirects to tnac::cmd::on_command
     //
-    void on_command(value_type command) const noexcept;
+    void on_command(value_type command) noexcept;
 
     //
     // Redirects to tnac::commands::store::declare
@@ -42,7 +42,7 @@ namespace tnac::packages
     //
     // tnac::cmd::on_error
     //
-    template <commands::detail::err_handler F>
+    template <commands::detail::cmd_err_handler F>
     void on_error(F&& handler) noexcept
     {
       m_cmdInterpreter.on_error(std::forward<F>(handler));

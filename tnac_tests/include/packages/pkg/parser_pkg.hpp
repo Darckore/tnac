@@ -60,7 +60,7 @@ namespace tnac::packages
     //
     // tnac::parser::on_error
     //
-    template <detail::err_handler F>
+    template <detail::parse_err_handler F>
     void on_parse_error(F&& handler) noexcept
     {
       m_parser.on_error(std::forward<F>(handler));

@@ -13,7 +13,7 @@ namespace tnac::commands
     concept cmd_handler = std::is_nothrow_invocable_r_v<void, F, ast::command>;
 
     template <typename F>
-    concept err_handler = std::is_nothrow_invocable_r_v<void, F, const token&, string_t>;
+    concept cmd_err_handler = std::is_nothrow_invocable_r_v<void, F, const token&, string_t>;
   }
 
   //

@@ -14,7 +14,7 @@ namespace tnac
   class cmd final
   {
   public:
-    using err_handler_t = std::function<void(const token&, string_t)>;
+    using err_handler_t = std::move_only_function<void(const token&, string_t) noexcept>;
     using value_type    = ast::command;
     using cmd_ptr       = const value_type*;
     using cmd_ref       = const value_type&;
@@ -33,12 +33,12 @@ namespace tnac
     //
     // Interprets a command
     //
-    void on_command(value_type command) const noexcept;
+    void on_command(value_type command) noexcept;
 
     //
     // Sets an error callback
     //
-    template <commands::detail::err_handler F>
+    template <commands::detail::cmd_err_handler F>
     void on_error(F&& handler) noexcept
     {
       m_errHandler = std::forward<F>(handler);
@@ -53,7 +53,7 @@ namespace tnac
     //
     // Produces an error
     //
-    void on_error(cmd_ref command, const ver_result& reason) const noexcept;
+    void on_error(cmd_ref command, const ver_result& reason) noexcept;
 
   private:
     err_handler_t m_errHandler{};

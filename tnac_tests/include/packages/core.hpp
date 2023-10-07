@@ -53,7 +53,7 @@ namespace tnac::packages
     //
     // tnac::cmd::on_error
     //
-    template <commands::detail::err_handler F>
+    template <commands::detail::cmd_err_handler F>
     void on_command_error(F&& handler) noexcept
     {
       m_cmd.on_error(std::forward<F>(handler));
@@ -71,7 +71,7 @@ namespace tnac::packages
     //
     // tnac::parser::on_error
     //
-    template <detail::err_handler F>
+    template <detail::parse_err_handler F>
     void on_parse_error(F&& handler) noexcept
     {
       m_parser.on_parse_error(std::forward<F>(handler));

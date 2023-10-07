@@ -76,7 +76,7 @@ namespace tnac
     };
 
     template <typename F>
-    concept err_handler = std::is_nothrow_invocable_r_v<void, F, const ast::error_expr&>;
+    concept parse_err_handler = std::is_nothrow_invocable_r_v<void, F, const ast::error_expr&>;
 
     template <typename F>
     concept cmd_handler = std::is_nothrow_invocable_r_v<void, F, ast::command>;
@@ -109,8 +109,8 @@ namespace tnac
 
     using prec = detail::op_precedence;
 
-    using err_handler_t = std::function<void(const ast::error_expr&)>;
-    using cmd_handler_t = std::function<void(ast::command)>;
+    using err_handler_t = std::move_only_function<void(const ast::error_expr&) noexcept>;
+    using cmd_handler_t = std::move_only_function<void(ast::command) noexcept>;
 
   private:
     //
@@ -198,7 +198,7 @@ namespace tnac
     // Attaches the error handler which gets called when the parser encounters a
     // syntax error and produces an error expression
     //
-    template <detail::err_handler F>
+    template <detail::parse_err_handler F>
     void on_error(F&& handler) noexcept
     {
       m_errHandler = std::forward<F>(handler);

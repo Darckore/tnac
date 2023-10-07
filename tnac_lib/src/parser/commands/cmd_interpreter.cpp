@@ -12,7 +12,7 @@ namespace tnac
 
   // Public members
 
-  void cmd::on_command(value_type command) const noexcept
+  void cmd::on_command(value_type command) noexcept
   {
     using enum commands::verification;
     auto foundCmd = m_cmdStore.find(command.name());
@@ -68,7 +68,7 @@ namespace tnac
     return res;
   }
 
-  void cmd::on_error(cmd_ref command, const ver_result& reason) const noexcept
+  void cmd::on_error(cmd_ref command, const ver_result& reason) noexcept
   {
     if (!m_errHandler)
       return;

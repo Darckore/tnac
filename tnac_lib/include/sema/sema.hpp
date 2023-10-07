@@ -25,7 +25,7 @@ namespace tnac
     
     using fake_name_set = std::unordered_set<buf_t>;
     
-    using var_handler_t = std::function<void(const semantics::variable&)>;
+    using var_handler_t = std::move_only_function<void(const semantics::variable&) noexcept>;
 
   public:
     CLASS_SPECIALS_NONE_CUSTOM(sema);

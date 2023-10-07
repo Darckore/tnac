@@ -12,7 +12,7 @@ namespace tnac::packages
 
   // Public members
 
-  void cmd::on_command(value_type command) const noexcept
+  void cmd::on_command(value_type command) noexcept
   {
     m_cmdInterpreter.on_command(std::move(command));
   }
