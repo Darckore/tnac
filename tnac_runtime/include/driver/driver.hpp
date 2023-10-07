@@ -3,6 +3,9 @@
 //
 
 #pragma once
+#include "parser/parser.hpp"
+#include "sema/sema.hpp"
+#include "src_mgr/source_manager.hpp"
 #include "input/cmdline.hpp"
 
 namespace tnac_rt
@@ -13,6 +16,9 @@ namespace tnac_rt
   //
   class driver final
   {
+  public:
+    using ast_ptr = tnac::ast::node*;
+
   private:
     struct io
     {
@@ -30,6 +36,8 @@ namespace tnac_rt
 
   private:
     void run() noexcept;
+
+    ast_ptr parse_input() noexcept;
 
   private: // IO
     in_stream& in() noexcept;

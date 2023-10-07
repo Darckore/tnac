@@ -21,7 +21,22 @@ namespace tnac_rt
 
   void driver::run() noexcept
   {
+    if (!m_settings.has_input_file())
+    {
+      // todo: REPL
+      return;
+    }
 
+    // todo: if source file
+    auto tree = parse_input();
+    utils::unused(tree);
+
+    // todo: load and compiled if not source
+  }
+
+  driver::ast_ptr driver::parse_input() noexcept
+  {
+    return {};
   }
 
 
