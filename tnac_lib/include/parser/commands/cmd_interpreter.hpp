@@ -3,8 +3,8 @@
 //
 
 #pragma once
-#include "ast/ast_util.hpp"
-#include "commands/cmd/commands.hpp"
+#include "parser/ast/ast_util.hpp"
+#include "parser/commands/cmd/commands.hpp"
 
 namespace tnac
 {

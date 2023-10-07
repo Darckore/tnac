@@ -1,5 +1,5 @@
 #include "test_cases/test_common.hpp"
-#include "ast/ast_visitor.hpp"
+#include "parser/ast/ast_visitor.hpp"
 
 namespace tnac_tests
 {

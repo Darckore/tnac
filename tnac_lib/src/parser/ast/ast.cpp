@@ -1,4 +1,4 @@
-#include "ast/ast_nodes.hpp"
+#include "parser/ast/ast_nodes.hpp"
 
 namespace tnac::ast
 {

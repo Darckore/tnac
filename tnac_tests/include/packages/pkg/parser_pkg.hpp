@@ -5,7 +5,7 @@
 #pragma once
 #include "parser/lex.hpp"
 #include "parser/parser.hpp"
-#include "ast/ast_builder.hpp"
+#include "parser/ast/ast_builder.hpp"
 #include "sema/sema.hpp"
 #include "src_mgr/source_manager.hpp"
 

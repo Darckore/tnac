@@ -4,7 +4,7 @@
 
 #pragma once
 #include "exec/value/value.hpp"
-#include "ast/ast_decls.hpp"
+#include "parser/ast/ast_decls.hpp"
 
 namespace tnac::ast
 {

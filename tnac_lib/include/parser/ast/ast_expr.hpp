@@ -3,7 +3,7 @@
 //
 
 #pragma once
-#include "ast/ast.hpp"
+#include "parser/ast/ast.hpp"
 #include "exec/value/value.hpp"
 
 namespace tnac::semantics

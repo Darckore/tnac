@@ -4,7 +4,7 @@
 
 #pragma once
 #include "exec/value/value_registry.hpp"
-#include "type_support/traits.hpp"
+#include "types/traits.hpp"
 
 namespace tnac::eval
 {

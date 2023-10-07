@@ -1,4 +1,4 @@
-#include "commands/cmd_interpreter.hpp"
+#include "parser/commands/cmd_interpreter.hpp"
 
 namespace tnac
 {

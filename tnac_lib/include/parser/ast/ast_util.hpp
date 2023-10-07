@@ -3,7 +3,7 @@
 //
 
 #pragma once
-#include "ast/ast_expr.hpp"
+#include "parser/ast/ast_expr.hpp"
 
 namespace tnac
 {

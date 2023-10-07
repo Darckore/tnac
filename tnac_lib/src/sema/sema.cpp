@@ -1,6 +1,6 @@
 #include "sema/sema.hpp"
 #include "sema/symbol.hpp"
-#include "ast/ast_nodes.hpp"
+#include "parser/ast/ast_nodes.hpp"
 
 namespace tnac
 {

@@ -5,7 +5,7 @@
 #pragma once
 #include "exec/value/value.hpp"
 #include "exec/value/value_visitor.hpp"
-#include "ast/ast_nodes.hpp"
+#include "parser/ast/ast_nodes.hpp"
 #include "sema/symbol.hpp"
 
 namespace tnac::eval

@@ -1,6 +1,6 @@
 #include "sema/sym_table.hpp"
 #include "sema/symbol.hpp"
-#include "ast/ast_decls.hpp"
+#include "parser/ast/ast_decls.hpp"
 
 namespace tnac::semantics
 {

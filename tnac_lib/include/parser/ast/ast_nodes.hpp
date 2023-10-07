@@ -4,10 +4,10 @@
 
 #pragma once
 
-#include "ast/ast.hpp"
-#include "ast/ast_expr.hpp"
-#include "ast/ast_util.hpp"
-#include "ast/ast_decls.hpp"
+#include "parser/ast/ast.hpp"
+#include "parser/ast/ast_expr.hpp"
+#include "parser/ast/ast_util.hpp"
+#include "parser/ast/ast_decls.hpp"
 
 TYPE_TO_ID_ASSOCIATION(tnac::ast::error_expr, tnac::ast::node_kind::Error);
 

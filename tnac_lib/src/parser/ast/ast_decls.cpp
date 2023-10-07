@@ -1,4 +1,4 @@
-#include "ast/ast_decls.hpp"
+#include "parser/ast/ast_decls.hpp"
 
 namespace tnac::ast
 {

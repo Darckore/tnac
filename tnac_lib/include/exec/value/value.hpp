@@ -3,7 +3,7 @@
 //
 
 #pragma once
-#include "type_support/types.hpp"
+#include "types/types.hpp"
 
 namespace tnac::semantics
 {

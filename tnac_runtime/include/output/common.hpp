@@ -3,7 +3,7 @@
 //
 
 #pragma once
-#include "ast/ast_visitor.hpp"
+#include "parser/ast/ast_visitor.hpp"
 #include "exec/value/value.hpp"
 
 namespace tnac_rt::out
