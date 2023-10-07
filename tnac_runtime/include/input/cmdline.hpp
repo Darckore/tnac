@@ -46,6 +46,11 @@ namespace tnac_rt
     void parse(int argCount, char** args) noexcept;
 
     //
+    // Returns true if the target file is specified
+    //
+    bool has_input_file() const noexcept;
+
+    //
     // Returns the input file name
     //
     name_t run_on() const noexcept;

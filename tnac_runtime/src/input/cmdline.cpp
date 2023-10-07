@@ -30,6 +30,11 @@ namespace tnac_rt
     }
   }
 
+  bool cmdline::has_input_file() const noexcept
+  {
+    return !run_on().empty();
+  }
+
   cmdline::name_t cmdline::run_on() const noexcept
   {
     return m_state.m_inputFile;
