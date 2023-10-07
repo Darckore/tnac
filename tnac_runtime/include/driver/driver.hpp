@@ -28,6 +28,9 @@ namespace tnac_rt
 
     driver(int argCount, char** args) noexcept;
 
+  private:
+    void run() noexcept;
+
   private: // IO
     in_stream& in() noexcept;
     out_stream& out() noexcept;

@@ -12,12 +12,17 @@ namespace tnac_rt
   driver::driver(int argCount, char** args) noexcept
   {
     set_callbacks();
-
     m_settings.parse(argCount, args);
+    run();
   }
 
 
-  // Public members
+  // Private members
+
+  void driver::run() noexcept
+  {
+
+  }
 
 
   // Private members (IO)
