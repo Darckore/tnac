@@ -6,7 +6,6 @@
 #include "packages/pkg/parser_pkg.hpp"
 #include "packages/pkg/evaluator_pkg.hpp"
 #include "packages/pkg/cmd_pkg.hpp"
-#include "packages/pkg/compiler_pkg.hpp"
 
 namespace tnac::packages
 {
@@ -30,7 +29,6 @@ namespace tnac::packages
   public:
     parser& get_parser() noexcept;
     evaluator& get_eval() noexcept;
-    compiler& get_compiler() noexcept;
     cmd& get_commands() noexcept;
 
   public:
@@ -98,7 +96,6 @@ namespace tnac::packages
   private:
     parser m_parser;
     evaluator m_ev;
-    compiler m_compiler;
     cmd m_cmd;
   };
 

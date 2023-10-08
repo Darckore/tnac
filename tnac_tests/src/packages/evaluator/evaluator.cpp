@@ -1,5 +1,5 @@
-#include "evaluator/evaluator.hpp"
-#include "exec/value/value.hpp"
+#include "packages/evaluator/evaluator.hpp"
+#include "eval/value/value.hpp"
 #include "sema/symbol.hpp"
 
 namespace tnac

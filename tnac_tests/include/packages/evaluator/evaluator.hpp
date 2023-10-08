@@ -4,9 +4,9 @@
 
 #pragma once
 #include "parser/ast/ast_visitor.hpp"
-#include "exec/value/value_visitor.hpp"
-#include "exec/value/value_registry.hpp"
-#include "exec/call_stack.hpp"
+#include "eval/value/value_visitor.hpp"
+#include "eval/value/value_registry.hpp"
+#include "eval/call_stack.hpp"
 
 namespace tnac
 {

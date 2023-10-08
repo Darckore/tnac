@@ -3,8 +3,8 @@
 //
 
 #pragma once
-#include "exec/value/value_registry.hpp"
-#include "types/traits.hpp"
+#include "eval/value/value_registry.hpp"
+#include "eval/types/traits.hpp"
 
 namespace tnac::eval
 {
