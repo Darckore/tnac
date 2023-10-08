@@ -1,4 +1,5 @@
 #include "compiler/compiler.hpp"
+#include "compiler/cfg/cfg_builder.hpp"
 
 namespace tnac
 {
@@ -17,8 +18,13 @@ namespace tnac
     if (!inputData)
       return;
 
-    auto parsedFile = parse(*inputData);
-    utils::unused(parsedFile);
+    auto ast = parse(*inputData);
+    build_cfg(ast);
+  }
+
+  comp::cfg& compiler::cfg() noexcept
+  {
+    return m_cfg;
   }
 
 
@@ -38,6 +44,12 @@ namespace tnac
     parser p{ m_astBuilder, m_sema };
     p(input);
     return p.root();
+  }
+
+  void compiler::build_cfg(ast_t entry) noexcept
+  {
+    comp::cfg_builder cb{ m_cfg };
+    cb(entry);
   }
 
 }

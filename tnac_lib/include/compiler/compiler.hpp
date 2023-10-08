@@ -7,6 +7,7 @@
 #include "parser/parser.hpp"
 #include "parser/ast/ast_builder.hpp"
 #include "sema/sema.hpp"
+#include "compiler/cfg/cfg.hpp"
 
 namespace tnac
 {
@@ -32,6 +33,11 @@ namespace tnac
     //
     void compile(filename_t fname) noexcept;
 
+    //
+    // Returns a reference to the program's cfg
+    //
+    comp::cfg& cfg() noexcept;
+
   private:
     //
     // Loads a file and returns its contents
@@ -43,9 +49,15 @@ namespace tnac
     //
     ast_t parse(string_t input) noexcept;
 
+    //
+    // Builds control-flow graph
+    //
+    void build_cfg(ast_t entry) noexcept;
+
   private:
     source_manager m_srcMgr;
     ast::builder m_astBuilder;
     sema m_sema;
+    comp::cfg m_cfg;
   };
 }
