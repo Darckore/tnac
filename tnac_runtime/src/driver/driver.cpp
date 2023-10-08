@@ -28,17 +28,10 @@ namespace tnac_rt
     }
 
     // todo: if source file
-    auto tree = parse_input();
-    utils::unused(tree);
+    m_compiler.compile(m_settings.run_on());
 
-    // todo: load and compiled if not source
+    // todo: load compiled if not source
   }
-
-  driver::ast_ptr driver::parse_input() noexcept
-  {
-    return {};
-  }
-
 
   // Private members (IO)
   
