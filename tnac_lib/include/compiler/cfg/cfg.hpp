@@ -13,8 +13,9 @@ namespace tnac::comp
   class cfg final
   {
   public:
-    using stored_block = std::unique_ptr<basic_block>;
-    using block_store  = std::vector<stored_block>;
+    using storage_key = utils::hashed_string;
+    using block_name  = basic_block::name_t;
+    using block_store = std::unordered_map<storage_key, basic_block>;
 
   public:
     CLASS_SPECIALS_NONE_CUSTOM(cfg);
@@ -30,11 +31,22 @@ namespace tnac::comp
 
   public:
     //
+    // Creates a new basic block
+    //
+    basic_block& create(block_name name) noexcept;
+
+    //
     // Returns a reference to the entry block
     //
     basic_block& entry() noexcept;
 
+    //
+    // Attempts to find a basic block by name
+    //
+    basic_block* find(storage_key name) noexcept;
+
   private:
+    basic_block* m_entry{};
     block_store m_blocks;
   };
 }
