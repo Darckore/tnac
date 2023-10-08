@@ -7,7 +7,7 @@
 #include "parser/parser.hpp"
 #include "parser/ast/ast_builder.hpp"
 #include "sema/sema.hpp"
-#include "src_mgr/source_manager.hpp"
+#include "compiler/src_mgr/source_manager.hpp"
 
 namespace tnac::packages
 {

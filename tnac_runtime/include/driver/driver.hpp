@@ -5,7 +5,7 @@
 #pragma once
 #include "parser/parser.hpp"
 #include "sema/sema.hpp"
-#include "src_mgr/source_manager.hpp"
+#include "compiler/compiler.hpp"
 #include "input/cmdline.hpp"
 
 namespace tnac_rt

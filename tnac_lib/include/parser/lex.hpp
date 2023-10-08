@@ -4,7 +4,7 @@
 
 #pragma once
 #include "parser/token.hpp"
-#include "src_mgr/source_location.hpp"
+#include "compiler/src_mgr/source_location.hpp"
 
 namespace tnac
 {
