@@ -16,6 +16,26 @@ namespace tnac::comp
 
   // Public members
 
+  void cfg::enter_block(basic_block& block) noexcept
+  {
+    // No reason to enter the same block twice
+    if (&block == m_entry)
+      return;
+
+    m_entryChain.push(m_entry);
+    m_entry = &block;
+  }
+
+  void cfg::exit_block() noexcept
+  {
+    // We're at the top, original entry is preserved
+    if (m_entryChain.empty())
+      return;
+
+    m_entry = m_entryChain.top();
+    m_entryChain.pop();
+  }
+
   basic_block& cfg::create(block_name name) noexcept
   {
     auto key = storage_key{ name };

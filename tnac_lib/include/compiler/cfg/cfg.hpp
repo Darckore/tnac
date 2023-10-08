@@ -16,6 +16,7 @@ namespace tnac::comp
     using storage_key = utils::hashed_string;
     using block_name  = basic_block::name_t;
     using block_store = std::unordered_map<storage_key, basic_block>;
+    using entry_stack = std::stack<basic_block*>;
 
   public:
     CLASS_SPECIALS_NONE_CUSTOM(cfg);
@@ -30,6 +31,17 @@ namespace tnac::comp
     explicit operator bool() const noexcept;
 
   public:
+    //
+    // Enters a basic block
+    //
+    void enter_block(basic_block& block) noexcept;
+
+    //
+    // Exits a basic block and rolls back to the one
+    // entered before
+    //
+    void exit_block() noexcept;
+
     //
     // Creates a new basic block
     //
@@ -48,5 +60,6 @@ namespace tnac::comp
   private:
     basic_block* m_entry{};
     block_store m_blocks;
+    entry_stack m_entryChain;
   };
 }
