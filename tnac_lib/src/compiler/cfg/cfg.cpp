@@ -63,6 +63,28 @@ namespace tnac::comp
   }
 
 
+  // Public members(Expressions)
+
+  void cfg::consume_unary(eval::val_ops opCode) noexcept
+  {
+    using enum eval::val_ops;
+    switch (opCode)
+    {
+    case LogicalNot: break;
+    case LogicalIs: break;
+    case UnaryPlus: break;
+    case UnaryNegation: break;
+    case UnaryBitwiseNot: break;
+
+    default: break;
+    }
+  }
+
+  void cfg::consume_binary(eval::val_ops opCode) noexcept
+  {
+    utils::unused(opCode);
+  }
+
   // Public members(Literals)
 
   void cfg::consume_int(string_t raw, int base) noexcept

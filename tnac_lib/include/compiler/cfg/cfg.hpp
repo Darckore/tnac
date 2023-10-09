@@ -59,6 +59,17 @@ namespace tnac::comp
     //
     basic_block* find(storage_key name) noexcept;
 
+  public: // Expressions
+    //
+    // Consumes a unary expression
+    //
+    void consume_unary(eval::val_ops opCode) noexcept;
+
+    //
+    // Consumes a binary expression
+    //
+    void consume_binary(eval::val_ops opCode) noexcept;
+
   public: // Literals
     //
     // Consumes an integer literal

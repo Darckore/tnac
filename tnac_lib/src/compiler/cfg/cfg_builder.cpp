@@ -3,6 +3,57 @@
 
 namespace tnac::comp
 {
+  namespace detail
+  {
+    namespace
+    {
+      auto conv_unary(const token& tk) noexcept
+      {
+        using enum tok_kind;
+        using enum eval::val_ops;
+        switch (tk.what())
+        {
+        case Exclamation: return LogicalNot;
+        case Question:    return LogicalIs;
+        case Plus:        return UnaryPlus;
+        case Minus:       return UnaryNegation;
+        case Tilde:       return UnaryBitwiseNot;
+
+        default: return InvalidOp;
+        }
+      }
+      auto conv_binary(const token& tk) noexcept
+      {
+        using enum tok_kind;
+        using enum eval::val_ops;
+        switch (tk.what())
+        {
+        case Plus:     return Addition;
+        case Minus:    return Subtraction;
+        case Asterisk: return Multiplication;
+        case Slash:    return Division;
+        case Percent:  return Modulo;
+
+        case Less:      return RelLess;
+        case LessEq:    return RelLessEq;
+        case Greater:   return RelGr;
+        case GreaterEq: return RelGrEq;
+        case Eq:        return Equal;
+        case NotEq:     return NEqual;
+
+        case Amp:  return BitwiseAnd;
+        case Hat:  return BitwiseXor;
+        case Pipe: return BitwiseOr;
+
+        case Pow:  return BinaryPow;
+        case Root: return BinaryRoot;
+
+        default: return InvalidOp;
+        }
+      }
+    }
+  }
+
   // Special members
 
   cfg_builder::~cfg_builder() noexcept = default;
@@ -69,12 +120,12 @@ namespace tnac::comp
 
   void cfg_builder::visit(ast::unary_expr& unary) noexcept
   {
-    utils::unused(unary);
+    get().consume_unary(detail::conv_unary(unary.op()));
   }
 
   void cfg_builder::visit(ast::binary_expr& binary) noexcept
   {
-    utils::unused(binary);
+    get().consume_binary(detail::conv_binary(binary.op()));
   }
 
 
