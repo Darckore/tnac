@@ -31,7 +31,7 @@ namespace tnac::comp
     block_name res;
 
     if (scope.is_global())
-      res = "`";
+      res = "global";
 
     return res;
   }
@@ -63,13 +63,18 @@ namespace tnac::comp
   }
 
 
-  // Public members(Previews)
+  // Public members(Scopes)
 
   bool cfg_builder::preview(ast::scope& scope) noexcept
   {
     auto&& block = get().create(make_name(scope));
     get().enter_block(block);
     return true;
+  }
+
+  void cfg_builder::visit(ast::scope& ) noexcept
+  {
+    get().exit_block();
   }
 
 }

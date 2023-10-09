@@ -60,11 +60,16 @@ namespace tnac::comp
     //
     void visit(ast::binary_expr& binary) noexcept;
 
-  public: // Previews
+  public: // Scopes
     //
     // Creates a basic block for a scope
     //
     bool preview(ast::scope& scope) noexcept;
+
+    //
+    // Exits a basic block on scope exit
+    //
+    void visit(ast::scope& scope) noexcept;
 
   private:
     cfg* m_cfg;
