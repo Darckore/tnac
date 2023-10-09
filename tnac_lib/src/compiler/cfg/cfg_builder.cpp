@@ -49,7 +49,22 @@ namespace tnac::comp
 
   void cfg_builder::visit(ast::lit_expr& lit) noexcept
   {
-    utils::unused(lit);
+    auto&& tok = lit.pos();
+    switch (tok.what())
+    {
+    case token::KwTrue:  get().consume_true();               break;
+    case token::KwFalse: get().consume_false();              break;
+    case token::KwI:     get().consume_i();                  break;
+    case token::KwPi:    get().consume_pi();                 break;
+    case token::KwE:     get().consume_e();                  break;
+    case token::IntDec:  get().consume_int(tok.value(), 10); break;
+    case token::IntBin:  get().consume_int(tok.value(), 2);  break;
+    case token::IntOct:  get().consume_int(tok.value(), 8);  break;
+    case token::IntHex:  get().consume_int(tok.value(), 16); break;
+    case token::Float:   get().consume_float(tok.value());   break;
+
+    default: break;
+    }
   }
 
   void cfg_builder::visit(ast::unary_expr& unary) noexcept

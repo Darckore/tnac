@@ -6,7 +6,9 @@ namespace tnac::comp
 
   cfg::~cfg() noexcept = default;
 
-  cfg::cfg() noexcept = default;
+  cfg::cfg() noexcept :
+    m_valVisitor{ m_valReg }
+  {}
 
   cfg::operator bool() const noexcept
   {
@@ -60,4 +62,41 @@ namespace tnac::comp
     return block != m_blocks.end() ? &block->second : nullptr;
   }
 
+
+  // Public members(Literals)
+
+  void cfg::consume_int(string_t raw, int base) noexcept
+  {
+    m_valVisitor.visit_int_literal(raw, base);
+  }
+
+  void cfg::consume_float(string_t raw) noexcept
+  {
+    m_valVisitor.visit_float_literal(raw);
+  }
+
+  void cfg::consume_true() noexcept
+  {
+    m_valVisitor.visit_bool_literal(true);
+  }
+
+  void cfg::consume_false() noexcept
+  {
+    m_valVisitor.visit_bool_literal(false);
+  }
+
+  void cfg::consume_i() noexcept
+  {
+    m_valVisitor.visit_i();
+  }
+
+  void cfg::consume_e() noexcept
+  {
+    m_valVisitor.visit_e();
+  }
+
+  void cfg::consume_pi() noexcept
+  {
+    m_valVisitor.visit_pi();
+  }
 }

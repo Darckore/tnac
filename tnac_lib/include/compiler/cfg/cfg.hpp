@@ -4,6 +4,8 @@
 
 #pragma once
 #include "compiler/cfg/basic_block.hpp"
+#include "eval/value/value_registry.hpp"
+#include "eval/value/value_visitor.hpp"
 
 namespace tnac::comp
 {
@@ -57,9 +59,47 @@ namespace tnac::comp
     //
     basic_block* find(storage_key name) noexcept;
 
+  public: // Literals
+    //
+    // Consumes an integer literal
+    //
+    void consume_int(string_t raw, int base) noexcept;
+
+    //
+    // Consumes a float literal
+    //
+    void consume_float(string_t raw) noexcept;
+
+    //
+    // Consumes true
+    //
+    void consume_true() noexcept;
+
+    //
+    // Consumes false
+    //
+    void consume_false() noexcept;
+
+    //
+    // Consumes imaginary unit
+    //
+    void consume_i() noexcept;
+
+    //
+    // Consumes the e constant
+    //
+    void consume_e() noexcept;
+
+    //
+    // Consumes the pi constant
+    //
+    void consume_pi() noexcept;
+
   private:
     basic_block* m_entry{};
     block_store m_blocks;
     entry_stack m_entryChain;
+    eval::registry m_valReg;
+    eval::value_visitor m_valVisitor;
   };
 }
