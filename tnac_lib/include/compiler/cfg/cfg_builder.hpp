@@ -25,11 +25,6 @@ namespace tnac::comp
     //
     static name_idx gen_name_idx() noexcept;
 
-    //
-    // Generates a name for scope
-    //
-    static block_name make_name(ast::scope& scope) noexcept;
-
   public:
     CLASS_SPECIALS_NONE(cfg_builder);
 

@@ -77,17 +77,6 @@ namespace tnac::comp
     return idx++;
   }
 
-  cfg_builder::block_name cfg_builder::make_name(ast::scope& scope) noexcept
-  {
-    block_name res;
-
-    if (scope.is_global())
-      res = "global";
-
-    return res;
-  }
-
-
   // Public members
 
   cfg& cfg_builder::get() noexcept
@@ -133,8 +122,7 @@ namespace tnac::comp
 
   bool cfg_builder::preview(ast::scope& scope) noexcept
   {
-    auto&& block = get().create(make_name(scope));
-    get().enter_block(block);
+    utils::unused(scope);
     return true;
   }
 

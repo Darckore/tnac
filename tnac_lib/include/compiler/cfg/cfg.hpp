@@ -26,12 +26,6 @@ namespace tnac::comp
     ~cfg() noexcept;
     cfg() noexcept;
 
-    //
-    // Returns true if the cfg has an entry point
-    // (i.e., is not empty)
-    //
-    explicit operator bool() const noexcept;
-
   public:
     //
     // Enters a basic block

@@ -4,6 +4,7 @@
 
 #pragma once
 #include "compiler/cfg/edge.hpp"
+#include "ir/ir.hpp"
 
 namespace tnac::comp
 {

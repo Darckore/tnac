@@ -8,13 +8,9 @@ namespace tnac::comp
 
   cfg::cfg() noexcept :
     m_valVisitor{ m_valReg }
-  {}
-
-  cfg::operator bool() const noexcept
   {
-    return static_cast<bool>(m_entry);
+    create("`program"s);
   }
-
 
   // Public members
 
@@ -52,7 +48,6 @@ namespace tnac::comp
 
   basic_block& cfg::entry() noexcept
   {
-    UTILS_ASSERT(static_cast<bool>(*this));
     return *m_entry;
   }
 
