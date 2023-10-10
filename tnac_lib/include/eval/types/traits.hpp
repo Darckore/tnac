@@ -328,6 +328,53 @@ namespace tnac::eval
   template <> struct common_type<bool_type, int_type> : common_type<int_type, bool_type> {};
   template <> struct common_type<bool_type, bool_type> : common_type<int_type, bool_type> {};
 
+  // Common type id
+
+  namespace detail
+  {
+    template <type_id L, type_id R>
+    constexpr auto ct_id() noexcept
+    {
+      using ltype = utils::id_to_type_t<L>;
+      using rtype = utils::id_to_type_t<R>;
+      using ctype = common_type_t<ltype, rtype>;
+      return utils::type_to_id_v<ctype>;
+    }
+
+    template <type_id L>
+    constexpr auto ct_id(type_id r) noexcept
+    {
+      using enum type_id;
+      switch (r)
+      {
+      case Bool:     return ct_id<L, Bool>();
+      case Int:      return ct_id<L, Int>();
+      case Float:    return ct_id<L, Float>();
+      case Complex:  return ct_id<L, Complex>();
+      case Fraction: return ct_id<L, Fraction>();
+      case Function: return ct_id<L, Function>();
+      case Array:    return ct_id<L, Array>();
+      default:       return Invalid;
+      }
+    }
+  }
+
+  constexpr auto common_type_id(type_id l, type_id r) noexcept
+  {
+    using enum type_id;
+    switch (l)
+    {
+    case Bool:     return detail::ct_id<Bool>(r);
+    case Int:      return detail::ct_id<Int>(r);
+    case Float:    return detail::ct_id<Float>(r);
+    case Complex:  return detail::ct_id<Complex>(r);
+    case Fraction: return detail::ct_id<Fraction>(r);
+    case Function: return detail::ct_id<Function>(r);
+    case Array:    return detail::ct_id<Array>(r);
+    default:       return Invalid;
+    }
+  }
+
 
   //
   // Missing operators
