@@ -2,6 +2,40 @@
 
 namespace tnac_tests
 {
+  namespace
+  {
+    void all_same(string_t input, tok_kind kind)
+    {
+      tnac::lex lex;
+      lex(input);
+
+      for (;;)
+      {
+        auto tok = lex.next();
+        if (tok.is_eol())
+          break;
+
+        EXPECT_TRUE(tok.is(kind)) << "Failed token: " << tok.value();
+      }
+    }
+
+    template <std::size_t N>
+    void check_tokens(string_t input, const std::array<tok_kind, N>& tokArr) noexcept
+    {
+      tnac::lex lex;
+      lex(input);
+
+      for (auto tk : tokArr)
+      {
+        auto tok = lex.next();
+        EXPECT_TRUE(tok.is(tk)) << "Failed token: " << tok.value();
+      }
+    }
+  }
+}
+
+namespace tnac_tests
+{
   TEST(lexer, t_token_list)
   {
     constexpr auto input = "= + - ~ * / && & ^ || | ** // ! ? == != < > <= >= -> : , ; ( ) { } [ ] _true _false 1 01 0b1 0x1 1.0 id #cmd"sv;
