@@ -9,19 +9,19 @@ namespace tnac::comp
   cfg::cfg() noexcept :
     m_valVisitor{ m_valReg }
   {
-    create("`program"s);
   }
 
-  // Public members
+
+  // Public members(Basic blocks)
 
   void cfg::enter_block(basic_block& block) noexcept
   {
     // No reason to enter the same block twice
-    if (&block == m_entry)
+    if (&block == m_currentBlock)
       return;
 
-    m_entryChain.push(m_entry);
-    m_entry = &block;
+    m_entryChain.push(m_currentBlock);
+    m_currentBlock = &block;
   }
 
   void cfg::exit_block() noexcept
@@ -30,31 +30,61 @@ namespace tnac::comp
     if (m_entryChain.empty())
       return;
 
-    m_entry = m_entryChain.top();
+    m_currentBlock = m_entryChain.top();
     m_entryChain.pop();
   }
 
-  basic_block& cfg::create(block_name name) noexcept
+  basic_block& cfg::create_block(block_name name) noexcept
   {
     auto key = storage_key{ name };
-    auto item = m_blocks.try_emplace(key, std::move(name));
+    auto item = m_blocks.try_emplace(key, std::move(name), current_func());
     
     auto&& res = item.first->second;
-    if (!m_entry)
-      m_entry = &res;
+    if (!m_currentBlock)
+      m_currentBlock = &res;
 
     return res;
   }
 
-  basic_block& cfg::entry() noexcept
+  basic_block& cfg::current_block() noexcept
   {
-    return *m_entry;
+    return *m_currentBlock;
   }
 
-  basic_block* cfg::find(storage_key name) noexcept
+  basic_block* cfg::find_block(storage_key name) noexcept
   {
-    auto block = m_blocks.find(name);
-    return block != m_blocks.end() ? &block->second : nullptr;
+    auto res = m_blocks.find(name);
+    return res != m_blocks.end() ? &res->second : nullptr;
+  }
+
+
+  // Public members(Functions)
+
+  func& cfg::create_function(func_name name) noexcept
+  {
+    auto key = storage_key{ name };
+    auto item = m_functions.try_emplace(key, std::move(name), m_currentFunction);
+    auto&& res = item.first->second;
+    m_currentFunction = &res;
+
+    return res;
+  }
+
+  func* cfg::find_func(storage_key name) noexcept
+  {
+    auto res = m_functions.find(name);
+    return res != m_functions.end() ? &res->second : nullptr;
+  }
+
+  func& cfg::current_func() noexcept
+  {
+    return *m_currentFunction;
+  }
+
+  void cfg::end_function() noexcept
+  {
+    if (m_currentFunction)
+      m_currentFunction = m_currentFunction->parent();
   }
 
 

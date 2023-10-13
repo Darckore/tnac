@@ -7,9 +7,9 @@
 namespace tnac::ir
 {
   //
-  // Command code for the IR
+  // Operation code for the IR
   //
-  enum class comm_code : std::uint8_t
+  enum class op_code : std::uint8_t
   {
     // Arithmetic
     Add,  // +

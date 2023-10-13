@@ -8,6 +8,8 @@
 
 namespace tnac::comp
 {
+  class func;
+
   //
   // Basic block of the cfg
   //
@@ -24,14 +26,26 @@ namespace tnac::comp
     CLASS_SPECIALS_NODEFAULT_NOCOPY(basic_block);
 
     ~basic_block() noexcept;
-    
-    basic_block(name_t name) noexcept;
+
+    basic_block(name_t name, func& parent) noexcept;
 
   public:
     //
     // Returns the name
     //
     string_t name() const noexcept;
+
+    //
+    // Returns the parent function
+    // 
+    // const version
+    //
+    const func& parent() const noexcept;
+
+    //
+    // Returns the parent function
+    //
+    func& parent() noexcept;
 
     //
     // Creates an outbound connection to another block
@@ -46,6 +60,7 @@ namespace tnac::comp
 
   private:
     name_t m_name;
+    func* m_parent{};
     out_edge_list m_outbound;
     in_edge_list m_inbound;
   };

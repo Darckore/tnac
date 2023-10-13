@@ -1,4 +1,5 @@
 #include "compiler/cfg/basic_block.hpp"
+#include "compiler/cfg/func.hpp"
 
 namespace tnac::comp
 {
@@ -6,8 +7,9 @@ namespace tnac::comp
 
   basic_block::~basic_block() noexcept = default;
 
-  basic_block::basic_block(name_t name) noexcept :
-    m_name{ std::move(name) }
+  basic_block::basic_block(name_t name, func& parent) noexcept :
+    m_name{ std::move(name) },
+    m_parent{ &parent }
   {}
 
 
@@ -16,6 +18,16 @@ namespace tnac::comp
   string_t basic_block::name() const noexcept
   {
     return m_name;
+  }
+
+  const func& basic_block::parent() const noexcept
+  {
+    return *m_parent;
+  }
+
+  func& basic_block::parent() noexcept
+  {
+    return FROM_CONST(parent);
   }
 
   cfg_edge& basic_block::add_outbound(basic_block& target) noexcept

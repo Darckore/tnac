@@ -19,12 +19,6 @@ namespace tnac::comp
     using block_name = basic_block::name_t;
     using name_idx   = std::uintmax_t;
 
-  private:
-    //
-    // Retrieves the index used in generated names
-    //
-    static name_idx gen_name_idx() noexcept;
-
   public:
     CLASS_SPECIALS_NONE(cfg_builder);
 
@@ -37,7 +31,7 @@ namespace tnac::comp
     //
     // Returns a reference to the control-flow graph worked on
     //
-    cfg& get() noexcept;
+    cfg& get_cfg() noexcept;
 
   public: // Expressions
     //
@@ -54,17 +48,6 @@ namespace tnac::comp
     // Visits a binary expression
     //
     void visit(ast::binary_expr& binary) noexcept;
-
-  public: // Scopes
-    //
-    // Creates a basic block for a scope
-    //
-    bool preview(ast::scope& scope) noexcept;
-
-    //
-    // Exits a basic block on scope exit
-    //
-    void visit(ast::scope& scope) noexcept;
 
   private:
     cfg* m_cfg;

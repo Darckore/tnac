@@ -68,18 +68,9 @@ namespace tnac::comp
     base::operator()(root);
   }
 
-
-  // Static members
-
-  cfg_builder::name_idx cfg_builder::gen_name_idx() noexcept
-  {
-    static name_idx idx{};
-    return idx++;
-  }
-
   // Public members
 
-  cfg& cfg_builder::get() noexcept
+  cfg& cfg_builder::get_cfg() noexcept
   {
     return *m_cfg;
   }
@@ -92,16 +83,16 @@ namespace tnac::comp
     auto&& tok = lit.pos();
     switch (tok.what())
     {
-    case token::KwTrue:  get().consume_true();               break;
-    case token::KwFalse: get().consume_false();              break;
-    case token::KwI:     get().consume_i();                  break;
-    case token::KwPi:    get().consume_pi();                 break;
-    case token::KwE:     get().consume_e();                  break;
-    case token::IntDec:  get().consume_int(tok.value(), 10); break;
-    case token::IntBin:  get().consume_int(tok.value(), 2);  break;
-    case token::IntOct:  get().consume_int(tok.value(), 8);  break;
-    case token::IntHex:  get().consume_int(tok.value(), 16); break;
-    case token::Float:   get().consume_float(tok.value());   break;
+    case token::KwTrue:  get_cfg().consume_true();               break;
+    case token::KwFalse: get_cfg().consume_false();              break;
+    case token::KwI:     get_cfg().consume_i();                  break;
+    case token::KwPi:    get_cfg().consume_pi();                 break;
+    case token::KwE:     get_cfg().consume_e();                  break;
+    case token::IntDec:  get_cfg().consume_int(tok.value(), 10); break;
+    case token::IntBin:  get_cfg().consume_int(tok.value(), 2);  break;
+    case token::IntOct:  get_cfg().consume_int(tok.value(), 8);  break;
+    case token::IntHex:  get_cfg().consume_int(tok.value(), 16); break;
+    case token::Float:   get_cfg().consume_float(tok.value());   break;
 
     default: break;
     }
@@ -109,26 +100,12 @@ namespace tnac::comp
 
   void cfg_builder::visit(ast::unary_expr& unary) noexcept
   {
-    get().consume_unary(detail::conv_unary(unary.op()));
+    get_cfg().consume_unary(detail::conv_unary(unary.op()));
   }
 
   void cfg_builder::visit(ast::binary_expr& binary) noexcept
   {
-    get().consume_binary(detail::conv_binary(binary.op()));
-  }
-
-
-  // Public members(Scopes)
-
-  bool cfg_builder::preview(ast::scope& scope) noexcept
-  {
-    utils::unused(scope);
-    return true;
-  }
-
-  void cfg_builder::visit(ast::scope& ) noexcept
-  {
-    get().exit_block();
+    get_cfg().consume_binary(detail::conv_binary(binary.op()));
   }
 
 }

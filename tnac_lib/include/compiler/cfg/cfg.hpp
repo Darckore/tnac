@@ -3,7 +3,7 @@
 //
 
 #pragma once
-#include "compiler/cfg/basic_block.hpp"
+#include "compiler/cfg/func.hpp"
 #include "eval/value/value_registry.hpp"
 #include "eval/value/value_visitor.hpp"
 
@@ -16,8 +16,13 @@ namespace tnac::comp
   {
   public:
     using storage_key = utils::hashed_string;
+
     using block_name  = basic_block::name_t;
     using block_store = std::unordered_map<storage_key, basic_block>;
+
+    using func_name = func::name_t;
+    using func_store = std::unordered_map<storage_key, func>;
+
     using entry_stack = std::stack<basic_block*>;
 
   public:
@@ -26,7 +31,7 @@ namespace tnac::comp
     ~cfg() noexcept;
     cfg() noexcept;
 
-  public:
+  public: // Basic blocks
     //
     // Enters a basic block
     //
@@ -41,17 +46,38 @@ namespace tnac::comp
     //
     // Creates a new basic block
     //
-    basic_block& create(block_name name) noexcept;
+    basic_block& create_block(block_name name) noexcept;
 
     //
-    // Returns a reference to the entry block
+    // Returns a reference to the current block
     //
-    basic_block& entry() noexcept;
+    basic_block& current_block() noexcept;
 
     //
     // Attempts to find a basic block by name
     //
-    basic_block* find(storage_key name) noexcept;
+    basic_block* find_block(storage_key name) noexcept;
+
+  public: // Functions
+    //
+    // Creates a new function
+    //
+    func& create_function(func_name name) noexcept;
+
+    //
+    // Attempts to find a function by name
+    //
+    func* find_func(storage_key name) noexcept;
+
+    //
+    // Returns a reference to the currently processed function
+    //
+    func& current_func() noexcept;
+
+    //
+    // Exits the currently processed function
+    //
+    void end_function() noexcept;
 
   public: // Expressions
     //
@@ -101,8 +127,10 @@ namespace tnac::comp
     void consume_pi() noexcept;
 
   private:
-    basic_block* m_entry{};
+    basic_block* m_currentBlock{};
+    func* m_currentFunction{};
     block_store m_blocks;
+    func_store m_functions;
     entry_stack m_entryChain;
     eval::registry m_valReg;
     eval::value_visitor m_valVisitor;
