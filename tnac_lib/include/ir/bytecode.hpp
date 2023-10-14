@@ -11,6 +11,8 @@ namespace tnac::ir
   //
   enum class op_code : std::uint8_t
   {
+    Nop,
+
     // Storage access
     Constant, // produce a constant
     Load,     // load a value from memory

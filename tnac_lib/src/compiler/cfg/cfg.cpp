@@ -12,52 +12,6 @@ namespace tnac::comp
   }
 
 
-  // Public members(Basic blocks)
-
-  void cfg::enter_block(basic_block& block) noexcept
-  {
-    // No reason to enter the same block twice
-    if (&block == m_currentBlock)
-      return;
-
-    m_entryChain.push(m_currentBlock);
-    m_currentBlock = &block;
-  }
-
-  void cfg::exit_block() noexcept
-  {
-    // We're at the top, original entry is preserved
-    if (m_entryChain.empty())
-      return;
-
-    m_currentBlock = m_entryChain.top();
-    m_entryChain.pop();
-  }
-
-  basic_block& cfg::create_block(block_name name) noexcept
-  {
-    auto key = storage_key{ name };
-    auto item = m_blocks.try_emplace(key, std::move(name), current_func());
-    
-    auto&& res = item.first->second;
-    if (!m_currentBlock)
-      m_currentBlock = &res;
-
-    return res;
-  }
-
-  basic_block& cfg::current_block() noexcept
-  {
-    return *m_currentBlock;
-  }
-
-  basic_block* cfg::find_block(storage_key name) noexcept
-  {
-    auto res = m_blocks.find(name);
-    return res != m_blocks.end() ? &res->second : nullptr;
-  }
-
-
   // Public members(Functions)
 
   func& cfg::create_function(func_name name) noexcept
@@ -115,53 +69,54 @@ namespace tnac::comp
   void cfg::consume_int(string_t raw, int base) noexcept
   {
     m_valVisitor.visit_int_literal(raw, base);
-    emit_constant(eval::type_id::Int);
+    emit_constant();
   }
 
   void cfg::consume_float(string_t raw) noexcept
   {
     m_valVisitor.visit_float_literal(raw);
-    emit_constant(eval::type_id::Float);
+    emit_constant();
   }
 
   void cfg::consume_true() noexcept
   {
     m_valVisitor.visit_bool_literal(true);
-    emit_constant(eval::type_id::Bool);
+    emit_constant();
   }
 
   void cfg::consume_false() noexcept
   {
     m_valVisitor.visit_bool_literal(false);
-    emit_constant(eval::type_id::Bool);
+    emit_constant();
   }
 
   void cfg::consume_i() noexcept
   {
     m_valVisitor.visit_i();
-    emit_constant(eval::type_id::Complex);
+    emit_constant();
   }
 
   void cfg::consume_e() noexcept
   {
     m_valVisitor.visit_e();
-    emit_constant(eval::type_id::Float);
+    emit_constant();
   }
 
   void cfg::consume_pi() noexcept
   {
     m_valVisitor.visit_pi();
-    emit_constant(eval::type_id::Float);
+    emit_constant();
   }
 
 
   // Private members
 
-  void cfg::emit_constant(eval::type_id type) noexcept
+  void cfg::emit_constant() noexcept
   {
-    auto value  = m_valVisitor.fetch_next();
-    auto irNode = ir::operation{ ir::op_code::Constant, eval::size_of(type) };
-    utils::unused(irNode, value, type);
+    auto operand = m_valVisitor.fetch_next();
+    auto value = *operand;
+    auto irNode = ir::operation{ ir::op_code::Constant, value.size() };
+    utils::unused(irNode, value);
   }
 
 }

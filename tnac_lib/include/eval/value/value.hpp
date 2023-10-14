@@ -77,6 +77,7 @@ namespace tnac::eval
   public:
     using value_type = std::uintptr_t;
     using input_ptr = const void*;
+    using size_type = decltype(sizeof(0));
 
   private:
     template <detail::expr_result T>
@@ -130,6 +131,11 @@ namespace tnac::eval
     // Returns the token with its type id stripped
     //
     value_type raw() const noexcept;
+
+    //
+    // Returns the underlying value's size in bytes
+    //
+    size_type size() const noexcept;
 
     //
     // Unconditionally casts data at the value address to the specified type

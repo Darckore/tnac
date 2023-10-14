@@ -1,4 +1,5 @@
 #include "eval/value/value.hpp"
+#include "eval/types/traits.hpp"
 
 namespace tnac::eval
 {
@@ -82,6 +83,10 @@ namespace tnac::eval
     return split(m_val).val;
   }
 
+  value::size_type value::size() const noexcept
+  {
+    return size_of(id());
+  }
 
   // Private members
 

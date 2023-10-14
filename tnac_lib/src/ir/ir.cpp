@@ -8,7 +8,7 @@ namespace tnac::ir
 
   operation::operation(op_code opCode, size_type prealloc) noexcept
   {
-    m_data.reserve(prealloc);
+    m_data.reserve(prealloc + sizeof(opCode));
     m_data.emplace_back(std::bit_cast<byte_t>(opCode));
   }
 

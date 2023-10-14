@@ -17,9 +17,6 @@ namespace tnac::comp
   public:
     using storage_key = utils::hashed_string;
 
-    using block_name  = basic_block::name_t;
-    using block_store = std::unordered_map<storage_key, basic_block>;
-
     using func_name = func::name_t;
     using func_store = std::unordered_map<storage_key, func>;
 
@@ -30,33 +27,6 @@ namespace tnac::comp
 
     ~cfg() noexcept;
     cfg() noexcept;
-
-  public: // Basic blocks
-    //
-    // Enters a basic block
-    //
-    void enter_block(basic_block& block) noexcept;
-
-    //
-    // Exits a basic block and rolls back to the one
-    // entered before
-    //
-    void exit_block() noexcept;
-
-    //
-    // Creates a new basic block
-    //
-    basic_block& create_block(block_name name) noexcept;
-
-    //
-    // Returns a reference to the current block
-    //
-    basic_block& current_block() noexcept;
-
-    //
-    // Attempts to find a basic block by name
-    //
-    basic_block* find_block(storage_key name) noexcept;
 
   public: // Functions
     //
@@ -130,14 +100,11 @@ namespace tnac::comp
     //
     // Emits a constant instuction
     //
-    void emit_constant(eval::type_id type) noexcept;
+    void emit_constant() noexcept;
 
   private:
-    basic_block* m_currentBlock{};
     func* m_currentFunction{};
-    block_store m_blocks;
     func_store m_functions;
-    entry_stack m_entryChain;
     eval::registry m_valReg;
     eval::value_visitor m_valVisitor;
   };
