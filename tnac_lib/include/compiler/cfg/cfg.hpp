@@ -20,7 +20,7 @@ namespace tnac::comp
     using func_name = func::name_t;
     using func_store = std::unordered_map<storage_key, func>;
 
-    using entry_stack = std::stack<basic_block*>;
+    using op_t = basic_block::op_t;
 
   public:
     CLASS_SPECIALS_NONE_CUSTOM(cfg);
@@ -97,6 +97,11 @@ namespace tnac::comp
     void consume_pi() noexcept;
 
   private:
+    //
+    // Adds an operation to the currently active basic block
+    //
+    op_t& add_operation(ir::op_code opCode, op_t::size_type size) noexcept;
+
     //
     // Emits a constant instuction
     //

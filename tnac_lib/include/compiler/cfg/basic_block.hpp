@@ -58,7 +58,7 @@ namespace tnac::comp
     //
     // Adds an operation
     //
-    void add_operation(op_t op) noexcept;
+    op_t& add_operation(ir::op_code op, op_t::size_type size) noexcept;
 
   private:
     //

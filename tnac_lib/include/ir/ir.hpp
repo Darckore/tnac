@@ -4,6 +4,7 @@
 
 #pragma once
 #include "ir/bytecode.hpp"
+#include "eval/value/value.hpp"
 
 namespace tnac::ir
 {
@@ -30,6 +31,39 @@ namespace tnac::ir
     // Returns the operation code
     //
     op_code code() const noexcept;
+
+    //
+    // Adds an int operand
+    //
+    void add_value(eval::int_type val) noexcept;
+
+    //
+    // Adds a float operand
+    //
+    void add_value(eval::float_type val) noexcept;
+
+    //
+    // Adds a complex operand
+    //
+    void add_value(eval::complex_type val) noexcept;
+
+  private:
+    //
+    // Adds a type id prefix to the operand
+    //
+    void add_type_id(eval::type_id ti) noexcept;
+
+    //
+    // Adds a value operand
+    //
+    template <typename T>
+    void add_operand(T val) noexcept
+    {
+      constexpr auto dataSize = sizeof(val);
+      std::array<byte_t, dataSize> byteArr{};
+      std::memcpy(byteArr.data(), &val, dataSize);
+      m_data.append_range(byteArr);
+    }
 
   private:
     data_t m_data;

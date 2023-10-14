@@ -37,9 +37,9 @@ namespace tnac::comp
     return res;
   }
 
-  void basic_block::add_operation(op_t op) noexcept
+  basic_block::op_t& basic_block::add_operation(ir::op_code op, op_t::size_type size) noexcept
   {
-    m_operations.emplace_back(std::move(op));
+    return m_operations.emplace_back(op, size);
   }
 
 
