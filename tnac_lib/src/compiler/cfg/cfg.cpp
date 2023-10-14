@@ -64,6 +64,7 @@ namespace tnac::comp
     utils::unused(opCode);
   }
 
+
   // Public members(Literals)
 
   void cfg::consume_int(string_t raw, int base) noexcept
