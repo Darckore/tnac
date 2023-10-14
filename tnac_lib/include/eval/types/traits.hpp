@@ -540,4 +540,55 @@ namespace tnac::eval
     concept abs_compatible = generic_type<T> &&
       requires(T op) { eval::abs(op); };
   }
+
+
+  //
+  // Size of a type in bytes
+  //
+
+  template <detail::expr_result Type>
+  constexpr auto size_of() noexcept
+  {
+    return sizeof(Type);
+  }
+
+  template <>
+  constexpr auto size_of<invalid_val_t>() noexcept
+  {
+    return decltype(sizeof(0)){};
+  }
+
+  template <>
+  constexpr auto size_of<complex_type>() noexcept
+  {
+    return 2 * size_of<float_type>();
+  }
+
+  template <>
+  constexpr auto size_of<fraction_type>() noexcept
+  {
+    return 2 * size_of<int_type>() + 1;
+  }
+
+  template <type_id Type>
+  constexpr auto size_of() noexcept
+  {
+    return size_of<utils::id_to_type_t<Type>>();
+  }
+
+  constexpr auto size_of(type_id type) noexcept
+  {
+    using enum type_id;
+    switch (type)
+    {
+    case Bool:      return size_of<Bool>();
+    case Int:       return size_of<Int>();
+    case Float:     return size_of<Float>();
+    case Complex:   return size_of<Complex>();
+    case Fraction:  return size_of<Fraction>();
+    case Function:  return size_of<Function>();
+    case Array:     return size_of<Array>();
+    default:        return size_of<Invalid>();
+    }
+  }
 }

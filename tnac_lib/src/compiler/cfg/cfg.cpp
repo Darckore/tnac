@@ -115,35 +115,53 @@ namespace tnac::comp
   void cfg::consume_int(string_t raw, int base) noexcept
   {
     m_valVisitor.visit_int_literal(raw, base);
+    emit_constant(eval::type_id::Int);
   }
 
   void cfg::consume_float(string_t raw) noexcept
   {
     m_valVisitor.visit_float_literal(raw);
+    emit_constant(eval::type_id::Float);
   }
 
   void cfg::consume_true() noexcept
   {
     m_valVisitor.visit_bool_literal(true);
+    emit_constant(eval::type_id::Bool);
   }
 
   void cfg::consume_false() noexcept
   {
     m_valVisitor.visit_bool_literal(false);
+    emit_constant(eval::type_id::Bool);
   }
 
   void cfg::consume_i() noexcept
   {
     m_valVisitor.visit_i();
+    emit_constant(eval::type_id::Complex);
   }
 
   void cfg::consume_e() noexcept
   {
     m_valVisitor.visit_e();
+    emit_constant(eval::type_id::Float);
   }
 
   void cfg::consume_pi() noexcept
   {
     m_valVisitor.visit_pi();
+    emit_constant(eval::type_id::Float);
   }
+
+
+  // Private members
+
+  void cfg::emit_constant(eval::type_id type) noexcept
+  {
+    auto value  = m_valVisitor.fetch_next();
+    auto irNode = ir::operation{ ir::op_code::Constant, eval::size_of(type) };
+    utils::unused(irNode, value, type);
+  }
+
 }

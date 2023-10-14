@@ -11,6 +11,11 @@ namespace tnac::ir
   //
   enum class op_code : std::uint8_t
   {
+    // Storage access
+    Constant, // produce a constant
+    Load,     // load a value from memory
+    Store,    // store a value into memory
+
     // Arithmetic
     Add,  // +
     Sub,  // -
@@ -32,11 +37,6 @@ namespace tnac::ir
     Eq,        // ==
     NEq,       // !=
     CmpNot,    // !
-    CmpIs,     // ?
-
-    // Storage access
-    Load,
-    Store
-
+    CmpIs      // ?
   };
 }

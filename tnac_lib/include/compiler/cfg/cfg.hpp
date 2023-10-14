@@ -127,6 +127,12 @@ namespace tnac::comp
     void consume_pi() noexcept;
 
   private:
+    //
+    // Emits a constant instuction
+    //
+    void emit_constant(eval::type_id type) noexcept;
+
+  private:
     basic_block* m_currentBlock{};
     func* m_currentFunction{};
     block_store m_blocks;
