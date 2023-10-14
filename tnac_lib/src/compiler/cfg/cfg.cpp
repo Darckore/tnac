@@ -116,7 +116,7 @@ namespace tnac::comp
   {
     auto operand = m_valVisitor.fetch_next();
     auto value = *operand;
-    auto irNode = ir::operation{ ir::op_code::Constant, value.size() };
+    auto irNode = ir::operation{ ir::op_code::Constant, value.size() + sizeof(eval::type_id) };
     current_func().current_block().add_operation(std::move(irNode));
     utils::unused(irNode, value);
   }
