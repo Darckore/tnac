@@ -52,6 +52,30 @@ namespace tnac::comp
     //
     void enter_block(basic_block& block) noexcept;
 
+    //
+    // Returns a reference to the entry basic block
+    // 
+    // const version
+    //
+    const basic_block& entry() const noexcept;
+
+    //
+    // Returns a reference to the entry basic block
+    //
+    basic_block& entry() noexcept;
+
+    //
+    // Returns a reference to the current basic block
+    // 
+    // const version
+    //
+    const basic_block& current_block() const noexcept;
+
+    //
+    // Returns a reference to the current basic block
+    //
+    basic_block& current_block() noexcept;
+
   private:
     name_t m_name;
     func* m_parent{};

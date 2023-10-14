@@ -48,4 +48,22 @@ namespace tnac::comp
     m_cur = &block;
   }
 
+
+  const basic_block& func::entry() const noexcept
+  {
+    return *m_entry;
+  }
+  basic_block& func::entry() noexcept
+  {
+    return FROM_CONST(entry);
+  }
+
+  const basic_block& func::current_block() const noexcept
+  {
+    return *m_cur;
+  }
+  basic_block& func::current_block() noexcept
+  {
+    return FROM_CONST(current_block);
+  }
 }

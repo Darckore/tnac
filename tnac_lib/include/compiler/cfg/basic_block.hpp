@@ -19,8 +19,11 @@ namespace tnac::comp
     using edge_ptr      = std::unique_ptr<cfg_edge>;
     using out_edge_list = std::vector<edge_ptr>;
     using in_edge_list  = std::vector<cfg_edge*>;
-    
     using name_t = buf_t;
+
+    using op_t = ir::operation;
+    using op_store = std::vector<op_t>;
+    using size_type = op_store::size_type;
 
   public:
     CLASS_SPECIALS_NODEFAULT_NOCOPY(basic_block);
@@ -52,6 +55,11 @@ namespace tnac::comp
     //
     cfg_edge& add_outbound(basic_block& target) noexcept;
 
+    //
+    // Adds an operation
+    //
+    void add_operation(op_t op) noexcept;
+
   private:
     //
     // Adds a pointer to an inbound connection to another block
@@ -63,5 +71,6 @@ namespace tnac::comp
     func* m_parent{};
     out_edge_list m_outbound;
     in_edge_list m_inbound;
+    op_store m_operations;
   };
 }

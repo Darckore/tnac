@@ -37,6 +37,11 @@ namespace tnac::comp
     return res;
   }
 
+  void basic_block::add_operation(op_t op) noexcept
+  {
+    m_operations.emplace_back(std::move(op));
+  }
+
 
   // Private members
 
