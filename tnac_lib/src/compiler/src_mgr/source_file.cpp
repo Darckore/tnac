@@ -53,6 +53,11 @@ namespace tnac::src
     return m_path;
   }
 
+  buf_t file::extract_name() const noexcept
+  {
+    return path().stem().string();
+  }
+
   file::hash_t file::hash() const noexcept
   {
     return hash(path());

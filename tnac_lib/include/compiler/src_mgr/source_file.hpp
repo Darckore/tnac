@@ -61,9 +61,14 @@ namespace tnac::src
     contents_t get_contents() noexcept;
 
     //
-    // Returns the file path
+    // Returns the full path
     //
     const path_t& path() const noexcept;
+
+    //
+    // Returns file name without extension
+    //
+    buf_t extract_name() const noexcept;
 
     //
     // Returns the hash value for the underlying path

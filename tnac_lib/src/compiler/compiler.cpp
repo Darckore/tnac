@@ -36,13 +36,16 @@ namespace tnac
     if (!inputFile)
       return std::unexpected{ inputFile.error() };
 
-    return (*inputFile)->get_contents();
+    m_src = *inputFile;
+    return m_src->get_contents();
   }
 
   compiler::ast_t compiler::parse(string_t input) noexcept
   {
+    register_module();
     parser p{ m_astBuilder, m_sema };
-    p(input);
+    auto srcLocation = m_src->make_location();
+    p(input, srcLocation);
     return p.root();
   }
 
@@ -50,6 +53,12 @@ namespace tnac
   {
     comp::cfg_builder cb{ m_cfg };
     cb(entry);
+  }
+
+  void compiler::register_module() noexcept
+  {
+    auto&& root = m_cfg.create_function(m_src->extract_name());
+    utils::unused(root); // todo: sema, add symbol for module
   }
 
 }

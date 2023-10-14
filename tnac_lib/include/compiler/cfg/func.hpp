@@ -9,6 +9,7 @@ namespace tnac::comp
 {
   //
   // Represents a function in the cfg
+  //
   class func final
   {
   public:

@@ -54,8 +54,14 @@ namespace tnac
     //
     void build_cfg(ast_t entry) noexcept;
 
+    //
+    // Registers the current module
+    //
+    void register_module() noexcept;
+
   private:
     source_manager m_srcMgr;
+    src::file* m_src{};
     ast::builder m_astBuilder;
     sema m_sema;
     comp::cfg m_cfg;

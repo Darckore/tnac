@@ -60,8 +60,7 @@ namespace tnac::comp
 
   cfg_builder::cfg_builder(cfg& gr) noexcept :
     m_cfg{ &gr }
-  {
-  }
+  {}
 
   void cfg_builder::operator()(ast::node* root) noexcept
   {
