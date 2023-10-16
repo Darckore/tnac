@@ -37,11 +37,6 @@ namespace tnac::comp
     return res;
   }
 
-  basic_block::op_t& basic_block::add_operation(ir::op_code op, op_t::size_type size) noexcept
-  {
-    return m_operations.emplace_back(op, size);
-  }
-
 
   // Private members
 

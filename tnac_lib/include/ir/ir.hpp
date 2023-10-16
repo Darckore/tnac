@@ -40,6 +40,12 @@ namespace tnac::ir
     op_code code() const noexcept;
 
     //
+    // Adds a value operand
+    //
+    void add_value(eval::value val) noexcept;
+
+  private:
+    //
     // Adds an int operand
     //
     void add_value(eval::int_type val) noexcept;
@@ -75,4 +81,37 @@ namespace tnac::ir
   private:
     data_t m_data;
   };
+
+
+  //
+  // A wrapper around IR for convenient access
+  //
+  class wrapper
+  {
+  public:
+    using op_t = operation;
+    using byte_t = op_t::byte_t;
+    using op_view  = std::span<byte_t>;
+    using size_type = op_t::size_type;
+
+  public:
+    CLASS_SPECIALS_NODEFAULT_NOCOPY(wrapper);
+
+    ~wrapper() noexcept;
+
+    wrapper(op_code code, size_type prealloc) noexcept;
+
+  public:
+    [[nodiscard]]
+    op_t operator*() && noexcept;
+
+  protected:
+    op_t& op() noexcept;
+
+  private:
+    operation m_op;
+  };
+
+  template <typename T>
+  concept op_wrapper = std::derived_from<T, wrapper>;
 }

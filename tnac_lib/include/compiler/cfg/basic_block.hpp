@@ -58,7 +58,11 @@ namespace tnac::comp
     //
     // Adds an operation
     //
-    op_t& add_operation(ir::op_code op, op_t::size_type size) noexcept;
+    template <ir::op_wrapper Op>
+    void add_operation(Op op) noexcept
+    {
+      m_operations.emplace_back(*std::move(op));
+    }
 
   private:
     //

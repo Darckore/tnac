@@ -112,25 +112,10 @@ namespace tnac::comp
 
   // Private members
 
-  cfg::op_t& cfg::add_operation(ir::op_code opCode, op_t::size_type size) noexcept
-  {
-    return current_func().current_block().add_operation(opCode, size);
-  }
-
   void cfg::emit_constant() noexcept
   {
     auto operand = m_valVisitor.fetch_next();
-    auto value = *operand;
-    auto&& irNode = add_operation(ir::op_code::Constant, value.size() + sizeof(eval::type_id));
-    eval::on_value(value, utils::visitor
-    {
-      [&irNode](auto&&) {},
-      [&irNode](eval::int_type i) { irNode.add_value(i); },
-      [&irNode](eval::float_type f) { irNode.add_value(f); },
-      [&irNode](eval::complex_type c) { irNode.add_value(c); }
-    });
-
-    utils::unused(irNode);
+    current_func().current_block().add_operation(ir::constant{ *operand });
   }
 
 }

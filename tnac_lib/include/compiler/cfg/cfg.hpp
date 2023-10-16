@@ -98,11 +98,6 @@ namespace tnac::comp
 
   private:
     //
-    // Adds an operation to the currently active basic block
-    //
-    op_t& add_operation(ir::op_code opCode, op_t::size_type size) noexcept;
-
-    //
     // Emits a constant instuction
     //
     void emit_constant() noexcept;
