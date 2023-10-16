@@ -49,11 +49,6 @@ namespace tnac::comp
     //
     void end_function() noexcept;
 
-    //
-    // Returns a reference to the current basic block
-    //
-    basic_block& current_block() noexcept;
-
   public: // Expressions
     //
     // Consumes a unary expression
@@ -106,6 +101,16 @@ namespace tnac::comp
     // Emits a constant instuction
     //
     void emit_constant() noexcept;
+
+    //
+    // Returns a reference to the current basic block
+    //
+    basic_block& current_block() noexcept;
+
+    //
+    // Returns a reference to the current environment
+    //
+    environment& env() noexcept;
 
   private:
     func* m_currentFunction{};

@@ -66,4 +66,13 @@ namespace tnac::comp
   {
     return FROM_CONST(current_block);
   }
+
+  const environment& func::env() const noexcept
+  {
+    return m_env;
+  }
+  environment& func::env() noexcept
+  {
+    return FROM_CONST(env);
+  }
 }

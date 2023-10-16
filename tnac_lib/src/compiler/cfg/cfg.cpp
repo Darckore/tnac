@@ -44,11 +44,6 @@ namespace tnac::comp
       m_currentFunction = parent;
   }
 
-  basic_block& cfg::current_block() noexcept
-  {
-    return current_func().current_block();
-  }
-
 
   // Public members(Expressions)
 
@@ -124,6 +119,16 @@ namespace tnac::comp
   {
     auto operand = m_valVisitor.fetch_next();
     current_block().add_operation(ir::constant{ *operand });
+  }
+
+  basic_block& cfg::current_block() noexcept
+  {
+    return current_func().current_block();
+  }
+
+  environment& cfg::env() noexcept
+  {
+    return current_func().env();
   }
 
 }

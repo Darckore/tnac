@@ -4,6 +4,7 @@
 
 #pragma once
 #include "compiler/cfg/basic_block.hpp"
+#include "compiler/cfg/environment.hpp"
 
 namespace tnac::comp
 {
@@ -18,7 +19,7 @@ namespace tnac::comp
     using block_store = std::unordered_map<storage_key, basic_block>;
 
   public:
-    CLASS_SPECIALS_NODEFAULT_NOCOPY(func);
+    CLASS_SPECIALS_NONE(func);
 
     ~func() noexcept;
 
@@ -76,11 +77,24 @@ namespace tnac::comp
     //
     basic_block& current_block() noexcept;
 
+    //
+    // Returns a reference to the environment
+    // 
+    // const version
+    //
+    const environment& env() const noexcept;
+
+    //
+    // Returns a reference to the environment
+    //
+    environment& env() noexcept;
+
   private:
     name_t m_name;
     func* m_parent{};
     block_store m_blocks;
     basic_block* m_entry{};
     basic_block* m_cur{};
+    environment m_env;
   };
 }

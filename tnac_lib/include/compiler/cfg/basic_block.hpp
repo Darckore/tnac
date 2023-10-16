@@ -26,7 +26,7 @@ namespace tnac::comp
     using size_type = op_store::size_type;
 
   public:
-    CLASS_SPECIALS_NODEFAULT_NOCOPY(basic_block);
+    CLASS_SPECIALS_NONE(basic_block);
 
     ~basic_block() noexcept;
 
