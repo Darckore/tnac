@@ -37,8 +37,16 @@ namespace tnac::comp
 
   void cfg::end_function() noexcept
   {
-    if (m_currentFunction)
-      m_currentFunction = m_currentFunction->parent();
+    if (!m_currentFunction)
+      return;
+
+    if (auto parent = m_currentFunction->parent())
+      m_currentFunction = parent;
+  }
+
+  basic_block& cfg::current_block() noexcept
+  {
+    return current_func().current_block();
   }
 
 
@@ -115,7 +123,7 @@ namespace tnac::comp
   void cfg::emit_constant() noexcept
   {
     auto operand = m_valVisitor.fetch_next();
-    current_func().current_block().add_operation(ir::constant{ *operand });
+    current_block().add_operation(ir::constant{ *operand });
   }
 
 }

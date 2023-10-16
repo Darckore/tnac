@@ -49,6 +49,11 @@ namespace tnac::comp
     //
     void end_function() noexcept;
 
+    //
+    // Returns a reference to the current basic block
+    //
+    basic_block& current_block() noexcept;
+
   public: // Expressions
     //
     // Consumes a unary expression
