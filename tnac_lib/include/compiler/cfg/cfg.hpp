@@ -40,11 +40,6 @@ namespace tnac::comp
     func* find_func(storage_key name) noexcept;
 
     //
-    // Returns a reference to the currently processed function
-    //
-    func& current_func() noexcept;
-
-    //
     // Exits the currently processed function
     //
     void end_function() noexcept;
@@ -101,6 +96,11 @@ namespace tnac::comp
     // Emits a constant instuction
     //
     void emit_constant() noexcept;
+
+    //
+    // Returns a reference to the currently processed function
+    //
+    func& current_func() noexcept;
 
     //
     // Returns a reference to the current basic block

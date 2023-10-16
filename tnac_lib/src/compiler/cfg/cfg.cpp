@@ -8,8 +8,7 @@ namespace tnac::comp
 
   cfg::cfg() noexcept :
     m_valVisitor{ m_valReg }
-  {
-  }
+  {}
 
 
   // Public members(Functions)
@@ -28,11 +27,6 @@ namespace tnac::comp
   {
     auto res = m_functions.find(name);
     return res != m_functions.end() ? &res->second : nullptr;
-  }
-
-  func& cfg::current_func() noexcept
-  {
-    return *m_currentFunction;
   }
 
   void cfg::end_function() noexcept
@@ -119,6 +113,11 @@ namespace tnac::comp
   {
     auto operand = m_valVisitor.fetch_next();
     current_block().add_operation(ir::constant{ *operand });
+  }
+
+  func& cfg::current_func() noexcept
+  {
+    return *m_currentFunction;
   }
 
   basic_block& cfg::current_block() noexcept
