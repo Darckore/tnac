@@ -3,11 +3,18 @@
 //
 
 #pragma once
-#include "ir/bytecode.hpp"
 #include "eval/value/value.hpp"
 
 namespace tnac::ir
 {
+  //
+  // Operation code for the IR
+  //
+  enum class op_code : std::uint8_t
+  {
+#include "general/op_codes.inl"
+  };
+
   //
   // Intermediate representation operation
   //
