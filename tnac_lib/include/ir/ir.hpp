@@ -22,9 +22,10 @@ namespace tnac::ir
   {
   public:
     using enum op_code;
-    using byte_t = std::byte;
-    using data_t = std::vector<byte_t>;
-    using size_type = data_t::size_type;
+    using byte_t      = std::byte;
+    using data_t      = std::vector<byte_t>;
+    using size_type   = data_t::size_type;
+    using reg_index_t = std::uint16_t;
 
   public:
     CLASS_SPECIALS_NODEFAULT_NOCOPY(operation);
@@ -43,6 +44,11 @@ namespace tnac::ir
     // Adds a value operand
     //
     void add_value(eval::value val) noexcept;
+
+    //
+    // Adds a virtula register index to store the result in
+    //
+    void add_register(reg_index_t idx) noexcept;
 
   private:
     //
@@ -89,10 +95,11 @@ namespace tnac::ir
   class wrapper
   {
   public:
-    using op_t = operation;
-    using byte_t = op_t::byte_t;
-    using op_view  = std::span<byte_t>;
-    using size_type = op_t::size_type;
+    using op_t        = operation;
+    using byte_t      = op_t::byte_t;
+    using op_view     = std::span<byte_t>;
+    using size_type   = op_t::size_type;
+    using reg_index_t = op_t::reg_index_t;
 
   public:
     CLASS_SPECIALS_NODEFAULT_NOCOPY(wrapper);

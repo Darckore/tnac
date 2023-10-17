@@ -112,7 +112,7 @@ namespace tnac::comp
   void cfg::emit_constant() noexcept
   {
     auto operand = m_valVisitor.fetch_next();
-    current_block().add_operation(ir::constant{ *operand });
+    current_block().add_operation(ir::constant{ env().next_register(), *operand });
   }
 
   func& cfg::current_func() noexcept

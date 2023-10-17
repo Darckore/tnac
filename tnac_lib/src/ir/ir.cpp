@@ -31,6 +31,11 @@ namespace tnac::ir // operation
     });
   }
 
+  void operation::add_register(reg_index_t idx) noexcept
+  {
+    add_operand(idx);
+  }
+
 
   // Private members
 

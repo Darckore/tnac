@@ -17,6 +17,6 @@ namespace tnac::ir
 
     ~constant() noexcept;
 
-    explicit constant(eval::value val) noexcept;
+    constant(reg_index_t reg, eval::value val) noexcept;
   };
 }
