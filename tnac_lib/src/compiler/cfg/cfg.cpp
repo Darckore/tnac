@@ -23,7 +23,7 @@ namespace tnac::comp
     return res;
   }
 
-  func* cfg::find_func(storage_key name) noexcept
+  func* cfg::find_function(storage_key name) noexcept
   {
     auto res = m_functions.find(name);
     return res != m_functions.end() ? &res->second : nullptr;

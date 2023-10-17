@@ -37,7 +37,7 @@ namespace tnac::comp
     //
     // Attempts to find a function by name
     //
-    func* find_func(storage_key name) noexcept;
+    func* find_function(storage_key name) noexcept;
 
     //
     // Exits the currently processed function
