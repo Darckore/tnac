@@ -19,11 +19,11 @@ Root, // //
 Abs,  // | |
 
 // Logical
-CmpLess,   // <
-CmpLessEq, // <=
-CmpGr,     // >
-CmpGrEq,   // >=
+Less,   // <
+LessEq, // <=
+Gr,     // >
+GrEq,   // >=
 Eq,        // ==
 NEq,       // !=
-CmpNot,    // !
-CmpIs      // ?
+Not,    // !
+Is      // ?
