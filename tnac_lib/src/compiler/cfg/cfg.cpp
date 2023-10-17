@@ -58,7 +58,28 @@ namespace tnac::comp
 
   void cfg::consume_binary(eval::val_ops opCode) noexcept
   {
-    utils::unused(opCode);
+    using enum eval::val_ops;
+    switch (opCode)
+    {
+      case Addition: break;
+      case Subtraction: break;
+      case Multiplication: break;
+      case Division: break;
+      case Modulo: break;
+      case RelLess: break;
+      case RelLessEq: break;
+      case RelGr: break;
+      case RelGrEq: break;
+      case Equal: break;
+      case NEqual: break;
+      case BitwiseAnd: break;
+      case BitwiseXor: break;
+      case BitwiseOr: break;
+      case BinaryPow: break;
+      case BinaryRoot: break;
+
+      default: break;
+    }
   }
 
 
