@@ -16,14 +16,17 @@ Xor,  // ^
 Or,   // |
 Pow,  // **
 Root, // //
+
+// Unaries
 Abs,  // | |
+Inv,  // ~
 
 // Logical
 Less,   // <
 LessEq, // <=
 Gr,     // >
 GrEq,   // >=
-Eq,        // ==
-NEq,       // !=
+Eq,     // ==
+NEq,    // !=
 Not,    // !
 Is      // ?
