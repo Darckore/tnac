@@ -44,42 +44,59 @@ namespace tnac::comp
   void cfg::consume_unary(eval::val_ops opCode) noexcept
   {
     using enum eval::val_ops;
+    using enum ir::op_code;
+
+    ir::op_code code{};
     switch (opCode)
     {
-    case LogicalNot: break;
-    case LogicalIs: break;
-    case UnaryPlus: break;
-    case UnaryNegation: break;
-    case UnaryBitwiseNot: break;
+    //case LogicalNot: break;
+    //case LogicalIs: break;
+    case UnaryPlus: code = Add; break;
+    case UnaryNegation: code = Sub; break;
+    //case UnaryBitwiseNot: break;
 
-    default: break;
+    default: return;
     }
+
+    auto&& curEnv = env();
+    const auto right  = curEnv.pop_register();
+    const auto saveTo = curEnv.next_register();
+    current_block().add_binary(code, saveTo, {}, right);
   }
 
   void cfg::consume_binary(eval::val_ops opCode) noexcept
   {
     using enum eval::val_ops;
+    using enum ir::op_code;
+
+    ir::op_code code{};
     switch (opCode)
     {
-      case Addition: break;
-      case Subtraction: break;
-      case Multiplication: break;
-      case Division: break;
-      case Modulo: break;
-      case RelLess: break;
-      case RelLessEq: break;
-      case RelGr: break;
-      case RelGrEq: break;
-      case Equal: break;
-      case NEqual: break;
-      case BitwiseAnd: break;
-      case BitwiseXor: break;
-      case BitwiseOr: break;
-      case BinaryPow: break;
-      case BinaryRoot: break;
+    case Addition:       code = Add;  break;
+    case Subtraction:    code = Sub; break;
+    case Multiplication: code = Mul; break;
+    case Division:       code = Div; break;
+    case Modulo:         code = Mod; break;
+    case BitwiseAnd:     code = And; break;
+    case BitwiseXor:     code = Xor; break;
+    case BitwiseOr:      code = Or; break;
+    case BinaryPow:      code = Pow; break;
+    case BinaryRoot:     code = Root; break;
+    case RelLess:        code = Less; break;
+    case RelLessEq:      code = LessEq; break;
+    case RelGr:          code = Gr; break;
+    case RelGrEq:        code = GrEq; break;
+    case Equal:          code = Eq; break;
+    case NEqual:         code = NEq; break;
 
-      default: break;
+    default: return;
     }
+
+    auto&& curEnv = env();
+    const auto right  = curEnv.pop_register();
+    const auto left   = curEnv.pop_register();
+    const auto saveTo = curEnv.next_register();
+    current_block().add_binary(code, saveTo, left, right);
   }
 
 

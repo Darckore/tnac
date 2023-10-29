@@ -10,6 +10,7 @@ namespace tnac::comp
   // Environment
   // 
   // Used to manage registers and variable access
+  // Registers start at 1, since index 0 is reserved as a logical zero
   //
   class environment final
   {
@@ -40,6 +41,6 @@ namespace tnac::comp
 
   private:
     reg_stack m_regStack;
-    reg_index_t m_curRegisterIdx{};
+    reg_index_t m_curRegisterIdx{ 1 };
   };
 }

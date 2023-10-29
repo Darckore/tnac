@@ -65,6 +65,15 @@ namespace tnac::comp
     add_value(val);
   }
 
+  void basic_block::add_binary(ir::op_code code, reg_index_t saveTo, reg_index_t left, reg_index_t right) noexcept
+  {
+    alloc_op(sizeof(reg_index_t) * 3);
+    add_operand(code);
+    add_register(saveTo);
+    add_register(left);
+    add_register(right);
+  }
+
 
   // Private members
 

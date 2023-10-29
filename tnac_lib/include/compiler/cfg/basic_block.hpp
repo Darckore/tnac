@@ -63,6 +63,11 @@ namespace tnac::comp
     //
     void add_constant(reg_index_t saveTo, eval::value val) noexcept;
 
+    //
+    // Adds a binary operation
+    //
+    void add_binary(ir::op_code code, reg_index_t saveTo, reg_index_t left, reg_index_t right) noexcept;
+
   private:
     //
     // Adds a pointer to an inbound connection to another block
