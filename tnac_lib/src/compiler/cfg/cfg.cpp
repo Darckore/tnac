@@ -44,14 +44,24 @@ namespace tnac::comp
   void cfg::consume_unary(eval::val_ops opCode) noexcept
   {
     using enum eval::val_ops;
+    using enum ir::op_code;
+
+    if (utils::eq_any(opCode, UnaryPlus, UnaryNegation))
+    {
+      auto&& curEnv      = env();
+      const auto code    = (opCode == UnaryPlus) ? Add : Sub;
+      const auto operand = curEnv.pop_register();
+      const auto saveTo  = curEnv.next_register();
+      current_block().add_binary(code, saveTo, {}, operand);
+      return;
+    }
+
     switch (opCode)
     {
     case LogicalNot:      break;
     case LogicalIs:       break;
     case UnaryBitwiseNot: break;
     case AbsoluteValue:   break;
-    case UnaryPlus:       break;
-    case UnaryNegation:   break;
 
     default: return;
     }
