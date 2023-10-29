@@ -20,8 +20,6 @@ namespace tnac::comp
     using func_name = func::name_t;
     using func_store = std::unordered_map<storage_key, func>;
 
-    using op_t = basic_block::op_t;
-
   public:
     CLASS_SPECIALS_NONE_CUSTOM(cfg);
 

@@ -3,6 +3,23 @@
 
 namespace tnac::comp
 {
+  namespace detail
+  {
+    template <typename Val>
+    concept ir_const = tnac::is_any_v<Val,
+      eval::bool_type,
+      eval::int_type,
+      eval::float_type,
+      eval::complex_type
+    >;
+
+    template <typename Val>
+    concept invalid_ir_const = !ir_const<Val>;
+  }
+}
+
+namespace tnac::comp
+{
   // Special members
 
   basic_block::~basic_block() noexcept = default;
@@ -38,11 +55,78 @@ namespace tnac::comp
   }
 
 
+  // Public members(Operations)
+
+  void basic_block::add_constant(reg_index_t saveTo, eval::value val) noexcept
+  {
+    alloc_op(sizeof(reg_index_t) + value_size(val));
+    add_operand(ir::op_code::Constant);
+    add_register(saveTo);
+    add_value(val);
+  }
+
+
   // Private members
 
   void basic_block::add_inbound(cfg_edge& connection) noexcept
   {
     m_inbound.emplace_back(&connection);
   }
+
+  void basic_block::alloc_op(size_type size) noexcept
+  {
+    const auto newSize = sizeof(ir::op_code) + size + m_opData.size();
+    m_opData.reserve(newSize);
+  }
+
+  basic_block::size_type basic_block::value_size(eval::value val) const noexcept
+  {
+    return sizeof(eval::type_id) + val.size();
+  }
+
+  void basic_block::add_value(eval::value val) noexcept
+  {
+    eval::on_value(val, utils::visitor
+      {
+        [this](detail::invalid_ir_const auto&&) {},
+        [this](detail::ir_const auto v) { add_value(v); }
+      });
+  }
+
+  void basic_block::add_register(reg_index_t idx) noexcept
+  {
+    add_operand(idx);
+  }
+
+  void basic_block::add_value(eval::bool_type val) noexcept
+  {
+    add_type_id(eval::type_id::Bool);
+    add_operand(val);
+  }
+
+  void basic_block::add_value(eval::int_type val) noexcept
+  {
+    add_type_id(eval::type_id::Int);
+    add_operand(val);
+  }
+
+  void basic_block::add_value(eval::float_type val) noexcept
+  {
+    add_type_id(eval::type_id::Float);
+    add_operand(val);
+  }
+
+  void basic_block::add_value(eval::complex_type val) noexcept
+  {
+    add_type_id(eval::type_id::Complex);
+    add_operand(val.real());
+    add_operand(val.imag());
+  }
+
+  void basic_block::add_type_id(eval::type_id ti) noexcept
+  {
+    m_opData.emplace_back(std::bit_cast<byte_t>(ti));
+  }
+
 
 }
