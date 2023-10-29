@@ -64,6 +64,11 @@ namespace tnac::comp
     void add_constant(reg_index_t saveTo, eval::value val) noexcept;
 
     //
+    // Adds a unary operation
+    //
+    void add_unary(ir::op_code code, reg_index_t saveTo, reg_index_t operand) noexcept;
+
+    //
     // Adds a binary operation
     //
     void add_binary(ir::op_code code, reg_index_t saveTo, reg_index_t left, reg_index_t right) noexcept;

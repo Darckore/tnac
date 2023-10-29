@@ -48,23 +48,25 @@ namespace tnac::comp
 
     if (utils::eq_any(opCode, UnaryPlus, UnaryNegation))
     {
-      auto&& curEnv      = env();
       const auto code    = (opCode == UnaryPlus) ? Add : Sub;
-      const auto operand = curEnv.pop_register();
-      const auto saveTo  = curEnv.next_register();
+      const auto [saveTo, operand ] = extract_unary();
       current_block().add_binary(code, saveTo, {}, operand);
       return;
     }
 
+    ir::op_code code{};
     switch (opCode)
     {
-    case LogicalNot:      break;
-    case LogicalIs:       break;
-    case UnaryBitwiseNot: break;
-    case AbsoluteValue:   break;
+    case LogicalNot:      code = Not; break;
+    case LogicalIs:       code = Is;  break;
+    case UnaryBitwiseNot: code = Inv; break;
+    case AbsoluteValue:   code = Abs; break;
 
     default: return;
     }
+
+    const auto [saveTo, operand] = extract_unary();
+    current_block().add_unary(code, saveTo, operand);
   }
 
   void cfg::consume_binary(eval::val_ops opCode) noexcept
@@ -95,10 +97,7 @@ namespace tnac::comp
     default: return;
     }
 
-    auto&& curEnv = env();
-    const auto right  = curEnv.pop_register();
-    const auto left   = curEnv.pop_register();
-    const auto saveTo = curEnv.next_register();
+    const auto [saveTo, left, right] = extract_binary();
     current_block().add_binary(code, saveTo, left, right);
   }
 
@@ -149,6 +148,23 @@ namespace tnac::comp
 
 
   // Private members
+
+  cfg::unary_regs cfg::extract_unary() noexcept
+  {
+    auto&& curEnv = env();
+    const auto operand = curEnv.pop_register();
+    const auto saveTo  = curEnv.next_register();
+    return { saveTo, operand };
+  }
+
+  cfg::binary_regs cfg::extract_binary() noexcept
+  {
+    auto&& curEnv = env();
+    const auto right  = curEnv.pop_register();
+    const auto left   = curEnv.pop_register();
+    const auto saveTo = curEnv.next_register();
+    return { saveTo, left, right };
+  }
 
   void cfg::emit_constant() noexcept
   {

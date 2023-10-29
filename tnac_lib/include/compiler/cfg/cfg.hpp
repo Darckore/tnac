@@ -20,6 +20,11 @@ namespace tnac::comp
     using func_name = func::name_t;
     using func_store = std::unordered_map<storage_key, func>;
 
+  private:
+    using reg_index_t = basic_block::reg_index_t;
+    using unary_regs  = std::pair<reg_index_t, reg_index_t>;
+    using binary_regs = std::tuple<reg_index_t, reg_index_t, reg_index_t>;
+
   public:
     CLASS_SPECIALS_NONE_CUSTOM(cfg);
 
@@ -90,6 +95,16 @@ namespace tnac::comp
     void consume_pi() noexcept;
 
   private:
+    //
+    // Extracts register idxs for a unary op
+    //
+    unary_regs extract_unary() noexcept;
+
+    //
+    // Extracts register idxs for a binary op
+    //
+    binary_regs extract_binary() noexcept;
+
     //
     // Emits a constant instuction
     //
