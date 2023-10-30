@@ -53,7 +53,7 @@ namespace tnac_tests
       static void check_error(tnac::string_t input, tnac::string_t errMsg) noexcept
       {
         auto core = get_tnac();
-        core.on_parse_error(on_error);
+        core.get_parser().on_error(on_error);
         expectedErr = errMsg;
         stop = false;
 
@@ -770,7 +770,7 @@ namespace tnac_tests
   {
     auto core = get_tnac();
     auto&& parser = core.get_parser();
-    core.on_command([](tnac::ast::command) noexcept {});
+    core.get_parser().on_command([](tnac::ast::command) noexcept {});
 
     auto ast = parser("#command p1 p2"sv);
     ASSERT_NE(ast, nullptr);

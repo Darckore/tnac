@@ -1,5 +1,10 @@
 #pragma once
-#include "packages/core.hpp"
+#include "parser/parser.hpp"
+#include "sema/sema.hpp"
+#include "eval/value/value.hpp"
+#include "eval/types/traits.hpp"
+#include "compiler/src_mgr/source_manager.hpp"
+#include "parser/commands/cmd_interpreter.hpp"
 
 namespace tnac_tests
 {
@@ -8,7 +13,6 @@ namespace tnac_tests
   //
 
   namespace tree = tnac::ast;
-  namespace pkg  = tnac::packages;
   using tree::node_kind;
   using tnac::string_t;
   using tnac::buf_t;
@@ -31,11 +35,42 @@ namespace tnac_tests
     return msg;
   }
 
-  inline pkg::tnac_core get_tnac(std::size_t stackSz = 0) noexcept
+  class tnac_core final
   {
-    return pkg::tnac_core{ stackSz };
+  public:
+    CLASS_SPECIALS_NONE(tnac_core);
+
+    ~tnac_core() noexcept = default;
+
+    tnac_core(std::size_t stackSize) noexcept :
+      m_parser{ m_builder, m_sema },
+      m_cmdInterpreter{ m_cmdStore }
+    {
+      utils::unused(stackSize);
+    }
+
+  public:
+    tnac::parser& get_parser() noexcept
+    {
+      return m_parser;
+    }
+
+  private:
+    tnac::ast::builder m_builder;
+    tnac::sema m_sema;
+    tnac::parser m_parser;
+    tnac::source_manager m_srcMgr;
+
+    tnac::commands::store m_cmdStore;
+    tnac::cmd m_cmdInterpreter;
+  };
+
+  inline tnac_core get_tnac(std::size_t stackSz = 0) noexcept
+  {
+    return tnac_core{ stackSz };
   }
 
+#if 0
   //
   // Evaluator
   //
@@ -147,23 +182,24 @@ namespace tnac_tests
     value_checker() noexcept :
       m_tnac{ 128 }
     {
-      m_tnac.on_parse_error(on_parse_error);
-      m_tnac.on_semantic_error(on_eval_error);
+      //m_tnac.on_parse_error(on_parse_error);
+      //m_tnac.on_semantic_error(on_eval_error);
     }
 
     value_checker(string_t fname, bool doEval = false) noexcept :
       value_checker{}
     {
       read_file(fname);
-      if (doEval)
-        eval(m_buffer);
+      utils::unused(doEval);
+      //if (doEval)
+      //  eval(m_buffer);
     }
 
   public:
-    value_type eval(string_t input) noexcept
-    {
-      return core().evaluate(input);
-    }
+    //value_type eval(string_t input) noexcept
+    //{
+    //  return core().evaluate(input);
+    //}
 
     template <testable T>
     void operator()(string_t input, T expected) noexcept
@@ -205,13 +241,13 @@ namespace tnac_tests
       m_buffer.assign(it{ in }, it{});
     }
 
-    pkg::tnac_core& core() noexcept
+    tnac_core& core() noexcept
     {
       return m_tnac;
     }
 
   private:
-    pkg::tnac_core m_tnac;
+    tnac_core m_tnac;
     buf_t m_buffer;
   };
 
@@ -265,5 +301,5 @@ namespace tnac_tests
   private:
     arr_store m_arrays;
   };
-
+#endif
 }

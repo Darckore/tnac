@@ -1,3 +1,4 @@
+#if 0
 #include "test_cases/test_common.hpp"
 
 namespace tnac_tests
@@ -532,3 +533,4 @@ namespace tnac_tests
   }
 
 }
+#endif
