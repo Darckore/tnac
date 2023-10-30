@@ -95,7 +95,7 @@ namespace tnac::src
   loc_wrapper location::record() noexcept
   {
     if (is_dummy())
-      return loc_wrapper { *this };
+      return loc_wrapper{ dummy() };
 
     return src_mgr().register_location(*this);
   }
