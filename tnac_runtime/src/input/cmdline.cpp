@@ -1,4 +1,5 @@
 #include "input/cmdline.hpp"
+#include "common/feedback.hpp"
 
 namespace tnac::rt
 {
@@ -10,6 +11,11 @@ namespace tnac::rt
 
 
   // Public members
+
+  void cmdline::attach_feedback(feedback& fb) noexcept
+  {
+    m_feedback = &fb;
+  }
 
   void cmdline::parse(int argCount, char** args) noexcept
   {
@@ -50,8 +56,8 @@ namespace tnac::rt
 
   void cmdline::error(string_t msg) noexcept
   {
-    if (m_errHandler)
-      m_errHandler(msg);
+    if (m_feedback)
+      m_feedback->error(msg);
   }
 
   void cmdline::consume(string_t arg) noexcept
@@ -59,6 +65,6 @@ namespace tnac::rt
     if (arg == "-i"sv)
       m_state.m_interactive = true;
     else
-      error("Unknown cli arg");
+      error("Unknown cli arg"sv);
   }
 }

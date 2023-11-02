@@ -5,6 +5,7 @@
 #pragma once
 #include "input/cmdline.hpp"
 #include "src_mgr/source_manager.hpp"
+#include "common/feedback.hpp"
 
 namespace tnac::rt
 {
@@ -46,6 +47,7 @@ namespace tnac::rt
     io m_io{};
     cmdline m_settings;
     source_manager m_srcMgr;
+    feedback m_feedback;
   };
 }
 

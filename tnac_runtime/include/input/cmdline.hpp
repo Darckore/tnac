@@ -4,14 +4,13 @@
 
 #pragma once
 
+namespace tnac
+{
+  class feedback;
+}
+
 namespace tnac::rt
 {
-  namespace detail
-  {
-    template <typename F>
-    concept cli_err_handler = std::is_nothrow_invocable_r_v<void, F, string_t>;
-  }
-
   //
   // Parses the command line and stores the settings
   //
@@ -20,8 +19,6 @@ namespace tnac::rt
   public:
     using name_t  = string_t;
     using flags_t = unsigned;
-
-    using err_handler_t = std::move_only_function<void(string_t) noexcept>;
 
   public:
     CLASS_SPECIALS_NONE_CUSTOM(cmdline);
@@ -32,13 +29,9 @@ namespace tnac::rt
 
   public:
     //
-    // Attaches the error handler
+    // Attaches the feedback object
     //
-    template <detail::cli_err_handler F>
-    void on_error(F&& f) noexcept
-    {
-      m_errHandler = std::forward<F>(f);
-    }
+    void attach_feedback(feedback& fb) noexcept;
 
     //
     // Parses the command line
@@ -73,7 +66,7 @@ namespace tnac::rt
     void consume(string_t arg) noexcept;
 
   private:
-    err_handler_t m_errHandler{};
+    feedback* m_feedback{};
 
     struct state
     {

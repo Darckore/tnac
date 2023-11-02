@@ -63,7 +63,8 @@ namespace tnac::rt
 
   void driver::set_callbacks() noexcept
   {
-    m_settings.on_error([this](string_t msg) noexcept { on_cli_error(msg); });
+    m_feedback.on_error([this](string_t msg) noexcept { on_cli_error(msg); });
+    m_settings.attach_feedback(m_feedback);
   }
 
   void driver::on_cli_error(string_t msg) noexcept

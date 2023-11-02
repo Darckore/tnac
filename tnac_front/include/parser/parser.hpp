@@ -6,11 +6,11 @@
 #include "parser/lex.hpp"
 #include "ast/ast_builder.hpp"
 #include "ast/ast.hpp"
-#include "common/diag.hpp"
 
 namespace tnac
 {
   class sema;
+  class feedback;
 }
 
 namespace tnac
@@ -104,9 +104,6 @@ namespace tnac
 
     using prec = detail::op_precedence;
 
-    using err_handler_t = std::move_only_function<void(const ast::error_expr&) noexcept>;
-    using cmd_handler_t = std::move_only_function<void(ast::command) noexcept>;
-
   private:
     //
     // Helper for the expr list parser
@@ -190,23 +187,9 @@ namespace tnac
     root_ptr root() noexcept;
 
     //
-    // Attaches the error handler which gets called when the parser encounters a
-    // syntax error and produces an error expression
+    // Attaches a feedback object for error and command handling
     //
-    template <detail::parse_err_handler F>
-    void on_error(F&& handler) noexcept
-    {
-      m_errHandler = std::forward<F>(handler);
-    }
-
-    //
-    // Attaches the command handler which gets called when a command is encountered
-    //
-    template <detail::cmd_handler F>
-    void on_command(F&& handler) noexcept
-    {
-      m_cmdHandler = std::forward<F>(handler);
-    }
+    void attach_feedback(feedback& fb) noexcept;
 
   private: // semantics
     //
@@ -402,8 +385,7 @@ namespace tnac
     root_ptr m_root{};
     tok_opt m_lastConsumed{};
 
-    err_handler_t m_errHandler{};
-    cmd_handler_t m_cmdHandler{};
+    feedback* m_feedback{};
 
     tok_kind m_terminateAt{ tok_kind::Eol };
   };

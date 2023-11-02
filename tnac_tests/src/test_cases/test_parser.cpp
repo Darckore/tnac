@@ -1,5 +1,6 @@
 #include "test_cases/test_common.hpp"
 #include "parser/ast/ast_visitor.hpp"
+#include "common/feedback.hpp"
 
 namespace tnac::tests
 {
@@ -52,8 +53,10 @@ namespace tnac::tests
 
       static void check_error(string_t input, string_t errMsg) noexcept
       {
+        static feedback fb;
+        fb.on_parse_error(on_error);
         auto core = get_tnac();
-        core.get_parser().on_error(on_error);
+        core.get_parser().attach_feedback(fb);
         expectedErr = errMsg;
         stop = false;
 
@@ -770,7 +773,9 @@ namespace tnac::tests
   {
     auto core = get_tnac();
     auto&& parser = core.get_parser();
-    core.get_parser().on_command([](ast::command) noexcept {});
+    feedback fb;
+    fb.on_command([](ast::command) noexcept {});
+    parser.attach_feedback(fb);
 
     auto ast = parser("#command p1 p2"sv);
     ASSERT_NE(ast, nullptr);

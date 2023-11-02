@@ -1,6 +1,7 @@
 #include "parser/parser.hpp"
 #include "sema/sema.hpp"
 #include "sema/symbol.hpp"
+#include "common/feedback.hpp"
 
 namespace tnac
 {
@@ -229,6 +230,11 @@ namespace tnac
     return FROM_CONST(root);
   }
 
+  void parser::attach_feedback(feedback& fb) noexcept
+  {
+    m_feedback = &fb;
+  }
+
 
   // Private members
 
@@ -254,7 +260,8 @@ namespace tnac
     next_tok();
     auto argList = command_args(consumeSeparator);
     ast::command cmd{ cmdName, std::move(argList) };
-    if(m_cmdHandler) m_cmdHandler(std::move(cmd));
+    if(m_feedback)
+      m_feedback->command(std::move(cmd));
   }
 
   ast::command::arg_list parser::command_args(bool consumeSeparator) noexcept
@@ -308,8 +315,8 @@ namespace tnac
     auto errPos = at == err_pos::Current ? pos : last_tok(pos).get_after();
     auto errExpr = m_builder.make_error(errPos, msg);
 
-    if (m_errHandler)
-      m_errHandler(*errExpr);
+    if (m_feedback)
+      m_feedback->parse_error(*errExpr);
 
     return errExpr;
   }
