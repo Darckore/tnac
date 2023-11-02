@@ -4,6 +4,18 @@ namespace tnac
 {
   namespace err = src::err;
 
+
+  // Statics
+
+  source_manager::path_t source_manager::canonise(const path_t& src) noexcept
+  {
+    std::error_code errc;
+    auto res = fsys::weakly_canonical(src, errc);
+    if (errc) res.clear();
+    return res;
+  }
+
+
   // Special members
 
   source_manager::~source_manager() noexcept = default;
@@ -15,12 +27,12 @@ namespace tnac
 
   source_manager::load_res source_manager::load(path_t path) noexcept
   {
-    file_t file{ path, *this };
-    if (!file)
+    auto loadPath = canonise(path);
+    if (loadPath.empty() || !file_t::exists(loadPath))
       return std::unexpected{ err::file_not_found() };
 
-    const auto hash = file.hash();
-    auto emplaceRes = m_files.try_emplace(hash, std::move(file));
+    const auto hash = file_t::hash(loadPath);
+    auto emplaceRes = m_files.try_emplace(hash, file_t{ std::move(path), *this });
     return &emplaceRes.first->second;
   }
 

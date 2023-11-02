@@ -36,16 +36,18 @@ namespace tnac::src
     //
     static hash_t hash(const path_t& path) noexcept;
 
-  private:
     //
-    // Converts the path to its canonical form
+    // Checks whether the file at the specified path exists
     //
-    static path_t canonise(path_t src) noexcept;
+    static bool exists(const path_t& path) noexcept;
 
   public:
     CLASS_SPECIALS_NODEFAULT_NOCOPY(file);
 
     ~file() noexcept;
+
+  private:
+    friend class source_manager;
 
     file(path_t path, source_manager& mgr) noexcept;
 
@@ -86,11 +88,6 @@ namespace tnac::src
     location make_location() const noexcept;
 
   private:
-    //
-    // Allows checking whether the file exists
-    //
-    bool exists() const noexcept;
-
     //
     // Reads the entire file into the internal buffer
     //

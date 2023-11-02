@@ -29,6 +29,12 @@ namespace tnac
     
     source_manager() noexcept;
 
+  private:
+    //
+    // Converts the path to its canonical form
+    //
+    static path_t canonise(const path_t& src) noexcept;
+
   public:
     //
     // Loads a file

@@ -9,12 +9,9 @@ namespace tnac::src
     return fsys::hash_value(path);
   }
 
-  file::path_t file::canonise(path_t src) noexcept
+  bool file::exists(const path_t & path) noexcept
   {
-    std::error_code errc;
-    src = fsys::weakly_canonical(src, errc);
-    if (errc) src.clear();
-    return src;
+    return fsys::exists(path);
   }
 
 
@@ -23,13 +20,13 @@ namespace tnac::src
   file::~file() noexcept = default;
 
   file::file(path_t path, source_manager& mgr) noexcept :
-    m_path{ canonise(std::move(path)) },
+    m_path{ std::move(path) },
     m_mgr{ &mgr }
   {}
 
   file::operator bool() const noexcept
   {
-    return exists();
+    return exists(m_path);
   }
 
 
@@ -76,15 +73,10 @@ namespace tnac::src
 
   // Private members
 
-  bool file::exists() const noexcept
-  {
-    return fsys::exists(m_path);
-  }
-
   bool file::read() noexcept
   {
     m_buffer.clear();
-    if (!exists())
+    if (!exists(m_path))
       return false;
 
     std::ifstream in{ m_path.string() };
