@@ -1,7 +1,7 @@
 #if 0
 #include "test_cases/test_common.hpp"
 
-namespace tnac_tests
+namespace tnac::tests
 {
   #define TEST_EXAMPLE(N) "tests/example"#N".tnac"
 

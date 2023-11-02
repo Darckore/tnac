@@ -1,17 +1,17 @@
 #include "test_cases/test_common.hpp"
 
-namespace tnac_tests
+namespace tnac::tests
 {
   namespace
   {
     void all_same(string_t input, tok_kind kind)
     {
-      tnac::lex lex;
-      lex(input);
+      lex l;
+      l(input);
 
       for (;;)
       {
-        auto tok = lex.next();
+        auto tok = l.next();
         if (tok.is_eol())
           break;
 
@@ -22,25 +22,25 @@ namespace tnac_tests
     template <std::size_t N>
     void check_tokens(string_t input, const std::array<tok_kind, N>& tokArr) noexcept
     {
-      tnac::lex lex;
-      lex(input);
+      lex l;
+      l(input);
 
       for (auto tk : tokArr)
       {
-        auto tok = lex.next();
+        auto tok = l.next();
         EXPECT_TRUE(tok.is(tk)) << "Failed token: " << tok.value();
       }
     }
   }
 }
 
-namespace tnac_tests
+namespace tnac::tests
 {
   TEST(lexer, t_token_list)
   {
     constexpr auto input = "= + - ~ * / && & ^ || | ** // ! ? == != < > <= >= -> : , ; ( ) { } [ ] _true _false 1 01 0b1 0x1 1.0 id #cmd"sv;
 
-    using enum tnac::tok_kind;
+    using enum tok_kind;
     constexpr std::array testArr{
       Assign, Plus, Minus, Tilde, Asterisk, Slash,
       LogAnd, Amp, Hat, LogOr, Pipe, Pow, Root, Exclamation, Question,
@@ -59,7 +59,7 @@ namespace tnac_tests
   {
     constexpr auto input = "=+-~*/&&&^|||**//!?<><=>===!=->:(){}[],;0.1"sv;
 
-    using enum tnac::tok_kind;
+    using enum tok_kind;
     constexpr std::array testArr{
       Assign, Plus, Minus, Tilde, Asterisk, Slash,
       LogAnd, Amp, Hat, LogOr, Pipe, Pow, Root, Exclamation, Question,
@@ -79,7 +79,7 @@ namespace tnac_tests
     constexpr auto hexInts = "0x0 0x1 0x1234567890AbCDeF 0x69 0x228a 0x666 0xfF"sv;
     constexpr auto floats  = "0.0 0.00000 0.1 0023.3450 13456.0"sv;
 
-    using enum tnac::tok_kind;
+    using enum tok_kind;
     all_same(binInts, IntBin);
     all_same(octInts, IntOct);
     all_same(decInts, IntDec);
@@ -91,7 +91,7 @@ namespace tnac_tests
   {
     constexpr auto failures = "0. .1 08 1.2.3 0xabcdr 0xab.c 0b111.1 0b 0x 0b2 256a"sv;
 
-    using enum tnac::tok_kind;
+    using enum tok_kind;
     all_same(failures, Error);
   }
 
@@ -99,7 +99,7 @@ namespace tnac_tests
   {
     constexpr auto input = "'one' 'and two  ' 'and 3 & 4 @$' '' '            '"sv;
 
-    using enum tnac::tok_kind;
+    using enum tok_kind;
     all_same(input, String);
   }
 
@@ -107,14 +107,14 @@ namespace tnac_tests
   {
     constexpr auto input = "'this string has no end"sv;
 
-    using enum tnac::tok_kind;
+    using enum tok_kind;
     all_same(input, Error);
   }
 
   TEST(lexer, t_ids)
   {
     constexpr auto ids = "a var_001 x____111__v long_identifier_name_of_doom"sv;
-    using enum tnac::tok_kind;
+    using enum tok_kind;
     all_same(ids, Identifier);
   }
 
@@ -122,7 +122,7 @@ namespace tnac_tests
   {
     constexpr auto input = "_fn _ret _result _cplx _frac _int _flt _bool _true _false _i _pi _e"sv;
 
-    using enum tnac::tok_kind;
+    using enum tok_kind;
     constexpr std::array testArr{
       KwFunction, KwRet,
       KwResult, KwComplex, KwFraction, KwInt, KwFloat, KwBool,
@@ -136,16 +136,16 @@ namespace tnac_tests
   TEST(lexer, t_peek)
   {
     constexpr auto input = "42 69"sv;
-    tnac::lex lex;
-    lex(input);
+    lex l;
+    l(input);
 
-    auto tok = lex.peek();
-    EXPECT_EQ(tok, lex.peek());
-    EXPECT_EQ(tok, lex.peek());
-    EXPECT_EQ(tok, lex.next());
-    EXPECT_NE(tok, lex.peek());
+    auto tok = l.peek();
+    EXPECT_EQ(tok, l.peek());
+    EXPECT_EQ(tok, l.peek());
+    EXPECT_EQ(tok, l.next());
+    EXPECT_NE(tok, l.peek());
     
-    utils::unused(lex.next());
-    EXPECT_TRUE(lex.next().is_eol());
+    utils::unused(l.next());
+    EXPECT_TRUE(l.next().is_eol());
   }
 }

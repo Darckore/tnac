@@ -6,22 +6,16 @@
 #include "src_mgr/source_manager.hpp"
 #include "parser/commands/cmd_interpreter.hpp"
 
-namespace tnac_tests
+namespace tnac::tests
 {
   //
   // Stuff
   //
 
-  namespace tree = tnac::ast;
-  using tree::node_kind;
-  using tnac::string_t;
-  using tnac::buf_t;
-  using tnac::tok_kind;
-  using tnac::ast::node_kind;
-  using cplx = tnac::eval::complex_type;
-  using frac = tnac::eval::fraction_type;
-  using arr  = tnac::eval::array_type;
-  using func = tnac::eval::function_type;
+  using cplx = eval::complex_type;
+  using frac = eval::fraction_type;
+  using arr  = eval::array_type;
+  using func = eval::function_type;
 
   inline testing::Message& operator<<(testing::Message& msg, const frac& f) noexcept
   {
@@ -50,19 +44,19 @@ namespace tnac_tests
     }
 
   public:
-    tnac::parser& get_parser() noexcept
+    parser& get_parser() noexcept
     {
       return m_parser;
     }
 
   private:
-    tnac::ast::builder m_builder;
-    tnac::sema m_sema;
-    tnac::parser m_parser;
-    tnac::source_manager m_srcMgr;
+    ast::builder m_builder;
+    sema m_sema;
+    parser m_parser;
+    source_manager m_srcMgr;
 
-    tnac::commands::store m_cmdStore;
-    tnac::cmd m_cmdInterpreter;
+    commands::store m_cmdStore;
+    cmd m_cmdInterpreter;
   };
 
   inline tnac_core get_tnac(std::size_t stackSz = 0) noexcept

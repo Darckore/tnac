@@ -1,20 +1,20 @@
 #include "test_cases/test_common.hpp"
 #include "parser/ast/ast_visitor.hpp"
 
-namespace tnac_tests
+namespace tnac::tests
 {
   namespace
   {
-    using enum tree::node_kind;
+    using enum ast::node_kind;
 
-    class tree_checker : public tree::const_bottom_up_visitor<tree_checker>
+    class tree_checker : public ast::const_bottom_up_visitor<tree_checker>
     {
     public:
       struct expected_node
       {
         string_t data{};
-        node_kind kind{};
-        node_kind parent{};
+        ast::node_kind kind{};
+        ast::node_kind parent{};
         bool nullParent{};
       };
 
@@ -28,7 +28,7 @@ namespace tnac_tests
         tree_checker{ exp }(ast);
       }
 
-      template <node_kind kind, std::size_t N>
+      template <ast::node_kind kind, std::size_t N>
       static void check_simple_exprs(const std::array<string_t, N>& inputs)
       {
         auto core = get_tnac();
@@ -43,14 +43,14 @@ namespace tnac_tests
             EXPECT_EQ(nodeKind, kind) << "Bad kind for input: " << input;
             if (nodeKind == kind)
             {
-              auto&& tok = static_cast<tree::expr&>(*ast).pos();
+              auto&& tok = static_cast<ast::expr&>(*ast).pos();
               EXPECT_TRUE(input.starts_with(tok.value()));
             }
           }
         }
       }
 
-      static void check_error(tnac::string_t input, tnac::string_t errMsg) noexcept
+      static void check_error(string_t input, string_t errMsg) noexcept
       {
         auto core = get_tnac();
         core.get_parser().on_error(on_error);
@@ -76,7 +76,7 @@ namespace tnac_tests
       inline static bool stop{};
       inline static unsigned errCount{};
 
-      static void on_error(const tree::error_expr& err) noexcept
+      static void on_error(const ast::error_expr& err) noexcept
       {
         ++errCount;
         if (stop) return;
@@ -102,93 +102,93 @@ namespace tnac_tests
       {}
 
     public:
-      void visit(const tree::scope& scope) noexcept
+      void visit(const ast::scope& scope) noexcept
       {
         check_node(scope, "");
       }
 
-      void visit(const tree::assign_expr& expr) noexcept
+      void visit(const ast::assign_expr& expr) noexcept
       {
         check_node(expr, expr.op().value());
       }
 
-      void visit(const tree::decl_expr& expr) noexcept
+      void visit(const ast::decl_expr& expr) noexcept
       {
         check_node(expr, "");
       }
 
-      void visit(const tree::var_decl& decl) noexcept
+      void visit(const ast::var_decl& decl) noexcept
       {
         check_node(decl, decl.name());
       }
 
-      void visit(const tree::param_decl& decl) noexcept
+      void visit(const ast::param_decl& decl) noexcept
       {
         check_node(decl, decl.name());
       }
 
-      void visit(const tree::func_decl& decl) noexcept
+      void visit(const ast::func_decl& decl) noexcept
       {
         check_node(decl, decl.name());
       }
 
-      void visit(const tree::binary_expr& expr) noexcept
+      void visit(const ast::binary_expr& expr) noexcept
       {
         check_node(expr, expr.op().value());
       }
 
-      void visit(const tree::unary_expr& expr) noexcept
+      void visit(const ast::unary_expr& expr) noexcept
       {
         check_node(expr, expr.op().value());
       }
 
-      void visit(const tree::paren_expr& expr) noexcept
+      void visit(const ast::paren_expr& expr) noexcept
       {
         check_node(expr, "");
       }
 
-      void visit(const tree::abs_expr& expr) noexcept
+      void visit(const ast::abs_expr& expr) noexcept
       {
         check_node(expr, "");
       }
 
-      void visit(const tree::typed_expr& expr) noexcept
+      void visit(const ast::typed_expr& expr) noexcept
       {
         check_node(expr, expr.type_name().value());
       }
 
-      void visit(const tree::call_expr& expr) noexcept
+      void visit(const ast::call_expr& expr) noexcept
       {
         check_node(expr, "");
       }
 
-      void visit(const tree::lit_expr& expr) noexcept
+      void visit(const ast::lit_expr& expr) noexcept
       {
         check_node(expr, expr.pos().value());
       }
 
-      void visit(const tree::id_expr& expr) noexcept
+      void visit(const ast::id_expr& expr) noexcept
       {
         check_node(expr, expr.name());
       }
 
-      void visit(const tree::ret_expr& expr) noexcept
+      void visit(const ast::ret_expr& expr) noexcept
       {
         check_node(expr, "");
       }
 
-      void visit(const tree::result_expr& expr) noexcept
+      void visit(const ast::result_expr& expr) noexcept
       {
         check_node(expr, expr.pos().value());
       }
 
-      void visit(const tree::error_expr& expr) noexcept
+      void visit(const ast::error_expr& expr) noexcept
       {
         check_node(expr, expr.message());
       }
 
     private:
-      void check_node(const tree::node& node, string_t nodeStr) noexcept
+      void check_node(const ast::node& node, string_t nodeStr) noexcept
       {
         ASSERT_NE(m_iter, m_data.end()) << "Unexpected end of data";
         auto&& expected = *m_iter;
@@ -219,7 +219,7 @@ namespace tnac_tests
   }
 }
 
-namespace tnac_tests
+namespace tnac::tests
 {
   TEST(parser, t_literals)
   {
@@ -227,7 +227,7 @@ namespace tnac_tests
       "0"sv, "42"sv, "042"sv, "0b1101"sv, "0xfF2"sv, "42.69"sv
     };
 
-    tree_checker::check_simple_exprs<node_kind::Literal>(inputArr);
+    tree_checker::check_simple_exprs<ast::node_kind::Literal>(inputArr);
   }
 
   TEST(parser, t_unaries)
@@ -236,7 +236,7 @@ namespace tnac_tests
       "+0"sv, "-42"sv, "+042"sv, "+0b1101"sv, "-0xfF2"sv, "-42.69"sv, "~42"sv
     };
 
-    tree_checker::check_simple_exprs<node_kind::Unary>(inputArr);
+    tree_checker::check_simple_exprs<ast::node_kind::Unary>(inputArr);
   }
 
   TEST(parser, t_binaries)
@@ -245,7 +245,7 @@ namespace tnac_tests
       "+0 - 1"sv, "-42 + 0xff"sv, "042 * 2"sv, "0b1101 + -0.5"sv, "0*0xfF2"sv, "-42.69 / 0.0 / 2"sv
     };
 
-    tree_checker::check_simple_exprs<node_kind::Binary>(inputArr);
+    tree_checker::check_simple_exprs<ast::node_kind::Binary>(inputArr);
   }
 
   TEST(parser, t_struct_simple_unary)
@@ -770,7 +770,7 @@ namespace tnac_tests
   {
     auto core = get_tnac();
     auto&& parser = core.get_parser();
-    core.get_parser().on_command([](tnac::ast::command) noexcept {});
+    core.get_parser().on_command([](ast::command) noexcept {});
 
     auto ast = parser("#command p1 p2"sv);
     ASSERT_NE(ast, nullptr);
