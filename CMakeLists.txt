@@ -28,6 +28,7 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/out)
 
 set(APP_TARGET tnac)
 set(LIBCORE_TARGET tnac_lib)
+set(COMMON_TARGET tnac_common)
 set(FRONTEND_TARGET tnac_front)
 set(EVAL_TARGET tnac_eval)
 set(RUNTIME_TARGET tnac_runtime)
@@ -35,24 +36,29 @@ set(TESTS_TARGET tnac_tests)
 
 project(tnac_project CXX)
 
+set(TARGET_NAME ${COMMON_TARGET})
+add_subdirectory("${TARGET_NAME}")
+
 set(TARGET_NAME ${FRONTEND_TARGET})
 add_subdirectory("${TARGET_NAME}")
+target_link_libraries(${TARGET_NAME} ${COMMON_TARGET})
 
 set(TARGET_NAME ${EVAL_TARGET})
 add_subdirectory("${TARGET_NAME}")
+target_link_libraries(${TARGET_NAME} ${COMMON_TARGET})
 
 set(TARGET_NAME ${LIBCORE_TARGET})
 add_subdirectory("${TARGET_NAME}")
-target_link_libraries(${TARGET_NAME} ${FRONTEND_TARGET} ${EVAL_TARGET})
+target_link_libraries(${TARGET_NAME} ${COMMON_TARGET} ${FRONTEND_TARGET} ${EVAL_TARGET})
 
 set(TARGET_NAME ${RUNTIME_TARGET})
 add_subdirectory("${TARGET_NAME}")
-target_link_libraries(${TARGET_NAME} ${LIBCORE_TARGET} ${FRONTEND_TARGET} ${EVAL_TARGET})
+target_link_libraries(${TARGET_NAME} ${COMMON_TARGET} ${LIBCORE_TARGET} ${FRONTEND_TARGET} ${EVAL_TARGET})
 
 if(OPT_APP)
   set(TARGET_NAME ${APP_TARGET})
   add_subdirectory("${TARGET_NAME}")
-  target_link_libraries(${TARGET_NAME} ${RUNTIME_TARGET} ${LIBCORE_TARGET} ${FRONTEND_TARGET} ${EVAL_TARGET})
+  target_link_libraries(${TARGET_NAME} ${RUNTIME_TARGET} ${COMMON_TARGET} ${LIBCORE_TARGET} ${FRONTEND_TARGET} ${EVAL_TARGET})
 endif()
 
 if(OPT_TESTS AND NOT TARGET gtest)
@@ -64,7 +70,7 @@ if(OPT_TESTS AND TARGET gtest)
   set(TARGET_NAME ${TESTS_TARGET})
   set(OPT_DATA_DIR "tests")
   add_subdirectory("${TARGET_NAME}")
-  target_link_libraries(${TARGET_NAME} ${RUNTIME_TARGET} ${LIBCORE_TARGET} ${FRONTEND_TARGET} ${EVAL_TARGET})
+  target_link_libraries(${TARGET_NAME} ${RUNTIME_TARGET} ${COMMON_TARGET} ${LIBCORE_TARGET} ${FRONTEND_TARGET} ${EVAL_TARGET})
   
   if(OPT_APP)
     add_dependencies(${TARGET_NAME} ${APP_TARGET})
@@ -88,6 +94,7 @@ target_link_libraries(${LIBCORE_TARGET} ${TARGET_NAME})
 target_link_libraries(${RUNTIME_TARGET} ${TARGET_NAME})
 target_link_libraries(${FRONTEND_TARGET} ${TARGET_NAME})
 target_link_libraries(${EVAL_TARGET} ${TARGET_NAME})
+target_link_libraries(${COMMON_TARGET} ${TARGET_NAME})
 
 if(OPT_APP)
   target_link_libraries(${APP_TARGET} ${TARGET_NAME})
