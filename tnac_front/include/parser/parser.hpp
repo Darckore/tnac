@@ -6,6 +6,7 @@
 #include "parser/lex.hpp"
 #include "ast/ast_builder.hpp"
 #include "ast/ast.hpp"
+#include "common/diag.hpp"
 
 namespace tnac
 {
@@ -74,12 +75,6 @@ namespace tnac
     private:
       prec m_cur{};
     };
-
-    template <typename F>
-    concept parse_err_handler = std::is_nothrow_invocable_r_v<void, F, const ast::error_expr&>;
-
-    template <typename F>
-    concept cmd_handler = std::is_nothrow_invocable_r_v<void, F, ast::command>;
   }
 
   //
