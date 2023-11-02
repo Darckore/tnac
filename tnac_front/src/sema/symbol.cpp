@@ -45,16 +45,6 @@ namespace tnac::semantics
     return declarator().name();
   }
 
-  eval::value symbol::value() const noexcept
-  {
-    return m_value;
-  }
-
-  void symbol::eval_result(eval::value val) noexcept
-  {
-    m_value = val;
-  }
-
   // Variable symbol
 
   variable::~variable() noexcept = default;

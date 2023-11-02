@@ -12,7 +12,32 @@ namespace tnac::ast
   //
   enum class node_kind : std::uint16_t
   {
-#include "general/ast_kinds.inl"
+    Error,
+    Scope,
+
+    // Expressions
+    Literal,
+    Identifier,
+    Unary,
+    Binary,
+    Assign,
+    Array,
+    Paren,
+    Abs,
+    Typed,
+    Call,
+    Decl,
+    Result,
+    Ret,
+    Cond,
+    CondShort,
+    Matcher,
+    Pattern,
+
+    // Decls,
+    VarDecl,
+    FuncDecl,
+    ParamDecl
   };
 
   //

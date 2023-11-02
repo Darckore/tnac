@@ -89,7 +89,6 @@
     <Expand>
       <Item Name="[decl]">*m_decl</Item>
       <Item Name="[parent]">*m_owner</Item>
-      <Item Name="[value]">m_value</Item>
     </Expand>
   </Type>
 

@@ -3,7 +3,7 @@
 //
 
 #pragma once
-#include "compiler/src_mgr/source_location.hpp"
+#include "src_mgr/source_location.hpp"
 
 namespace tnac::src::err
 {

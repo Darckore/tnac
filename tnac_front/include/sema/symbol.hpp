@@ -3,7 +3,6 @@
 //
 
 #pragma once
-#include "eval/value/value.hpp"
 #include "parser/ast/ast_decls.hpp"
 
 namespace tnac::ast
@@ -98,21 +97,9 @@ namespace tnac::semantics
     //
     string_t name() const noexcept;
 
-    //
-    // Returns the value associated with the entity
-    //
-    eval::value value() const noexcept;
-
-    //
-    // Assigns a value to the entity
-    // The evaluator sets this
-    //
-    void eval_result(eval::value val) noexcept;
-
   private:
     const scope* m_owner{};
     ast::decl* m_decl{};
-    eval::value m_value{};
     kind m_kind{};
   };
 

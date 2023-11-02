@@ -3,7 +3,7 @@
 //
 
 #pragma once
-#include "compiler/src_mgr/source_manager.hpp"
+#include "src_mgr/source_manager.hpp"
 #include "parser/parser.hpp"
 #include "parser/ast/ast_builder.hpp"
 #include "sema/sema.hpp"

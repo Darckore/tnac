@@ -3,7 +3,7 @@
 #include "sema/sema.hpp"
 #include "eval/value/value.hpp"
 #include "eval/types/traits.hpp"
-#include "compiler/src_mgr/source_manager.hpp"
+#include "src_mgr/source_manager.hpp"
 #include "parser/commands/cmd_interpreter.hpp"
 
 namespace tnac_tests

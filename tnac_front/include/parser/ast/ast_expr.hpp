@@ -4,7 +4,6 @@
 
 #pragma once
 #include "parser/ast/ast.hpp"
-#include "eval/value/value.hpp"
 
 namespace tnac::semantics
 {

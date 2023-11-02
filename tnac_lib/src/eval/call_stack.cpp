@@ -33,10 +33,11 @@ namespace tnac::eval
 
       void reapply_vars(value_visitor& vis) noexcept
       {
-        for (auto&& [sym, val] : m_prevVars)
-        {
-          sym->eval_result(vis.visit_assign(sym, *val));
-        }
+        utils::unused(vis);
+        //for (auto&& [sym, val] : m_prevVars)
+        //{
+        //  sym->eval_result(vis.visit_assign(sym, *val));
+        //}
       }
 
       void allocate(size_type count) noexcept
@@ -92,11 +93,11 @@ namespace tnac::eval
     // Push previous values of parameters to the stack for later
     // We traverse them in reverse in order to place them in the natural order
     // rather than backwards as usual
-    for (auto param : callable.params() | views::reverse)
-    {
-      auto&& prmSym = param->symbol();
-      visitor.push_value(prmSym.value());
-    }
+    //for (auto param : callable.params() | views::reverse)
+    //{
+    //  auto&& prmSym = param->symbol();
+    //  visitor.push_value(prmSym.value());
+    //}
 
     // Push current args on the stack, also in the natural order
     for (auto&& arg : args)
@@ -108,33 +109,35 @@ namespace tnac::eval
 
   void call_stack::prologue(const sym_t& callable, vis_t& visitor) noexcept
   {
+    utils::unused(visitor, callable);
     if (m_frames.empty())
     {
       UTILS_ASSERT(false);
       return;
     }
 
-    auto&& top = m_frames.back();
-    for (auto&& [param, arg] : utils::make_iterators(callable.params(), top.args()))
-    {
-      auto&& sym = param->symbol();
-      sym.eval_result(visitor.visit_assign(&sym, *arg));
-    }
+    //auto&& top = m_frames.back();
+    //for (auto&& [param, arg] : utils::make_iterators(callable.params(), top.args()))
+    //{
+    //  auto&& sym = param->symbol();
+    //  sym.eval_result(visitor.visit_assign(&sym, *arg));
+    //}
   }
 
   void call_stack::epilogue(const sym_t& callable, vis_t& visitor) noexcept
   {
+    utils::unused(callable);
     if (m_frames.empty())
     {
       return;
     }
 
-    for (auto param : callable.params())
-    {
-      auto&& sym = param->symbol();
-      auto prev = visitor.fetch_next();
-      sym.eval_result(visitor.visit_assign(&sym, *prev));
-    }
+    //for (auto param : callable.params())
+    //{
+    //  auto&& sym = param->symbol();
+    //  auto prev = visitor.fetch_next();
+    //  sym.eval_result(visitor.visit_assign(&sym, *prev));
+    //}
 
     auto&& frame = m_frames.back();
     frame.reapply_vars(visitor);
