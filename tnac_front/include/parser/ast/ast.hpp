@@ -1,235 +1,36 @@
 //
-// Base AST
+// Includes all headers defining different AST node types
 //
 
 #pragma once
-#include "parser/token.hpp"
 
-namespace tnac::ast
-{
-  //
-  // Kinds of ast nodes
-  //
-  enum class node_kind : std::uint16_t
-  {
-    Error,
-    Scope,
+#include "parser/ast/ast_base.hpp"
+#include "parser/ast/ast_expr.hpp"
+#include "parser/ast/ast_util.hpp"
+#include "parser/ast/ast_decls.hpp"
 
-    // Expressions
-    Literal,
-    Identifier,
-    Unary,
-    Binary,
-    Assign,
-    Array,
-    Paren,
-    Abs,
-    Typed,
-    Call,
-    Decl,
-    Result,
-    Ret,
-    Cond,
-    CondShort,
-    Matcher,
-    Pattern,
+TYPE_TO_ID_ASSOCIATION(tnac::ast::error_expr, tnac::ast::node_kind::Error);
 
-    // Decls,
-    VarDecl,
-    FuncDecl,
-    ParamDecl
-  };
+TYPE_TO_ID_ASSOCIATION(tnac::ast::scope, tnac::ast::node_kind::Scope);
 
-  //
-  // Base class for all AST nodes
-  //
-  class node
-  {
-  public:
-    using kind = node_kind;
-    using enum kind;
+TYPE_TO_ID_ASSOCIATION(tnac::ast::lit_expr,    tnac::ast::node_kind::Literal);
+TYPE_TO_ID_ASSOCIATION(tnac::ast::id_expr,     tnac::ast::node_kind::Identifier);
+TYPE_TO_ID_ASSOCIATION(tnac::ast::unary_expr,  tnac::ast::node_kind::Unary);
+TYPE_TO_ID_ASSOCIATION(tnac::ast::binary_expr, tnac::ast::node_kind::Binary);
+TYPE_TO_ID_ASSOCIATION(tnac::ast::assign_expr, tnac::ast::node_kind::Assign);
+TYPE_TO_ID_ASSOCIATION(tnac::ast::array_expr,  tnac::ast::node_kind::Array);
+TYPE_TO_ID_ASSOCIATION(tnac::ast::paren_expr,  tnac::ast::node_kind::Paren);
+TYPE_TO_ID_ASSOCIATION(tnac::ast::abs_expr,    tnac::ast::node_kind::Abs);
+TYPE_TO_ID_ASSOCIATION(tnac::ast::typed_expr,  tnac::ast::node_kind::Typed);
+TYPE_TO_ID_ASSOCIATION(tnac::ast::call_expr,   tnac::ast::node_kind::Call);
+TYPE_TO_ID_ASSOCIATION(tnac::ast::result_expr, tnac::ast::node_kind::Result);
+TYPE_TO_ID_ASSOCIATION(tnac::ast::ret_expr,    tnac::ast::node_kind::Ret);
+TYPE_TO_ID_ASSOCIATION(tnac::ast::decl_expr,   tnac::ast::node_kind::Decl);
+TYPE_TO_ID_ASSOCIATION(tnac::ast::matcher,     tnac::ast::node_kind::Matcher);
+TYPE_TO_ID_ASSOCIATION(tnac::ast::pattern,     tnac::ast::node_kind::Pattern);
+TYPE_TO_ID_ASSOCIATION(tnac::ast::cond_short,  tnac::ast::node_kind::CondShort);
+TYPE_TO_ID_ASSOCIATION(tnac::ast::cond_expr,   tnac::ast::node_kind::Cond);
 
-  private:
-    friend class builder;
-
-  public:
-    CLASS_SPECIALS_NONE(node);
-
-    virtual ~node() noexcept;
-
-  protected:
-    node(kind k) noexcept;
-
-  public:
-    //
-    // Returns the parent node if one exists
-    // 
-    // const version
-    //
-    const node* parent() const noexcept;
-
-    //
-    // Returns the parent node if one exists
-    // 
-    node* parent() noexcept;
-
-    //
-    // Returns the node's kind
-    //
-    kind what() const noexcept;
-
-    //
-    // Checks whether the node has the specified kind
-    //
-    bool is(kind k) const noexcept;
-
-    //
-    // Checks whether the node is of one of the specified kinds
-    //
-    template <typename... KINDS> requires(utils::all_same<kind, KINDS...>)
-    auto is_any(KINDS... kinds) const noexcept
-    {
-      return ((is(kinds)) || ...);
-    }
-
-    //
-    // Checks whether the current node is valid (doesn't contain errors)
-    //
-    bool is_valid() const noexcept;
-
-    //
-    // Climbs the tree until the specified kind of node is encountered
-    // Returns nullptr is reached the root
-    // 
-    // const version
-    //
-    template <kind K>
-    auto climb() const noexcept
-    {
-      using res_type = decltype(utils::try_cast<K>(this));
-      auto top = this;
-      while (top)
-      {
-        auto res = utils::try_cast<K>(top);
-        if (res) return res;
-        top = top->parent();
-      }
-      return res_type{};
-    }
-
-    //
-    // Climbs the tree until the specified kind of node is encountered
-    // Returns nullptr is reached the root
-    // 
-    template <kind K>
-    auto climb() noexcept
-    {
-      return FROM_CONST(template climb<K>);
-    }
-
-  protected:
-    //
-    // Makes this node ivalid
-    //
-    void make_invalid() noexcept;
-
-    //
-    // Makes this node invalid if the given child is invalid
-    //
-    void make_invalid_if(node* child) noexcept;
-
-    //
-    // Assigns a parent. Called from non-terminal nodes which
-    // can have children
-    //
-    void make_child_of(node* parent) noexcept;
-
-    //
-    // Sets itself as the parent of the given child node
-    //
-    void assume_ancestry(node* child) noexcept;
-
-  private:
-    node* m_parent{};
-    kind m_kind{ Error };
-    bool m_valid{ true };
-  };
-
-  inline auto get_id(const node& n) noexcept
-  {
-    return n.what();
-  }
-
-  //
-  // Checks whether the target class inherits from ast::node
-  //
-  template <typename D>
-  concept ast_node = std::is_base_of_v<ast::node, D>;
-
-  //
-  // Mixin base for easy type definitions
-  //
-  template <ast_node N>
-  struct list
-  {
-    using elem = N;
-    using pointer = elem*;
-    using const_pointer = const elem*;
-    using reference = elem&;
-    using const_reference = const elem&;
-
-    using elem_list = std::vector<pointer>;
-  };
-
-  class expr;
-
-  //
-  // A special root node. Contains a list of all expressions in the current scope
-  //
-  class scope : public node
-  {
-  public:
-    using element = expr;
-    using pointer = element*;
-    using const_pointer = const element*;
-
-    using elem_list = std::vector<pointer>;
-
-  private:
-    friend class builder;
-
-  public:
-    CLASS_SPECIALS_NONE(scope);
-
-    virtual ~scope() noexcept;
-
-  protected:
-    scope(elem_list children) noexcept;
-
-  public:
-    //
-    // Merges the given list of child nodes with the list it currently holds
-    //
-    void adopt(elem_list children) noexcept;
-
-    //
-    // Returns the current list of children
-    // 
-    // const version
-    //
-    const elem_list& children() const noexcept;
-
-    //
-    // Returns the current list of children
-    // 
-    elem_list& children() noexcept;
-
-    //
-    // Checks whether the current scope is global
-    //
-    bool is_global() const noexcept;
-
-  private:
-    elem_list m_children;
-  };
-}
+TYPE_TO_ID_ASSOCIATION(tnac::ast::var_decl,   tnac::ast::node_kind::VarDecl);
+TYPE_TO_ID_ASSOCIATION(tnac::ast::func_decl,  tnac::ast::node_kind::FuncDecl);
+TYPE_TO_ID_ASSOCIATION(tnac::ast::param_decl, tnac::ast::node_kind::ParamDecl);

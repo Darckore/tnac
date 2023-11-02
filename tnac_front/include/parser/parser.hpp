@@ -5,7 +5,7 @@
 #pragma once
 #include "parser/lex.hpp"
 #include "ast/ast_builder.hpp"
-#include "ast/ast_nodes.hpp"
+#include "ast/ast.hpp"
 
 namespace tnac
 {
