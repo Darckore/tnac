@@ -40,4 +40,10 @@ using namespace std::literals;
 namespace fsys = std::filesystem;
 
 #include "utils/utils.hpp"
-#include "general/defs.hpp"
+
+namespace tnac
+{
+  using buf_t    = std::string;
+  using string_t = std::string_view;
+  using char_t   = string_t::value_type;
+}
