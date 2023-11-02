@@ -5,9 +5,6 @@
 #include "../tnac_lib/pch.h"
 #include "utils/utils.hpp"
 
-#include <iostream>
-#include <fstream>
-
 #define TNAC_BAD_PLATFORM static_assert(false, "Platform not supported");
 
 #if _WIN64
@@ -17,6 +14,6 @@
 
 namespace tnac_rt
 {
-  using in_stream  = std::istream;
-  using out_stream = std::ostream;
+  using in_stream  = utils::istream;
+  using out_stream = utils::ostream;
 }
