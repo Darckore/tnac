@@ -3,7 +3,6 @@
 //
 
 #pragma once
-#include "compiler/compiler.hpp"
 #include "input/cmdline.hpp"
 
 namespace tnac_rt
@@ -45,7 +44,6 @@ namespace tnac_rt
   private:
     io m_io{};
     cmdline m_settings;
-    tnac::compiler m_compiler;
   };
 }
 

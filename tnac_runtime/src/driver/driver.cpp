@@ -27,10 +27,7 @@ namespace tnac_rt
       return;
     }
 
-    // todo: if source file
-    m_compiler.compile(m_settings.run_on());
-
-    // todo: load compiled if not source
+    // todo: compilation
   }
 
   // Private members (IO)
