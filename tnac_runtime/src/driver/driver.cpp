@@ -27,8 +27,21 @@ namespace tnac_rt
       return;
     }
 
-    // todo: compilation
+    auto loadResult = m_srcMgr.load(m_settings.run_on());
+    if (!loadResult)
+    {
+      return;
+    }
+
+    fsys::current_path((*loadResult)->directory());
+    // todo: compile
+
+    if (!m_settings.interactive())
+      return;
+
+    // todo: REPL
   }
+
 
   // Private members (IO)
   

@@ -4,6 +4,7 @@
 
 #pragma once
 #include "input/cmdline.hpp"
+#include "src_mgr/source_manager.hpp"
 
 namespace tnac_rt
 {
@@ -44,6 +45,7 @@ namespace tnac_rt
   private:
     io m_io{};
     cmdline m_settings;
+    tnac::source_manager m_srcMgr;
   };
 }
 
