@@ -6,7 +6,7 @@ namespace tnac::comp
   namespace detail
   {
     template <typename Val>
-    concept ir_const = tnac::is_any_v<Val,
+    concept ir_const = utils::any_same_as<Val,
       eval::bool_type,
       eval::int_type,
       eval::float_type,

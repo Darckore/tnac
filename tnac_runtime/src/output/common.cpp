@@ -113,7 +113,7 @@ namespace tnac_rt::out
         using tnac::eval::int_type;
         using tnac::eval::bool_type;
         using tnac::eval::array_type;
-        if constexpr (tnac::is_same_noquals_v<vt, int_type>)
+        if constexpr (utils::same_noquals<vt, int_type>)
         {
           if (m_base == 10)
           {
@@ -149,11 +149,11 @@ namespace tnac_rt::out
           std::to_chars(basePtr, basePtr + conv.size(), outVal, m_base);
           out() << conv;
         }
-        else if constexpr (tnac::is_same_noquals_v<vt, bool_type>)
+        else if constexpr (utils::same_noquals<vt, bool_type>)
         {
           out() << (val ? "_true" : "_false");
         }
-        else if constexpr (tnac::is_same_noquals_v<vt, array_type>)
+        else if constexpr (utils::same_noquals<vt, array_type>)
         {
           out() << "[ ";
           for (auto arrSz = val->size(); auto&& elem : *val)

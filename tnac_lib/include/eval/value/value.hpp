@@ -23,8 +23,8 @@ namespace tnac::eval
     // Defines a valid result of expression evaluation
     //
     template <typename T>
-    concept expr_result = is_any_v<T, invalid_val_t, bool_type, int_type, float_type,
-                                      complex_type, fraction_type, function_type, array_type>;
+    concept expr_result = utils::any_same_as<T, invalid_val_t, bool_type, int_type, float_type,
+                                             complex_type, fraction_type, function_type, array_type>;
   }
 
   //

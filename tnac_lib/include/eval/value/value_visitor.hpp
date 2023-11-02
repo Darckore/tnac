@@ -272,7 +272,7 @@ namespace tnac::eval
 
     void div(detail::divisible auto lhs, detail::divisible auto rhs) noexcept
     {
-      if constexpr (is_same_noquals_v<decltype(lhs), int_type>)
+      if constexpr (utils::same_noquals<decltype(lhs), int_type>)
       {
         div(static_cast<float_type>(lhs), static_cast<float_type>(rhs));
       }
@@ -299,7 +299,7 @@ namespace tnac::eval
     }
     void mod(detail::modulo_divisible auto lhs, detail::modulo_divisible auto rhs) noexcept
     {
-      if constexpr (is_same_noquals_v<decltype(lhs), int_type>)
+      if constexpr (utils::same_noquals<decltype(lhs), int_type>)
       {
         mod(static_cast<float_type>(lhs), static_cast<float_type>(rhs));
       }
@@ -386,7 +386,7 @@ namespace tnac::eval
 
     void root(detail::invertible auto base, detail::invertible auto exp) noexcept
     {
-      if constexpr (is_same_noquals_v<decltype(base), int_type>)
+      if constexpr (utils::same_noquals<decltype(base), int_type>)
         root(static_cast<float_type>(base), static_cast<float_type>(exp));
       else
         power(base, eval::inv(exp));
@@ -630,7 +630,7 @@ namespace tnac::eval
     }
 
     template <detail::generic_type T>
-      requires (!is_same_noquals_v<T, array_type>)
+      requires (!utils::same_noquals<T, array_type>)
     void visit_binary(array_type l, T r, val_ops op) noexcept
     {
       auto rhs = to_unit_array(r);
@@ -638,7 +638,7 @@ namespace tnac::eval
     }
 
     template <detail::generic_type T>
-      requires (!is_same_noquals_v<T, array_type>)
+      requires (!utils::same_noquals<T, array_type>)
     void visit_binary(T l, array_type r, val_ops op) noexcept
     {
       auto lhs = to_unit_array(l);
@@ -721,7 +721,7 @@ namespace tnac::eval
     // Instantiates an object
     //
     template <detail::expr_result Obj, typename... Args>
-      requires is_all_v<stored_value, Args...>
+      requires utils::all_same<stored_value, Args...>
     void instantiate(Args ...args) noexcept
     {
       using type_info = eval::type_info<Obj>;

@@ -42,7 +42,7 @@ namespace tnac::ast
     template <typename N>
     concept visitable_root =
       ast_node<N> &&
-      is_same_noquals_v<N, node>;
+      utils::same_noquals<N, node>;
 
 
     //

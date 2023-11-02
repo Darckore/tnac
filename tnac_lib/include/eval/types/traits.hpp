@@ -69,7 +69,7 @@ namespace tnac::eval
   namespace detail
   {
     template <typename T>
-    concept generic_type = expr_result<T> || is_same_noquals_v<T, invalid_val_t>;
+    concept generic_type = expr_result<T> || utils::same_noquals<T, invalid_val_t>;
   }
 
   template <detail::generic_type T> using typed_value = std::optional<T>;
@@ -265,28 +265,28 @@ namespace tnac::eval
 
   // common type with self
 
-  template <detail::generic_type T1, detail::generic_type T2> requires (is_same_noquals_v<T1, T2>)
+  template <detail::generic_type T1, detail::generic_type T2> requires (utils::same_noquals<T1, T2>)
   struct common_type<T1, T2> { using type = std::remove_cvref_t<T1>; };
 
   // invalid
 
-  template <detail::generic_type T> requires (!is_same_noquals_v<T, invalid_val_t>)
+  template <detail::generic_type T> requires (!utils::same_noquals<T, invalid_val_t>)
   struct common_type<invalid_val_t, T> { using type = invalid_val_t; };
-  template <detail::generic_type T> requires (!is_same_noquals_v<T, invalid_val_t>)
+  template <detail::generic_type T> requires (!utils::same_noquals<T, invalid_val_t>)
   struct common_type<T, invalid_val_t> : common_type<invalid_val_t, T> {};
 
   // array
 
-  template <detail::expr_result T> requires (!is_any_v<T, array_type, invalid_val_t>)
+  template <detail::expr_result T> requires (!utils::any_same_as<T, array_type, invalid_val_t>)
   struct common_type<array_type, T> { using type = array_type; };
-  template <detail::expr_result T> requires (!is_any_v<T, array_type, invalid_val_t>)
+  template <detail::expr_result T> requires (!utils::any_same_as<T, array_type, invalid_val_t>)
   struct common_type<T, array_type> : common_type<array_type, T> {};
 
   // function
 
-  template <detail::expr_result T> requires (!is_any_v<T, function_type, invalid_val_t>)
+  template <detail::expr_result T> requires (!utils::any_same_as<T, function_type, invalid_val_t>)
   struct common_type<function_type, T> { using type = function_type; };
-  template <detail::expr_result T> requires (!is_any_v<T, function_type, invalid_val_t>)
+  template <detail::expr_result T> requires (!utils::any_same_as<T, function_type, invalid_val_t>)
   struct common_type<T, function_type> : common_type<function_type, T> {};
   template <> struct common_type<function_type, array_type> { using type = array_type; };
   template <> struct common_type<array_type, function_type> : common_type<function_type, array_type> {};
@@ -441,7 +441,7 @@ namespace tnac::eval
   template <typename T> auto eq(const T&, const T&) noexcept;
   template <detail::has_eq T> inline auto eq(const T& lhs, const T& rhs) noexcept
   {
-    if constexpr (is_same_noquals_v<T, float_type>)
+    if constexpr (utils::same_noquals<T, float_type>)
     {
       if (std::isinf(lhs) && std::isinf(rhs))
         return true;
