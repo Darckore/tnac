@@ -1,6 +1,6 @@
 #include "input/cmdline.hpp"
 
-namespace tnac_rt
+namespace tnac::rt
 {
   // Special members
 

@@ -1,7 +1,7 @@
 #include "output/common.hpp"
 #include "sema/symbol.hpp"
 
-namespace tnac_rt::out
+namespace tnac::rt::out
 {
   namespace
   {

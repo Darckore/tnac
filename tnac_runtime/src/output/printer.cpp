@@ -1,7 +1,7 @@
 #include "output/printer.hpp"
 #include "output/formatting.hpp"
 
-namespace tnac_rt::out
+namespace tnac::rt::out
 {
   // Special members
 

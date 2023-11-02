@@ -5,7 +5,7 @@
 #pragma once
 #include "output/common.hpp"
 
-namespace tnac_rt::out
+namespace tnac::rt::out
 {
   //
   // Prints the source code corresponding to an ast node

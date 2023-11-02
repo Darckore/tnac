@@ -6,7 +6,7 @@
 #include "parser/ast/ast_visitor.hpp"
 #include "eval/value/value.hpp"
 
-namespace tnac_rt::out
+namespace tnac::rt::out
 {
   namespace ast  = tnac::ast;
   namespace src  = tnac::src;

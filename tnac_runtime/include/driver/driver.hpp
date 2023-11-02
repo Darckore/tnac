@@ -6,7 +6,7 @@
 #include "input/cmdline.hpp"
 #include "src_mgr/source_manager.hpp"
 
-namespace tnac_rt
+namespace tnac::rt
 {
   //
   // System driver
@@ -40,12 +40,12 @@ namespace tnac_rt
   private: // Callbacks
     void set_callbacks() noexcept;
 
-    void on_cli_error(tnac::string_t msg) noexcept;
+    void on_cli_error(string_t msg) noexcept;
 
   private:
     io m_io{};
     cmdline m_settings;
-    tnac::source_manager m_srcMgr;
+    source_manager m_srcMgr;
   };
 }
 
@@ -53,7 +53,7 @@ namespace tnac_rt
 #include "packages/core.hpp"
 #include "driver/input_mgr.hpp"
 
-namespace tnac_rt
+namespace tnac::rt
 {
   //
   // System driver

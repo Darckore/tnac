@@ -43,7 +43,7 @@
   #define TNAC_RUN(ARGC, ARGV) go(ARGC, ARGV)
 #endif
 
-namespace tnac_rt
+namespace tnac::rt
 {
   namespace
   {

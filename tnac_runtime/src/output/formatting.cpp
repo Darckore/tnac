@@ -1,6 +1,6 @@
 #include "output/formatting.hpp"
 
-namespace tnac_rt::fmt
+namespace tnac::rt::fmt
 {
 #if TNAC_WINDOWS
   //

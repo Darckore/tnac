@@ -5,7 +5,7 @@
 #pragma once
 #include "output/common.hpp"
 
-namespace tnac_rt::out
+namespace tnac::rt::out
 {
   //
   // Printer for AST

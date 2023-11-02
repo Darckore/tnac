@@ -6,7 +6,7 @@
 #pragma once
 #include "driver/driver.hpp"
 
-namespace tnac_rt
+namespace tnac::rt
 {
   void execute(int argc, char** argv) noexcept;
 }

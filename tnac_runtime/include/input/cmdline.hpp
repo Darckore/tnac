@@ -4,7 +4,7 @@
 
 #pragma once
 
-namespace tnac_rt
+namespace tnac::rt
 {
   namespace detail
   {

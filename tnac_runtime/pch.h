@@ -13,7 +13,7 @@
 #else
 #endif
 
-namespace tnac_rt
+namespace tnac::rt
 {
   using in_stream  = utils::istream;
   using out_stream = utils::ostream;

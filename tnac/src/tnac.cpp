@@ -2,6 +2,6 @@
 
 int main(int argc, char** argv)
 {
-  tnac_rt::execute(argc, argv);
+  tnac::rt::execute(argc, argv);
   return 0;
 }

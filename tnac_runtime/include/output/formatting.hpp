@@ -4,7 +4,7 @@
 
 #pragma once
 
-namespace tnac_rt::fmt
+namespace tnac::rt::fmt
 {
   enum class clr : std::uint8_t
   {

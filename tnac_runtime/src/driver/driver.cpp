@@ -3,7 +3,7 @@
 #include "output/lister.hpp"
 #include "output/formatting.hpp"
 
-namespace tnac_rt
+namespace tnac::rt
 {
   // Special members
 
@@ -77,7 +77,7 @@ namespace tnac_rt
 
 
 #if 0
-namespace tnac_rt
+namespace tnac::rt
 {
   // Special members
 
