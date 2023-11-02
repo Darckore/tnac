@@ -73,6 +73,11 @@ namespace tnac::src
     buf_t extract_name() const noexcept;
 
     //
+    // Returns the path to the file's directory
+    //
+    path_t directory() const noexcept;
+
+    //
     // Returns the hash value for the underlying path
     //
     hash_t hash() const noexcept;

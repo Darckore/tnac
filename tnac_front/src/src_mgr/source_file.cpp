@@ -55,6 +55,11 @@ namespace tnac::src
     return path().stem().string();
   }
 
+  file::path_t file::directory() const noexcept
+  {
+    return path().parent_path();
+  }
+
   file::hash_t file::hash() const noexcept
   {
     return hash(path());
