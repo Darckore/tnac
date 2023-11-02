@@ -11,7 +11,7 @@ namespace tnac::rt::out
       return out;
     }
 
-    std::ostream& operator<<(std::ostream& out, const tnac::eval::complex_type& c) noexcept
+    std::ostream& operator<<(std::ostream& out, const eval::complex_type& c) noexcept
     {
       const auto r = c.real();
       const auto i = c.imag();
@@ -24,20 +24,20 @@ namespace tnac::rt::out
       return out;
     }
 
-    std::ostream& operator<<(std::ostream& out, const tnac::eval::fraction_type& f) noexcept
+    std::ostream& operator<<(std::ostream& out, const eval::fraction_type& f) noexcept
     {
       if (f.sign() < 0)
         out << '-';
 
       if (f.is_infinity())
       {
-        out << std::numeric_limits<tnac::eval::float_type>::infinity();
+        out << std::numeric_limits<eval::float_type>::infinity();
         return out;
       }
 
       const auto den = f.denom();
       auto num = f.num();
-      if (den == tnac::eval::int_type{ 1 })
+      if (den == eval::int_type{ 1 })
       {
         out << num;
         return out;
@@ -63,7 +63,7 @@ namespace tnac::rt::out
       return out;
     }
 
-    std::ostream& operator<<(std::ostream& out, const tnac::eval::function_type& f) noexcept
+    std::ostream& operator<<(std::ostream& out, const eval::function_type& f) noexcept
     {
       out << "function(" << f->name() << ')';
 
@@ -71,7 +71,7 @@ namespace tnac::rt::out
     }
   }
 
-  std::ostream& operator<<(std::ostream& out, const tnac::token& tok) noexcept
+  std::ostream& operator<<(std::ostream& out, const token& tok) noexcept
   {
     out << tok.value();
     return out;
@@ -110,9 +110,9 @@ namespace tnac::rt::out
     eval::on_value(val, [this](auto val)
       {
         using vt = decltype(val);
-        using tnac::eval::int_type;
-        using tnac::eval::bool_type;
-        using tnac::eval::array_type;
+        using eval::int_type;
+        using eval::bool_type;
+        using eval::array_type;
         if constexpr (utils::same_noquals<vt, int_type>)
         {
           if (m_base == 10)
@@ -121,11 +121,11 @@ namespace tnac::rt::out
             return;
           }
 
-          tnac::buf_t conv;
+          buf_t conv;
           static constexpr auto byteSizeInBin = 8u;
           static constexpr auto byteSizeInOct = 3u;
           static constexpr auto byteSizeInHex = 2u;
-          static constexpr auto intSize = sizeof(tnac::eval::int_type);
+          static constexpr auto intSize = sizeof(eval::int_type);
 
           switch (m_base)
           {
@@ -143,7 +143,7 @@ namespace tnac::rt::out
             break;
           }
 
-          using uint = std::make_unsigned_t<tnac::eval::int_type>;
+          using uint = std::make_unsigned_t<eval::int_type>;
           auto outVal = std::bit_cast<uint>(val);
           auto basePtr = conv.data();
           std::to_chars(basePtr, basePtr + conv.size(), outVal, m_base);

@@ -8,10 +8,6 @@
 
 namespace tnac::rt::out
 {
-  namespace ast  = tnac::ast;
-  namespace src  = tnac::src;
-  namespace eval = tnac::eval;
-
   //
   // Printer base class
   //
@@ -21,7 +17,7 @@ namespace tnac::rt::out
   //
   // Token output
   //
-  std::ostream& operator<<(std::ostream& out, const tnac::token& tok) noexcept;
+  std::ostream& operator<<(std::ostream& out, const token& tok) noexcept;
 
   //
   // Value printer

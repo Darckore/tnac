@@ -9,7 +9,7 @@ namespace tnac::rt
   namespace detail
   {
     template <typename F>
-    concept cli_err_handler = std::is_nothrow_invocable_r_v<void, F, tnac::string_t>;
+    concept cli_err_handler = std::is_nothrow_invocable_r_v<void, F, string_t>;
   }
 
   //
@@ -18,10 +18,10 @@ namespace tnac::rt
   class cmdline final
   {
   public:
-    using name_t  = tnac::string_t;
+    using name_t  = string_t;
     using flags_t = unsigned;
 
-    using err_handler_t = std::move_only_function<void(tnac::string_t) noexcept>;
+    using err_handler_t = std::move_only_function<void(string_t) noexcept>;
 
   public:
     CLASS_SPECIALS_NONE_CUSTOM(cmdline);
@@ -65,12 +65,12 @@ namespace tnac::rt
     // Reports an error
     // If no error handler is set, does nothing
     //
-    void error(tnac::string_t msg) noexcept;
+    void error(string_t msg) noexcept;
 
     //
     // Consumes the next cli arg
     //
-    void consume(tnac::string_t arg) noexcept;
+    void consume(string_t arg) noexcept;
 
   private:
     err_handler_t m_errHandler{};

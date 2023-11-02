@@ -22,7 +22,7 @@ namespace tnac::rt::out
 
   public:
     void operator()(const ast::node* node, out_stream& os) noexcept;
-    
+
     void operator()(const ast::node* node) noexcept;
 
     void enable_styles() noexcept;
@@ -90,29 +90,29 @@ namespace tnac::rt::out
 
     void indent() noexcept;
 
-    void node_designator(tnac::string_t str) noexcept;
+    void node_designator(string_t str) noexcept;
 
-    void failure_condition(tnac::string_t str) noexcept;
+    void failure_condition(string_t str) noexcept;
 
-    void node_value(tnac::string_t str) noexcept;
+    void node_value(string_t str) noexcept;
 
     void invalid_mark(const ast::node& n) noexcept;
 
     void location_info(src::loc_wrapper loc) noexcept;
 
     void additional_info(const ast::node& n) noexcept;
-    
+
     void additional_info(const ast::expr& e) noexcept;
-    
+
     void additional_info(const ast::decl& d) noexcept;
 
     void endl() noexcept;
 
     out_stream& out() noexcept;
 
-    void print_token(const tnac::token& tok) noexcept;
+    void print_token(const token& tok) noexcept;
 
-    void print_token_styled(const tnac::token& tok) noexcept;
+    void print_token_styled(const token& tok) noexcept;
 
     void print_value(eval::value v) noexcept;
 

@@ -25,7 +25,7 @@ namespace tnac::rt
 
     for (auto argIdx = 2; argIdx < argCount; ++argIdx)
     {
-      tnac::string_t arg = args[argIdx];
+      string_t arg = args[argIdx];
       consume(arg);
     }
   }
@@ -48,13 +48,13 @@ namespace tnac::rt
 
   // Private members
 
-  void cmdline::error(tnac::string_t msg) noexcept
+  void cmdline::error(string_t msg) noexcept
   {
     if (m_errHandler)
       m_errHandler(msg);
   }
 
-  void cmdline::consume(tnac::string_t arg) noexcept
+  void cmdline::consume(string_t arg) noexcept
   {
     if (arg == "-i"sv)
       m_state.m_interactive = true;

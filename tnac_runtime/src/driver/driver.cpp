@@ -63,10 +63,10 @@ namespace tnac::rt
 
   void driver::set_callbacks() noexcept
   {
-    m_settings.on_error([this](tnac::string_t msg) noexcept { on_cli_error(msg); });
+    m_settings.on_error([this](string_t msg) noexcept { on_cli_error(msg); });
   }
 
-  void driver::on_cli_error(tnac::string_t msg) noexcept
+  void driver::on_cli_error(string_t msg) noexcept
   {
     err() << "<Command line> ";
     fmt::print(err(), fmt::clr::BoldRed, "error: ");

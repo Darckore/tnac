@@ -365,21 +365,21 @@ namespace tnac::rt::out
     }
   }
 
-  void ast_printer::node_designator(tnac::string_t str) noexcept
+  void ast_printer::node_designator(string_t str) noexcept
   {
     if (m_styles) fmt::add_clr(out(), fmt::clr::BoldWhite);
     out() << str;
     if (m_styles) fmt::clear_clr(out());
   }
 
-  void ast_printer::failure_condition(tnac::string_t str) noexcept
+  void ast_printer::failure_condition(string_t str) noexcept
   {
     if (m_styles) fmt::add_clr(out(), fmt::clr::BoldRed);
     out() << str;
     if (m_styles) fmt::clear_clr(out());
   }
 
-  void ast_printer::node_value(tnac::string_t str) noexcept
+  void ast_printer::node_value(string_t str) noexcept
   {
     if (m_styles) fmt::add_clr(out(), fmt::clr::Cyan);
     out() << str;
@@ -426,12 +426,12 @@ namespace tnac::rt::out
     return *m_out;
   }
 
-  void ast_printer::print_token(const tnac::token& tok) noexcept
+  void ast_printer::print_token(const token& tok) noexcept
   {
     out() << " '" << tok << "' ";
   }
 
-  void ast_printer::print_token_styled(const tnac::token& tok) noexcept
+  void ast_printer::print_token_styled(const token& tok) noexcept
   {
     if (!m_styles)
     {

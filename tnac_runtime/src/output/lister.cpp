@@ -86,7 +86,7 @@ namespace tnac::rt::out
         continue;
       }
 
-      if (idx != size && !tnac::has_implicit_separator(*child))
+      if (idx != size && !has_implicit_separator(*child))
         out() << ':';
 
       endl();
@@ -309,7 +309,7 @@ namespace tnac::rt::out
     print_args(expr.args(), '(', ')');
   }
 
-  void lister::print_args(const args_t& args, tnac::char_t open, tnac::char_t close) noexcept
+  void lister::print_args(const args_t& args, char_t open, char_t close) noexcept
   {
     out() << open << ' ';
     const auto size = args.size();
@@ -328,7 +328,7 @@ namespace tnac::rt::out
 
   void lister::indent(const ast::node& cur) noexcept
   {
-    static constexpr auto scopeId = tnac::ast::node_kind::Scope;
+    static constexpr auto scopeId = ast::node_kind::Scope;
     if (cur.is(scopeId))
       return;
 
@@ -355,14 +355,14 @@ namespace tnac::rt::out
     return *m_out;
   }
 
-  void lister::print_token_plain(const tnac::token& tok, bool addSpace) noexcept
+  void lister::print_token_plain(const token& tok, bool addSpace) noexcept
   {
     out() << tok;
     if (addSpace)
       out() << ' ';
   }
 
-  void lister::print_token(const tnac::token& tok, bool addSpace) noexcept
+  void lister::print_token(const token& tok, bool addSpace) noexcept
   {
     if (tok.is_keyword())
       kw_style();
