@@ -4,6 +4,7 @@
 
 #pragma once
 #include "input/cmdline.hpp"
+#include "input/repl.hpp"
 #include "src_mgr/source_manager.hpp"
 #include "common/feedback.hpp"
 
@@ -31,7 +32,15 @@ namespace tnac::rt
     driver(int argCount, char** args) noexcept;
 
   private:
+    //
+    // Runs the driver with the provided input
+    //
     void run() noexcept;
+
+    //
+    // Runs the interactive mode, if specified
+    //
+    void run_interactive() noexcept;
 
   private: // IO
     in_stream& in() noexcept;
@@ -39,6 +48,9 @@ namespace tnac::rt
     out_stream& err() noexcept;
 
   private: // Callbacks
+    //
+    // Inits callbacks via the feedback object
+    //
     void set_callbacks() noexcept;
 
     void on_cli_error(string_t msg) noexcept;
@@ -46,6 +58,7 @@ namespace tnac::rt
   private:
     io m_io{};
     cmdline m_settings;
+    repl m_repl;
     source_manager m_srcMgr;
     feedback m_feedback;
   };

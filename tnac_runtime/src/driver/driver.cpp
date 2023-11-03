@@ -14,6 +14,7 @@ namespace tnac::rt
     set_callbacks();
     m_settings.parse(argCount, args);
     run();
+    run_interactive();
   }
 
 
@@ -23,7 +24,6 @@ namespace tnac::rt
   {
     if (!m_settings.has_input_file())
     {
-      // todo: REPL
       return;
     }
 
@@ -35,11 +35,14 @@ namespace tnac::rt
 
     fsys::current_path((*loadResult)->directory());
     // todo: compile
+  }
 
+  void driver::run_interactive() noexcept
+  {
     if (!m_settings.interactive())
       return;
 
-    // todo: REPL
+    m_repl.run();
   }
 
 
