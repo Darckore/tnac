@@ -41,6 +41,11 @@ namespace tnac
     ast::node* parse(string_t input) noexcept;
 
     //
+    // Parses the given input using the given location and returns the parse result
+    //
+    ast::node* parse(string_t input, src::location& loc) noexcept;
+
+    //
     // Parses the entire input file and returns the root ast node
     //
     ast::node* parse(src::file& file) noexcept;

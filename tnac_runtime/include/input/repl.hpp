@@ -3,6 +3,7 @@
 //
 
 #pragma once
+#include "src_mgr/source_manager.hpp"
 
 namespace tnac::ast
 {
@@ -20,6 +21,9 @@ namespace tnac::rt
   //
   class repl final
   {
+  public:
+    using input_map = std::unordered_map<std::uint32_t, buf_t>;
+
   public:
     CLASS_SPECIALS_NONE(repl);
 
@@ -43,6 +47,12 @@ namespace tnac::rt
     //
     void on_command(ast::command cmd) noexcept;
 
+  private:
+    //
+    // Interns an input string and returns a view into it
+    //
+    string_t consume_input() noexcept;
+
   private: // Command handlers
     //
     // #exit
@@ -65,6 +75,11 @@ namespace tnac::rt
     void print_ast(ast::command cmd) noexcept;
 
   private:
+    source_manager m_srcMgr;
+    source_manager::path_t m_fake{ "REPL" };
+    src::location m_loc;
+    input_map m_inputs;
+
     state* m_state{};
     ast::node* m_last{};
     bool m_commandsReady{};

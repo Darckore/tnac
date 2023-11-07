@@ -28,6 +28,11 @@ namespace tnac
     return m_parser(input);
   }
 
+  ast::node* core::parse(string_t input, src::location& loc) noexcept
+  {
+    return m_parser(input, loc);
+  }
+
   ast::node* core::parse(src::file& file) noexcept
   {
     auto fileContents = file.get_contents();

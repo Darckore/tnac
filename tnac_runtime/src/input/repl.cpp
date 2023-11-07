@@ -10,6 +10,7 @@ namespace tnac::rt
   repl::~repl() noexcept = default;
 
   repl::repl(state& st) noexcept :
+    m_loc{ m_fake, m_srcMgr },
     m_state{ &st }
   {}
 
@@ -18,26 +19,19 @@ namespace tnac::rt
 
   void repl::run() noexcept
   {
-    buf_t input;
     m_state->start();
 
     while (m_state->is_running())
     {
-      m_state->out() << ">> ";
-      std::getline(m_state->in(), input);
-      if (utils::ltrim(input).empty())
-      {
-        m_state->out() << "Enter an expression\n";
+      auto input = consume_input();
+      if (input.empty())
         continue;
-      }
 
-      auto parseRes = m_state->tnac_core().parse(input);
-      if (parseRes)
+      auto parseRes = m_state->tnac_core().parse(input, m_loc);
+      if (parseRes && parseRes != m_state->tnac_core().get_ast())
         m_last = parseRes;
 
       utils::unused(parseRes);
-
-      input = {};
     }
   }
 
@@ -75,6 +69,26 @@ namespace tnac::rt
   void repl::on_command(ast::command cmd) noexcept
   {
     m_state->tnac_core().process_cmd(std::move(cmd));
+  }
+
+
+  // Private members
+
+  string_t repl::consume_input() noexcept
+  {
+    buf_t input;
+
+    m_state->out() << ">> ";
+    std::getline(m_state->in(), input);
+    if (utils::ltrim(input).empty())
+    {
+      m_state->out() << "Enter an expression\n";
+      return {};
+    }
+
+    auto&& newItem = m_inputs.try_emplace(m_loc.line(), std::move(input));
+    m_loc.add_line();
+    return newItem.first->second;
   }
 
 
