@@ -32,7 +32,6 @@ namespace tnac::semantics
   struct scope
   {
     const scope* m_enclosing{};
-    const ast::scope* m_node{};
   };
 
   //

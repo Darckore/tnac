@@ -199,7 +199,7 @@ namespace tnac
     if (!m_root)
     {
       m_root = m_builder.make_scope({});
-      new_scope(m_root);
+      new_scope();
     }
 
     pointer res = m_root;
@@ -240,9 +240,9 @@ namespace tnac
 
   /// Semantics
 
-  void parser::new_scope(root_ptr node) noexcept
+  void parser::new_scope() noexcept
   {
-    m_sema.open_scope(*node);
+    m_sema.open_scope();
   }
   void parser::end_scope() noexcept
   {
@@ -432,7 +432,7 @@ namespace tnac
     next_tok();
 
     auto def = m_builder.make_scope({});
-    scope_guard _{ *this, def };
+    scope_guard _{ *this };
 
     auto params = formal_params();
 
@@ -760,7 +760,7 @@ namespace tnac
   ast::expr* parser::cond_expr() noexcept
   {
     auto scope = m_builder.make_scope({});
-    scope_guard _{ *this, scope };
+    scope_guard _{ *this };
 
     auto condExpr = cond();
     if (detail::is_arrow(peek_next()))
@@ -846,7 +846,7 @@ namespace tnac
   ast::expr* parser::cond_pattern() noexcept
   {
     auto body = m_builder.make_scope({});
-    scope_guard _{ *this, body };
+    scope_guard _{ *this };
     auto matcher = cond_matcher();
 
     if (!detail::is_semi(peek_next()))

@@ -46,7 +46,7 @@ namespace tnac
     //
     // Opens a new scope
     //
-    void open_scope(const ast::scope& scopeNode) noexcept;
+    void open_scope() noexcept;
 
     //
     // Closes the current scope and makes its parent the current one

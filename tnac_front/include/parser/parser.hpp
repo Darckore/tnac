@@ -133,10 +133,10 @@ namespace tnac
     public:
       CLASS_SPECIALS_NONE(scope_guard);
 
-      scope_guard(parser& p, root_ptr newScope) noexcept :
+      explicit scope_guard(parser& p) noexcept :
         m_parser{ p }
       {
-        m_parser.new_scope(newScope);
+        m_parser.new_scope();
       }
 
       ~scope_guard() noexcept
@@ -195,7 +195,7 @@ namespace tnac
     //
     // Instructs sema to open a new scope
     //
-    void new_scope(root_ptr node) noexcept;
+    void new_scope() noexcept;
 
     //
     // Instructs sema to return to the previous scope

@@ -12,9 +12,9 @@ namespace tnac
 
   // Public members
 
-  void sema::open_scope(const ast::scope& scopeNode) noexcept
+  void sema::open_scope() noexcept
   {
-    m_curScope = &m_symTab.add_scope(&scopeNode, m_curScope);
+    m_curScope = &m_symTab.add_scope(m_curScope);
   }
 
   void sema::close_scope() noexcept

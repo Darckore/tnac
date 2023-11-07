@@ -50,7 +50,7 @@ namespace tnac::semantics
     //
     // Inserts a new scope inside the one specified as the parent
     //
-    const scope& add_scope(const ast::scope* node, scope_ptr parent) noexcept;
+    const scope& add_scope(scope_ptr parent) noexcept;
 
     //
     // Inserts a variable to the specified scope
