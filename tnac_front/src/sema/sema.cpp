@@ -33,31 +33,44 @@ namespace tnac
   void sema::visit_decl(ast::decl& decl) noexcept
   {
     using enum ast::node::kind;
+    auto name = decl.name();
     switch (decl.what())
     {
     case VarDecl:
     {
-      auto&& var = m_symTab.add_variable(decl, m_curScope);
+      auto&& var = m_symTab.add_variable(name, m_curScope);
       if (m_varCallback)
         m_varCallback(var);
+      decl.attach_symbol(var);
     }
       break;
 
     case ParamDecl:
     {
-      m_symTab.add_parameter(decl, m_curScope);
+      decl.attach_symbol(m_symTab.add_parameter(name, m_curScope));
     }
       break;
 
     case FuncDecl:
     {
+      using namespace semantics;
       UTILS_ASSERT(static_cast<bool>(m_curScope));
       auto targetScope = m_curScope->m_enclosing;
-      m_symTab.add_function(decl, targetScope);
+      auto&& declParams = utils::cast<FuncDecl>(decl).params();
+      function::param_list params;
+      params.reserve(declParams.size());
+      for (auto&& param : declParams)
+      {
+        auto paramSym = utils::try_cast<parameter>(&param->symbol());
+        UTILS_ASSERT(paramSym);
+        params.emplace_back(paramSym);
+      }
+      decl.attach_symbol(m_symTab.add_function(name, targetScope, std::move(params)));
     }
     break;
 
     default:
+      UTILS_ASSERT(false);
       break;
     }
   }

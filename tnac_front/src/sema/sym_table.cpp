@@ -1,6 +1,5 @@
 #include "sema/sym_table.hpp"
 #include "sema/symbol.hpp"
-#include "parser/ast/ast_decls.hpp"
 
 namespace tnac::semantics
 {
@@ -18,28 +17,28 @@ namespace tnac::semantics
     return *insertedScope.get();
   }
 
-  variable& sym_table::add_variable(ast::decl& decl, scope_ptr parent) noexcept
+  variable& sym_table::add_variable(name_t name, scope_ptr parent) noexcept
   {
-    return *make_symbol<variable>(decl.name(), parent, decl);
+    return *make_symbol<variable>(name, parent);
   }
 
-  parameter& sym_table::add_parameter(ast::decl& decl, scope_ptr parent) noexcept
+  parameter& sym_table::add_parameter(name_t name, scope_ptr parent) noexcept
   {
-    return *make_symbol<parameter>(decl.name(), parent, decl);
+    return *make_symbol<parameter>(name, parent);
   }
 
-  function& sym_table::add_function(ast::decl& decl, scope_ptr parent) noexcept
+  function& sym_table::add_function(name_t name, scope_ptr parent, function::param_list params) noexcept
   {
-    return *make_symbol<function>(decl.name(), parent, decl);
+    return *make_symbol<function>(name, parent, std::move(params));
   }
 
-  sym_table::sym_ptr sym_table::lookup(string_t name, scope_ptr parent) noexcept
+  sym_table::sym_ptr sym_table::lookup(name_t name, scope_ptr parent) noexcept
   {
     auto scopes = lookup(name);
     return lookup(scopes, parent, false);
   }
 
-  sym_table::sym_ptr sym_table::scoped_lookup(string_t name, scope_ptr parent) noexcept
+  sym_table::sym_ptr sym_table::scoped_lookup(name_t name, scope_ptr parent) noexcept
   {
     auto scopes = lookup(name);
     return lookup(scopes, parent, true);
@@ -70,7 +69,7 @@ namespace tnac::semantics
     return res;
   }
 
-  sym_table::scope_map* sym_table::lookup(string_t name) noexcept
+  sym_table::scope_map* sym_table::lookup(name_t name) noexcept
   {
     auto nameIt = m_names.find(name);
     if (nameIt == m_names.end())
@@ -79,7 +78,7 @@ namespace tnac::semantics
     return &nameIt->second;
   }
 
-  sym_table::scope_map& sym_table::make_name(string_t name) noexcept
+  sym_table::scope_map& sym_table::make_name(name_t name) noexcept
   {
     return m_names.emplace(name, scope_map{}).first->second;
   }

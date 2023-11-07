@@ -5,12 +5,6 @@
 #pragma once
 #include "sema/symbol.hpp"
 
-namespace tnac::ast
-{
-  class scope;
-  class decl;
-}
-
 namespace tnac::semantics
 {
   //
@@ -29,6 +23,8 @@ namespace tnac::semantics
     using table = std::unordered_map<K, V>;
 
   public:
+    using name_t = symbol::name_t;
+
     using scope_ptr   = const scope*;
     using scope_owner = owning_ptr<scope>;
     using scope_store = entity_list<scope_owner>;
@@ -38,7 +34,7 @@ namespace tnac::semantics
     using sym_store = entity_list<sym_owner>;
 
     using scope_map = table<scope_ptr, sym_ptr>;
-    using name_map  = table<string_t, scope_map>;
+    using name_map  = table<name_t, scope_map>;
 
   public:
     CLASS_SPECIALS_NONE_CUSTOM(sym_table);
@@ -55,27 +51,27 @@ namespace tnac::semantics
     //
     // Inserts a variable to the specified scope
     //
-    variable& add_variable(ast::decl& decl, scope_ptr parent) noexcept;
+    variable& add_variable(name_t name, scope_ptr parent) noexcept;
 
     //
     // Inserts a parameter to the specified scope
     //
-    parameter& add_parameter(ast::decl& decl, scope_ptr parent) noexcept;
+    parameter& add_parameter(name_t name, scope_ptr parent) noexcept;
 
     //
     // Inserts a function to the specified scope
     //
-    function& add_function(ast::decl& decl, scope_ptr parent) noexcept;
+    function& add_function(name_t name, scope_ptr parent, function::param_list params) noexcept;
 
     //
     // Looks for a symbol starting from the specified scope
     //
-    sym_ptr lookup(string_t name, scope_ptr parent) noexcept;
+    sym_ptr lookup(name_t name, scope_ptr parent) noexcept;
 
     //
     // Looks up a symbol in the given scope only
     //
-    sym_ptr scoped_lookup(string_t name, scope_ptr parent) noexcept;
+    sym_ptr scoped_lookup(name_t name, scope_ptr parent) noexcept;
 
   private:
     //
@@ -83,7 +79,7 @@ namespace tnac::semantics
     // the table of scopes where at least one entity with such name is defined
     // Returns nullptr if the name doesn't exist
     //
-    scope_map* lookup(string_t name) noexcept;
+    scope_map* lookup(name_t name) noexcept;
 
     //
     // Searches for the provided scope in the scope table. On failure, repeats the search
@@ -100,7 +96,7 @@ namespace tnac::semantics
     // If the name already exists, returns the scopes where
     // an entities with such name exist
     //
-    scope_map& make_name(string_t name) noexcept;
+    scope_map& make_name(name_t name) noexcept;
 
     //
     // Adds a symbol to the scope table and returns a reference to it
@@ -123,13 +119,13 @@ namespace tnac::semantics
     // If the existing symbol has a different type, returns nullptr
     //
     template <detail::sym S, typename ...Args>
-    auto make_symbol(string_t name, scope_ptr parent, Args&& ...args) noexcept
+    auto make_symbol(name_t name, scope_ptr parent, Args&& ...args) noexcept
     {
       auto&& sym = make_symbol(make_name(name), parent);
       if (sym)
         return utils::try_cast<S>(sym);
 
-      auto res = alloc_sym<S>(*parent, std::forward<Args>(args)...);
+      auto res = alloc_sym<S>(*parent, name, std::forward<Args>(args)...);
       sym = res;
       return res;
     }

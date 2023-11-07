@@ -6,9 +6,9 @@
 #include "parser/ast/ast_base.hpp"
 #include "parser/ast/ast_expr.hpp"
 
-namespace tnac::semantics
+namespace tnac
 {
-  class symbol;
+  class sema;
 }
 
 namespace tnac::ast
@@ -20,7 +20,7 @@ namespace tnac::ast
   {
   private:
     friend class builder;
-    friend class semantics::symbol;
+    friend class sema;
 
   public:
     CLASS_SPECIALS_NONE(decl);

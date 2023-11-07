@@ -11,7 +11,7 @@
     <DisplayString>{m_kind,en} ({m_value,sb})</DisplayString>
   </Type>
 
-  
+
   <Type Name="tnac::eval::value">
     <DisplayString>{(tnac::eval::type_id)((m_val &amp; 0xFF00000000000000) &gt;&gt; 56),en}</DisplayString>
     <Expand>
@@ -46,22 +46,6 @@
     </Expand>
   </Type>
 
-  <Type Name="tnac::eval::call_stack">
-    <DisplayString>Call stack</DisplayString>
-    <Expand>
-      <Item Name="[depth]">m_depth</Item>
-      <Item Name="[frames]">m_frames</Item>
-    </Expand>
-  </Type>
-
-  <Type Name="tnac::eval::detail::stack_frame">
-    <DisplayString>Frame({m_name,sb})</DisplayString>
-    <Expand>
-      <Item Name="[name]">m_name,sb</Item>
-      <Item Name="[args]">m_args</Item>
-      <Item Name="[params]">m_params</Item>
-    </Expand>
-  </Type>
 
   <Type Name="tnac::semantics::scope">
     <DisplayString>scope</DisplayString>
@@ -72,15 +56,24 @@
   </Type>
 
   <Type Name="tnac::semantics::symbol">
-    <DisplayString>{m_kind,en} ({m_decl->m_id.m_value,sb})</DisplayString>
+    <DisplayString>{m_kind,en} ({m_name,sb})</DisplayString>
     <Expand>
-      <Item Name="[decl]">*m_decl</Item>
+      <Item Name="[name]">m_name,sb</Item>
       <Item Name="[parent]">*m_owner</Item>
     </Expand>
   </Type>
 
+  <Type Name="tnac::semantics::function">
+    <DisplayString>{m_kind,en} ({m_name,sb})</DisplayString>
+    <Expand>
+      <Item Name="[name]">m_name,sb</Item>
+      <Item Name="[parent]">*m_owner</Item>
+      <Item Name="[params]">m_params</Item>
+    </Expand>
+  </Type>
+
   <Type Name="tnac::eval::function_type">
-    <DisplayString Condition="m_func">function({m_func->m_decl->m_id.m_value,sb})</DisplayString>
+    <DisplayString Condition="m_func">function({m_func->m_name,sb})</DisplayString>
     <DisplayString Condition="!m_func">empty function</DisplayString>
     <Expand>
       <Item Name="[function]" Condition="m_func">*m_func</Item>

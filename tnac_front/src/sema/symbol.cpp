@@ -8,13 +8,11 @@ namespace tnac::semantics
 
   symbol::~symbol() noexcept = default;
 
-  symbol::symbol(kind k, ast::decl& decl, const scope& owner) noexcept :
+  symbol::symbol(kind k, name_t name, const scope& owner) noexcept :
     m_owner{ &owner },
-    m_decl{ &decl },
+    m_name{ name },
     m_kind{ k }
-  {
-    decl.attach_symbol(*this);
-  }
+  {}
 
   sym_kind symbol::what() const noexcept
   {
@@ -31,26 +29,17 @@ namespace tnac::semantics
     return *m_owner;
   }
 
-  const ast::decl& symbol::declarator() const noexcept
-  {
-    return *m_decl;
-  }
-  ast::decl& symbol::declarator() noexcept
-  {
-    return FROM_CONST(declarator);
-  }
-
   string_t symbol::name() const noexcept
   {
-    return declarator().name();
+    return m_name;
   }
 
   // Variable symbol
 
   variable::~variable() noexcept = default;
 
-  variable::variable(const scope& owner, ast::decl& decl) noexcept :
-    symbol{ kind::Variable, decl, owner }
+  variable::variable(const scope& owner, name_t name) noexcept :
+    symbol{ kind::Variable, name, owner }
   {}
 
 
@@ -58,8 +47,8 @@ namespace tnac::semantics
 
   parameter::~parameter() noexcept = default;
 
-  parameter::parameter(const scope& owner, ast::decl& decl) noexcept :
-    symbol{ kind::Parameter, decl, owner }
+  parameter::parameter(const scope& owner, name_t name) noexcept :
+    symbol{ kind::Parameter, name, owner }
   {}
 
 
@@ -67,32 +56,22 @@ namespace tnac::semantics
 
   function::~function() noexcept = default;
 
-  function::function(const scope& owner, ast::decl& decl) noexcept :
-    symbol{ kind::Function, decl, owner }
+  function::function(const scope& owner, name_t name, param_list params) noexcept :
+    symbol{ kind::Function, name, owner },
+    m_params{ std::move(params) }
   {}
 
   function::size_type function::param_count() const noexcept
   {
-    return func_decl().param_count();
+    return m_params.size();
   }
 
   const function::param_list& function::params() const noexcept
   {
-    return func_decl().params();
+    return m_params;
   }
   function::param_list& function::params() noexcept
   {
     return FROM_CONST(params);
   }
-
-  const ast::func_decl& function::func_decl() const noexcept
-  {
-    UTILS_ASSERT(declarator().is(ast::node_kind::FuncDecl));
-    return utils::cast<ast::func_decl>(declarator());
-  }
-  ast::func_decl& function::func_decl() noexcept
-  {
-    return FROM_CONST(func_decl);
-  }
-
 }

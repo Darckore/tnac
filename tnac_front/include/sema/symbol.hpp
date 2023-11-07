@@ -5,12 +5,6 @@
 #pragma once
 #include "parser/ast/ast_decls.hpp"
 
-namespace tnac::ast
-{
-  class scope;
-  class decl;
-}
-
 namespace tnac::semantics
 {
   //
@@ -35,13 +29,14 @@ namespace tnac::semantics
   };
 
   //
-  // Base symbol information object. Holds a declarator of an entity
+  // Base symbol information object. Holds information on an entity
   //
   class symbol
   {
   public:
-    using kind = sym_kind;
-    using enum kind;
+    using kind   = sym_kind;
+    using name_t = string_t;
+    using enum sym_kind;
 
   private:
     friend class sym_table;
@@ -52,7 +47,7 @@ namespace tnac::semantics
     virtual ~symbol() noexcept;
 
   protected:
-    symbol(kind k, ast::decl& decl, const scope& owner) noexcept;
+    symbol(kind k, name_t name, const scope& owner) noexcept;
 
   public:
     //
@@ -80,32 +75,20 @@ namespace tnac::semantics
     const scope& owner_scope() const noexcept;
 
     //
-    // Returns the declarator for which this symbol was created
-    // 
-    // const version
-    //
-    const ast::decl& declarator() const noexcept;
-
-    //
-    // Returns the declarator for which this symbol was created
-    // 
-    ast::decl& declarator() noexcept;
-
-    //
     // Returns the entity name
     //
     string_t name() const noexcept;
 
   private:
     const scope* m_owner{};
-    ast::decl* m_decl{};
+    name_t m_name;
     kind m_kind{};
   };
 
   namespace detail
   {
     template <typename T>
-    concept sym = std::is_base_of_v<symbol, T>;
+    concept sym = std::derived_from<T, symbol>;
   }
 
   inline auto get_id(const symbol& sym) noexcept
@@ -127,7 +110,7 @@ namespace tnac::semantics
     virtual ~variable() noexcept;
 
   protected:
-    variable(const scope& owner, ast::decl& decl) noexcept;
+    variable(const scope& owner, name_t name) noexcept;
   };
 
 
@@ -145,7 +128,7 @@ namespace tnac::semantics
     virtual ~parameter() noexcept;
 
   protected:
-    parameter(const scope& owner, ast::decl& decl) noexcept;
+    parameter(const scope& owner, name_t name) noexcept;
   };
 
 
@@ -155,9 +138,8 @@ namespace tnac::semantics
   class function final : public symbol
   {
   public:
-    using decl_type  = ast::func_decl;
-    using size_type  = decl_type::size_type;
-    using param_list = decl_type::param_list;
+    using param_list = std::vector<parameter*>;
+    using size_type  = param_list::size_type;
 
   private:
     friend class sym_table;
@@ -168,7 +150,7 @@ namespace tnac::semantics
     virtual ~function() noexcept;
 
   protected:
-    function(const scope& owner, ast::decl& decl) noexcept;
+    function(const scope& owner, name_t name, param_list params) noexcept;
 
   public:
     size_type param_count() const noexcept;
@@ -177,8 +159,7 @@ namespace tnac::semantics
     param_list& params() noexcept;
 
   private:
-    const ast::func_decl& func_decl() const noexcept;
-    ast::func_decl& func_decl() noexcept;
+    param_list m_params;
   };
 }
 
