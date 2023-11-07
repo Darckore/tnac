@@ -63,24 +63,11 @@
     </Expand>
   </Type>
 
-  <Type Name="tnac::evaluator">
-    <DisplayString Condition="m_return &amp;&amp; !m_fatal">Evaluator (returning)</DisplayString>
-    <DisplayString Condition="!m_return  &amp;&amp; !m_fatal">Evaluator (normal)</DisplayString>
-    <DisplayString Condition="m_fatal">Evaluator (error)</DisplayString>
-    <Expand>
-      <Item Name="[value visitor]">m_visitor</Item>
-      <Item Name="[stack]">m_callStack</Item>
-      <Item Name="[on error]">m_errHandler</Item>
-    </Expand>
-  </Type>
-
   <Type Name="tnac::semantics::scope">
     <DisplayString>scope</DisplayString>
     <Expand>
       <Item Name="[parent]" Condition="m_enclosing">*m_enclosing</Item>
       <Item Name="[parent]" Condition="!m_enclosing">"&lt;global&gt;",sb</Item>
-      <Item Name="[scope]" Condition="m_node">*m_node</Item>
-      <Item Name="[scope]" Condition="!m_node">"&lt;empty&gt;"</Item>
     </Expand>
   </Type>
 
