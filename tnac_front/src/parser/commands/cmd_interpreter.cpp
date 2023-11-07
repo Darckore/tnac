@@ -7,7 +7,7 @@ namespace tnac
   cmd::~cmd() noexcept = default;
 
   cmd::cmd(cmd_store& store) noexcept :
-    m_cmdStore { store }
+    m_cmdStore { &store }
   {}
 
   // Public members
@@ -15,7 +15,7 @@ namespace tnac
   void cmd::on_command(value_type command) noexcept
   {
     using enum commands::verification;
-    auto foundCmd = m_cmdStore.find(command.name());
+    auto foundCmd = m_cmdStore->find(command.name());
     if (!foundCmd)
     {
       on_error(command, { .m_res{ WrongName } });
@@ -31,6 +31,11 @@ namespace tnac
     }
 
     descr(std::move(command));
+  }
+
+  void cmd::attach_feedback(feedback& fb) noexcept
+  {
+    m_feedback = &fb;
   }
 
   // Private members
@@ -70,7 +75,7 @@ namespace tnac
 
   void cmd::on_error(cmd_ref command, const ver_result& reason) noexcept
   {
-    if (!m_errHandler)
+    if (!m_feedback)
       return;
 
     using enum commands::verification;
@@ -104,6 +109,6 @@ namespace tnac
       return;
     }
 
-    m_errHandler(*pos, msg);
+    m_feedback->compile_error(*pos, msg);
   }
 }

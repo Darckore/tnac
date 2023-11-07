@@ -5,6 +5,7 @@
 #pragma once
 #include "parser/ast/ast_util.hpp"
 #include "parser/commands/cmd/commands.hpp"
+#include "common/feedback.hpp"
 
 namespace tnac
 {
@@ -14,7 +15,6 @@ namespace tnac
   class cmd final
   {
   public:
-    using err_handler_t = std::move_only_function<void(const token&, string_t) noexcept>;
     using value_type    = ast::command;
     using cmd_ptr       = const value_type*;
     using cmd_ref       = const value_type&;
@@ -36,13 +36,9 @@ namespace tnac
     void on_command(value_type command) noexcept;
 
     //
-    // Sets an error callback
+    // Attaches a feedback object for error and command handling
     //
-    template <commands::detail::cmd_err_handler F>
-    void on_error(F&& handler) noexcept
-    {
-      m_errHandler = std::forward<F>(handler);
-    }
+    void attach_feedback(feedback& fb) noexcept;
 
   private:
     //
@@ -56,7 +52,7 @@ namespace tnac
     void on_error(cmd_ref command, const ver_result& reason) noexcept;
 
   private:
-    err_handler_t m_errHandler{};
-    cmd_store& m_cmdStore;
+    cmd_store* m_cmdStore{};
+    feedback* m_feedback{};
   };
 }

@@ -7,6 +7,7 @@
 #include "parser/parser.hpp"
 #include "src_mgr/source_manager.hpp"
 #include "sema/sema.hpp"
+#include "parser/commands/cmd_interpreter.hpp"
 
 namespace tnac
 {
@@ -18,6 +19,8 @@ namespace tnac
   public:
     using fname_t  = source_manager::path_t;
     using load_res = source_manager::load_res;
+    
+    using cmd_name_t = commands::store::name_type;
 
   public:
     CLASS_SPECIALS_NONE(core);
@@ -42,6 +45,25 @@ namespace tnac
     //
     ast::node* parse(src::file& file) noexcept;
 
+    //
+    // Returns the parsed ast
+    //
+    ast::node* get_ast() noexcept;
+
+    //
+    // Declares a command
+    //
+    template <typename ...Args>
+    void declare_cmd(cmd_name_t name, Args&& ...args) noexcept
+    {
+      m_cmdStore.declare(name, std::forward<Args>(args)...);
+    }
+
+    //
+    // Processes a command
+    //
+    void process_cmd(ast::command cmd) noexcept;
+
   private:
     feedback* m_feedback{};
     sema m_sema;
@@ -49,5 +71,8 @@ namespace tnac
     parser m_parser;
 
     source_manager m_srcMgr;
+
+    commands::store m_cmdStore;
+    cmd m_cmdInterpreter;
   };
 }

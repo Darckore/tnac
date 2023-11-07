@@ -40,6 +40,9 @@ namespace tnac::rt
     //
     void set_callbacks() noexcept;
 
+    //
+    // Triggers when a command-line parsing error occurs
+    //
     void on_cli_error(string_t msg) noexcept;
 
   private:

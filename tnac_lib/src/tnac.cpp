@@ -8,9 +8,11 @@ namespace tnac
 
   core::core(feedback& fb) noexcept :
     m_feedback{ &fb },
-    m_parser{ m_astBuilder, m_sema }
+    m_parser{ m_astBuilder, m_sema },
+    m_cmdInterpreter{ m_cmdStore }
   {
     m_parser.attach_feedback(fb);
+    m_cmdInterpreter.attach_feedback(fb);
   }
 
 
@@ -36,7 +38,17 @@ namespace tnac
 
     auto loc = file.make_location();
     m_parser(*fileContents, loc);
+    return get_ast();
+  }
+
+  ast::node* core::get_ast() noexcept
+  {
     return m_parser.root();
+  }
+
+  void core::process_cmd(ast::command cmd) noexcept
+  {
+    m_cmdInterpreter.on_command(std::move(cmd));
   }
 
 }

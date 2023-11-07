@@ -12,8 +12,9 @@ namespace tnac::rt
     m_state{ m_tnac },
     m_repl{ m_state }
   {
-    set_callbacks();
+    m_feedback.on_error([this](string_t msg) noexcept { on_cli_error(msg); });
     m_settings.parse(argCount, args);
+    set_callbacks();
     run();
     run_interactive();
   }
@@ -47,6 +48,7 @@ namespace tnac::rt
     if (!m_settings.interactive())
       return;
 
+    m_repl.declare_commands();
     m_repl.run();
   }
 
@@ -55,7 +57,10 @@ namespace tnac::rt
 
   void driver::set_callbacks() noexcept
   {
-    m_feedback.on_error([this](string_t msg) noexcept { on_cli_error(msg); });
+    if (m_settings.interactive())
+    {
+      m_feedback.on_command([this](ast::command cmd) noexcept { m_repl.on_command(std::move(cmd)); });
+    }
   }
 
   void driver::on_cli_error(string_t msg) noexcept
