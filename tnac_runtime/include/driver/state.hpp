@@ -34,7 +34,9 @@ namespace tnac::rt
     void reset_base() noexcept;
     void set_base(int base) noexcept;
 
+
   public: // IO
+    bool in_stdout() const noexcept;
     in_stream&  in() noexcept;
     out_stream& out() noexcept;
     out_stream& err() noexcept;
