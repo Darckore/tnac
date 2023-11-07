@@ -1,6 +1,5 @@
 #include "input/repl.hpp"
 #include "driver/state.hpp"
-#include "output/formatting.hpp"
 #include "output/printer.hpp"
 #include "output/lister.hpp"
 
@@ -31,6 +30,9 @@ namespace tnac::rt
         m_state->out() << "Enter an expression\n";
         continue;
       }
+
+      auto parseRes = m_state->tnac_core().parse(input);
+      utils::unused(parseRes);
 
       input = {};
     }

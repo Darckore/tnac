@@ -7,15 +7,12 @@ namespace tnac::rt
 
   cmdline::~cmdline() noexcept = default;
 
-  cmdline::cmdline() noexcept = default;
+  cmdline::cmdline(feedback& fb) noexcept :
+    m_feedback{ &fb }
+  {}
 
 
   // Public members
-
-  void cmdline::attach_feedback(feedback& fb) noexcept
-  {
-    m_feedback = &fb;
-  }
 
   void cmdline::parse(int argCount, char** args) noexcept
   {

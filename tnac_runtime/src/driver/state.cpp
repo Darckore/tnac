@@ -6,10 +6,17 @@ namespace tnac::rt
 
   state::~state() noexcept = default;
 
-  state::state() noexcept = default;
+  state::state(core& tnacCore) noexcept :
+    m_tnac{ &tnacCore }
+  {}
 
 
   // Public members
+
+  core& state::tnac_core() noexcept
+  {
+    return *m_tnac;
+  }
 
   bool state::is_running() const noexcept
   {

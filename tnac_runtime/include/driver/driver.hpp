@@ -6,8 +6,7 @@
 #include "driver/state.hpp"
 #include "input/cmdline.hpp"
 #include "input/repl.hpp"
-#include "src_mgr/source_manager.hpp"
-#include "common/feedback.hpp"
+#include "core/tnac.hpp"
 
 namespace tnac::rt
 {
@@ -44,11 +43,11 @@ namespace tnac::rt
     void on_cli_error(string_t msg) noexcept;
 
   private:
-    state m_state;
-    cmdline m_settings;
-    repl m_repl;
-    source_manager m_srcMgr;
     feedback m_feedback;
+    cmdline m_settings;
+    core m_tnac;
+    state m_state;
+    repl m_repl;
   };
 }
 

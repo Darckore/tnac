@@ -21,18 +21,13 @@ namespace tnac::rt
     using flags_t = unsigned;
 
   public:
-    CLASS_SPECIALS_NONE_CUSTOM(cmdline);
+    CLASS_SPECIALS_NONE(cmdline);
 
     ~cmdline() noexcept;
 
-    cmdline() noexcept;
+    explicit cmdline(feedback& fb) noexcept;
 
   public:
-    //
-    // Attaches the feedback object
-    //
-    void attach_feedback(feedback& fb) noexcept;
-
     //
     // Parses the command line
     //
