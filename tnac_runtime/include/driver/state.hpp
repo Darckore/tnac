@@ -12,6 +12,9 @@ namespace tnac::rt
   class state final
   {
   public:
+    static constexpr auto defaultBase = 10;
+
+  public:
     CLASS_SPECIALS_NONE_CUSTOM(state);
 
     ~state() noexcept;
@@ -23,6 +26,10 @@ namespace tnac::rt
     void start() noexcept;
     void stop() noexcept;
 
+    int num_base() const noexcept;
+    void reset_base() noexcept;
+    void set_base(int base) noexcept;
+
   public: // IO
     in_stream&  in() noexcept;
     out_stream& out() noexcept;
@@ -33,6 +40,7 @@ namespace tnac::rt
     out_stream* m_out{ &std::cout };
     out_stream* m_err{ &std::cerr };
 
+    int  m_numBase{ defaultBase };
     bool m_running{};
   };
 }

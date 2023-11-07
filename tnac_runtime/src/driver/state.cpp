@@ -24,6 +24,19 @@ namespace tnac::rt
     m_running = false;
   }
 
+  int state::num_base() const noexcept
+  {
+    return m_numBase;
+  }
+  void state::reset_base() noexcept
+  {
+    m_numBase = defaultBase;
+  }
+  void state::set_base(int base) noexcept
+  {
+    m_numBase = base;
+  }
+
 
   // Public members(IO)
 
