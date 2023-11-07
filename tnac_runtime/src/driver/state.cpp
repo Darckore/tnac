@@ -9,6 +9,22 @@ namespace tnac::rt
   state::state() noexcept = default;
 
 
+  // Public members
+
+  bool state::is_running() const noexcept
+  {
+    return m_running;
+  }
+  void state::start() noexcept
+  {
+    m_running = true;
+  }
+  void state::stop() noexcept
+  {
+    m_running = false;
+  }
+
+
   // Public members(IO)
 
   in_stream& state::in() noexcept

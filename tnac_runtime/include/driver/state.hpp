@@ -18,6 +18,11 @@ namespace tnac::rt
 
     state() noexcept;
 
+  public:
+    bool is_running() const noexcept;
+    void start() noexcept;
+    void stop() noexcept;
+
   public: // IO
     in_stream&  in() noexcept;
     out_stream& out() noexcept;
@@ -27,5 +32,7 @@ namespace tnac::rt
     in_stream*  m_in{ &std::cin };
     out_stream* m_out{ &std::cout };
     out_stream* m_err{ &std::cerr };
+
+    bool m_running{};
   };
 }

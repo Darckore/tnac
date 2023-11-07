@@ -1,6 +1,4 @@
 #include "driver/driver.hpp"
-#include "output/printer.hpp"
-#include "output/lister.hpp"
 #include "output/formatting.hpp"
 
 namespace tnac::rt
