@@ -9,7 +9,8 @@ namespace tnac::rt
 
   driver::~driver() noexcept = default;
 
-  driver::driver(int argCount, char** args) noexcept
+  driver::driver(int argCount, char** args) noexcept :
+    m_repl{ m_state }
   {
     set_callbacks();
     m_settings.parse(argCount, args);
@@ -46,22 +47,6 @@ namespace tnac::rt
   }
 
 
-  // Private members (IO)
-  
-  in_stream& driver::in() noexcept
-  {
-    return *m_io.in;
-  }
-  out_stream& driver::out() noexcept
-  {
-    return *m_io.out;
-  }
-  out_stream& driver::err() noexcept
-  {
-    return *m_io.err;
-  }
-
-
   // Private members (Callbacks)
 
   void driver::set_callbacks() noexcept
@@ -72,9 +57,9 @@ namespace tnac::rt
 
   void driver::on_cli_error(string_t msg) noexcept
   {
-    err() << "<Command line> ";
-    fmt::print(err(), fmt::clr::BoldRed, "error: ");
-    err() << msg << '\n';
+    m_state.err() << "<Command line> ";
+    fmt::print(m_state.err(), fmt::clr::BoldRed, "error: ");
+    m_state.err() << msg << '\n';
   }
 
 }

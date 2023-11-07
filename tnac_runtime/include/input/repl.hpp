@@ -6,6 +6,8 @@
 
 namespace tnac::rt
 {
+  class state;
+
   //
   // REPL shell
   // Provides interactive input
@@ -13,16 +15,19 @@ namespace tnac::rt
   class repl final
   {
   public:
-    CLASS_SPECIALS_NONE_CUSTOM(repl);
+    CLASS_SPECIALS_NONE(repl);
 
     ~repl() noexcept;
 
-    repl() noexcept;
+    explicit repl(state& st) noexcept;
 
   public:
     //
     // Runs the REPL
     //
     void run() noexcept;
+
+  private:
+    state* m_state{};
   };
 }

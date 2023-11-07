@@ -3,6 +3,7 @@
 //
 
 #pragma once
+#include "driver/state.hpp"
 #include "input/cmdline.hpp"
 #include "input/repl.hpp"
 #include "src_mgr/source_manager.hpp"
@@ -16,14 +17,6 @@ namespace tnac::rt
   //
   class driver final
   {
-  private:
-    struct io
-    {
-      in_stream*  in{ &std::cin };
-      out_stream* out{ &std::cout };
-      out_stream* err{ &std::cerr };
-    };
-
   public:
     CLASS_SPECIALS_NONE(driver);
 
@@ -42,11 +35,6 @@ namespace tnac::rt
     //
     void run_interactive() noexcept;
 
-  private: // IO
-    in_stream& in() noexcept;
-    out_stream& out() noexcept;
-    out_stream& err() noexcept;
-
   private: // Callbacks
     //
     // Inits callbacks via the feedback object
@@ -56,7 +44,7 @@ namespace tnac::rt
     void on_cli_error(string_t msg) noexcept;
 
   private:
-    io m_io{};
+    state m_state;
     cmdline m_settings;
     repl m_repl;
     source_manager m_srcMgr;
