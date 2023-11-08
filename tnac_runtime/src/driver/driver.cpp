@@ -12,9 +12,8 @@ namespace tnac::rt
     m_state{ m_tnac },
     m_repl{ m_state }
   {
-    m_feedback.on_error([this](string_t msg) noexcept { on_cli_error(msg); });
+    m_feedback.on_error([this](string_t msg) noexcept { on_error("Command line"sv, msg); });
     m_settings.parse(argCount, args);
-    set_callbacks();
     run();
     run_interactive();
   }
@@ -29,9 +28,11 @@ namespace tnac::rt
       return;
     }
 
+    set_file_callbacks();
     auto loadResult = m_tnac.load(m_settings.run_on());
     if (!loadResult)
     {
+      m_feedback.error("Failed to load the input file"sv);
       return;
     }
 
@@ -48,6 +49,7 @@ namespace tnac::rt
     if (!m_settings.interactive())
       return;
 
+    set_repl_callbacks();
     m_repl.declare_commands();
     m_repl.run();
   }
@@ -55,18 +57,20 @@ namespace tnac::rt
 
   // Private members (Callbacks)
 
-  void driver::set_callbacks() noexcept
+  void driver::set_file_callbacks() noexcept
   {
-    if (m_settings.interactive())
-    {
-      m_feedback.on_command([this](ast::command cmd) noexcept { m_repl.on_command(std::move(cmd)); });
-    }
+    m_feedback.on_error([this](string_t msg) noexcept { on_error("Input"sv, msg); });
   }
 
-  void driver::on_cli_error(string_t msg) noexcept
+  void driver::set_repl_callbacks() noexcept
   {
-    m_state.err() << "<Command line> ";
-    fmt::print(m_state.err(), fmt::clr::BoldRed, "error: ");
+    m_feedback.on_command([this](ast::command cmd) noexcept { m_repl.on_command(std::move(cmd)); });
+  }
+
+  void driver::on_error(string_t prefix, string_t msg) noexcept
+  {
+    m_state.err() << '<' << prefix << "> ";
+    fmt::print(m_state.err(), fmt::clr::BoldRed, "error: "sv);
     m_state.err() << msg << '\n';
   }
 

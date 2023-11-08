@@ -36,14 +36,19 @@ namespace tnac::rt
 
   private: // Callbacks
     //
-    // Inits callbacks via the feedback object
+    // Inits callbacks used when a file is processed
     //
-    void set_callbacks() noexcept;
+    void set_file_callbacks() noexcept;
 
     //
-    // Triggers when a command-line parsing error occurs
+    // Inits callbacks for REPL
     //
-    void on_cli_error(string_t msg) noexcept;
+    void set_repl_callbacks() noexcept;
+
+    //
+    // Posts a generic error
+    //
+    void on_error(string_t prefix, string_t msg) noexcept;
 
   private:
     feedback m_feedback;
