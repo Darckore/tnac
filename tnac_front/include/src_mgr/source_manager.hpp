@@ -46,6 +46,16 @@ namespace tnac
     //
     src::loc_wrapper register_location(const src::location& loc) noexcept;
 
+    //
+    // Retrieves the source file by location
+    //
+    const file_t* fetch_file(src::loc_wrapper loc) const noexcept;
+
+    //
+    // Retrieves the source line by location
+    //
+    string_t fetch_line(src::loc_wrapper loc) const noexcept;
+
   private:
     file_store m_files;
     loc_store  m_locations;

@@ -41,4 +41,19 @@ namespace tnac
     return src::loc_wrapper{ m_locations.emplace_front(loc) };
   }
 
+  const source_manager::file_t* source_manager::fetch_file(src::loc_wrapper loc) const noexcept
+  {
+    auto fileIt = m_files.find(loc->file_id());
+    return fileIt != m_files.end() ? &fileIt->second : nullptr;
+  }
+
+  string_t source_manager::fetch_line(src::loc_wrapper loc) const noexcept
+  {
+    auto srcFile = fetch_file(loc);
+    if (!srcFile)
+      return {};
+
+    return {};
+  }
+
 }
