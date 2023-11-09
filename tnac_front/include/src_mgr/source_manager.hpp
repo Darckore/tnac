@@ -48,8 +48,15 @@ namespace tnac
 
     //
     // Retrieves the source file by location
+    // 
+    // const version
     //
     const file_t* fetch_file(src::loc_wrapper loc) const noexcept;
+
+    //
+    // Retrieves the source file by location
+    // 
+    file_t* fetch_file(src::loc_wrapper loc) noexcept;
 
     //
     // Retrieves the source line by location

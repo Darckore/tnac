@@ -47,6 +47,11 @@ namespace tnac
     return fileIt != m_files.end() ? &fileIt->second : nullptr;
   }
 
+  source_manager::file_t* source_manager::fetch_file(src::loc_wrapper loc) noexcept
+  {
+    return FROM_CONST(fetch_file, loc);
+  }
+
   string_t source_manager::fetch_line(src::loc_wrapper loc) const noexcept
   {
     auto srcFile = fetch_file(loc);

@@ -217,6 +217,7 @@ namespace tnac
   {
     m_lex.attach_loc(srcLoc);
     auto res = operator()(str);
+    srcLoc.add_line();
     m_lex.detach_loc();
     return res;
   }

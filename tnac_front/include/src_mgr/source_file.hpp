@@ -25,12 +25,21 @@ namespace tnac::src
   //
   class file final
   {
+  private:
+    struct line
+    {
+      using size_type = string_t::size_type;
+      size_type beg{};
+      size_type end{};
+    };
+
   public:
     using path_t     = fsys::path;
     using hash_t     = std::size_t;
     using contents_t = std::expected<string_t, std::error_code>;
 
     using line_num_t = location::line_num;
+    using lines_t    = std::vector<line>;
 
   public:
     //
@@ -99,6 +108,11 @@ namespace tnac::src
     //
     string_t fetch_line(line_num_t ln) const noexcept;
 
+    //
+    // Adds line information for a new line
+    //
+    void add_line_info(src::loc_wrapper loc) noexcept;
+
   private:
     //
     // Reads the entire file into the internal buffer
@@ -109,5 +123,6 @@ namespace tnac::src
     path_t m_path{};
     buf_t m_buffer;
     source_manager* m_mgr{};
+    lines_t m_lines;
   };
 }

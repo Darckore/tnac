@@ -29,12 +29,6 @@ namespace tnac::src
     return !(m_path && m_mgr);
   }
 
-  void location::set(line_num l, line_pos c) noexcept
-  {
-    m_lineNumber = l;
-    m_column = c;
-  }
-
   void location::decr_column_by(line_pos delta) noexcept
   {
     if (m_column < delta)
@@ -53,6 +47,13 @@ namespace tnac::src
 
   void location::add_line() noexcept
   {
+    if (!is_dummy())
+    {
+      auto thisWrapper = loc_wrapper{ *this };
+      if (auto srcFile = src_mgr().fetch_file(thisWrapper))
+        srcFile->add_line_info(thisWrapper);
+    }
+
     ++m_lineNumber;
     m_column = {};
   }

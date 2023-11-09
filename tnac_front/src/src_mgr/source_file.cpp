@@ -77,11 +77,55 @@ namespace tnac::src
 
   string_t file::fetch_line(line_num_t ln) const noexcept
   {
-    if (m_buffer.empty())
+    using size_type = line::size_type;
+    const auto lineNum = static_cast<size_type>(ln);
+
+    line info{};
+    if (const auto sz = m_lines.size(); lineNum >= sz) // Possibly, currently parsed line
+    {
+      const auto last = lineNum ? lineNum - 1 : size_type{};
+      if (last < sz)
+        info = m_lines[last];
+      else if (!last)
+        info = {};
+      else
+        return {};
+
+      if (info.end > m_buffer.size())
+        return {};
+
+      auto newlinePos = m_buffer.find('\n', info.end);
+      if (newlinePos == buf_t::npos)
+        newlinePos = m_buffer.size();
+
+      info.beg = info.end;
+      info.end = newlinePos;
+    }
+    else
+    {
+      info = m_lines[lineNum];
+    }
+
+    if (info.end > m_buffer.size())
       return {};
 
-    utils::unused(ln);
-    return {};
+    auto bufIt = m_buffer.begin();
+    return utils::rtrim(string_t{ std::next(bufIt, info.beg), std::next(bufIt, info.end) });
+  }
+
+  void file::add_line_info(src::loc_wrapper loc) noexcept
+  {
+    using size_type = line::size_type;
+    const auto lineNum = static_cast<size_type>(loc->line());
+    if (lineNum != m_lines.size())
+    {
+      UTILS_ASSERT(false);
+      return;
+    }
+
+    const auto beg = lineNum ? m_lines[lineNum - 1].end : size_type{};
+    const auto end = static_cast<size_type>(loc->col() + 1) + beg;
+    m_lines.emplace_back(beg, end);
   }
 
 

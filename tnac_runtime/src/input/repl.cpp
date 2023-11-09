@@ -33,7 +33,6 @@ namespace tnac::rt
       if (parseRes && parseRes != m_state->tnac_core().get_ast())
         m_last = parseRes;
 
-      m_loc.add_line();
       utils::unused(parseRes);
     }
   }

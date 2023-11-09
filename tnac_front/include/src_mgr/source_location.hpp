@@ -52,11 +52,6 @@ namespace tnac::src
     bool is_dummy() const noexcept;
 
     //
-    // Sets line and column numbers to the specified values
-    //
-    void set(line_num l, line_pos c) noexcept;
-
-    //
     // Decrements column number by the specified amout
     // will not go past 0
     //
