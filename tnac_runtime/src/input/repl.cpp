@@ -74,6 +74,18 @@ namespace tnac::rt
     m_state->tnac_core().process_cmd(std::move(cmd));
   }
 
+  repl::line_opt repl::fetch_line(src::loc_wrapper loc) noexcept
+  {
+    if (!loc || &loc->file() != &m_fake)
+      return {};
+
+    auto inputIt = m_inputs.find(loc->line());
+    if (inputIt == m_inputs.end())
+      return {};
+
+    return inputIt->second;
+  }
+
 
   // Private members
 

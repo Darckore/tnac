@@ -29,6 +29,7 @@ namespace tnac::rt
   {
   public:
     using input_map = std::unordered_map<std::uint32_t, buf_t>;
+    using line_opt  = std::optional<string_t>;
 
   public:
     CLASS_SPECIALS_NONE(repl);
@@ -52,6 +53,11 @@ namespace tnac::rt
     // Processes a command
     //
     void on_command(ast::command cmd) noexcept;
+
+    //
+    // Retrieves a line by location if possible
+    //
+    line_opt fetch_line(src::loc_wrapper loc) noexcept;
 
   private:
     //

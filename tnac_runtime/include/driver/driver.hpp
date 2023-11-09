@@ -56,6 +56,11 @@ namespace tnac::rt
     void post_error(string_t msg) noexcept;
 
     //
+    // Retrieves a code line by location
+    //
+    string_t fetch_line(src::loc_wrapper at) noexcept;
+
+    //
     // Posts a generic error
     //
     void on_error(string_t prefix, string_t msg) noexcept;
