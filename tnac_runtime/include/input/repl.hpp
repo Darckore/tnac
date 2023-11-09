@@ -5,6 +5,11 @@
 #pragma once
 #include "src_mgr/source_manager.hpp"
 
+namespace tnac
+{
+  class token;
+}
+
 namespace tnac::ast
 {
   class node;
@@ -52,6 +57,16 @@ namespace tnac::rt
     // Interns an input string and returns a view into it
     //
     string_t consume_input() noexcept;
+
+    //
+    // Attempts to redirect output to the specified file
+    //
+    bool try_redirect_output(const token& path) noexcept;
+
+    //
+    // Resets the output stream
+    //
+    void end_redirect() noexcept;
 
   private: // Command handlers
     //

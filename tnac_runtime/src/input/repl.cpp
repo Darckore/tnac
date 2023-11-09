@@ -91,6 +91,26 @@ namespace tnac::rt
     return newItem.first->second;
   }
 
+  bool repl::try_redirect_output(const token& path) noexcept
+  {
+    fsys::path fileName{ path.value() };
+    if (fileName.empty())
+      return false;
+
+    if (!m_state->redirect_to_file(fileName))
+    {
+      //m_inpMgr.on_error(pathTok, "Failed to open output file"sv);
+      return false;
+    }
+
+    return true;
+  }
+
+  void repl::end_redirect() noexcept
+  {
+    m_state->reset_output();
+  }
+
 
   // Private members (Command handlers)
 
@@ -106,11 +126,11 @@ namespace tnac::rt
 
   void repl::list_code(ast::command cmd) noexcept
   {
+    using size_type = ast::command::size_type;
     auto wrapInLines = true;
     if (cmd.arg_count())
     {
-      wrapInLines = false;
-      //try_redirect_output(c[size_type{}]);
+      wrapInLines = !try_redirect_output(cmd[size_type{}]);
     }
 
     out::lister ls;
@@ -118,7 +138,7 @@ namespace tnac::rt
     if (wrapInLines) m_state->out() << '\n';
     ls(m_state->tnac_core().get_ast(), m_state->out());
     if (wrapInLines) m_state->out() << '\n';
-    //end_redirect();
+    end_redirect();
   }
 
   void repl::print_ast(ast::command cmd) noexcept
@@ -145,8 +165,7 @@ namespace tnac::rt
     auto wrapInLines = true;
     if (cmd.arg_count())
     {
-      wrapInLines = false;
-      //try_redirect_output(cmd[size_type{}]);
+      wrapInLines = !try_redirect_output(cmd[size_type{}]);
     }
 
     out::ast_printer pr;
@@ -154,7 +173,7 @@ namespace tnac::rt
     if (wrapInLines) m_state->out() << '\n';
     pr(ast, m_state->out());
     if (wrapInLines) m_state->out() << '\n';
-    //end_redirect();
+    end_redirect();
   }
 
 }

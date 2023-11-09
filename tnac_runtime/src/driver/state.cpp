@@ -44,6 +44,23 @@ namespace tnac::rt
     m_numBase = base;
   }
 
+  bool state::redirect_to_file(const fsys::path& to) noexcept
+  {
+    m_outFile.open(to);
+    if (!m_outFile)
+      return false;
+
+    m_out = &m_outFile;
+    return true;
+  }
+  void state::reset_output() noexcept
+  {
+    if (m_outFile)
+      m_outFile.close();
+
+    m_out = &std::cout;
+  }
+
 
   // Public members(IO)
 

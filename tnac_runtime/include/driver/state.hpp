@@ -34,6 +34,8 @@ namespace tnac::rt
     void reset_base() noexcept;
     void set_base(int base) noexcept;
 
+    bool redirect_to_file(const fsys::path& to) noexcept;
+    void reset_output() noexcept;
 
   public: // IO
     bool in_stdout() const noexcept;
@@ -47,6 +49,8 @@ namespace tnac::rt
     in_stream*  m_in{ &std::cin };
     out_stream* m_out{ &std::cout };
     out_stream* m_err{ &std::cerr };
+
+    std::ofstream m_outFile;
 
     int  m_numBase{ defaultBase };
     bool m_running{};
