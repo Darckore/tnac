@@ -8,6 +8,7 @@
 namespace tnac
 {
   class token;
+  class feedback;
 }
 
 namespace tnac::ast
@@ -34,7 +35,7 @@ namespace tnac::rt
 
     ~repl() noexcept;
 
-    explicit repl(state& st) noexcept;
+    repl(state& st, feedback& fb) noexcept;
 
   public:
     //
@@ -96,6 +97,7 @@ namespace tnac::rt
     input_map m_inputs;
 
     state* m_state{};
+    feedback* m_feedback{};
     ast::node* m_last{};
     bool m_commandsReady{};
   };

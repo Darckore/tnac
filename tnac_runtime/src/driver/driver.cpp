@@ -10,7 +10,7 @@ namespace tnac::rt
     m_settings{ m_feedback },
     m_tnac{ m_feedback },
     m_state{ m_tnac },
-    m_repl{ m_state }
+    m_repl{ m_state, m_feedback }
   {
     m_feedback.on_error([this](string_t msg) noexcept { on_error("Command line"sv, msg); });
     m_settings.parse(argCount, args);
@@ -59,19 +59,48 @@ namespace tnac::rt
 
   void driver::set_file_callbacks() noexcept
   {
-    m_feedback.on_error([this](string_t msg) noexcept { on_error("Input"sv, msg); });
+    m_feedback.on_error([this](string_t msg) noexcept
+      { on_error("Input"sv, msg); });
+    m_feedback.on_parse_error([this](const ast::error_expr& err) noexcept
+      { on_error(err.at(), err.message()); });
+    m_feedback.on_compile_error([this](const token& tok, string_t msg) noexcept
+      { on_error(tok, msg); });
   }
 
   void driver::set_repl_callbacks() noexcept
   {
-    m_feedback.on_command([this](ast::command cmd) noexcept { m_repl.on_command(std::move(cmd)); });
+    m_feedback.on_command([this](ast::command cmd) noexcept
+      { m_repl.on_command(std::move(cmd)); });
+  }
+
+  void driver::error_mark() noexcept
+  {
+    fmt::print(m_state.err(), fmt::clr::BoldRed, " error: "sv);
+  }
+
+  void driver::post_error(string_t msg) noexcept
+  {
+    error_mark();
+    m_state.err() << msg << '\n';
   }
 
   void driver::on_error(string_t prefix, string_t msg) noexcept
   {
-    m_state.err() << '<' << prefix << "> ";
-    fmt::print(m_state.err(), fmt::clr::BoldRed, "error: "sv);
-    m_state.err() << msg << '\n';
+    m_state.err() << '<' << prefix << '>';
+    post_error(msg);
+  }
+
+  void driver::on_error(const token& tok, string_t msg) noexcept
+  {
+    auto loc = tok.at();
+    m_state.err() << '<';
+    if (loc)
+      m_state.err() << loc->file().string();
+    else
+      m_state.err() << "Unknown"sv;
+
+    m_state.err() << ">:" << (loc->line() + 1) << ':' << (loc->col() + 1) << ':';
+    post_error(msg);
   }
 
 }

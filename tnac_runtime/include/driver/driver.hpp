@@ -46,9 +46,24 @@ namespace tnac::rt
     void set_repl_callbacks() noexcept;
 
     //
+    // Prints the error mark
+    //
+    void error_mark() noexcept;
+
+    //
+    // Posts an error message
+    //
+    void post_error(string_t msg) noexcept;
+
+    //
     // Posts a generic error
     //
     void on_error(string_t prefix, string_t msg) noexcept;
+
+    //
+    // Posts a compile or parse error
+    //
+    void on_error(const token& tok, string_t msg) noexcept;
 
   private:
     feedback m_feedback;

@@ -2,6 +2,7 @@
 #include "driver/state.hpp"
 #include "output/printer.hpp"
 #include "output/lister.hpp"
+#include "common/feedback.hpp"
 
 namespace tnac::rt
 {
@@ -9,9 +10,10 @@ namespace tnac::rt
 
   repl::~repl() noexcept = default;
 
-  repl::repl(state& st) noexcept :
+  repl::repl(state& st, feedback& fb) noexcept :
     m_loc{ m_fake, m_srcMgr },
-    m_state{ &st }
+    m_state{ &st },
+    m_feedback{ &fb }
   {}
 
 
@@ -31,6 +33,7 @@ namespace tnac::rt
       if (parseRes && parseRes != m_state->tnac_core().get_ast())
         m_last = parseRes;
 
+      m_loc.add_line();
       utils::unused(parseRes);
     }
   }
@@ -58,10 +61,10 @@ namespace tnac::rt
     //core.declare_cmd("vars"sv, params{ String }, size_type{},
     //     [this](auto c) noexcept { print_vars(std::move(c)); });
 
-    //core.declare_cmd("bin"sv, [this](auto) noexcept { set_num_base(2); });
-    //core.declare_cmd("oct"sv, [this](auto) noexcept { set_num_base(8); });
-    //core.declare_cmd("dec"sv, [this](auto) noexcept { set_num_base(10); });
-    //core.declare_cmd("hex"sv, [this](auto) noexcept { set_num_base(16); });
+    core.declare_cmd("bin"sv, [this](auto) noexcept { m_state->set_base(2); });
+    core.declare_cmd("oct"sv, [this](auto) noexcept { m_state->set_base(8); });
+    core.declare_cmd("dec"sv, [this](auto) noexcept { m_state->set_base(10); });
+    core.declare_cmd("hex"sv, [this](auto) noexcept { m_state->set_base(16); });
 
     m_commandsReady = true;
   }
@@ -87,7 +90,6 @@ namespace tnac::rt
     }
 
     auto&& newItem = m_inputs.try_emplace(m_loc.line(), std::move(input));
-    m_loc.add_line();
     return newItem.first->second;
   }
 
@@ -99,7 +101,7 @@ namespace tnac::rt
 
     if (!m_state->redirect_to_file(fileName))
     {
-      //m_inpMgr.on_error(pathTok, "Failed to open output file"sv);
+      m_feedback->compile_error(path, "Failed to open output file"sv);
       return false;
     }
 
@@ -157,7 +159,7 @@ namespace tnac::rt
         if (second.value() == "current"sv)
           return m_last;
 
-        // todo: error
+        m_feedback->compile_error(second, "Unknown command argument"sv);
         return core.get_ast();
       };
 
