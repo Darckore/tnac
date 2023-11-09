@@ -75,6 +75,15 @@ namespace tnac::src
     return { path(), src_mgr() };
   }
 
+  string_t file::fetch_line(line_num_t ln) const noexcept
+  {
+    if (m_buffer.empty())
+      return {};
+
+    utils::unused(ln);
+    return {};
+  }
+
 
   // Private members
 

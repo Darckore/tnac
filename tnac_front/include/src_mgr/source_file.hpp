@@ -30,6 +30,8 @@ namespace tnac::src
     using hash_t     = std::size_t;
     using contents_t = std::expected<string_t, std::error_code>;
 
+    using line_num_t = location::line_num;
+
   public:
     //
     // Hashes a path
@@ -91,6 +93,11 @@ namespace tnac::src
     // Creates an associated source location
     //
     location make_location() const noexcept;
+
+    //
+    // Retrieves a line by number
+    //
+    string_t fetch_line(line_num_t ln) const noexcept;
 
   private:
     //

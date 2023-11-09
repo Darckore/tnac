@@ -89,7 +89,7 @@ namespace tnac::rt
     if (auto replLine = m_repl.fetch_line(at))
       return *replLine;
 
-    return {};
+    return m_tnac.fetch_line(at);
   }
 
   void driver::on_error(string_t prefix, string_t msg) noexcept

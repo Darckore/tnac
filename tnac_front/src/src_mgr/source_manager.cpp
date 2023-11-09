@@ -53,7 +53,7 @@ namespace tnac
     if (!srcFile)
       return {};
 
-    return {};
+    return srcFile->fetch_line(loc->line());
   }
 
 }

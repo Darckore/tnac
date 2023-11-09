@@ -69,6 +69,11 @@ namespace tnac
     //
     void process_cmd(ast::command cmd) noexcept;
 
+    //
+    // Retrieves a line from source file by location
+    //
+    string_t fetch_line(src::loc_wrapper loc) const noexcept;
+
   private:
     feedback* m_feedback{};
     sema m_sema;

@@ -56,4 +56,9 @@ namespace tnac
     m_cmdInterpreter.on_command(std::move(cmd));
   }
 
+  string_t core::fetch_line(src::loc_wrapper loc) const noexcept
+  {
+    return m_srcMgr.fetch_line(loc);
+  }
+
 }
