@@ -61,7 +61,7 @@ namespace tnac::eval
   // Represents a value used for evaluation
   // 
   // This is basically an opaque token corresponding to a value stored elsewhere
-  // The idetifier is converted from a pointer to the target value and combined
+  // The identifier is converted from a pointer to the target value and combined
   // with the appropriate type id
   // 
   // Since user mode doesn't use the most significant byte of the address, we can
