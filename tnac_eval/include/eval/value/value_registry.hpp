@@ -111,7 +111,6 @@ namespace tnac::eval
   class registry final
   {
   public:
-    using value_type   = value;
     using entity_id    = std::uintptr_t;
     using entity_vals  = std::unordered_map<entity_id, stored_value>;
 
@@ -127,8 +126,8 @@ namespace tnac::eval
   public:
     CLASS_SPECIALS_NONE_CUSTOM(registry);
 
-    registry() noexcept = default;
-    ~registry() noexcept = default;
+    ~registry() noexcept;
+    registry() noexcept;
 
   private:
     //
@@ -145,170 +144,69 @@ namespace tnac::eval
     // Fetches the next value from the temporary storage
     // If the storage is empty, gets the last result
     //
-    tmp_val fetch() noexcept
-    {
-      tmp_val res;
-      if (!m_inFlight.empty())
-      {
-        res = std::move(m_inFlight.top());
-        m_inFlight.pop();
-      }
-
-      return res;
-    }
+    tmp_val fetch() noexcept;
 
     //
     // Finds an array object by id
     //
-    ref_arr* get_array(entity_id id) noexcept
-    {
-      auto stored = m_arrays.find(id);
-      if (stored == m_arrays.end())
-        return {};
-
-      return &stored->second;
-    }
+    ref_arr* get_array(entity_id id) noexcept;
 
     //
     // Decreases the ref count for an array
     //
-    void unref_array(array_type arr) noexcept
-    {
-      if (auto refArr = get_array(arr.id()))
-      {
-        refArr->unref();
-      }
-    }
+    void unref_array(array_type arr) noexcept;
 
     //
     // If the underlying type is a reference counted one, decreases the ref count
     //
-    void unref(value val) noexcept
-    {
-      on_value(val, utils::visitor
-      {
-        [this](auto&&) noexcept {},
-        [this](array_type& arr) { unref_array(arr); }
-      });
-    }
+    void unref(value val) noexcept;
 
     //
     // Increases the ref count of an array
     //
-    void ref_array(array_type arr) noexcept
-    {
-      if (auto refArr = get_array(arr.id()))
-      {
-        refArr->ref();
-      }
-    }
+    void ref_array(array_type arr) noexcept;
 
     //
     // If the underlying type is a reference counted one, increases the ref count
     //
-    void ref(value val) noexcept
-    {
-      on_value(val, utils::visitor
-      {
-        [this](auto&&) noexcept {},
-        [this](array_type& arr) { ref_array(arr); }
-      });
-    }
+    void ref(value val) noexcept;
 
     //
     // Creates a new array
     //
-    auto allocate_array(size_type prealloc) noexcept
-    {
-      auto newArr = val_array{};
-      newArr.reserve(prealloc);
-
-      auto [inserted, ok] = m_arrays.emplace(m_arrayId, ref_arr{ std::move(newArr) });
-      UTILS_ASSERT(ok); // This id is not taken yet
-
-      auto&& result = inserted->second;
-      return arr_wrapper{ result.value(), m_arrayId++ };
-    }
+    arr_wrapper allocate_array(size_type prealloc) noexcept;
 
     //
     // Unreferences components of an array
     //
-    void unref_subarrays(const val_array& arr) noexcept
-    {
-      for (auto&& elem : arr)
-      {
-        auto val = *elem;
-        unref(val);
-        if (auto arrT = val.try_get<array_type>())
-        {
-          auto subArr = get_array(arrT->id());
-          if (!subArr)
-            continue;
-
-          unref_subarrays(subArr->value());
-        }
-      }
-    }
+    void unref_subarrays(const val_array& arr) noexcept;
 
     //
     // Goes through the array collection and clears the empty ones
     //
-    void cleanup_arrays() noexcept
-    {
-      for (auto arrIt = m_arrays.begin(); arrIt != m_arrays.end(); )
-      {
-        auto&& [id, arr] = *arrIt;
-        if (arr.ref_count())
-        {
-          ++arrIt;
-          continue;
-        }
-
-        unref_subarrays(arr.value());
-        arrIt = m_arrays.erase(arrIt);
-      }
-    }
+    void cleanup_arrays() noexcept;
 
   public:
     //
     // Locks an array to prevent it from being removed or reused while its ref count is 0
     //
-    void lock(array_type arr) noexcept
-    {
-      ref_array(arr);
-    }
+    void lock(array_type arr) noexcept;
 
     //
     // Unlocks an array and makes it available for removal or reuse
     //
-    void unlock(array_type arr) noexcept
-    {
-      unref_array(arr);
-    }
+    void unlock(array_type arr) noexcept;
 
   public:
     //
     // Allocates an array object and returns a reference to it
     //
-    auto make_array(size_type prealloc) noexcept
-    {
-      cleanup_arrays();
-      return allocate_array(prealloc);
-    }
+    arr_wrapper make_array(size_type prealloc) noexcept;
 
     //
     // Registers an array from a ref counted wrapper
     //
-    void push_array(arr_wrapper aw) noexcept
-    {
-      auto&& arr = *aw;
-      for (auto&& elem : arr)
-      {
-        ref(*elem);
-      }
-      auto val = array_type{ arr, aw.id() };
-      push(val);
-    }
+    void push_array(arr_wrapper aw) noexcept;
 
     //
     // Pushes a temporary value to the stack and updates the result
@@ -324,12 +222,7 @@ namespace tnac::eval
     //
     // Extracts the next value from the stack and returns it
     //
-    tmp_val consume() noexcept
-    {
-      auto res = fetch();
-      unref(*res);
-      return res;
-    }
+    tmp_val consume() noexcept;
 
     //
     // Registers a value for a specific entity (e.g., a variable)
@@ -345,22 +238,12 @@ namespace tnac::eval
     //
     // Retrueves a stored entity value
     //
-    value value_for(entity_id id) noexcept
-    {
-      auto item = m_entityValues.find(id);
-      if (item == m_entityValues.end())
-        return {};
-
-      return *(item->second);
-    }
+    value value_for(entity_id id) noexcept;
 
     //
     // Returns the last evaluated value
     //
-    value_type evaluation_result() const noexcept
-    {
-      return *m_result;
-    }
+    value evaluation_result() const noexcept;
 
   private:
     tmp_val m_result;

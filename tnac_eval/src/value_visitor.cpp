@@ -1,8 +1,3 @@
-//
-// Value visitor
-//
-
-#pragma once
 #include "eval/value/value_visitor.hpp"
 
 namespace tnac::eval
