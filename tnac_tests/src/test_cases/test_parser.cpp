@@ -24,18 +24,20 @@ namespace tnac::tests
 
       static void check_tree_structure(std::span<expected_node> exp, string_t input) noexcept
       {
-        auto core = get_tnac();
-        auto ast = core.get_parser()(input);
+        feedback fb;
+        auto core = get_tnac(fb);
+        auto ast = core.parse(input);
         tree_checker{ exp }(ast);
       }
 
       template <ast::node_kind kind, std::size_t N>
       static void check_simple_exprs(const std::array<string_t, N>& inputs)
       {
-        auto core = get_tnac();
+        feedback fb;
+        auto core = get_tnac(fb);
         for (auto input : inputs)
         {
-          auto ast = core.get_parser()(input);
+          auto ast = core.parse(input);
           EXPECT_NE(ast, nullptr) << "Null AST for input: " << input;
 
           if (ast)
@@ -53,15 +55,14 @@ namespace tnac::tests
 
       static void check_error(string_t input, string_t errMsg) noexcept
       {
-        static feedback fb;
+        feedback fb;
         fb.on_parse_error(on_error);
-        auto core = get_tnac();
-        core.get_parser().attach_feedback(fb);
+        auto core = get_tnac(fb);
         expectedErr = errMsg;
         stop = false;
 
         errCount = {};
-        core.get_parser()(input);
+        core.parse(input);
 
         expectedErr = {};
         stop = false;
@@ -753,39 +754,37 @@ namespace tnac::tests
   
   TEST(parser, t_cmd_skip)
   {
-    auto core = get_tnac();
-    auto&& parser = core.get_parser();
+    feedback fb;
+    auto core = get_tnac(fb);
 
-    auto ast = parser("#command p1 p2"sv);
+    auto ast = core.parse("#command p1 p2"sv);
     ASSERT_NE(ast, nullptr);
     EXPECT_TRUE(ast->is(Scope));
 
-    ast = parser("#command p1 p2 : 2 + 2"sv);
+    ast = core.parse("#command p1 p2 : 2 + 2"sv);
     ASSERT_NE(ast, nullptr);
     EXPECT_TRUE(ast->is(Binary));
 
-    ast = parser("-2 #cmd : 3 + 3"sv);
+    ast = core.parse("-2 #cmd : 3 + 3"sv);
     ASSERT_NE(ast, nullptr);
     EXPECT_TRUE(ast->is(Binary));
   }
 
   TEST(parser, t_cmd_handle)
   {
-    auto core = get_tnac();
-    auto&& parser = core.get_parser();
     feedback fb;
+    auto core = get_tnac(fb);
     fb.on_command([](ast::command) noexcept {});
-    parser.attach_feedback(fb);
 
-    auto ast = parser("#command p1 p2"sv);
+    auto ast = core.parse("#command p1 p2"sv);
     ASSERT_NE(ast, nullptr);
     EXPECT_TRUE(ast->is(Scope));
 
-    ast = parser("#command p1 p2 : 2 + 2"sv);
+    ast = core.parse("#command p1 p2 : 2 + 2"sv);
     ASSERT_NE(ast, nullptr);
     EXPECT_TRUE(ast->is(Binary));
 
-    ast = parser("-2 #cmd : 3 + 3"sv);
+    ast = core.parse("-2 #cmd : 3 + 3"sv);
     ASSERT_NE(ast, nullptr);
     EXPECT_TRUE(ast->is(Binary));
   }

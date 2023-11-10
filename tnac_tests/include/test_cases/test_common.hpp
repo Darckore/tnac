@@ -1,10 +1,7 @@
 #pragma once
-#include "parser/parser.hpp"
-#include "sema/sema.hpp"
+#include "core/tnac.hpp"
 #include "eval/value/value.hpp"
 #include "eval/types/traits.hpp"
-#include "src_mgr/source_manager.hpp"
-#include "parser/commands/cmd_interpreter.hpp"
 
 namespace tnac::tests
 {
@@ -29,39 +26,9 @@ namespace tnac::tests
     return msg;
   }
 
-  class tnac_core final
+  inline core get_tnac(feedback& fb) noexcept
   {
-  public:
-    CLASS_SPECIALS_NONE(tnac_core);
-
-    ~tnac_core() noexcept = default;
-
-    tnac_core(std::size_t stackSize) noexcept :
-      m_parser{ m_builder, m_sema },
-      m_cmdInterpreter{ m_cmdStore }
-    {
-      utils::unused(stackSize);
-    }
-
-  public:
-    parser& get_parser() noexcept
-    {
-      return m_parser;
-    }
-
-  private:
-    ast::builder m_builder;
-    sema m_sema;
-    parser m_parser;
-    source_manager m_srcMgr;
-
-    commands::store m_cmdStore;
-    cmd m_cmdInterpreter;
-  };
-
-  inline tnac_core get_tnac(std::size_t stackSz = 0) noexcept
-  {
-    return tnac_core{ stackSz };
+    return core{ fb };
   }
 
 #if 0
