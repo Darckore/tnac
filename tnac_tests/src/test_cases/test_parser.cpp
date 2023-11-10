@@ -22,7 +22,7 @@ namespace tnac::tests
       using test_data = std::span<expected_node>;
       using data_iter = test_data::iterator;
 
-      static void check_tree_structute(std::span<expected_node> exp, string_t input) noexcept
+      static void check_tree_structure(std::span<expected_node> exp, string_t input) noexcept
       {
         auto core = get_tnac();
         auto ast = core.get_parser()(input);
@@ -266,7 +266,7 @@ namespace tnac::tests
       expected_node{  "-", Unary,   Scope }
     };
 
-    tree_checker::check_tree_structute(exp, input);
+    tree_checker::check_tree_structure(exp, input);
   }
 
   TEST(parser, t_struct_complex_unary)
@@ -291,7 +291,7 @@ namespace tnac::tests
       expected_node{  "-", Unary,   Scope },
     };
 
-    tree_checker::check_tree_structute(exp, input);
+    tree_checker::check_tree_structure(exp, input);
   }
 
   TEST(parser, t_struct_abs)
@@ -313,7 +313,7 @@ namespace tnac::tests
       expected_node{ "",   Abs,     Scope },
     };
 
-    tree_checker::check_tree_structute(exp, input);
+    tree_checker::check_tree_structure(exp, input);
   }
 
   TEST(parser, t_struct_simple_binary)
@@ -335,7 +335,7 @@ namespace tnac::tests
       expected_node{  "+", Binary,  Scope }
     };
 
-    tree_checker::check_tree_structute(exp, input);
+    tree_checker::check_tree_structure(exp, input);
   }
 
   TEST(parser, t_struct_result_unary)
@@ -353,7 +353,7 @@ namespace tnac::tests
       expected_node{  "-", Unary,  Scope }
     };
 
-    tree_checker::check_tree_structute(exp, input);
+    tree_checker::check_tree_structure(exp, input);
   }
 
   TEST(parser, t_struct_result_bin)
@@ -372,7 +372,7 @@ namespace tnac::tests
       expected_node{  "+", Binary,  Scope }
     };
 
-    tree_checker::check_tree_structute(exp, input);
+    tree_checker::check_tree_structure(exp, input);
   }
 
   TEST(parser, t_struct_seq_binary) // :3
@@ -395,7 +395,7 @@ namespace tnac::tests
       expected_node{   "-", Binary,  Scope },
     };
 
-    tree_checker::check_tree_structute(exp, input);
+    tree_checker::check_tree_structure(exp, input);
   }
 
   TEST(parser, t_struct_pow_root)
@@ -420,7 +420,7 @@ namespace tnac::tests
       expected_node{ "*",  Binary,  Scope },
     };
 
-    tree_checker::check_tree_structute(exp, input);
+    tree_checker::check_tree_structure(exp, input);
   }
 
   TEST(parser, t_struct_complex_binary)
@@ -452,7 +452,7 @@ namespace tnac::tests
       expected_node{  "+", Binary,  Scope }
     };
 
-    tree_checker::check_tree_structute(exp, input);
+    tree_checker::check_tree_structure(exp, input);
   }
 
   TEST(parser, t_struct_call)
@@ -475,7 +475,7 @@ namespace tnac::tests
       expected_node{ "",  Call,       Scope },
     };
 
-    tree_checker::check_tree_structute(exp, input);
+    tree_checker::check_tree_structure(exp, input);
   }
 
   TEST(parser, t_struct_typed)
@@ -494,7 +494,7 @@ namespace tnac::tests
       expected_node{ "_cplx", Typed,   Scope },
     };
 
-    tree_checker::check_tree_structute(exp, input);
+    tree_checker::check_tree_structure(exp, input);
   }
 
   TEST(parser, t_struct_complex_typed)
@@ -523,7 +523,7 @@ namespace tnac::tests
       expected_node{ "_cplx", Typed,   Scope },
     };
 
-    tree_checker::check_tree_structute(exp, input);
+    tree_checker::check_tree_structure(exp, input);
   }
 
   TEST(parser, t_struct_op_precedence)
@@ -555,7 +555,7 @@ namespace tnac::tests
       expected_node{  "+", Binary,  Scope },
     };
 
-    tree_checker::check_tree_structute(exp, input);
+    tree_checker::check_tree_structure(exp, input);
   }
 
   TEST(parser, t_bitwise_precedence)
@@ -596,7 +596,7 @@ namespace tnac::tests
       expected_node{  "|", Binary,  Scope  },
     };
 
-    tree_checker::check_tree_structute(exp, input);
+    tree_checker::check_tree_structure(exp, input);
   }
 
   TEST(parser, t_struct_simple_decl)
@@ -621,7 +621,7 @@ namespace tnac::tests
       expected_node{   "", Decl,    Scope },
     };
 
-    tree_checker::check_tree_structute(exp, input);
+    tree_checker::check_tree_structure(exp, input);
   }
 
   TEST(parser, t_struct_complex_decl)
@@ -658,7 +658,7 @@ namespace tnac::tests
       expected_node{   "", Decl,    Scope },
     };
 
-    tree_checker::check_tree_structute(exp, input);
+    tree_checker::check_tree_structure(exp, input);
   }
 
   TEST(parser, t_struct_func_decl_empty)
@@ -679,7 +679,7 @@ namespace tnac::tests
       expected_node{   "", Decl,     Scope },
     };
 
-    tree_checker::check_tree_structute(exp, input);
+    tree_checker::check_tree_structure(exp, input);
   }
 
   TEST(parser, t_struct_func_decl_params)
@@ -705,7 +705,7 @@ namespace tnac::tests
       expected_node{   "", Decl,      Scope },
     };
 
-    tree_checker::check_tree_structute(exp, input);
+    tree_checker::check_tree_structure(exp, input);
   }
 
   TEST(parser, t_struct_func_decl_body)
@@ -734,7 +734,7 @@ namespace tnac::tests
       expected_node{   "", Decl,       Scope },
     };
 
-    tree_checker::check_tree_structute(exp, input);
+    tree_checker::check_tree_structure(exp, input);
   }
 
   TEST(parser, t_errors)
