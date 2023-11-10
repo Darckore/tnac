@@ -14,13 +14,13 @@ namespace tnac::tests
   using arr  = eval::array_type;
   using func = eval::function_type;
 
-  inline testing::Message& operator<<(testing::Message& msg, const frac& f) noexcept
+  inline ::testing::Message& operator<<(::testing::Message & msg, const frac& f) noexcept
   {
     if (f.sign() < 0) msg << '-';
     msg << f.num() << ',' << f.denom();
     return msg;
   }
-  inline testing::Message& operator<<(testing::Message& msg, const func& f) noexcept
+  inline ::testing::Message& operator<<(::testing::Message& msg, const func& f) noexcept
   {
     msg << "function(" << f->name() << ')';
     return msg;
