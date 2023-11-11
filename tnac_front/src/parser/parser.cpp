@@ -184,9 +184,10 @@ namespace tnac
 
   parser::~parser() noexcept = default;
 
-  parser::parser(ast::builder& builder, sema& sema) noexcept :
+  parser::parser(ast::builder& builder, sema& sema, feedback* fb /*= nullptr*/) noexcept :
     m_builder{ builder },
-    m_sema{ sema }
+    m_sema{ sema },
+    m_feedback{ fb }
   {}
 
 
@@ -232,15 +233,8 @@ namespace tnac
     return FROM_CONST(root);
   }
 
-  void parser::attach_feedback(feedback& fb) noexcept
-  {
-    m_feedback = &fb;
-  }
 
-
-  // Private members
-
-  /// Semantics
+  // Private members(Semantics)
 
   void parser::new_scope() noexcept
   {
@@ -251,7 +245,8 @@ namespace tnac
     m_sema.close_scope();
   }
 
-  /// Commands
+
+  // Private members(Commands)
 
   void parser::command(bool consumeSeparator) noexcept
   {
@@ -291,7 +286,8 @@ namespace tnac
     return res;
   }
 
-  /// Parsing
+
+  // Private members(Parsing)
 
   const token& parser::peek_next() noexcept
   {

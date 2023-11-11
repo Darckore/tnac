@@ -7,8 +7,9 @@ namespace tnac
 
   cmd::~cmd() noexcept = default;
 
-  cmd::cmd(cmd_store& store) noexcept :
-    m_cmdStore { &store }
+  cmd::cmd(cmd_store& store, feedback& fb) noexcept :
+    m_cmdStore { &store },
+    m_feedback{ &fb }
   {}
 
   // Public members
@@ -34,10 +35,6 @@ namespace tnac
     descr(std::move(command));
   }
 
-  void cmd::attach_feedback(feedback& fb) noexcept
-  {
-    m_feedback = &fb;
-  }
 
   // Private members
 
@@ -84,9 +81,6 @@ namespace tnac
 
   void cmd::on_error(cmd_ref command, const ver_result& reason) noexcept
   {
-    if (!m_feedback)
-      return;
-
     using enum commands::verification;
     string_t msg{};
     const token* pos{};

@@ -1,25 +1,25 @@
 #include "common/diag.hpp"
 
+namespace tnac::detail
+{
+  static constexpr auto wrongArgN{ "Too {} arguments. Expected {}, got {}"sv };
+
+  static constexpr auto expected{ "Expected {}"sv };
+  static constexpr auto expectedCh{ "Expected '{}'"sv };
+  static constexpr auto expectedInfo{ "Expected {} {}"sv };
+  static constexpr auto expectedInfoCh{ "Expected '{}' {}"sv };
+  static constexpr auto expectedAfter{ "Expected {} after {}"sv };
+  static constexpr auto expectedAfterCh{ "Expected '{}' after {}"sv };
+
+  static constexpr auto wrongCmdArgType{ "Command argument {} has an unexpected type"sv };
+  static constexpr auto wrongCmdArg{ "Unrecognised argument '{}' at index {}"sv };
+
+  static constexpr auto unknownCliArg{ "Unknown cli arg '{}'"sv };
+  static constexpr auto fileErr{ "Failed to {} file '{}'. Reason: '{}'"sv };
+}
+
 namespace tnac
 {
-  namespace detail
-  {
-    static constexpr auto wrongArgN{ "Too {} arguments. Expected {}, got {}"sv };
-
-    static constexpr auto expected{ "Expected {}"sv };
-    static constexpr auto expectedCh{ "Expected '{}'"sv };
-    static constexpr auto expectedInfo{ "Expected {} {}"sv };
-    static constexpr auto expectedInfoCh{ "Expected '{}' {}"sv };
-    static constexpr auto expectedAfter{ "Expected {} after {}"sv };
-    static constexpr auto expectedAfterCh{ "Expected '{}' after {}"sv };
-
-    static constexpr auto wrongCmdArgType{ "Command argument {} has an unexpected type"sv };
-    static constexpr auto wrongCmdArg{ "Unrecognised argument '{}' at index {}"sv };
-
-    static constexpr auto unknownCliArg{ "Unknown cli arg '{}'"sv };
-    static constexpr auto fileErr{ "Failed to {} file '{}'. Reason: '{}'"sv };
-  }
-
   // Data members
 
   buf_t diag::m_buffer{};

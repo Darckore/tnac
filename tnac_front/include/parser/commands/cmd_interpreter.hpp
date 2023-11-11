@@ -27,18 +27,13 @@ namespace tnac
 
     ~cmd() noexcept;
 
-    cmd(cmd_store& store) noexcept;
+    cmd(cmd_store& store, feedback& fb) noexcept;
 
   public:
     //
     // Interprets a command
     //
     void on_command(value_type command) noexcept;
-
-    //
-    // Attaches a feedback object for error and command handling
-    //
-    void attach_feedback(feedback& fb) noexcept;
 
   private:
     //

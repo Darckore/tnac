@@ -8,12 +8,9 @@ namespace tnac
 
   core::core(feedback& fb) noexcept :
     m_feedback{ &fb },
-    m_parser{ m_astBuilder, m_sema },
-    m_cmdInterpreter{ m_cmdStore }
-  {
-    m_parser.attach_feedback(fb);
-    m_cmdInterpreter.attach_feedback(fb);
-  }
+    m_parser{ m_astBuilder, m_sema, &fb },
+    m_cmdInterpreter{ m_cmdStore, fb }
+  {}
 
 
   // Public members

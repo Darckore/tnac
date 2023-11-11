@@ -5,17 +5,14 @@
 #pragma once
 #include "parser/ast/ast_util.hpp"
 
+namespace tnac::commands::detail
+{
+  template <typename F>
+  concept cmd_handler = std::is_nothrow_invocable_r_v<void, F, ast::command>;
+}
+
 namespace tnac::commands
 {
-  namespace detail
-  {
-    template <typename F>
-    concept cmd_handler = std::is_nothrow_invocable_r_v<void, F, ast::command>;
-
-    template <typename F>
-    concept cmd_err_handler = std::is_nothrow_invocable_r_v<void, F, const token&, string_t>;
-  }
-
   //
   // Indicates whether or not a command passes verification
   //

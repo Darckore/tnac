@@ -153,7 +153,7 @@ namespace tnac
 
     ~parser() noexcept;
 
-    parser(ast::builder& builder, sema& sema) noexcept;
+    parser(ast::builder& builder, sema& sema, feedback* fb = nullptr) noexcept;
 
   public:
     //
@@ -185,11 +185,6 @@ namespace tnac
     // potentially, built over multiple parse calls
     //
     root_ptr root() noexcept;
-
-    //
-    // Attaches a feedback object for error and command handling
-    //
-    void attach_feedback(feedback& fb) noexcept;
 
   private: // semantics
     //
