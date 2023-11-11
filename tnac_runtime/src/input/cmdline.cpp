@@ -1,5 +1,6 @@
 #include "input/cmdline.hpp"
 #include "common/feedback.hpp"
+#include "common/diag.hpp"
 
 namespace tnac::rt
 {
@@ -62,6 +63,6 @@ namespace tnac::rt
     if (arg == "-i"sv)
       m_state.m_interactive = true;
     else
-      error("Unknown cli arg"sv);
+      error(diag::unknown_cli_arg(arg));
   }
 }

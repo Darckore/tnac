@@ -4,6 +4,8 @@ namespace tnac
 {
   namespace detail
   {
+    static constexpr auto wrongArgN{ "Too {} arguments. Expected {}, got {}"sv };
+
     static constexpr auto expected{ "Expected {}"sv };
     static constexpr auto expectedCh{ "Expected '{}'"sv };
     static constexpr auto expectedInfo{ "Expected {} {}"sv };
@@ -11,9 +13,11 @@ namespace tnac
     static constexpr auto expectedAfter{ "Expected {} after {}"sv };
     static constexpr auto expectedAfterCh{ "Expected '{}' after {}"sv };
 
-    static constexpr auto wrongCmdArg{ "Command argument {} has an unexpected type"sv };
+    static constexpr auto wrongCmdArgType{ "Command argument {} has an unexpected type"sv };
+    static constexpr auto wrongCmdArg{ "Unrecognised argument '{}' at index {}"sv };
 
-    static constexpr auto wrongArgN{ "Too {} arguments. Expected {}, got {}"sv };
+    static constexpr auto unknownCliArg{ "Unknown cli arg '{}'"sv };
+    static constexpr auto fileErr{ "Failed to {} file '{}'. Reason: '{}'"sv };
   }
 
   // Data members
@@ -154,7 +158,29 @@ namespace tnac
 
   string_t diag::wrong_cmd_arg(size_type idx) noexcept
   {
-    return format(detail::wrongCmdArg, idx + 1);
+    return format(detail::wrongCmdArgType, idx + 1);
+  }
+
+  string_t diag::wrong_cmd_arg(size_type idx, string_t value) noexcept
+  {
+    return format(detail::wrongCmdArg, value, idx + 1);
+  }
+  
+  // Public members(Runtime)
+
+  string_t diag::unknown_cli_arg(string_t arg) noexcept
+  {
+    return format(detail::unknownCliArg, arg);
+  }
+
+  string_t diag::file_load_failure(const fsys::path& path, string_t reason) noexcept
+  {
+    return format(detail::fileErr, "load"sv, path.string(), reason);
+  }
+
+  string_t diag::file_write_failure(const fsys::path& path, string_t reason) noexcept
+  {
+    return format(detail::fileErr, "write to"sv, path.string(), reason);
   }
 
 }

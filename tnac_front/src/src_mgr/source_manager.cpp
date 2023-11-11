@@ -10,7 +10,8 @@ namespace tnac
   source_manager::path_t source_manager::canonise(const path_t& src) noexcept
   {
     std::error_code errc;
-    auto res = fsys::weakly_canonical(src, errc);
+    auto res = fsys::absolute(src, errc);
+    res = fsys::weakly_canonical(res, errc);
     if (errc) res.clear();
     return res;
   }
@@ -29,7 +30,7 @@ namespace tnac
   {
     auto loadPath = canonise(path);
     if (loadPath.empty() || !file_t::exists(loadPath))
-      return std::unexpected{ err::file_not_found() };
+      return std::unexpected{ load_err{ err::file_not_found(), std::move(loadPath) } };
 
     const auto hash = file_t::hash(loadPath);
     auto emplaceRes = m_files.try_emplace(hash, file_t{ std::move(loadPath), *this });

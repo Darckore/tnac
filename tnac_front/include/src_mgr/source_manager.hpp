@@ -18,7 +18,8 @@ namespace tnac
     using path_t = file_t::path_t;
     using hash_t = file_t::hash_t;
 
-    using load_res   = std::expected<file_t*, std::error_code>;
+    using load_err   = std::pair<std::error_code, path_t>;
+    using load_res   = std::expected<file_t*, load_err>;
     using file_store = std::unordered_map<hash_t, file_t>;
     using loc_store  = std::forward_list<src::location>;
 

@@ -3,6 +3,7 @@
 #include "output/printer.hpp"
 #include "output/lister.hpp"
 #include "common/feedback.hpp"
+#include "common/diag.hpp"
 
 namespace tnac::rt
 {
@@ -106,13 +107,15 @@ namespace tnac::rt
 
   bool repl::try_redirect_output(const token& path) noexcept
   {
-    fsys::path fileName{ path.value() };
+    std::error_code errc;
+    auto fileName = fsys::absolute(fsys::path{ path.value() }, errc);
     if (fileName.empty())
       return false;
 
     if (!m_state->redirect_to_file(fileName))
     {
-      m_feedback->compile_error(path, "Failed to open output file"sv);
+      m_feedback->compile_error(path, diag::file_write_failure(fileName, "not accessible"sv));
+
       return false;
     }
 
@@ -166,11 +169,12 @@ namespace tnac::rt
         if (argCount < maxArgs)
           return core.get_ast();
 
-        auto&& second = c[size_type{ 1 }];
+        const auto curIdx = size_type{ 1 };
+        auto&& second = c[curIdx];
         if (second.value() == "current"sv)
           return m_last;
 
-        m_feedback->compile_error(second, "Unknown command argument"sv);
+        m_feedback->compile_error(second, diag::wrong_cmd_arg(curIdx, second.value()));
         return core.get_ast();
       };
 

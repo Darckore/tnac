@@ -1,4 +1,5 @@
 #include "driver/driver.hpp"
+#include "common/diag.hpp"
 
 namespace tnac::rt
 {
@@ -32,7 +33,8 @@ namespace tnac::rt
     auto loadResult = m_tnac.load(m_settings.run_on());
     if (!loadResult)
     {
-      m_feedback.error("Failed to load the input file"sv);
+      auto&& err = loadResult.error();
+      m_feedback.error(diag::file_load_failure(err.second, err.first.message()));
       return;
     }
 

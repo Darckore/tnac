@@ -163,6 +163,27 @@ namespace tnac
     //
     static string_t wrong_cmd_arg(size_type idx) noexcept;
 
+    //
+    // Returns a 'wrong cmd arg' message
+    //
+    static string_t wrong_cmd_arg(size_type idx, string_t value) noexcept;
+
+  public: // Runtime
+    //
+    // Returns an 'unknown cli arg' message
+    //
+    static string_t unknown_cli_arg(string_t arg) noexcept;
+
+    //
+    // Returns a 'failed to load file' message
+    //
+    static string_t file_load_failure(const fsys::path& path, string_t reason) noexcept;
+
+    //
+    // Returns a 'failed to write to file' message
+    //
+    static string_t file_write_failure(const fsys::path& path, string_t reason) noexcept;
+
   private:
     static buf_t m_buffer;
     static msg_store m_interned;
