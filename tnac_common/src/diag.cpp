@@ -1,0 +1,132 @@
+#include "common/diag.hpp"
+
+namespace tnac
+{
+  namespace detail
+  {
+    static constexpr auto expected{ "Expected {}"sv };
+    static constexpr auto expectedCh{ "Expected '{}'"sv };
+    static constexpr auto expectedInfo{ "Expected {} {}"sv };
+    static constexpr auto expectedInfoCh{ "Expected '{}' {}"sv };
+    static constexpr auto expectedAfter{ "Expected {} after {}"sv };
+    static constexpr auto expectedAfterCh{ "Expected '{}' after {}"sv };
+  }
+
+  // Data members
+
+  buf_t diag::m_buffer{};
+
+  diag::msg_store diag::m_interned{};
+
+
+  // Public members
+
+  string_t diag::expected(string_t what) noexcept
+  {
+    return format(detail::expected, what);
+  }
+
+  string_t diag::expected(char_t what) noexcept
+  {
+    return format(detail::expectedCh, what);
+  }
+
+  string_t diag::expected(string_t what, string_t more) noexcept
+  {
+    return format(detail::expectedInfo, what, more);
+  }
+
+  string_t diag::expected(char_t what, string_t more) noexcept
+  {
+    return format(detail::expectedInfoCh, what, more);
+  }
+  
+  
+  // Public members(Parsing)
+
+  string_t diag::expected_expr() noexcept
+  {
+    return expected("expression"sv);
+  }
+
+  string_t diag::expected_args() noexcept
+  {
+    return expected("argument list"sv);
+  }
+
+  string_t diag::expected_assignable() noexcept
+  {
+    return expected("an assignable object"sv);
+  }
+
+  string_t diag::expected_id() noexcept
+  {
+    return expected("identifier"sv);
+  }
+
+  string_t diag::expected_init() noexcept
+  {
+    return expected("initialisation"sv);
+  }
+
+  string_t diag::expected_single_id() noexcept
+  {
+    return expected("a single identifier"sv);
+  }
+
+  string_t diag::expected_expr_sep() noexcept
+  {
+    return expected(':', "or EOL"sv);
+  }
+
+  string_t diag::expected_func_end() noexcept
+  {
+    return format(detail::expectedAfterCh, ';', "function definition"sv);
+  }
+
+  string_t diag::expected_cond_end() noexcept
+  {
+    return format(detail::expectedAfterCh, ';', "conditional"sv);
+  }
+
+  string_t diag::expected_pattern_end() noexcept
+  {
+    return format(detail::expectedAfterCh, ';', "pattern body"sv);
+  }
+
+  string_t diag::expected_matcher_def() noexcept
+  {
+    return format(detail::expectedAfterCh, "->"sv, "condition matcher"sv);
+  }
+
+  string_t diag::undef_id() noexcept
+  {
+    return "Undefined identifier"sv;
+  }
+
+  string_t diag::invalid_decl() noexcept
+  {
+    return "Invalid declaration"sv;
+  }
+
+  string_t diag::invalid_lambda() noexcept
+  {
+    return "Invalid anonimous function definition"sv;
+  }
+
+  string_t diag::param_redef() noexcept
+  {
+    return "Function parameter redifinition"sv;
+  }
+
+  string_t diag::expr_not_allowed() noexcept
+  {
+    return "Expression is not allowed here"sv;
+  }
+
+  string_t diag::empty_cond() noexcept
+  {
+    return "Condition can't be empty"sv;
+  }
+
+}

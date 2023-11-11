@@ -356,7 +356,7 @@ namespace tnac
 
       // Invalid expressions might be in the middle of other expressions
       if(e->is_valid())
-        res.push_back(error_expr(next, "Expected ':' or EOL"sv, err_pos::Last));
+        res.push_back(error_expr(next, diag::expected_expr_sep(), err_pos::Last));
     }
 
     return res;
@@ -374,7 +374,7 @@ namespace tnac
       return assign_expr();
 
     if (!decl->is_valid())
-      return error_expr(decl->pos(), "Invalid declaration"sv, err_pos::Current);
+      return error_expr(decl->pos(), diag::invalid_decl(), err_pos::Current);
 
     return m_builder.make_decl_expr(*decl);
   }
@@ -419,7 +419,7 @@ namespace tnac
     }
     else
     {
-      init = error_expr(op, "Expected initialisation"sv, err_pos::Current);
+      init = error_expr(op, diag::expected_init(), err_pos::Current);
     }
 
     auto varDecl = m_builder.make_var_decl(name, *init);
@@ -439,7 +439,7 @@ namespace tnac
 
     if (auto&& cp = peek_next(); !detail::is_close_paren(cp))
     {
-      auto opt = error_expr(cp, "Expected ')'"sv, err_pos::Last);
+      auto opt = error_expr(cp, diag::expected(')'), err_pos::Last);
       params.push_back(m_builder.make_param_decl(cp, opt));
     }
     else
@@ -466,7 +466,7 @@ namespace tnac
     auto body = expression_list(scope_level::Nested);
     if (auto&& last = peek_next(); !detail::is_semi(last))
     {
-      body.push_back(error_expr(last, "Expected ';' at function definition end"sv, err_pos::Last));
+      body.push_back(error_expr(last, diag::expected_func_end(), err_pos::Last));
     }
     else
     {
@@ -485,12 +485,12 @@ namespace tnac
     if (!name.is_identifier())
     {
       expr();
-      opt = error_expr(name, "Expected identifier"sv, err_pos::Current);
+      opt = error_expr(name, diag::expected_id(), err_pos::Current);
     }
     else if (auto sym = m_sema.find(name.value(), true))
     {
       next_tok();
-      opt = error_expr(name, "Function parameter redifinition"sv, err_pos::Current);
+      opt = error_expr(name, diag::param_redef(), err_pos::Current);
     }
     else
     {
@@ -501,7 +501,7 @@ namespace tnac
           next_tok();
 
         expr();
-        opt = error_expr(name, "Expression is not allowed here"sv, err_pos::Current);
+        opt = error_expr(name, diag::expr_not_allowed(), err_pos::Current);
       }
     }
 
@@ -547,11 +547,11 @@ namespace tnac
 
     if (auto id = utils::try_cast<ast::id_expr>(lhs); !id)
     {
-      lhs = error_expr(lhs->pos(), "Expected a single identifier"sv, err_pos::Current);
+      lhs = error_expr(lhs->pos(), diag::expected_single_id(), err_pos::Current);
     }
     else if(!detail::is_assignable(id->symbol()))
     {
-      lhs = error_expr(lhs->pos(), "Expected an assignable object"sv, err_pos::Current);
+      lhs = error_expr(lhs->pos(), diag::expected_assignable(), err_pos::Current);
     }
 
     auto op = next_tok();
@@ -613,7 +613,7 @@ namespace tnac
     auto elements = arg_list(token::BracketClose);
 
     if (!detail::is_close_bracket(peek_next()))
-      elements.push_back(error_expr(peek_next(), "Expected ']'"sv, err_pos::Last));
+      elements.push_back(error_expr(peek_next(), diag::expected(']'), err_pos::Last));
     else
       next_tok();
 
@@ -628,7 +628,7 @@ namespace tnac
     auto intExpr = expr();
 
     if (!detail::is_close_paren(peek_next()))
-      return error_expr(peek_next(), "Expected ')'"sv, err_pos::Last);
+      return error_expr(peek_next(), diag::expected(')'), err_pos::Last);
 
     next_tok();
     return m_builder.make_paren(*intExpr, op);
@@ -642,7 +642,7 @@ namespace tnac
     auto intExpr = expr();
 
     if (!detail::is_pipe(peek_next()))
-      return error_expr(peek_next(), "Expected '|'"sv, err_pos::Last);
+      return error_expr(peek_next(), diag::expected('|'), err_pos::Last);
 
     next_tok();
     return m_builder.make_abs(*intExpr, op);
@@ -681,13 +681,13 @@ namespace tnac
       auto sym = m_sema.find(next.value());
 
       if (!sym)
-        return error_expr(next_tok(), "Undefined identifier"sv, err_pos::Current);
+        return error_expr(next_tok(), diag::undef_id(), err_pos::Current);
 
       return m_builder.make_id(next_tok(), *sym);
     }
 
     auto err = next_tok();
-    return error_expr(err, "Expected expression"sv, err_pos::Current);
+    return error_expr(err, diag::expected_expr(), err_pos::Current);
   }
 
   ast::expr* parser::anonimous_function() noexcept
@@ -696,7 +696,7 @@ namespace tnac
     auto kw = next_tok();
     auto funcDecl = func_decl(kw);
     if (!funcDecl->is_valid())
-      return error_expr(kw, "Invalid anonimous function definition"sv, err_pos::Current);
+      return error_expr(kw, diag::invalid_lambda(), err_pos::Current);
 
     return m_builder.make_decl_expr(*funcDecl);
   }
@@ -706,13 +706,13 @@ namespace tnac
     auto kw = next_tok();
 
     if (!detail::is_open_paren(peek_next()))
-      return error_expr(peek_next(), "Expected argument list"sv, err_pos::Last);
+      return error_expr(peek_next(), diag::expected_args(), err_pos::Last);
 
     next_tok();
     auto args = arg_list(token::ParenClose);
 
     if (!detail::is_close_paren(peek_next()))
-      return error_expr(peek_next(), "Expected ')'"sv, err_pos::Last);
+      return error_expr(peek_next(), diag::expected(')'), err_pos::Last);
 
     next_tok();
     return m_builder.make_typed(kw, std::move(args));
@@ -749,7 +749,7 @@ namespace tnac
       auto args = arg_list(token::ParenClose);
 
       if (!detail::is_close_paren(peek_next()))
-        return error_expr(peek_next(), "Expected ')'"sv, err_pos::Last);
+        return error_expr(peek_next(), diag::expected(')'), err_pos::Last);
 
       next_tok();
       res = m_builder.make_call(*res, std::move(args));
@@ -779,12 +779,12 @@ namespace tnac
     next_tok();
 
     if(auto&& next = peek_next(); detail::is_close_curly(next))
-      return error_expr(peek_next(), "Condition can't be empty"sv, err_pos::Current);
+      return error_expr(peek_next(), diag::empty_cond(), err_pos::Current);
     
     auto c = expr();
 
     if (!detail::is_close_curly(peek_next()))
-      return error_expr(peek_next(), "Expected '}'"sv, err_pos::Last);
+      return error_expr(peek_next(), diag::expected('}'), err_pos::Last);
 
     next_tok();
     return c;
@@ -793,7 +793,7 @@ namespace tnac
   ast::expr* parser::cond_short(ast::expr& condExpr, ast::scope& scope) noexcept
   {
     if (!detail::is_open_curly(peek_next()))
-      return error_expr(peek_next(), "Expected '{'"sv, err_pos::Current);
+      return error_expr(peek_next(), diag::expected('{'), err_pos::Current);
 
     next_tok();
     ast::expr* onTrue{};
@@ -816,12 +816,12 @@ namespace tnac
       {
         auto err = peek_next();
         expr();
-        onFalse = error_expr(err, "Expected ','"sv, err_pos::Current);
+        onFalse = error_expr(err, diag::expected(','), err_pos::Current);
       }
     }
 
     if (auto&& next = peek_next(); !detail::is_close_curly(next))
-      return error_expr(next, "Expected '}'"sv, err_pos::Last);
+      return error_expr(next, diag::expected('}'), err_pos::Last);
 
     next_tok();
     return m_builder.make_short_cond(condExpr, onTrue, onFalse, scope);
@@ -836,7 +836,7 @@ namespace tnac
     }
 
     if (!detail::is_semi(peek_next()))
-      patterns.push_back(error_expr(peek_next(), "Expected ';' at the end of conditional"sv, err_pos::Last));
+      patterns.push_back(error_expr(peek_next(), diag::expected_cond_end(), err_pos::Last));
 
     next_tok();
     scope.adopt(std::move(patterns));
@@ -855,7 +855,7 @@ namespace tnac
       auto exprList = expression_list(scope_level::Nested);
       if (!detail::is_semi(peek_next()))
       {
-        exprList.push_back(error_expr(next_tok(), "Expected ';' at the end of pattern body"sv, err_pos::Last));
+        exprList.push_back(error_expr(next_tok(), diag::expected_pattern_end(), err_pos::Last));
       }
       body->adopt(std::move(exprList));
     }
@@ -867,7 +867,7 @@ namespace tnac
   ast::expr* parser::cond_matcher() noexcept
   {
     if (!detail::is_open_curly(peek_next()))
-      return error_expr(peek_next(), "Expected '{'"sv, err_pos::Current);
+      return error_expr(peek_next(), diag::expected('{'), err_pos::Current);
 
     auto patternPos = next_tok();
     ast::expr* checked{};
@@ -876,7 +876,7 @@ namespace tnac
     {
       patternPos = next_tok();
       if (detail::is_close_curly(peek_next()))
-        return error_expr(next_tok(), "Expected expression"sv, err_pos::Current);
+        return error_expr(next_tok(), diag::expected_expr(), err_pos::Current);
     }
     else if (detail::is_pattern_unary(peek_next()))
     {
@@ -890,7 +890,7 @@ namespace tnac
         checked = m_builder.make_unary(*checked, patternPos);
 
       if (!detail::is_close_curly(peek_next()))
-        return error_expr(peek_next(), "Expected '}'"sv, err_pos::Last);
+        return error_expr(peek_next(), diag::expected('}'), err_pos::Last);
 
       if (detail::is_open_curly(patternPos))
         patternPos = checked->pos();
@@ -898,7 +898,7 @@ namespace tnac
 
     next_tok();
     if (!detail::is_arrow(peek_next()))
-      return error_expr(peek_next(), "Expected '->' after condition matcher"sv, err_pos::Last);
+      return error_expr(peek_next(), diag::expected_matcher_def(), err_pos::Last);
 
     next_tok();
     return m_builder.make_matcher(patternPos, checked);

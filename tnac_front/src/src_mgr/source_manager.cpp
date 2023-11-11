@@ -32,7 +32,7 @@ namespace tnac
       return std::unexpected{ err::file_not_found() };
 
     const auto hash = file_t::hash(loadPath);
-    auto emplaceRes = m_files.try_emplace(hash, file_t{ std::move(path), *this });
+    auto emplaceRes = m_files.try_emplace(hash, file_t{ std::move(loadPath), *this });
     return &emplaceRes.first->second;
   }
 

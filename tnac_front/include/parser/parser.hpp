@@ -6,6 +6,7 @@
 #include "parser/lex.hpp"
 #include "ast/ast_builder.hpp"
 #include "ast/ast.hpp"
+#include "common/diag.hpp"
 
 namespace tnac
 {
