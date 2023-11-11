@@ -36,6 +36,14 @@ namespace tnac::semantics
     using scope_map = table<scope_ptr, sym_ptr>;
     using name_map  = table<name_t, scope_map>;
 
+  private:
+    template <detail::sym S>
+    using sym_collection = table<scope_ptr, entity_list<S*>>;
+
+  public:
+    using var_collection  = sym_collection<variable>;
+    using func_collection = sym_collection<function>;
+
   public:
     CLASS_SPECIALS_NONE_CUSTOM(sym_table);
 
@@ -94,7 +102,7 @@ namespace tnac::semantics
     //
     // Adds the given name to the name map and returns an empty scope table
     // If the name already exists, returns the scopes where
-    // an entities with such name exist
+    // entities with such name exist
     //
     scope_map& make_name(name_t name) noexcept;
 
@@ -130,9 +138,36 @@ namespace tnac::semantics
       return res;
     }
 
+    //
+    // Stores a symbol in the corresponding collection
+    // This is mostly needed for enumeration of everything in the given scope
+    //
+    template <detail::sym S, typename Collection>
+      requires (std::same_as<Collection, sym_collection<S>>)
+    void store_sym(S& sym, Collection& store) noexcept
+    {
+      auto parent = &sym.owner_scope();
+      auto&& newIt = store[parent];
+      newIt.emplace_back(&sym);
+    }
+
+    //
+    // Stores a variable in the collection which holds all variables in the program
+    // along with their scopes
+    //
+    void store_variable(variable& var) noexcept;
+
+    //
+    // Stores a function in the collection which holds all functions in the program
+    // along with their scopes
+    //
+    void store_function(function& func) noexcept;
+
   private:
     name_map m_names;
     scope_store m_scopes;
     sym_store m_symbols;
+    var_collection m_vars;
+    func_collection m_funcs;
   };
 }

@@ -39,8 +39,6 @@ namespace tnac
     case VarDecl:
     {
       auto&& var = m_symTab.add_variable(name, m_curScope);
-      if (m_varCallback)
-        m_varCallback(var);
       decl.attach_symbol(var);
     }
       break;

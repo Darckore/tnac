@@ -19,7 +19,9 @@ namespace tnac::semantics
 
   variable& sym_table::add_variable(name_t name, scope_ptr parent) noexcept
   {
-    return *make_symbol<variable>(name, parent);
+    auto&& newVar = *make_symbol<variable>(name, parent);
+    store_variable(newVar);
+    return newVar;
   }
 
   parameter& sym_table::add_parameter(name_t name, scope_ptr parent) noexcept
@@ -29,7 +31,9 @@ namespace tnac::semantics
 
   function& sym_table::add_function(name_t name, scope_ptr parent, function::param_list params) noexcept
   {
-    return *make_symbol<function>(name, parent, std::move(params));
+    auto&& newFunc = *make_symbol<function>(name, parent, std::move(params));
+    store_function(newFunc);
+    return newFunc;
   }
 
   sym_table::sym_ptr sym_table::lookup(name_t name, scope_ptr parent) noexcept
@@ -86,6 +90,16 @@ namespace tnac::semantics
   sym_table::sym_ptr& sym_table::make_symbol(scope_map& scopes, scope_ptr parent) noexcept
   {
     return scopes.emplace(parent, sym_ptr{}).first->second;
+  }
+
+  void sym_table::store_variable(variable& var) noexcept
+  {
+    store_sym(var, m_vars);
+  }
+
+  void sym_table::store_function(function& func) noexcept
+  {
+    store_sym(func, m_funcs);
   }
 
 }
