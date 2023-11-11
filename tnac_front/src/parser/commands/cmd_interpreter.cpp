@@ -1,4 +1,5 @@
 #include "parser/commands/cmd_interpreter.hpp"
+#include "common/diag.hpp"
 
 namespace tnac
 {
@@ -48,14 +49,22 @@ namespace tnac
     using size_type = ver_result::size_type;
 
     const auto argSize = command.arg_count();
-    
-    if (argSize > base.size())
+
+    if (const auto maxArgs = base.size(); argSize > maxArgs)
+    {
+      res.m_expectedArgs = maxArgs;
       res.m_res = TooMany;
-    else if (argSize < base.required())
+    }
+    else if (const auto minArgs = base.required(); argSize < minArgs)
+    {
+      res.m_expectedArgs = minArgs;
       res.m_res = TooFew;
+    }
 
     if (res.m_res != Correct)
+    {
       res.m_diff = argSize;
+    }
     else
     {
       auto idx = size_type{};
@@ -86,22 +95,22 @@ namespace tnac
     {
     case WrongName:
       pos = &command.pos();
-      msg = "Unknown command"sv;
+      msg = diag::unknown_cmd();
       break;
 
     case TooFew:
       pos = !reason.m_diff ? &command.pos() : &command[reason.m_diff - 1];
-      msg = "Too few arguments"sv;
+      msg = diag::wrong_arg_num(reason.m_expectedArgs, reason.m_diff);
       break;
 
     case TooMany:
-      pos = &command[reason.m_diff - 1];
-      msg = "Too many arguments"sv;
+      pos = &command[reason.m_expectedArgs];
+      msg = diag::wrong_arg_num(reason.m_expectedArgs, reason.m_diff);
       break;
 
     case WrongKind:
       pos = &command[reason.m_diff];
-      msg = "Wrong argument type"sv;
+      msg = diag::wrong_cmd_arg(reason.m_diff);
       break;
 
     default:

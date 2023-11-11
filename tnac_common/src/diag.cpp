@@ -10,6 +10,10 @@ namespace tnac
     static constexpr auto expectedInfoCh{ "Expected '{}' {}"sv };
     static constexpr auto expectedAfter{ "Expected {} after {}"sv };
     static constexpr auto expectedAfterCh{ "Expected '{}' after {}"sv };
+
+    static constexpr auto wrongCmdArg{ "Command argument {} has an unexpected type"sv };
+
+    static constexpr auto wrongArgN{ "Too {} arguments. Expected {}, got {}"sv };
   }
 
   // Data members
@@ -42,6 +46,17 @@ namespace tnac
   }
   
   
+  // Public members(Compile)
+
+  string_t diag::wrong_arg_num(size_type wanted, size_type got) noexcept
+  {
+    static constexpr auto few { "few"sv };
+    static constexpr auto many{ "many"sv };
+    auto quantity = wanted < got ? many : few;
+    return format(detail::wrongArgN, quantity, wanted, got);
+  }
+
+
   // Public members(Parsing)
 
   string_t diag::expected_expr() noexcept
@@ -127,6 +142,19 @@ namespace tnac
   string_t diag::empty_cond() noexcept
   {
     return "Condition can't be empty"sv;
+  }
+
+
+  // Public members(Commands)
+
+  string_t diag::unknown_cmd() noexcept
+  {
+    return "Unknown command"sv;
+  }
+
+  string_t diag::wrong_cmd_arg(size_type idx) noexcept
+  {
+    return format(detail::wrongCmdArg, idx + 1);
   }
 
 }

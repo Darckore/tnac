@@ -14,6 +14,7 @@ namespace tnac
   {
   public:
     using msg_store = std::unordered_map<utils::hashed_string, buf_t>;
+    using size_type = std::size_t;
 
   public:
     CLASS_SPECIALS_NONE(diag);
@@ -58,6 +59,12 @@ namespace tnac
     // Formats and interns an 'expected X <SOMETHING>' kind of error
     //
     static string_t expected(char_t what, string_t more) noexcept;
+
+  public: // Compile
+    //
+    // Returns a 'wrong number of arguments' message
+    //
+    static string_t wrong_arg_num(size_type wanted, size_type got) noexcept;
 
   public: // Parsing
     //
@@ -144,6 +151,17 @@ namespace tnac
     // Returns an 'empty condition' message
     //
     static string_t empty_cond() noexcept;
+
+  public: // Commands
+    //
+    // Returns an 'unknown command' message
+    //
+    static string_t unknown_cmd() noexcept;
+
+    //
+    // Returns a 'wrong cmd arg type' message
+    //
+    static string_t wrong_cmd_arg(size_type idx) noexcept;
 
   private:
     static buf_t m_buffer;

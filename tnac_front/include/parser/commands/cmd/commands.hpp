@@ -40,6 +40,7 @@ namespace tnac::commands
       return m_res == verification::Correct;
     }
 
+    size_type m_expectedArgs{};
     size_type m_diff{};
     verification m_res{ verification::Correct };
   };
