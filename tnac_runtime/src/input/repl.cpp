@@ -58,8 +58,8 @@ namespace tnac::rt
     core.declare_cmd("ast"sv, params{ String, Identifier }, size_type{},
          [this](auto c) noexcept { print_ast(std::move(c)); });
 
-    //core.declare_cmd("vars"sv, params{ String }, size_type{},
-    //     [this](auto c) noexcept { print_vars(std::move(c)); });
+    core.declare_cmd("vars"sv, params{ String }, size_type{},
+         [this](auto c) noexcept { print_vars(std::move(c)); });
 
     core.declare_cmd("bin"sv, [this](auto) noexcept { m_state->set_base(2); });
     core.declare_cmd("oct"sv, [this](auto) noexcept { m_state->set_base(8); });
@@ -193,4 +193,29 @@ namespace tnac::rt
     end_redirect();
   }
 
+  void repl::print_vars(ast::command cmd) noexcept
+  {
+    using size_type = ast::command::size_type;
+    auto wrapInLines = true;
+    if (cmd.arg_count())
+    {
+      wrapInLines = !try_redirect_output(cmd[size_type{}]);
+    }
+
+    if (wrapInLines) m_state->out() << '\n';
+
+    auto varCollection = m_state->tnac_core().variables();
+    for (auto it = varCollection.begin(); it != varCollection.end(); ++it)
+    {
+      auto scope = it.scope();
+      m_state->out() << scope << ":\n";
+      for (auto var : *it)
+      {
+        m_state->out() << ' ' << var->name() << '\n';
+      }
+    }
+
+    if (wrapInLines) m_state->out() << '\n';
+    end_redirect();
+  }
 }

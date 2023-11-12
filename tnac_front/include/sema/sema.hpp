@@ -52,6 +52,22 @@ namespace tnac
     //
     token contrive_name() noexcept;
 
+    //
+    // Returns an iterable collection of all declared variables
+    //
+    auto vars() const noexcept
+    {
+      return m_symTab.vars();
+    }
+
+    //
+    // Returns an iterable collection of all declared functions
+    //
+    auto funcs() const noexcept
+    {
+      return m_symTab.funcs();
+    }
+
   private:
     semantics::sym_table m_symTab;
     fake_name_set m_generatedNames;

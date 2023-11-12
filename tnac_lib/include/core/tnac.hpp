@@ -74,6 +74,22 @@ namespace tnac
     //
     string_t fetch_line(src::loc_wrapper loc) const noexcept;
 
+    //
+    // Returns an iterable collection of all declared variables
+    //
+    auto variables() const noexcept
+    {
+      return m_sema.vars();
+    }
+
+    //
+    // Returns an iterable collection of all declared functions
+    //
+    auto functions() const noexcept
+    {
+      return m_sema.funcs();
+    }
+
   private:
     feedback* m_feedback{};
     sema m_sema;

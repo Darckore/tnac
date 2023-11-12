@@ -48,6 +48,16 @@ namespace tnac::semantics
     return lookup(scopes, parent, true);
   }
 
+  sym_table::var_container sym_table::vars() const noexcept
+  {
+    return { m_vars.begin(), m_vars.end() };
+  }
+
+  sym_table::func_container sym_table::funcs() const noexcept
+  {
+    return { m_funcs.begin(), m_funcs.end() };
+  }
+
   // Private members
 
   sym_table::sym_ptr sym_table::lookup(scope_map* scopes, scope_ptr parent, bool current) noexcept

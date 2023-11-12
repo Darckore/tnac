@@ -7,6 +7,100 @@
 
 namespace tnac::semantics
 {
+  template <detail::sym S>
+  using sym_collection = std::unordered_map<const scope*, std::vector<const S*>>;
+
+  //
+  // Iterator which allows going through scopes associated with a collection
+  // of certain symbol types
+  //
+  template <detail::sym S>
+  class scope_iter final
+  {
+  public:
+    using size_type       = std::size_t;
+    using difference_type = std::ptrdiff_t;
+    using collection_type = sym_collection<S>;
+    using value_type      = collection_type::mapped_type;
+    using underlying_iter = collection_type::const_iterator;
+    using scope_ptr       = collection_type::key_type;
+    using pointer         = const value_type*;
+    using reference       = const value_type&;
+
+  public:
+    CLASS_SPECIALS_NODEFAULT(scope_iter);
+
+    scope_iter(underlying_iter it) noexcept :
+      m_it{ it }
+    {}
+
+    bool operator==(const scope_iter&) const noexcept = default;
+
+    scope_iter& operator++() noexcept
+    {
+      ++m_it;
+      return *this;
+    }
+
+    scope_iter operator++(int) noexcept
+    {
+      auto&& self = *this;
+      auto copy = self;
+      ++self;
+      return copy;
+    }
+
+    reference operator*() const noexcept
+    {
+      return m_it->second;
+    }
+
+    pointer operator->() const noexcept
+    {
+      return &(operator*());
+    }
+
+    scope_ptr scope() const noexcept
+    {
+      return m_it->first;
+    }
+
+  private:
+    underlying_iter m_it;
+  };
+
+  //
+  // Iterable container for a collection of symbols
+  //
+  template <detail::sym S>
+  class sym_container final
+  {
+  public:
+    using iterator = scope_iter<S>;
+
+  public:
+    CLASS_SPECIALS_NODEFAULT(sym_container);
+
+    sym_container(iterator beg, iterator end) noexcept :
+      m_beg{ beg },
+      m_end{ end }
+    {}
+
+  public:
+    auto begin() const noexcept
+    {
+      return m_beg;
+    }
+    auto end() const noexcept
+    {
+      return m_end;
+    }
+
+  private:
+    iterator m_beg;
+    iterator m_end;
+  };
+
   //
   // Symbol table. Stores symbols associated to names in respect with their scopes
   //
@@ -36,13 +130,10 @@ namespace tnac::semantics
     using scope_map = table<scope_ptr, sym_ptr>;
     using name_map  = table<name_t, scope_map>;
 
-  private:
-    template <detail::sym S>
-    using sym_collection = table<scope_ptr, entity_list<S*>>;
-
-  public:
     using var_collection  = sym_collection<variable>;
+    using var_container   = sym_container<variable>;
     using func_collection = sym_collection<function>;
+    using func_container  = sym_container<function>;
 
   public:
     CLASS_SPECIALS_NONE_CUSTOM(sym_table);
@@ -80,6 +171,16 @@ namespace tnac::semantics
     // Looks up a symbol in the given scope only
     //
     sym_ptr scoped_lookup(name_t name, scope_ptr parent) noexcept;
+
+    //
+    // Returns an iterable collection of all declared variables
+    //
+    var_container vars() const noexcept;
+
+    //
+    // Returns an iterable collection of all declared functions
+    //
+    func_container funcs() const noexcept;
 
   private:
     //
