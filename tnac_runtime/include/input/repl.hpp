@@ -4,18 +4,8 @@
 
 #pragma once
 #include "src_mgr/source_manager.hpp"
-
-namespace tnac
-{
-  class token;
-  class feedback;
-}
-
-namespace tnac::ast
-{
-  class node;
-  class command;
-}
+#include "driver/state.hpp"
+#include "parser/ast/ast.hpp"
 
 namespace tnac::rt
 {
@@ -80,6 +70,25 @@ namespace tnac::rt
     // #exit
     //
     void on_exit() noexcept;
+
+    //
+    // Generalised print function used in different command handlers
+    //
+    template <std::invocable<> F>
+    void print_cmd(const ast::command& cmd, F&& printFunc) noexcept
+    {
+      using size_type = ast::command::size_type;
+      auto wrapInLines = true;
+      if (cmd.arg_count())
+      {
+        wrapInLines = !try_redirect_output(cmd[size_type{}]);
+      }
+
+      if (wrapInLines) m_state->out() << '\n';
+      printFunc();
+      if (wrapInLines) m_state->out() << '\n';
+      end_redirect();
+    }
 
     //
     // #result

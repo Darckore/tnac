@@ -1,5 +1,4 @@
 #include "input/repl.hpp"
-#include "driver/state.hpp"
 #include "output/printer.hpp"
 #include "output/lister.hpp"
 #include "common/feedback.hpp"
@@ -142,26 +141,19 @@ namespace tnac::rt
 
   void repl::list_code(ast::command cmd) noexcept
   {
-    using size_type = ast::command::size_type;
-    auto wrapInLines = true;
-    if (cmd.arg_count())
-    {
-      wrapInLines = !try_redirect_output(cmd[size_type{}]);
-    }
-
-    out::lister ls;
-    if (m_state->in_stdout()) ls.enable_styles();
-    if (wrapInLines) m_state->out() << '\n';
-    ls(m_state->tnac_core().get_ast(), m_state->out());
-    if (wrapInLines) m_state->out() << '\n';
-    end_redirect();
+    print_cmd(cmd, [this]
+      {
+        out::lister ls;
+        if (m_state->in_stdout()) ls.enable_styles();
+        ls(m_state->tnac_core().get_ast(), m_state->out());
+      });
   }
 
   void repl::print_ast(ast::command cmd) noexcept
   {
-    using size_type = ast::command::size_type;
     auto toPrint = [this](const ast::command& c) noexcept -> const tnac::ast::node*
       {
+        using size_type = ast::command::size_type;
         constexpr auto maxArgs = size_type{ 2 };
         const auto argCount = c.arg_count();
         auto&& core = m_state->tnac_core();
@@ -179,43 +171,28 @@ namespace tnac::rt
       };
 
     auto ast = toPrint(cmd);
-    auto wrapInLines = true;
-    if (cmd.arg_count())
-    {
-      wrapInLines = !try_redirect_output(cmd[size_type{}]);
-    }
-
-    out::ast_printer pr;
-    if (m_state->in_stdout()) pr.enable_styles();
-    if (wrapInLines) m_state->out() << '\n';
-    pr(ast, m_state->out());
-    if (wrapInLines) m_state->out() << '\n';
-    end_redirect();
+    print_cmd(cmd, [this, ast]
+      {
+        out::ast_printer pr;
+        if (m_state->in_stdout()) pr.enable_styles();
+        pr(ast, m_state->out());
+      });
   }
 
   void repl::print_vars(ast::command cmd) noexcept
   {
-    using size_type = ast::command::size_type;
-    auto wrapInLines = true;
-    if (cmd.arg_count())
-    {
-      wrapInLines = !try_redirect_output(cmd[size_type{}]);
-    }
-
-    if (wrapInLines) m_state->out() << '\n';
-
-    auto varCollection = m_state->tnac_core().variables();
-    for (auto it = varCollection.begin(); it != varCollection.end(); ++it)
-    {
-      auto scope = it.scope();
-      m_state->out() << scope << ":\n";
-      for (auto var : *it)
+    print_cmd(cmd, [this]
       {
-        m_state->out() << ' ' << var->name() << '\n';
-      }
-    }
-
-    if (wrapInLines) m_state->out() << '\n';
-    end_redirect();
+        auto varCollection = m_state->tnac_core().variables();
+        for (auto it = varCollection.begin(); it != varCollection.end(); ++it)
+        {
+          auto scope = it.scope();
+          m_state->out() << scope << ":\n";
+          for (auto var : *it)
+          {
+            m_state->out() << ' ' << var->name() << '\n';
+          }
+        }
+      });
   }
 }
