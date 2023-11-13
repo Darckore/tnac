@@ -11,7 +11,7 @@ namespace tnac::semantics
 
   // Public members
 
-  const scope& sym_table::add_scope(scope_ptr parent) noexcept
+  scope& sym_table::add_scope(scope_ptr parent) noexcept
   {
     auto&& insertedScope = m_scopes.emplace_back(std::make_unique<scope>(parent));
     return *insertedScope.get();
@@ -77,7 +77,7 @@ namespace tnac::semantics
       if (current)
         break;
 
-      parent = parent->m_enclosing;
+      parent = parent->enclosing();
     }
 
     return res;

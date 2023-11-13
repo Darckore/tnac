@@ -6,7 +6,7 @@ namespace tnac::semantics
 
   function::~function() noexcept = default;
 
-  function::function(const scope& owner, name_t name, param_list params) noexcept :
+  function::function(scope& owner, name_t name, param_list params) noexcept :
     symbol{ kind::Function, name, owner },
     m_params{ std::move(params) }
   {}

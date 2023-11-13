@@ -19,7 +19,7 @@ namespace tnac
   void sema::close_scope() noexcept
   {
     if(m_curScope)
-      m_curScope = m_curScope->m_enclosing;
+      m_curScope = m_curScope->enclosing();
   }
 
   sema::sym_ptr sema::find(string_t name, bool currentOnly /*= false*/) noexcept
@@ -52,7 +52,7 @@ namespace tnac
     {
       using namespace semantics;
       UTILS_ASSERT(static_cast<bool>(m_curScope));
-      auto targetScope = m_curScope->m_enclosing;
+      auto targetScope = m_curScope->enclosing();
       auto&& declParams = utils::cast<FuncDecl>(decl).params();
       function::param_list params;
       params.reserve(declParams.size());

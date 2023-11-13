@@ -72,6 +72,6 @@ namespace tnac
   private:
     semantics::sym_table m_symTab;
     fake_name_set m_generatedNames;
-    const semantics::scope* m_curScope{};
+    semantics::scope* m_curScope{};
   };
 }

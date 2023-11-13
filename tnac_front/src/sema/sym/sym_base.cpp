@@ -6,7 +6,7 @@ namespace tnac::semantics
 
   symbol::~symbol() noexcept = default;
 
-  symbol::symbol(kind k, name_t name, const scope& owner) noexcept :
+  symbol::symbol(kind k, name_t name, scope& owner) noexcept :
     m_owner{ &owner },
     m_name{ name },
     m_kind{ k }
@@ -28,6 +28,10 @@ namespace tnac::semantics
   const scope& symbol::owner_scope() const noexcept
   {
     return *m_owner;
+  }
+  scope& symbol::owner_scope() noexcept
+  {
+    return FROM_CONST(owner_scope);
   }
 
   string_t symbol::name() const noexcept

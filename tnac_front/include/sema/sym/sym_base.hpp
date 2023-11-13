@@ -37,7 +37,7 @@ namespace tnac::semantics
     virtual ~symbol() noexcept;
 
   protected:
-    symbol(kind k, name_t name, const scope& owner) noexcept;
+    symbol(kind k, name_t name, scope& owner) noexcept;
 
   public:
     //
@@ -61,8 +61,15 @@ namespace tnac::semantics
 
     //
     // Returns the owner scope
+    // 
+    // const version
     //
     const scope& owner_scope() const noexcept;
+
+    //
+    // Returns the owner scope
+    //
+    scope& owner_scope() noexcept;
 
     //
     // Returns the entity name
@@ -70,7 +77,7 @@ namespace tnac::semantics
     string_t name() const noexcept;
 
   private:
-    const scope* m_owner{};
+    scope* m_owner{};
     name_t m_name;
     kind m_kind{};
   };

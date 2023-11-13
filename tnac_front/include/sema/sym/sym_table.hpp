@@ -119,7 +119,7 @@ namespace tnac::semantics
   public:
     using name_t = symbol::name_t;
 
-    using scope_ptr   = const scope*;
+    using scope_ptr   = scope*;
     using scope_owner = owning_ptr<scope>;
     using scope_store = entity_list<scope_owner>;
 
@@ -145,7 +145,7 @@ namespace tnac::semantics
     //
     // Inserts a new scope inside the one specified as the parent
     //
-    const scope& add_scope(scope_ptr parent) noexcept;
+    scope& add_scope(scope_ptr parent) noexcept;
 
     //
     // Inserts a variable to the specified scope
