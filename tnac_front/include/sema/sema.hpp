@@ -30,7 +30,7 @@ namespace tnac
     //
     // Opens a new scope
     //
-    void open_scope() noexcept;
+    void open_scope(semantics::scope_kind kind) noexcept;
 
     //
     // Closes the current scope and makes its parent the current one

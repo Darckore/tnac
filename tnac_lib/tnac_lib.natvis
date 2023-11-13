@@ -52,6 +52,8 @@
     <Expand>
       <Item Name="[parent]" Condition="m_enclosing">*m_enclosing</Item>
       <Item Name="[parent]" Condition="!m_enclosing">"&lt;global&gt;",sb</Item>
+      <Item Name="[depth]">m_depth</Item>
+      <Item Name="[kind]">m_scopeKind,en</Item>
     </Expand>
   </Type>
 

@@ -11,9 +11,9 @@ namespace tnac
 
   // Public members
 
-  void sema::open_scope() noexcept
+  void sema::open_scope(semantics::scope_kind kind) noexcept
   {
-    m_curScope = &m_symTab.add_scope(m_curScope);
+    m_curScope = &m_symTab.add_scope(m_curScope, kind);
   }
 
   void sema::close_scope() noexcept

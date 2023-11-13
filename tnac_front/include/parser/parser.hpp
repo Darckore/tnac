@@ -6,6 +6,7 @@
 #include "parser/lex.hpp"
 #include "ast/ast_builder.hpp"
 #include "ast/ast.hpp"
+#include "sema/sym/symbols.hpp"
 
 namespace tnac
 {
@@ -115,7 +116,7 @@ namespace tnac
     //
     // Instructs sema to open a new scope
     //
-    void new_scope() noexcept;
+    void new_scope(semantics::scope_kind kind) noexcept;
 
     //
     // Instructs sema to return to the previous scope

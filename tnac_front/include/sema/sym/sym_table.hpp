@@ -145,7 +145,7 @@ namespace tnac::semantics
     //
     // Inserts a new scope inside the one specified as the parent
     //
-    scope& add_scope(scope_ptr parent) noexcept;
+    scope& add_scope(scope_ptr parent, scope_kind kind) noexcept;
 
     //
     // Inserts a variable to the specified scope

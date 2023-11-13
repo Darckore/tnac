@@ -1,6 +1,5 @@
 #include "parser/parser.hpp"
 #include "sema/sema.hpp"
-#include "sema/sym/symbols.hpp"
 #include "common/feedback.hpp"
 #include "common/diag.hpp"
 
@@ -244,10 +243,10 @@ namespace tnac
   public:
     CLASS_SPECIALS_NONE(scope_guard);
 
-    explicit scope_guard(parser& p) noexcept :
+    explicit scope_guard(parser& p, semantics::scope_kind kind) noexcept :
       m_parser{ p }
     {
-      m_parser.new_scope();
+      m_parser.new_scope(kind);
     }
 
     ~scope_guard() noexcept
@@ -283,7 +282,7 @@ namespace tnac
     if (!m_root)
     {
       m_root = m_builder.make_scope({});
-      new_scope();
+      new_scope(semantics::scope_kind::Global);
     }
 
     pointer res = m_root;
@@ -318,9 +317,9 @@ namespace tnac
 
   // Private members(Semantics)
 
-  void parser::new_scope() noexcept
+  void parser::new_scope(semantics::scope_kind kind) noexcept
   {
-    m_sema.open_scope();
+    m_sema.open_scope(kind);
   }
   void parser::end_scope() noexcept
   {
@@ -512,7 +511,7 @@ namespace tnac
     next_tok();
 
     auto def = m_builder.make_scope({});
-    scope_guard _{ *this };
+    scope_guard _{ *this, semantics::scope_kind::Function };
 
     auto params = formal_params();
 
@@ -840,7 +839,7 @@ namespace tnac
   ast::expr* parser::cond_expr() noexcept
   {
     auto scope = m_builder.make_scope({});
-    scope_guard _{ *this };
+    scope_guard _{ *this, semantics::scope_kind::Block };
 
     auto condExpr = cond();
     if (detail::is_arrow(peek_next()))
@@ -926,7 +925,7 @@ namespace tnac
   ast::expr* parser::cond_pattern() noexcept
   {
     auto body = m_builder.make_scope({});
-    scope_guard _{ *this };
+    scope_guard _{ *this, semantics::scope_kind::Block };
     auto matcher = cond_matcher();
 
     if (!detail::is_semi(peek_next()))

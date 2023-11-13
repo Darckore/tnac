@@ -11,9 +11,9 @@ namespace tnac::semantics
 
   // Public members
 
-  scope& sym_table::add_scope(scope_ptr parent) noexcept
+  scope& sym_table::add_scope(scope_ptr parent, scope_kind kind) noexcept
   {
-    auto&& insertedScope = m_scopes.emplace_back(std::make_unique<scope>(parent));
+    auto&& insertedScope = m_scopes.emplace_back(std::make_unique<scope>(parent, kind));
     return *insertedScope.get();
   }
 
@@ -66,6 +66,7 @@ namespace tnac::semantics
     if (!scopes)
       return res;
 
+    bool reachedFunction{};
     while (parent)
     {
       auto scopeIt = scopes->find(parent);
@@ -77,7 +78,16 @@ namespace tnac::semantics
       if (current)
         break;
 
+      if (parent->is_function())
+        reachedFunction = true;
+
       parent = parent->enclosing();
+    }
+
+    // Variables don't leak acros functions
+    if (auto var = utils::try_cast<variable>(res); var && reachedFunction)
+    {
+      res = {};
     }
 
     return res;
