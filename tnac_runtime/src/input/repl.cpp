@@ -207,10 +207,10 @@ namespace tnac::rt
       const auto kind = scope->kind();
       switch (kind)
       {
-      case Global:   m_state->out() << "Global";   break;
-      case Module:   m_state->out() << "Module";   break;
-      case Function: m_state->out() << "Function"; break;
-      case Block:    m_state->out() << "Internal"; break;
+      case Global:   m_state->out() << "Global";        break;
+      case Module:   m_state->out() << "Module";        break;
+      case Function: print_func(scope->func(), styles); break;
+      case Block:    m_state->out() << "Internal";      break;
       }
       if (styles) fmt::clear_clr(m_state->out());
 

@@ -4,9 +4,15 @@
 
 #pragma once
 
+namespace tnac
+{
+  class sema;
+}
+
 namespace tnac::semantics
 {
   class symbol;
+  class function;
 }
 
 namespace tnac::semantics
@@ -29,6 +35,9 @@ namespace tnac::semantics
   //
   class scope final
   {
+  private:
+    friend class tnac::sema;
+
   public:
     using depth_t = std::uint32_t;
     using enum scope_kind;
@@ -103,6 +112,53 @@ namespace tnac::semantics
     // Checks if the scope is internal (i.e., condition body)
     //
     bool is_internal() const noexcept;
+
+    //
+    // Checks whether a symbol is attached
+    //
+    bool has_sym() const noexcept;
+
+    //
+    // Returns a pointer to the attached symbol
+    // 
+    // const version
+    //
+    const symbol* sym() const noexcept;
+
+    //
+    // Returns a pointer to the attached symbol
+    //
+    symbol* sym() noexcept;
+
+    //
+    // Attempts to cast the attached symbol to function
+    // 
+    // const version
+    //
+    const function* to_func() const noexcept;
+
+    //
+    // Attempts to cast the attached symbol to function
+    //
+    function* to_func() noexcept;
+
+    //
+    // Casts the attached symbol to function without checking if one is attached
+    // 
+    // const version
+    //
+    const function& func() const noexcept;
+
+    //
+    // Casts the attached symbol to function without checking if one is attached
+    //
+    function& func() noexcept;
+
+  protected:
+    //
+    // Attaches a symbol
+    //
+    void attach_symbol(symbol& sym) noexcept;
 
   private:
     scope* m_enclosing{};

@@ -54,6 +54,7 @@
       <Item Name="[parent]" Condition="!m_enclosing">"&lt;global&gt;",sb</Item>
       <Item Name="[depth]">m_depth</Item>
       <Item Name="[kind]">m_scopeKind,en</Item>
+      <Item Name="[symbol]" Condition="m_sym">*m_sym</Item>
     </Expand>
   </Type>
 

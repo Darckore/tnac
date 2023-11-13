@@ -51,7 +51,7 @@ namespace tnac
     case FuncDecl:
     {
       using namespace semantics;
-      UTILS_ASSERT(static_cast<bool>(m_curScope));
+      UTILS_ASSERT(static_cast<bool>(m_curScope) && m_curScope->is_function());
       auto targetScope = m_curScope->enclosing();
       auto&& declParams = utils::cast<FuncDecl>(decl).params();
       function::param_list params;
@@ -62,7 +62,9 @@ namespace tnac
         UTILS_ASSERT(paramSym);
         params.emplace_back(paramSym);
       }
-      decl.attach_symbol(m_symTab.add_function(name, targetScope, std::move(params)));
+      auto&& sym = m_symTab.add_function(name, targetScope, std::move(params));
+      decl.attach_symbol(sym);
+      m_curScope->attach_symbol(sym);
     }
     break;
 

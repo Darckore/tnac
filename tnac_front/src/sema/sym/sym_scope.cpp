@@ -71,4 +71,46 @@ namespace tnac::semantics
   {
     return is(Block);
   }
+
+  bool scope::has_sym() const noexcept
+  {
+    return static_cast<bool>(sym());
+  }
+
+  const symbol* scope::sym() const noexcept
+  {
+    return m_sym;
+  }
+  symbol* scope::sym() noexcept
+  {
+    return FROM_CONST(sym);
+  }
+
+  const function* scope::to_func() const noexcept
+  {
+    return utils::try_cast<function>(sym());
+  }
+  function* scope::to_func() noexcept
+  {
+    return FROM_CONST(to_func);
+  }
+
+  const function& scope::func() const noexcept
+  {
+    auto fsym = to_func();
+    UTILS_ASSERT(static_cast<bool>(fsym));
+    return *fsym;
+  }
+  function& scope::func() noexcept
+  {
+    return FROM_CONST(func);
+  }
+
+
+  // Protected members
+
+  void scope::attach_symbol(symbol& sym) noexcept
+  {
+    m_sym = &sym;
+  }
 }

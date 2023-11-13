@@ -104,8 +104,9 @@ namespace tnac::rt
       auto styles = m_state->in_stdout();
       for (auto it = collection.begin(); it != collection.end(); ++it)
       {
+        m_state->out() << "In scope '";
         print_scope(it.scope(), styles);
-        m_state->out() << ":\n";
+        m_state->out() << "':\n";
         for (auto sym : *it)
         {
           m_state->out() << ' ';
