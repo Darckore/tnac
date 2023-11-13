@@ -239,7 +239,29 @@ namespace tnac
     return def && has_implicit_separator(*def);
   }
 
+  class parser::scope_guard final
+  {
+  public:
+    CLASS_SPECIALS_NONE(scope_guard);
 
+    explicit scope_guard(parser& p) noexcept :
+      m_parser{ p }
+    {
+      m_parser.new_scope();
+    }
+
+    ~scope_guard() noexcept
+    {
+      m_parser.end_scope();
+    }
+
+  private:
+    parser& m_parser;
+  };
+}
+
+namespace tnac
+{
   // Special members
 
   parser::~parser() noexcept = default;

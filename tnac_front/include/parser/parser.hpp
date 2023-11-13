@@ -16,16 +16,16 @@ namespace tnac
   {
     class op_precedence;
   }
-}
 
-namespace tnac
-{
   //
   // Checks whether the given expression ends with a ';'
   // This implies an expression end, so, no need to add ':'
   //
   bool has_implicit_separator(const ast::node& expr) noexcept;
+}
 
+namespace tnac
+{
   //
   // Parser for the input
   //
@@ -71,25 +71,7 @@ namespace tnac
     //
     // Helper type to manage scopes RAII-way
     //
-    class scope_guard
-    {
-    public:
-      CLASS_SPECIALS_NONE(scope_guard);
-
-      explicit scope_guard(parser& p) noexcept :
-        m_parser{ p }
-      {
-        m_parser.new_scope();
-      }
-
-      ~scope_guard() noexcept
-      {
-        m_parser.end_scope();
-      }
-
-    private:
-      parser& m_parser;
-    };
+    class scope_guard;
 
   public:
     CLASS_SPECIALS_NONE(parser);
