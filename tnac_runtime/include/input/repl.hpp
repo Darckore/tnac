@@ -6,6 +6,7 @@
 #include "src_mgr/source_manager.hpp"
 #include "driver/state.hpp"
 #include "parser/ast/ast.hpp"
+#include "output/common.hpp"
 
 namespace tnac::semantics
 {
@@ -109,10 +110,21 @@ namespace tnac::rt
         m_state->out() << "':\n";
         for (auto sym : *it)
         {
+          using namespace out;
           m_state->out() << ' ';
           print_sym(*sym, styles);
+
+          m_state->out() << " at ";
+
+          if (styles) fmt::add_clr(m_state->out(), fmt::clr::White);
+          m_state->out() << sym->at();
+          if (styles) fmt::clear_clr(m_state->out());
+          
           m_state->out() << '\n';
         }
+
+        if (std::next(it) != collection.end())
+          m_state->out() << '\n';
       }
     }
 

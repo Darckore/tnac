@@ -96,11 +96,11 @@ namespace tnac::rt
   {
     buf_t input;
 
-    m_state->out() << ">> ";
+    fmt::print(m_state->out(), fmt::clr::BoldYellow, ">> "sv);
     std::getline(m_state->in(), input);
     if (utils::ltrim(input).empty())
     {
-      m_state->out() << "Enter an expression\n";
+      fmt::println(m_state->out(), fmt::clr::BoldRed, "Enter an expression"sv);
       return {};
     }
 
