@@ -4,6 +4,8 @@
 
 #pragma once
 #include "sema/sym/sym_base.hpp"
+#include "sema/sym/sym_var.hpp"
+#include "sema/sym/sym_func.hpp"
 
 TYPE_TO_ID_ASSOCIATION(tnac::semantics::variable,  tnac::semantics::sym_kind::Variable);
 TYPE_TO_ID_ASSOCIATION(tnac::semantics::parameter, tnac::semantics::sym_kind::Parameter);
