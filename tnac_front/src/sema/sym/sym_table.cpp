@@ -84,8 +84,8 @@ namespace tnac::semantics
       parent = parent->enclosing();
     }
 
-    // Variables don't leak acros functions
-    if (auto var = utils::try_cast<variable>(res); var && reachedFunction)
+    // Variables and parameters don't leak acros functions
+    if (reachedFunction && res && res->is_any(symbol::Variable, symbol::Parameter))
     {
       res = {};
     }
