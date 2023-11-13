@@ -3,6 +3,7 @@
 #include "output/lister.hpp"
 #include "common/feedback.hpp"
 #include "common/diag.hpp"
+#include "sema/sym/symbols.hpp"
 
 namespace tnac::rt
 {
