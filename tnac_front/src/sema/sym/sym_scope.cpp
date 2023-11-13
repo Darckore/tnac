@@ -26,6 +26,23 @@ namespace tnac::semantics
     return FROM_CONST(enclosing);
   }
 
+  const scope* scope::encl_skip_internal() const noexcept
+  {
+    auto encl = enclosing();
+    while(encl)
+    {
+      if (encl->is_function() || encl->is_top_level())
+        break;
+
+      encl = encl->enclosing();
+    }
+    return encl;
+  }
+  scope* scope::encl_skip_internal() noexcept
+  {
+    return FROM_CONST(encl_skip_internal);
+  }
+
   scope::depth_t scope::depth() const noexcept
   {
     return m_depth;

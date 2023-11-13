@@ -7,6 +7,11 @@
 #include "driver/state.hpp"
 #include "parser/ast/ast.hpp"
 
+namespace tnac::semantics
+{
+  class scope;
+}
+
 namespace tnac::rt
 {
   class state;
@@ -109,6 +114,11 @@ namespace tnac::rt
     // #vars <'path'> <current>
     //
     void print_vars(ast::command cmd) noexcept;
+
+    //
+    // Prints info on the scope of a symbol
+    //
+    void print_scope(const semantics::scope* scope, bool styles) noexcept;
 
   private:
     source_manager m_srcMgr;

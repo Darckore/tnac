@@ -49,6 +49,18 @@ namespace tnac::semantics
     scope* enclosing() noexcept;
 
     //
+    // Climbs to the nearest function or module parent
+    // 
+    // const version
+    //
+    const scope* encl_skip_internal() const noexcept;
+
+    //
+    // Climbs to the nearest function or module parent
+    //
+    scope* encl_skip_internal() noexcept;
+
+    //
     // Returns the scope's depth
     //
     depth_t depth() const noexcept;

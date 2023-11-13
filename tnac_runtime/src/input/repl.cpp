@@ -183,16 +183,49 @@ namespace tnac::rt
   {
     print_cmd(cmd, [this]
       {
+        auto styles = m_state->in_stdout();
         auto varCollection = m_state->tnac_core().variables();
         for (auto it = varCollection.begin(); it != varCollection.end(); ++it)
         {
-          auto scope = it.scope();
-          m_state->out() << scope << ":\n";
+          print_scope(it.scope(), styles);
+          m_state->out() << ":\n";
           for (auto var : *it)
           {
+            if (styles) fmt::add_clr(m_state->out(), fmt::clr::Cyan);
             m_state->out() << ' ' << var->name() << '\n';
+            if (styles) fmt::clear_clr(m_state->out());
           }
         }
       });
+  }
+
+  void repl::print_scope(const semantics::scope* scope, bool styles) noexcept
+  {
+    using enum semantics::scope_kind;
+    if (scope)
+    {
+      if (styles) fmt::add_clr(m_state->out(), fmt::clr::White);
+      const auto kind = scope->kind();
+      switch (kind)
+      {
+      case Global:   m_state->out() << "Global";   break;
+      case Module:   m_state->out() << "Module";   break;
+      case Function: m_state->out() << "Function"; break;
+      case Block:    m_state->out() << "Internal"; break;
+      }
+      if (styles) fmt::clear_clr(m_state->out());
+
+      if (utils::eq_any(kind, Function, Block))
+      {
+        m_state->out() << "<=";
+        print_scope(scope->encl_skip_internal(), styles);
+      }
+    }
+    else
+    {
+      if (styles) fmt::add_clr(m_state->out(), fmt::clr::Red);
+      m_state->out() << "UNKNOWN";
+      if (styles) fmt::clear_clr(m_state->out());
+    }
   }
 }
