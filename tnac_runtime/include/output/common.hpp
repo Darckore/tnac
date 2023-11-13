@@ -5,6 +5,7 @@
 #pragma once
 #include "parser/ast/ast_visitor.hpp"
 #include "eval/value/value.hpp"
+#include "src_mgr/source_location.hpp"
 
 namespace tnac::rt::out
 {
@@ -17,7 +18,12 @@ namespace tnac::rt::out
   //
   // Token output
   //
-  std::ostream& operator<<(std::ostream& out, const token& tok) noexcept;
+  out_stream& operator<<(out_stream& out, const token& tok) noexcept;
+
+  //
+  // Location output
+  //
+  out_stream& operator<<(out_stream& out, src::loc_wrapper loc) noexcept;
 
   //
   // Value printer

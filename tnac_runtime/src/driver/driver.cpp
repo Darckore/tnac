@@ -1,5 +1,6 @@
 #include "driver/driver.hpp"
 #include "common/diag.hpp"
+#include "output/common.hpp"
 
 namespace tnac::rt
 {
@@ -102,14 +103,9 @@ namespace tnac::rt
 
   void driver::on_error(const token& tok, string_t msg) noexcept
   {
+    using namespace out;
     auto loc = tok.at();
-    m_state.err() << '<';
-    if (loc)
-      m_state.err() << loc->file().string();
-    else
-      m_state.err() << "Unknown"sv;
-
-    m_state.err() << ">:" << (loc->line() + 1) << ':' << (loc->col() + 1) << ':';
+    m_state.err() << loc << ':';
     post_error(msg);
 
     auto line = fetch_line(loc);

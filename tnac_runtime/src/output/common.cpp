@@ -5,13 +5,13 @@ namespace tnac::rt::out
 {
   namespace
   {
-    std::ostream& operator<<(std::ostream& out, eval::invalid_val_t) noexcept
+    out_stream& operator<<(out_stream& out, eval::invalid_val_t) noexcept
     {
       out << "<undef>";
       return out;
     }
 
-    std::ostream& operator<<(std::ostream& out, const eval::complex_type& c) noexcept
+    out_stream& operator<<(out_stream& out, const eval::complex_type& c) noexcept
     {
       const auto r = c.real();
       const auto i = c.imag();
@@ -24,7 +24,7 @@ namespace tnac::rt::out
       return out;
     }
 
-    std::ostream& operator<<(std::ostream& out, const eval::fraction_type& f) noexcept
+    out_stream& operator<<(out_stream& out, const eval::fraction_type& f) noexcept
     {
       if (f.sign() < 0)
         out << '-';
@@ -63,7 +63,7 @@ namespace tnac::rt::out
       return out;
     }
 
-    std::ostream& operator<<(std::ostream& out, const eval::function_type& f) noexcept
+    out_stream& operator<<(out_stream& out, const eval::function_type& f) noexcept
     {
       out << "function(" << f->name() << ')';
 
@@ -71,9 +71,21 @@ namespace tnac::rt::out
     }
   }
 
-  std::ostream& operator<<(std::ostream& out, const token& tok) noexcept
+  out_stream& operator<<(out_stream& out, const token& tok) noexcept
   {
     out << tok.value();
+    return out;
+  }
+
+  out_stream& operator<<(out_stream& out, src::loc_wrapper loc) noexcept
+  {
+    out << '<';
+    if (loc)
+      out << loc->file().string();
+    else
+      out << "Unknown"sv;
+
+    out << ">:" << (loc->line() + 1) << ':' << (loc->col() + 1);
     return out;
   }
 
