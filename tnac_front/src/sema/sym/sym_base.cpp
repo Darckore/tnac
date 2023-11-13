@@ -1,6 +1,4 @@
 #include "sema/sym/sym_base.hpp"
-#include "parser/ast/ast_base.hpp"
-#include "parser/ast/ast_decls.hpp"
 
 namespace tnac::semantics
 {
