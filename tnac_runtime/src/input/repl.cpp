@@ -60,6 +60,9 @@ namespace tnac::rt
     core.declare_cmd("vars"sv, params{ String }, size_type{},
          [this](auto c) noexcept { print_vars(std::move(c)); });
 
+    core.declare_cmd("funcs"sv, params{ String }, size_type{},
+         [this](auto c) noexcept { print_funcs(std::move(c)); });
+
     core.declare_cmd("bin"sv, [this](auto) noexcept { m_state->set_base(2); });
     core.declare_cmd("oct"sv, [this](auto) noexcept { m_state->set_base(8); });
     core.declare_cmd("dec"sv, [this](auto) noexcept { m_state->set_base(10); });
@@ -183,19 +186,15 @@ namespace tnac::rt
   {
     print_cmd(cmd, [this]
       {
-        auto styles = m_state->in_stdout();
-        auto varCollection = m_state->tnac_core().variables();
-        for (auto it = varCollection.begin(); it != varCollection.end(); ++it)
-        {
-          print_scope(it.scope(), styles);
-          m_state->out() << ":\n";
-          for (auto var : *it)
-          {
-            if (styles) fmt::add_clr(m_state->out(), fmt::clr::Cyan);
-            m_state->out() << ' ' << var->name() << '\n';
-            if (styles) fmt::clear_clr(m_state->out());
-          }
-        }
+        print_sym_collection(m_state->tnac_core().variables());
+      });
+  }
+
+  void repl::print_funcs(ast::command cmd) noexcept
+  {
+    print_cmd(cmd, [this]
+      {
+        print_sym_collection(m_state->tnac_core().functions());
       });
   }
 
@@ -226,6 +225,53 @@ namespace tnac::rt
       if (styles) fmt::add_clr(m_state->out(), fmt::clr::Red);
       m_state->out() << "UNKNOWN";
       if (styles) fmt::clear_clr(m_state->out());
+    }
+  }
+
+  void repl::print_var(const semantics::variable& var, bool styles) noexcept
+  {
+    if (styles) fmt::add_clr(m_state->out(), fmt::clr::Cyan);
+    m_state->out() << var.name();
+    if (styles) fmt::clear_clr(m_state->out());
+  }
+
+  void repl::print_param(const semantics::parameter& par, bool styles) noexcept
+  {
+    if (styles) fmt::add_clr(m_state->out(), fmt::clr::Yellow);
+    m_state->out() << par.name();
+    if (styles) fmt::clear_clr(m_state->out());
+  }
+
+  void repl::print_func(const semantics::function& func, bool styles) noexcept
+  {
+    if (styles) fmt::add_clr(m_state->out(), fmt::clr::Cyan);
+    m_state->out() << func.name();
+    if (styles) fmt::clear_clr(m_state->out());
+
+    m_state->out() << " (";
+
+    auto paramCount = func.param_count();
+    for (decltype(paramCount) idx{}; auto param : func.params())
+    {
+      print_sym(*param, styles);
+      ++idx;
+      if (idx < paramCount)
+        m_state->out() << ", ";
+    }
+
+    m_state->out() << ')';
+  }
+
+  void repl::print_sym(const semantics::symbol& sym, bool styles) noexcept
+  {
+    using enum semantics::sym_kind;
+    switch (sym.what())
+    {
+    case Variable:  print_var(utils::cast<Variable>(sym), styles);    break;
+    case Function:  print_func(utils::cast<Function>(sym), styles);   break;
+    case Parameter: print_param(utils::cast<Parameter>(sym), styles); break;
+
+    default: break;
     }
   }
 }

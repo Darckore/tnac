@@ -96,6 +96,26 @@ namespace tnac::rt
     }
 
     //
+    // Generalised function for printing vars and funcs
+    //
+    template <semantics::detail::sym S>
+    void print_sym_collection(semantics::sym_container<S> collection) noexcept
+    {
+      auto styles = m_state->in_stdout();
+      for (auto it = collection.begin(); it != collection.end(); ++it)
+      {
+        print_scope(it.scope(), styles);
+        m_state->out() << ":\n";
+        for (auto sym : *it)
+        {
+          m_state->out() << ' ';
+          print_sym(*sym, styles);
+          m_state->out() << '\n';
+        }
+      }
+    }
+
+    //
     // #result
     //
     void print_result(ast::command cmd) noexcept;
@@ -111,14 +131,39 @@ namespace tnac::rt
     void print_ast(ast::command cmd) noexcept;
 
     //
-    // #vars <'path'> <current>
+    // #vars <'path'>
     //
     void print_vars(ast::command cmd) noexcept;
+
+    //
+    // #funcs <'path'>
+    //
+    void print_funcs(ast::command cmd) noexcept;
 
     //
     // Prints info on the scope of a symbol
     //
     void print_scope(const semantics::scope* scope, bool styles) noexcept;
+
+    //
+    // Prints variable information
+    //
+    void print_var(const semantics::variable& var, bool styles) noexcept;
+
+    //
+    // Prints parameter information
+    //
+    void print_param(const semantics::parameter& par, bool styles) noexcept;
+
+    //
+    // Prints function information
+    //
+    void print_func(const semantics::function& func, bool styles) noexcept;
+
+    //
+    // Prints symbol information
+    //
+    void print_sym(const semantics::symbol& sym, bool styles) noexcept;
 
   private:
     source_manager m_srcMgr;

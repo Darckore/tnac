@@ -1,4 +1,5 @@
 #include "sema/sym/sym_scope.hpp"
+#include "sema/sym/symbols.hpp"
 
 namespace tnac::semantics
 {

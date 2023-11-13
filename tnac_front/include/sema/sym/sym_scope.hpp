@@ -6,6 +6,11 @@
 
 namespace tnac::semantics
 {
+  class symbol;
+}
+
+namespace tnac::semantics
+{
   //
   // The kind of the scope
   //
@@ -101,6 +106,7 @@ namespace tnac::semantics
 
   private:
     scope* m_enclosing{};
+    symbol* m_sym{};
     depth_t m_depth{};
     scope_kind m_scopeKind;
   };
