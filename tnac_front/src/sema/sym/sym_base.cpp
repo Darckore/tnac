@@ -6,9 +6,10 @@ namespace tnac::semantics
 
   symbol::~symbol() noexcept = default;
 
-  symbol::symbol(kind k, name_t name, scope& owner) noexcept :
+  symbol::symbol(kind k, name_t name, scope& owner, loc_t loc) noexcept :
     m_owner{ &owner },
     m_name{ name },
+    m_location{ loc },
     m_kind{ k }
   {}
 
@@ -37,5 +38,10 @@ namespace tnac::semantics
   string_t symbol::name() const noexcept
   {
     return m_name;
+  }
+
+  symbol::loc_t symbol::at() const noexcept
+  {
+    return m_location;
   }
 }

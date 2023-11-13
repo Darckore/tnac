@@ -135,6 +135,9 @@ namespace tnac::semantics
     using func_collection = sym_collection<function>;
     using func_container  = sym_container<function>;
 
+    using loc_t = symbol::loc_t;
+    using func_params = function::param_list;
+
   public:
     CLASS_SPECIALS_NONE_CUSTOM(sym_table);
 
@@ -150,17 +153,17 @@ namespace tnac::semantics
     //
     // Inserts a variable to the specified scope
     //
-    variable& add_variable(name_t name, scope_ptr parent) noexcept;
+    variable& add_variable(name_t name, scope_ptr parent, loc_t loc) noexcept;
 
     //
     // Inserts a parameter to the specified scope
     //
-    parameter& add_parameter(name_t name, scope_ptr parent) noexcept;
+    parameter& add_parameter(name_t name, scope_ptr parent, loc_t loc) noexcept;
 
     //
     // Inserts a function to the specified scope
     //
-    function& add_function(name_t name, scope_ptr parent, function::param_list params) noexcept;
+    function& add_function(name_t name, scope_ptr parent, func_params params, loc_t loc) noexcept;
 
     //
     // Looks for a symbol starting from the specified scope

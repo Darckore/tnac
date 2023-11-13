@@ -27,7 +27,7 @@ namespace tnac::semantics
     virtual ~function() noexcept;
 
   protected:
-    function(scope& owner, name_t name, param_list params) noexcept;
+    function(scope& owner, name_t name, param_list params, loc_t loc) noexcept;
 
   public:
     size_type param_count() const noexcept;

@@ -17,21 +17,21 @@ namespace tnac::semantics
     return *insertedScope.get();
   }
 
-  variable& sym_table::add_variable(name_t name, scope_ptr parent) noexcept
+  variable& sym_table::add_variable(name_t name, scope_ptr parent, loc_t loc) noexcept
   {
-    auto&& newVar = *make_symbol<variable>(name, parent);
+    auto&& newVar = *make_symbol<variable>(name, parent, loc);
     store_variable(newVar);
     return newVar;
   }
 
-  parameter& sym_table::add_parameter(name_t name, scope_ptr parent) noexcept
+  parameter& sym_table::add_parameter(name_t name, scope_ptr parent, loc_t loc) noexcept
   {
-    return *make_symbol<parameter>(name, parent);
+    return *make_symbol<parameter>(name, parent, loc);
   }
 
-  function& sym_table::add_function(name_t name, scope_ptr parent, function::param_list params) noexcept
+  function& sym_table::add_function(name_t name, scope_ptr parent, func_params params, loc_t loc) noexcept
   {
-    auto&& newFunc = *make_symbol<function>(name, parent, std::move(params));
+    auto&& newFunc = *make_symbol<function>(name, parent, std::move(params), loc);
     store_function(newFunc);
     return newFunc;
   }

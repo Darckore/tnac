@@ -21,7 +21,7 @@ namespace tnac::semantics
     virtual ~variable() noexcept;
 
   protected:
-    variable(scope& owner, name_t name) noexcept;
+    variable(scope& owner, name_t name, loc_t loc) noexcept;
   };
 
 
@@ -39,6 +39,6 @@ namespace tnac::semantics
     virtual ~parameter() noexcept;
 
   protected:
-    parameter(scope& owner, name_t name) noexcept;
+    parameter(scope& owner, name_t name, loc_t loc) noexcept;
   };
 }

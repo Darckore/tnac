@@ -6,8 +6,8 @@ namespace tnac::semantics // Variable
 
   variable::~variable() noexcept = default;
 
-  variable::variable(scope& owner, name_t name) noexcept :
-    symbol{ kind::Variable, name, owner }
+  variable::variable(scope& owner, name_t name, loc_t loc) noexcept :
+    symbol{ kind::Variable, name, owner, loc }
   {}
 }
 
@@ -18,7 +18,7 @@ namespace tnac::semantics  // Parameter
 
   parameter::~parameter() noexcept = default;
 
-  parameter::parameter(scope& owner, name_t name) noexcept :
-    symbol{ kind::Parameter, name, owner }
+  parameter::parameter(scope& owner, name_t name, loc_t loc) noexcept :
+    symbol{ kind::Parameter, name, owner, loc }
   {}
 }

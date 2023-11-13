@@ -4,6 +4,7 @@
 
 #pragma once
 #include "sema/sym/sym_scope.hpp"
+#include "src_mgr/source_location.hpp"
 
 namespace tnac::semantics
 {
@@ -26,6 +27,7 @@ namespace tnac::semantics
   public:
     using kind   = sym_kind;
     using name_t = string_t;
+    using loc_t  = src::loc_wrapper;
     using enum sym_kind;
 
   private:
@@ -37,7 +39,7 @@ namespace tnac::semantics
     virtual ~symbol() noexcept;
 
   protected:
-    symbol(kind k, name_t name, scope& owner) noexcept;
+    symbol(kind k, name_t name, scope& owner, loc_t loc) noexcept;
 
   public:
     //
@@ -76,9 +78,15 @@ namespace tnac::semantics
     //
     string_t name() const noexcept;
 
+    //
+    // Returns the source location where this symbol is declared
+    //
+    loc_t at() const noexcept;
+
   private:
     scope* m_owner{};
     name_t m_name;
+    loc_t m_location;
     kind m_kind{};
   };
 

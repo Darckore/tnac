@@ -33,18 +33,19 @@ namespace tnac
   {
     using enum ast::node::kind;
     auto name = decl.name();
+    auto loc = decl.pos().at();
     switch (decl.what())
     {
     case VarDecl:
     {
-      auto&& var = m_symTab.add_variable(name, m_curScope);
+      auto&& var = m_symTab.add_variable(name, m_curScope, loc);
       decl.attach_symbol(var);
     }
       break;
 
     case ParamDecl:
     {
-      decl.attach_symbol(m_symTab.add_parameter(name, m_curScope));
+      decl.attach_symbol(m_symTab.add_parameter(name, m_curScope, loc));
     }
       break;
 
@@ -62,7 +63,7 @@ namespace tnac
         UTILS_ASSERT(paramSym);
         params.emplace_back(paramSym);
       }
-      auto&& sym = m_symTab.add_function(name, targetScope, std::move(params));
+      auto&& sym = m_symTab.add_function(name, targetScope, std::move(params), loc);
       decl.attach_symbol(sym);
       m_curScope->attach_symbol(sym);
     }
