@@ -1,5 +1,5 @@
-#include "sema/sym_table.hpp"
-#include "sema/symbol.hpp"
+#include "sema/sym/sym_table.hpp"
+#include "sema/sym/sym_base.hpp"
 
 namespace tnac::semantics
 {

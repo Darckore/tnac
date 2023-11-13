@@ -1,6 +1,6 @@
 #include "parser/parser.hpp"
 #include "sema/sema.hpp"
-#include "sema/symbol.hpp"
+#include "sema/sym/symbols.hpp"
 #include "common/feedback.hpp"
 #include "common/diag.hpp"
 

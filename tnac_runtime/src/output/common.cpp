@@ -1,5 +1,5 @@
 #include "output/common.hpp"
-#include "sema/symbol.hpp"
+#include "sema/sym/symbols.hpp"
 
 namespace tnac::rt::out
 {

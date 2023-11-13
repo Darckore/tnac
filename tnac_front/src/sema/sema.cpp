@@ -1,5 +1,4 @@
 #include "sema/sema.hpp"
-#include "sema/symbol.hpp"
 #include "parser/ast/ast.hpp"
 
 namespace tnac

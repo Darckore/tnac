@@ -3,7 +3,8 @@
 //
 
 #pragma once
-#include "sema/sym_table.hpp"
+#include "sema/sym/sym_table.hpp"
+#include "parser/ast/ast.hpp"
 
 namespace tnac
 {

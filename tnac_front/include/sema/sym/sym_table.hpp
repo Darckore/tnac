@@ -3,7 +3,7 @@
 //
 
 #pragma once
-#include "sema/symbol.hpp"
+#include "sema/sym/symbols.hpp"
 
 namespace tnac::semantics
 {
