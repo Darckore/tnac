@@ -14,6 +14,9 @@ namespace tnac::semantics
   class scope final
   {
   public:
+    using depth_t = std::uint32_t;
+
+  public:
     CLASS_SPECIALS_NONE(scope);
 
     ~scope() noexcept;
@@ -33,7 +36,13 @@ namespace tnac::semantics
     //
     scope* enclosing() noexcept;
 
+    //
+    // Returns the scope's depth
+    //
+    depth_t depth() const noexcept;
+
   private:
     scope* m_enclosing{};
+    depth_t m_depth{};
   };
 }

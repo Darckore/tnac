@@ -4,162 +4,221 @@
 #include "common/feedback.hpp"
 #include "common/diag.hpp"
 
-namespace tnac
+namespace tnac::detail
 {
-  namespace detail
+  class op_precedence final
   {
-    namespace
+  public:
+    enum class prec : std::uint8_t
     {
-      auto is_unary_op(const token& tok) noexcept
-      {
-        return tok.is_any(token::Plus, token::Minus, token::Tilde,
-                          token::Exclamation, token::Question);
-      }
-      auto is_add_op(const token& tok) noexcept
-      {
-        return tok.is_any(token::Plus, token::Minus);
-      }
-      auto is_mul_op(const token& tok) noexcept
-      {
-        return tok.is_any(token::Asterisk, token::Slash, token::Percent);
-      }
-      auto is_pow_op(const token& tok) noexcept
-      {
-        return tok.is_any(token::Pow, token::Root);
-      }
-      auto is_assign(const token& tok) noexcept
-      {
-        return tok.is_any(token::Assign);
-      }
-      auto is_init(const token& tok) noexcept
-      {
-        return tok.is(token::Assign);
-      }
-      auto is_relational(const token& tok) noexcept
-      {
-        return tok.is_any(token::Less, token::LessEq,
-          token::Greater, token::GreaterEq);
-      }
-      auto is_eq_comparison(const token& tok) noexcept
-      {
-        return tok.is_any(token::Eq, token::NotEq);
-      }
-      auto is_pattern_matcher(const token& tok) noexcept
-      {
-        return is_eq_comparison(tok) || is_relational(tok);
-      }
-      auto is_pattern_unary(const token& tok) noexcept
-      {
-        return tok.is_any(token::Exclamation, token::Question);
-      }
-      auto is_logical(const token& tok) noexcept
-      {
-        return tok.is_any(token::LogAnd, token::LogOr);
-      }
+      LogicalOr,
+      LogicalAnd,
+      Equality,
+      Relational,
+      BitOr,
+      BitXor,
+      BitAnd,
+      Additive,
+      Multiplicative,
+      Power,
+      Unary
+    };
+    using enum prec;
 
-      auto match(op_precedence prec, const token& tok) noexcept
-      {
-        using enum op_precedence::prec;
-        switch (*prec)
-        {
-        case LogicalOr:      return tok.is(token::LogOr);
-        case LogicalAnd:     return tok.is(token::LogAnd);
-        case Equality:       return is_eq_comparison(tok);
-        case Relational:     return is_relational(tok);
-        case BitOr:          return tok.is(token::Pipe);
-        case BitXor:         return tok.is(token::Hat);
-        case BitAnd:         return tok.is(token::Amp);
-        case Additive:       return is_add_op(tok);
-        case Multiplicative: return is_mul_op(tok);
-        case Power:          return is_pow_op(tok);
-        case Unary:          return is_unary_op(tok);
+  private:
+    inline static constexpr std::array precOrder{
+      LogicalAnd,
+      Equality,
+      Relational,
+      BitOr,
+      BitXor,
+      BitAnd,
+      Additive,
+      Multiplicative,
+      Power,
+      Unary
+    };
 
-        default: return false;
-        }
-      }
 
-      auto is_open_paren(const token& tok) noexcept
-      {
-        return tok.is(token::ParenOpen);
-      }
-      auto is_close_paren(const token& tok) noexcept
-      {
-        return tok.is(token::ParenClose);
-      }
-      auto is_open_curly(const token& tok) noexcept
-      {
-        return tok.is(token::CurlyOpen);
-      }
-      auto is_close_curly(const token& tok) noexcept
-      {
-        return tok.is(token::CurlyClose);
-      }
-      auto is_open_bracket(const token& tok) noexcept
-      {
-        return tok.is(token::BracketOpen);
-      }
-      auto is_close_bracket(const token& tok) noexcept
-      {
-        return tok.is(token::BracketClose);
-      }
-      auto is_comma(const token& tok) noexcept
-      {
-        return tok.is(token::Comma);
-      }
-      auto is_semi(const token& tok) noexcept
-      {
-        return tok.is(token::Semicolon);
-      }
-      auto is_arrow(const token& tok) noexcept
-      {
-        return tok.is(token::Arrow);
-      }
-      auto is_pipe(const token& tok) noexcept
-      {
-        return tok.is(token::Pipe);
-      }
+  public:
+    CLASS_SPECIALS_ALL(op_precedence);
 
-      auto is_expression_separator(const token& tok) noexcept
-      {
-        return tok.is(token::ExprSep);
-      }
+    constexpr op_precedence(prec cur) noexcept :
+      m_cur{ cur }
+    {}
 
-      auto is_command_name(const token& tok) noexcept
-      {
-        return tok.is(token::Command);
-      }
+    constexpr bool operator==(const op_precedence&) const noexcept = default;
 
-      auto is_type_keyword(const token& tok) noexcept
-      {
-        using enum tok_kind;
-        return tok.is_any(KwComplex, KwFraction, KwInt, KwFloat, KwBool);
-      }
+    constexpr prec next() noexcept
+    {
+      using idx_t = decltype(precOrder)::size_type;
+      const auto idx = static_cast<idx_t>(m_cur);
+      return precOrder[idx];
+    }
 
-      auto is_expr_starter(const token& tok) noexcept
-      {
-        return tok.is_literal() ||
-               tok.is_identifier() ||
-               is_type_keyword(tok) ||
-               is_open_paren(tok) ||
-               is_open_bracket(tok) ||
-               is_open_curly(tok) ||
-               is_pipe(tok) ||
-               is_unary_op(tok);
-      }
+    constexpr auto operator*() const noexcept
+    {
+      return m_cur;
+    }
 
-      auto is_error_expr(const ast::expr& expr) noexcept
-      {
-        return expr.is(ast::node_kind::Error);
-      }
+  private:
+    prec m_cur{};
+  };
 
-      auto is_assignable(const semantics::symbol& sym) noexcept
+  namespace
+  {
+    auto is_unary_op(const token& tok) noexcept
+    {
+      return tok.is_any(token::Plus, token::Minus, token::Tilde,
+        token::Exclamation, token::Question);
+    }
+    auto is_add_op(const token& tok) noexcept
+    {
+      return tok.is_any(token::Plus, token::Minus);
+    }
+    auto is_mul_op(const token& tok) noexcept
+    {
+      return tok.is_any(token::Asterisk, token::Slash, token::Percent);
+    }
+    auto is_pow_op(const token& tok) noexcept
+    {
+      return tok.is_any(token::Pow, token::Root);
+    }
+    auto is_assign(const token& tok) noexcept
+    {
+      return tok.is_any(token::Assign);
+    }
+    auto is_init(const token& tok) noexcept
+    {
+      return tok.is(token::Assign);
+    }
+    auto is_relational(const token& tok) noexcept
+    {
+      return tok.is_any(token::Less, token::LessEq,
+        token::Greater, token::GreaterEq);
+    }
+    auto is_eq_comparison(const token& tok) noexcept
+    {
+      return tok.is_any(token::Eq, token::NotEq);
+    }
+    auto is_pattern_matcher(const token& tok) noexcept
+    {
+      return is_eq_comparison(tok) || is_relational(tok);
+    }
+    auto is_pattern_unary(const token& tok) noexcept
+    {
+      return tok.is_any(token::Exclamation, token::Question);
+    }
+    auto is_logical(const token& tok) noexcept
+    {
+      return tok.is_any(token::LogAnd, token::LogOr);
+    }
+
+    auto match(op_precedence prec, const token& tok) noexcept
+    {
+      using enum op_precedence::prec;
+      switch (*prec)
       {
-        using enum semantics::sym_kind;
-        return sym.is_any(Variable, Parameter);
+      case LogicalOr:      return tok.is(token::LogOr);
+      case LogicalAnd:     return tok.is(token::LogAnd);
+      case Equality:       return is_eq_comparison(tok);
+      case Relational:     return is_relational(tok);
+      case BitOr:          return tok.is(token::Pipe);
+      case BitXor:         return tok.is(token::Hat);
+      case BitAnd:         return tok.is(token::Amp);
+      case Additive:       return is_add_op(tok);
+      case Multiplicative: return is_mul_op(tok);
+      case Power:          return is_pow_op(tok);
+      case Unary:          return is_unary_op(tok);
+
+      default: return false;
       }
     }
-  }
 
+    auto is_open_paren(const token& tok) noexcept
+    {
+      return tok.is(token::ParenOpen);
+    }
+    auto is_close_paren(const token& tok) noexcept
+    {
+      return tok.is(token::ParenClose);
+    }
+    auto is_open_curly(const token& tok) noexcept
+    {
+      return tok.is(token::CurlyOpen);
+    }
+    auto is_close_curly(const token& tok) noexcept
+    {
+      return tok.is(token::CurlyClose);
+    }
+    auto is_open_bracket(const token& tok) noexcept
+    {
+      return tok.is(token::BracketOpen);
+    }
+    auto is_close_bracket(const token& tok) noexcept
+    {
+      return tok.is(token::BracketClose);
+    }
+    auto is_comma(const token& tok) noexcept
+    {
+      return tok.is(token::Comma);
+    }
+    auto is_semi(const token& tok) noexcept
+    {
+      return tok.is(token::Semicolon);
+    }
+    auto is_arrow(const token& tok) noexcept
+    {
+      return tok.is(token::Arrow);
+    }
+    auto is_pipe(const token& tok) noexcept
+    {
+      return tok.is(token::Pipe);
+    }
+
+    auto is_expression_separator(const token& tok) noexcept
+    {
+      return tok.is(token::ExprSep);
+    }
+
+    auto is_command_name(const token& tok) noexcept
+    {
+      return tok.is(token::Command);
+    }
+
+    auto is_type_keyword(const token& tok) noexcept
+    {
+      using enum tok_kind;
+      return tok.is_any(KwComplex, KwFraction, KwInt, KwFloat, KwBool);
+    }
+
+    auto is_expr_starter(const token& tok) noexcept
+    {
+      return tok.is_literal() ||
+        tok.is_identifier() ||
+        is_type_keyword(tok) ||
+        is_open_paren(tok) ||
+        is_open_bracket(tok) ||
+        is_open_curly(tok) ||
+        is_pipe(tok) ||
+        is_unary_op(tok);
+    }
+
+    auto is_error_expr(const ast::expr& expr) noexcept
+    {
+      return expr.is(ast::node_kind::Error);
+    }
+
+    auto is_assignable(const semantics::symbol& sym) noexcept
+    {
+      using enum semantics::sym_kind;
+      return sym.is_any(Variable, Parameter);
+    }
+  }
+}
+
+namespace tnac
+{
   bool has_implicit_separator(const ast::node& expr) noexcept
   {
     using kind = ast::node_kind;
@@ -179,6 +238,7 @@ namespace tnac
     auto def = decl.definition();
     return def && has_implicit_separator(*def);
   }
+
 
   // Special members
 

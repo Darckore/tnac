@@ -11,72 +11,15 @@ namespace tnac
 {
   class sema;
   class feedback;
+
+  namespace detail
+  {
+    class op_precedence;
+  }
 }
 
 namespace tnac
 {
-  namespace detail
-  {
-    class op_precedence
-    {
-    public:
-      enum class prec : std::uint8_t
-      {
-        LogicalOr,
-        LogicalAnd,
-        Equality,
-        Relational,
-        BitOr,
-        BitXor,
-        BitAnd,
-        Additive,
-        Multiplicative,
-        Power,
-        Unary
-      };
-      using enum prec;
-
-    private:
-      inline static constexpr std::array precOrder{
-        LogicalAnd,
-        Equality,
-        Relational,
-        BitOr,
-        BitXor,
-        BitAnd,
-        Additive,
-        Multiplicative,
-        Power,
-        Unary
-      };
-
-
-    public:
-      CLASS_SPECIALS_ALL(op_precedence);
-
-      constexpr op_precedence(prec cur) noexcept :
-        m_cur{ cur }
-      {}
-
-      constexpr bool operator==(const op_precedence&) const noexcept = default;
-
-      constexpr prec next() noexcept
-      {
-        using idx_t = decltype(precOrder)::size_type;
-        const auto idx = static_cast<idx_t>(m_cur);
-        return precOrder[idx];
-      }
-
-      constexpr auto operator*() const noexcept
-      {
-        return m_cur;
-      }
-
-    private:
-      prec m_cur{};
-    };
-  }
-
   //
   // Checks whether the given expression ends with a ';'
   // This implies an expression end, so, no need to add ':'

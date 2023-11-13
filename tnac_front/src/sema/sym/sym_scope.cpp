@@ -8,7 +8,10 @@ namespace tnac::semantics
 
   scope::scope(scope* encl) noexcept :
     m_enclosing{ encl }
-  {}
+  {
+    if (m_enclosing)
+      m_depth = m_enclosing->depth() + 1;
+  }
 
 
   // Public members
@@ -20,5 +23,10 @@ namespace tnac::semantics
   scope* scope::enclosing() noexcept
   {
     return FROM_CONST(enclosing);
+  }
+
+  scope::depth_t scope::depth() const noexcept
+  {
+    return m_depth;
   }
 }
