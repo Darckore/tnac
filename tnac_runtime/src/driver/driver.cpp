@@ -31,16 +31,12 @@ namespace tnac::rt
       return;
     }
 
-    auto loadResult = m_tnac.load(m_settings.run_on());
-    if (!loadResult)
+    auto inputFile = m_tnac.load(m_settings.run_on());
+    if (!inputFile)
     {
-      auto&& err = loadResult.error();
-      m_feedback.error(diag::file_load_failure(err.second, err.first.message()));
       return;
     }
 
-    auto&& inputFile = *loadResult;
-    fsys::current_path(inputFile->directory());
     auto parseRes = m_tnac.parse(*inputFile);
     utils::unused(parseRes);
 

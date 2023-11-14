@@ -86,6 +86,9 @@ namespace tnac
 
     parser(ast::builder& builder, sema& sema, feedback* fb = nullptr) noexcept;
 
+  private:
+    parser(ast::builder& builder, sema& sema, feedback* fb, root_ptr root) noexcept;
+
   public:
     //
     // Parses the input string and produces an AST

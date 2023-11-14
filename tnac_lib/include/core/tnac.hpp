@@ -17,9 +17,7 @@ namespace tnac
   class core final
   {
   public:
-    using fname_t  = source_manager::path_t;
-    using load_res = source_manager::load_res;
-    
+    using fname_t    = source_manager::path_t;
     using cmd_name_t = commands::store::name_type;
 
   public:
@@ -33,7 +31,7 @@ namespace tnac
     //
     // Loads the specified source file
     //
-    load_res load(fname_t fname) noexcept;
+    src::file* load(fname_t fname) noexcept;
 
     //
     // Parses the given input and returns the parse result

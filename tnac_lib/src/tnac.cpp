@@ -1,4 +1,5 @@
 #include "core/tnac.hpp"
+#include "common/diag.hpp"
 
 namespace tnac
 {
@@ -10,14 +11,24 @@ namespace tnac
     m_feedback{ &fb },
     m_parser{ m_astBuilder, m_sema, &fb },
     m_cmdInterpreter{ m_cmdStore, fb }
-  {}
+  {
+    m_feedback->on_load_request([this](fname_t path) noexcept { return load(std::move(path)); });
+  }
 
 
   // Public members
 
-  core::load_res core::load(fname_t fname) noexcept
+  src::file* core::load(fname_t fname) noexcept
   {
-    return m_srcMgr.load(std::move(fname));
+    auto loadRes = m_srcMgr.load(std::move(fname));
+    if (!loadRes)
+    {
+      auto&& err = loadRes.error();
+      m_feedback->error(diag::file_load_failure(err.second, err.first.message()));
+      return {};
+    }
+
+    return *loadRes;
   }
 
   ast::node* core::parse(string_t input) noexcept

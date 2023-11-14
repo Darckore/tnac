@@ -8,6 +8,7 @@ namespace tnac
     void dummy_parse_err(const ast::error_expr&) noexcept {}
     void dummy_compile_err(const token&, string_t) noexcept {}
     void dummy_cmd(ast::command&&) noexcept {}
+    src::file* dummy_file(fsys::path) noexcept { return {}; }
   }
 }
 
@@ -21,7 +22,8 @@ namespace tnac
     m_genericErrorHandler{ dummy_err },
     m_parseErrorHandler{ dummy_parse_err },
     m_compileErrorHandler{ dummy_compile_err },
-    m_commandHandler{ dummy_cmd }
+    m_commandHandler{ dummy_cmd },
+    m_fileLoader{ dummy_file }
   {}
 
 
@@ -45,6 +47,11 @@ namespace tnac
   void feedback::command(ast::command&& cmd) noexcept
   {
     m_commandHandler(std::move(cmd));
+  }
+
+  src::file* feedback::load_file(fsys::path path) noexcept
+  {
+    return m_fileLoader(std::move(path));
   }
 
 }

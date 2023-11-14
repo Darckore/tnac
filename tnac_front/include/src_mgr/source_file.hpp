@@ -36,7 +36,7 @@ namespace tnac::src
   public:
     using path_t     = fsys::path;
     using hash_t     = std::size_t;
-    using contents_t = std::expected<string_t, std::error_code>;
+    using contents_t = file_data;
 
     using line_num_t = location::line_num;
     using lines_t    = std::vector<line>;

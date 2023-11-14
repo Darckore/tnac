@@ -267,8 +267,13 @@ namespace tnac
   parser::~parser() noexcept = default;
 
   parser::parser(ast::builder& builder, sema& sema, feedback* fb /*= nullptr*/) noexcept :
+    parser{ builder, sema, fb, {} }
+  {}
+
+  parser::parser(ast::builder& builder, sema& sema, feedback* fb, root_ptr root) noexcept :
     m_builder{ builder },
     m_sema{ sema },
+    m_root{ root },
     m_feedback{ fb }
   {}
 
@@ -309,12 +314,20 @@ namespace tnac
     {
       if (m_feedback)
         m_feedback->error(diag::file_load_failure(input.path(), inStr.error().message()));
-      return {};
+
+      return m_root;
     }
 
     init_root();
+    auto lastWD = fsys::current_path();
+    fsys::current_path(input.directory());
+    auto moduleName = input.extract_name();
+    utils::unused(moduleName);
+
     // todo: module scope
-    return operator()(*inStr, loc);
+    auto parseRes = operator()(*inStr, loc);
+    fsys::current_path(lastWD);
+    return parseRes;
   }
 
   parser::const_root_ptr parser::root() const noexcept
