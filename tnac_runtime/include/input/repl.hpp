@@ -3,14 +3,22 @@
 //
 
 #pragma once
-#include "src_mgr/source_manager.hpp"
 #include "driver/state.hpp"
-#include "parser/ast/ast.hpp"
 #include "output/common.hpp"
 
 namespace tnac::semantics
 {
   class scope;
+}
+
+namespace tnac::src
+{
+  class loc_wrapper;
+}
+
+namespace tnac::ast
+{
+  class command;
 }
 
 namespace tnac::rt
@@ -81,52 +89,13 @@ namespace tnac::rt
     // Generalised print function used in different command handlers
     //
     template <std::invocable<> F>
-    void print_cmd(const ast::command& cmd, F&& printFunc) noexcept
-    {
-      using size_type = ast::command::size_type;
-      auto wrapInLines = true;
-      if (cmd.arg_count())
-      {
-        wrapInLines = !try_redirect_output(cmd[size_type{}]);
-      }
-
-      if (wrapInLines) m_state->out() << '\n';
-      printFunc();
-      if (wrapInLines) m_state->out() << '\n';
-      end_redirect();
-    }
+    void print_cmd(const ast::command& cmd, F&& printFunc) noexcept;
 
     //
-    // Generalised function for printing vars and funcs
+    // Generalised print function for symbols
     //
     template <semantics::detail::sym S>
-    void print_sym_collection(semantics::sym_container<S> collection) noexcept
-    {
-      auto styles = m_state->in_stdout();
-      for (auto it = collection.begin(); it != collection.end(); ++it)
-      {
-        m_state->out() << "In scope '";
-        print_scope(it.scope(), styles);
-        m_state->out() << "':\n";
-        for (auto sym : *it)
-        {
-          using namespace out;
-          m_state->out() << ' ';
-          print_sym(*sym, styles);
-
-          m_state->out() << " at ";
-
-          if (styles) fmt::add_clr(m_state->out(), fmt::clr::White);
-          m_state->out() << sym->at();
-          if (styles) fmt::clear_clr(m_state->out());
-          
-          m_state->out() << '\n';
-        }
-
-        if (std::next(it) != collection.end())
-          m_state->out() << '\n';
-      }
-    }
+    void print_symbols(semantics::sym_container<S> collection) noexcept;
 
     //
     // #result
@@ -152,31 +121,6 @@ namespace tnac::rt
     // #funcs <'path'>
     //
     void print_funcs(ast::command cmd) noexcept;
-
-    //
-    // Prints info on the scope of a symbol
-    //
-    void print_scope(const semantics::scope* scope, bool styles) noexcept;
-
-    //
-    // Prints variable information
-    //
-    void print_var(const semantics::variable& var, bool styles) noexcept;
-
-    //
-    // Prints parameter information
-    //
-    void print_param(const semantics::parameter& par, bool styles) noexcept;
-
-    //
-    // Prints function information
-    //
-    void print_func(const semantics::function& func, bool styles) noexcept;
-
-    //
-    // Prints symbol information
-    //
-    void print_sym(const semantics::symbol& sym, bool styles) noexcept;
 
   private:
     source_manager m_srcMgr;

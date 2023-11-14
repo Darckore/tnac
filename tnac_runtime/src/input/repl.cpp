@@ -1,9 +1,12 @@
 #include "input/repl.hpp"
 #include "output/printer.hpp"
+#include "output/sym_printer.hpp"
 #include "output/lister.hpp"
 #include "common/feedback.hpp"
 #include "common/diag.hpp"
 #include "sema/sym/symbols.hpp"
+#include "src_mgr/source_manager.hpp"
+#include "parser/ast/ast.hpp"
 
 namespace tnac::rt
 {
@@ -138,6 +141,22 @@ namespace tnac::rt
     m_state->stop();
   }
 
+  template <std::invocable<> F>
+  void repl::print_cmd(const ast::command& cmd, F&& printFunc) noexcept
+  {
+    using size_type = ast::command::size_type;
+    auto wrapInLines = true;
+    if (cmd.arg_count())
+    {
+      wrapInLines = !try_redirect_output(cmd[size_type{}]);
+    }
+
+    if (wrapInLines) m_state->out() << '\n';
+    printFunc();
+    if (wrapInLines) m_state->out() << '\n';
+    end_redirect();
+  }
+
   void repl::print_result(ast::command cmd) noexcept
   {
     utils::unused(cmd);
@@ -183,11 +202,19 @@ namespace tnac::rt
       });
   }
 
+  template <semantics::detail::sym S>
+  void repl::print_symbols(semantics::sym_container<S> collection) noexcept
+  {
+    out::sym_printer sp;
+    if (m_state->in_stdout()) sp.enable_styles();
+    sp(collection, m_state->out());
+  }
+
   void repl::print_vars(ast::command cmd) noexcept
   {
     print_cmd(cmd, [this]
       {
-        print_sym_collection(m_state->tnac_core().variables());
+        print_symbols(m_state->tnac_core().variables());
       });
   }
 
@@ -195,84 +222,7 @@ namespace tnac::rt
   {
     print_cmd(cmd, [this]
       {
-        print_sym_collection(m_state->tnac_core().functions());
+        print_symbols(m_state->tnac_core().functions());
       });
-  }
-
-  void repl::print_scope(const semantics::scope* scope, bool styles) noexcept
-  {
-    using enum semantics::scope_kind;
-    if (scope)
-    {
-      if (styles) fmt::add_clr(m_state->out(), fmt::clr::White);
-      const auto kind = scope->kind();
-      switch (kind)
-      {
-      case Global:   m_state->out() << "Global";        break;
-      case Module:   m_state->out() << "Module";        break;
-      case Function: print_func(scope->func(), styles); break;
-      case Block:    m_state->out() << "Internal";      break;
-      }
-      if (styles) fmt::clear_clr(m_state->out());
-
-      if (utils::eq_any(kind, Function, Block))
-      {
-        m_state->out() << "<=";
-        print_scope(scope->encl_skip_internal(), styles);
-      }
-    }
-    else
-    {
-      if (styles) fmt::add_clr(m_state->out(), fmt::clr::Red);
-      m_state->out() << "UNKNOWN";
-      if (styles) fmt::clear_clr(m_state->out());
-    }
-  }
-
-  void repl::print_var(const semantics::variable& var, bool styles) noexcept
-  {
-    if (styles) fmt::add_clr(m_state->out(), fmt::clr::Cyan);
-    m_state->out() << var.name();
-    if (styles) fmt::clear_clr(m_state->out());
-  }
-
-  void repl::print_param(const semantics::parameter& par, bool styles) noexcept
-  {
-    if (styles) fmt::add_clr(m_state->out(), fmt::clr::Yellow);
-    m_state->out() << par.name();
-    if (styles) fmt::clear_clr(m_state->out());
-  }
-
-  void repl::print_func(const semantics::function& func, bool styles) noexcept
-  {
-    if (styles) fmt::add_clr(m_state->out(), fmt::clr::Cyan);
-    m_state->out() << func.name();
-    if (styles) fmt::clear_clr(m_state->out());
-
-    m_state->out() << " (";
-
-    auto paramCount = func.param_count();
-    for (decltype(paramCount) idx{}; auto param : func.params())
-    {
-      print_sym(*param, styles);
-      ++idx;
-      if (idx < paramCount)
-        m_state->out() << ", ";
-    }
-
-    m_state->out() << ')';
-  }
-
-  void repl::print_sym(const semantics::symbol& sym, bool styles) noexcept
-  {
-    using enum semantics::sym_kind;
-    switch (sym.what())
-    {
-    case Variable:  print_var(utils::cast<Variable>(sym), styles);    break;
-    case Function:  print_func(utils::cast<Function>(sym), styles);   break;
-    case Parameter: print_param(utils::cast<Parameter>(sym), styles); break;
-
-    default: break;
-    }
   }
 }
