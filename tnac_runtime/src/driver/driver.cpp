@@ -16,6 +16,7 @@ namespace tnac::rt
   {
     m_feedback.on_error([this](string_t msg) noexcept { on_error("Command line"sv, msg); });
     m_settings.parse(argCount, args);
+    set_callbacks();
     run();
     run_interactive();
   }
@@ -30,7 +31,6 @@ namespace tnac::rt
       return;
     }
 
-    set_file_callbacks();
     auto loadResult = m_tnac.load(m_settings.run_on());
     if (!loadResult)
     {
@@ -52,7 +52,8 @@ namespace tnac::rt
     if (!m_settings.interactive())
       return;
 
-    set_repl_callbacks();
+    m_feedback.on_command([this](ast::command cmd) noexcept
+      { m_repl.on_command(std::move(cmd)); });
     m_repl.declare_commands();
     m_repl.run();
   }
@@ -60,7 +61,7 @@ namespace tnac::rt
 
   // Private members (Callbacks)
 
-  void driver::set_file_callbacks() noexcept
+  void driver::set_callbacks() noexcept
   {
     m_feedback.on_error([this](string_t msg) noexcept
       { on_error("Input"sv, msg); });
@@ -68,12 +69,6 @@ namespace tnac::rt
       { on_error(err.at(), err.message()); });
     m_feedback.on_compile_error([this](const token& tok, string_t msg) noexcept
       { on_error(tok, msg); });
-  }
-
-  void driver::set_repl_callbacks() noexcept
-  {
-    m_feedback.on_command([this](ast::command cmd) noexcept
-      { m_repl.on_command(std::move(cmd)); });
   }
 
   void driver::error_mark() noexcept

@@ -38,12 +38,7 @@ namespace tnac::rt
     //
     // Inits callbacks used when a file is processed
     //
-    void set_file_callbacks() noexcept;
-
-    //
-    // Inits callbacks for REPL
-    //
-    void set_repl_callbacks() noexcept;
+    void set_callbacks() noexcept;
 
     //
     // Prints the error mark
