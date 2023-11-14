@@ -720,6 +720,8 @@ the entire ast, or only the last parsed expression will be printed. See examples
 is the file name to print it to
 * `#vars [<string>]` - prints a list of all variables in existence. The optional string argument
 is the file name to print it to
+* `#funcs [<string>]` - prints a list of all functions in existence. The optional string argument
+is the file name to print it to
 * `#bin`, `#oct`, `#dec`, `#hex` - these make sense when supplied right after
 an expression. They control the numeric base of the printed value.
 
@@ -727,26 +729,34 @@ an expression. They control the numeric base of the printed value.
 
 Given the sequence of inputs below:
 
-input 1: `a = 10`
+input 1: `func(a, b) c = a + b;`
 
-input 2: `b = a + 1`
+input 2: `a = 10`
 
-input 3: `a + b`
+input 3: `b = a + 1`
+
+input 4: `a + b`
 
 `#ast` prints this to stdout:
 ```
 <scope>
-|-Declaration  <VarName: a>
-| `-Literal expression '10' <value: 10>
-|-Declaration  <VarName: b>
-| `-Binary expression '+'
-|   |-Id expression 'a'
-|   `-Literal expression '1' <value: 1>
-`-Assign expression '='
-  |-Id expression 'a'
-  `-Binary expression '+'
-    |-Id expression 'a'
-    `-Id expression 'b'
+|-Declaration <FuncName: func> <1:1>
+| |- <Function parameter: a> <1:6>
+| |- <Function parameter: b> <1:9>
+| `-<scope>
+|   `-Declaration  <VarName: c> <1:12>
+|     `-Binary expression '+'  <1:16>
+|       |-Id expression 'a'  <1:16>
+|       `-Id expression 'b'  <1:20>
+|-Declaration  <VarName: a> <2:1>
+| `-Literal expression '10'  <2:5>
+|-Declaration  <VarName: b> <3:1>
+| `-Binary expression '+'  <3:5>
+|   |-Id expression 'a'  <3:5>
+|   `-Literal expression '1'  <3:9>
+`-Binary expression '+'  <4:1>
+  |-Id expression 'a'  <4:1>
+  `-Id expression 'b'  <4:5>
 ```
 `#ast 'out.txt'` produces the same output and prints it to a file named
 `out.txt` and located in the current working directory
@@ -755,26 +765,39 @@ input 3: `a + b`
 
 `#ast '' current` prints this to stdout:
 ```
-Assign expression '='
-|-Id expression 'a'
-`-Binary expression '+'
-  |-Id expression 'a'
-  `-Id expression 'b'
+Binary expression '+'  <3:1>
+|-Id expression 'a'  <3:1>
+`-Id expression 'b'  <3:3>
 ```
 
 `#vars` prints this to stdout:
 ```
-a : 21
-b : 11
+In scope 'func (a, b)<=Global':
+ c at <REPL>:1:12
+
+In scope 'Global':
+ a at <REPL>:2:1
+ b at <REPL>:3:1
 ```
 
 `#vars 'out.txt'` - same, but uses the `out.txt` file
 
+`#funcs` prints this to stdout:
+```
+In scope 'Global':
+ func (a, b) at <REPL>:1:1
+```
+
+`#funcs 'out.txt'` - same, but uses the `out.txt` file
+
 `#list` prints this to stdout:
 ```
+func(a, b)
+  c = a + b
+;
 a = 10 :
 b = a + 1 :
-a = a + b
+a + b
 ```
 
 `#list 'out.txt'` - same, but uses the `out.txt` file
