@@ -207,14 +207,14 @@ namespace tnac::rt::out
       VALUE_GUARD(m_indent);
       ++m_indent;
       print(patterns);
-      indent(*expr.parent());
+      --m_indent;
+      indent(nearest_to_scope(expr));
     }
     else
     {
       out() << ' ';
     }
 
-    indent(expr);
     out() << "; ";
   }
 
@@ -292,7 +292,7 @@ namespace tnac::rt::out
       ++m_indent;
       print(body);
       --m_indent;
-      indent(*decl.parent());
+      indent(nearest_to_scope(decl));
     }
     else
     {
@@ -302,6 +302,18 @@ namespace tnac::rt::out
     out() << "; ";
   }
 
+  const ast::node& lister::nearest_to_scope(const ast::node& src) noexcept
+  {
+    auto res = src.parent();
+    for (;;)
+    {
+      auto next = res->parent();
+      if (!next || next->is(ast::node_kind::Scope))
+        break;
+      res = next;
+    }
+    return *res;
+  }
 
   void lister::print_invocation(const ast::invocation& expr) noexcept
   {
