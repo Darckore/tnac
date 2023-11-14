@@ -2,6 +2,7 @@
 #include "sema/sema.hpp"
 #include "common/feedback.hpp"
 #include "common/diag.hpp"
+#include "src_mgr/source_file.hpp"
 
 namespace tnac::detail
 {
@@ -278,12 +279,7 @@ namespace tnac
   {
     m_lastConsumed.reset();
     m_lex(str);
-
-    if (!m_root)
-    {
-      m_root = m_builder.make_scope({});
-      new_scope(semantics::scope_kind::Global);
-    }
+    init_root();
 
     pointer res = m_root;
     auto eList = expression_list(scope_level::Global);
@@ -303,6 +299,22 @@ namespace tnac
     srcLoc.add_line();
     m_lex.detach_loc();
     return res;
+  }
+
+  parser::pointer parser::operator()(src::file& input) noexcept
+  {
+    auto loc = input.make_location();
+    auto inStr = input.get_contents();
+    if (!inStr)
+    {
+      if (m_feedback)
+        m_feedback->error(diag::file_load_failure(input.path(), inStr.error().message()));
+      return {};
+    }
+
+    init_root();
+    // todo: module scope
+    return operator()(*inStr, loc);
   }
 
   parser::const_root_ptr parser::root() const noexcept
@@ -369,6 +381,15 @@ namespace tnac
 
 
   // Private members(Parsing)
+
+  void parser::init_root() noexcept
+  {
+    if (!m_root)
+    {
+      m_root = m_builder.make_scope({});
+      new_scope(semantics::scope_kind::Global);
+    }
+  }
 
   const token& parser::peek_next() noexcept
   {

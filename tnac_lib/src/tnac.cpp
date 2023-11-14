@@ -32,14 +32,7 @@ namespace tnac
 
   ast::node* core::parse(src::file& file) noexcept
   {
-    auto fileContents = file.get_contents();
-    if (!fileContents)
-    {
-      return {};
-    }
-
-    auto loc = file.make_location();
-    m_parser(*fileContents, loc);
+    m_parser(file);
     return get_ast();
   }
 

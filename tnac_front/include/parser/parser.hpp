@@ -12,6 +12,11 @@ namespace tnac
 {
   class sema;
   class feedback;
+  
+  namespace src
+  {
+    class file;
+  }
 
   namespace detail
   {
@@ -99,6 +104,11 @@ namespace tnac
     pointer operator()(string_t str, loc& srcLoc) noexcept;
 
     //
+    // Parses the given source file
+    //
+    pointer operator()(src::file& input) noexcept;
+
+    //
     // Returns the root node of the entire AST, which is,
     // potentially, built over multiple parse calls
     // 
@@ -138,6 +148,11 @@ namespace tnac
     ast::command::arg_list command_args(bool consumeSeparator) noexcept;
 
   private: // parsing
+    //
+    // Inits the ast root if it doesn't yet exist
+    //
+    void init_root() noexcept;
+
     //
     // Previews the next token from the lexer
     //
