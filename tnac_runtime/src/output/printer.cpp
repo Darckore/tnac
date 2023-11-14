@@ -395,7 +395,7 @@ namespace tnac::rt::out
   void ast_printer::location_info(src::loc_wrapper loc) noexcept
   {
     if (m_styles) fmt::add_clr(out(), fmt::clr::White);
-    out() << " <" << (loc->line() + 1) << ':' << (loc->col() + 1) << '>';
+    out() << " (" << loc << ')';
     if (m_styles) fmt::clear_clr(out());
   }
 

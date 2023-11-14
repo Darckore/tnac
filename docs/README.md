@@ -740,23 +740,23 @@ input 4: `a + b`
 `#ast` prints this to stdout:
 ```
 <scope>
-|-Declaration <FuncName: func> <1:1>
-| |- <Function parameter: a> <1:6>
-| |- <Function parameter: b> <1:9>
+|-Declaration <FuncName: func> (<REPL>:1:1)
+| |- <Function parameter: a> (<REPL>:1:6)
+| |- <Function parameter: b> (<REPL>:1:9)
 | `-<scope>
-|   `-Declaration  <VarName: c> <1:12>
-|     `-Binary expression '+'  <1:16>
-|       |-Id expression 'a'  <1:16>
-|       `-Id expression 'b'  <1:20>
-|-Declaration  <VarName: a> <2:1>
-| `-Literal expression '10'  <2:5>
-|-Declaration  <VarName: b> <3:1>
-| `-Binary expression '+'  <3:5>
-|   |-Id expression 'a'  <3:5>
-|   `-Literal expression '1'  <3:9>
-`-Binary expression '+'  <4:1>
-  |-Id expression 'a'  <4:1>
-  `-Id expression 'b'  <4:5>
+|   `-Declaration  <VarName: c> (<REPL>:1:12)
+|     `-Binary expression '+'  (<REPL>:1:16)
+|       |-Id expression 'a'  (<REPL>:1:16)
+|       `-Id expression 'b'  (<REPL>:1:20)
+|-Declaration  <VarName: a> (<REPL>:2:1)
+| `-Literal expression '10'  (<REPL>:2:5)
+|-Declaration  <VarName: b> (<REPL>:3:1)
+| `-Binary expression '+'  (<REPL>:3:5)
+|   |-Id expression 'a'  (<REPL>:3:5)
+|   `-Literal expression '1'  (<REPL>:3:9)
+`-Binary expression '+'  (<REPL>:4:1)
+  |-Id expression 'a'  (<REPL>:4:1)
+  `-Id expression 'b'  (<REPL>:4:5)
 ```
 `#ast 'out.txt'` produces the same output and prints it to a file named
 `out.txt` and located in the current working directory
@@ -765,9 +765,9 @@ input 4: `a + b`
 
 `#ast '' current` prints this to stdout:
 ```
-Binary expression '+'  <3:1>
-|-Id expression 'a'  <3:1>
-`-Id expression 'b'  <3:3>
+Binary expression '+'  (<REPL>:3:1)
+|-Id expression 'a'  (<REPL>:3:1)
+`-Id expression 'b'  (<REPL>:3:3)
 ```
 
 `#vars` prints this to stdout:
