@@ -42,13 +42,18 @@ namespace tnac
     using pointer       = value_type*;
     using const_pointer = const value_type*;
 
-    using root_type      = ast::scope;
+    using module_type      = ast::module_def;
+    using module_ptr       = module_type*;
+    using const_module_ptr = const module_type*;
+
+    using root_type      = ast::root;
     using root_ptr       = root_type*;
     using const_root_ptr = const root_type*;
-    using expr_list      = root_type::elem_list;
+
+    using expr_list      = ast::scope::elem_list;
     using param_list     = ast::func_decl::param_list;
 
-    using loc     = src::location;
+    using loc_t    = src::location;
     using tok_opt = lex::token_opt;
 
     using prec = detail::op_precedence;
@@ -104,7 +109,7 @@ namespace tnac
     //
     // Parses the input string and provides a source location to the lexer
     //
-    pointer operator()(string_t str, loc& srcLoc) noexcept;
+    pointer operator()(string_t str, loc_t& srcLoc) noexcept;
 
     //
     // Parses the given source file
@@ -151,6 +156,11 @@ namespace tnac
     ast::command::arg_list command_args(bool consumeSeparator) noexcept;
 
   private: // parsing
+    //
+    // Opens scope for the current module
+    //
+    void start_module() noexcept;
+
     //
     // Inits the ast root if it doesn't yet exist
     //
@@ -322,6 +332,7 @@ namespace tnac
     ast::builder& m_builder;
     sema& m_sema;
     root_ptr m_root{};
+    module_ptr m_curModule{};
     tok_opt m_lastConsumed{};
 
     feedback* m_feedback{};

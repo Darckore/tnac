@@ -11,6 +11,23 @@ namespace tnac::ast
 
   // General
 
+  root* builder::make_root() noexcept
+  {
+    return make<root>();
+  }
+
+  module_def* builder::make_module(buf_t name, src::loc_wrapper loc) noexcept
+  {
+    return make<module_def>(std::move(name), loc);
+  }
+
+  module_def* builder::get_default_module(src::loc_wrapper loc) noexcept
+  {
+    static module_def fake{ {}, loc };
+    fake.override_loc(loc);
+    return &fake;
+  }
+
   scope* builder::make_scope(scope::elem_list children) noexcept
   {
     return make<scope>(std::move(children));

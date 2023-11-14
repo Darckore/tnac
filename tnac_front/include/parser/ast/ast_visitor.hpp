@@ -178,6 +178,50 @@ namespace tnac::ast
     }
 
     //
+    // Visits the AST root
+    //
+    void visit_impl(dest<root> r) noexcept
+    {
+      if constexpr (is_top_down())
+        visit(r);
+
+      if (preview(r))
+      {
+        //for (auto child : r->children())
+        //{
+        //  visit_root(child);
+        //  if (!exit_child())
+        //    break;
+        //}
+      }
+
+      if constexpr (is_bottom_up())
+        visit(r);
+    }
+
+    //
+    // Visits a module definition
+    //
+    void visit_impl(dest<module_def> m) noexcept
+    {
+      if constexpr (is_top_down())
+        visit(m);
+
+      if (preview(m))
+      {
+        for (auto child : m->children())
+        {
+          visit_root(child);
+          if (!exit_child())
+            break;
+        }
+      }
+
+      if constexpr (is_bottom_up())
+        visit(m);
+    }
+
+    //
     // Visits a scope
     //
     void visit_impl(dest<scope> s) noexcept
@@ -547,6 +591,8 @@ namespace tnac::ast
 
       switch (cur.what())
       {
+      case Root:       visit_impl(&cast<root>(cur));  break;
+      case Module:     visit_impl(&cast<module_def>(cur));  break;
       case Scope:      visit_impl(&cast<scope>(cur));       break;
       case Result:     visit_impl(&cast<result_expr>(cur)); break;
       case Ret:        visit_impl(&cast<ret_expr>(cur));    break;

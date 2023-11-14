@@ -13,7 +13,9 @@ namespace tnac::ast
   enum class node_kind : std::uint16_t
   {
     Error,
+    Root,
     Scope,
+    Module,
 
     // Expressions
     Literal,
@@ -206,6 +208,8 @@ namespace tnac::ast
   protected:
     scope(elem_list children) noexcept;
 
+    explicit scope(kind k) noexcept;
+
   public:
     //
     // Merges the given list of child nodes with the list it currently holds
@@ -232,4 +236,9 @@ namespace tnac::ast
   private:
     elem_list m_children;
   };
+
+  inline auto get_id(const scope& s) noexcept
+  {
+    return s.what();
+  }
 }

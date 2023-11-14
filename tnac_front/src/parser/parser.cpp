@@ -285,20 +285,35 @@ namespace tnac
     m_lastConsumed.reset();
     m_lex(str);
     init_root();
+    if (!m_curModule)
+    {
+      m_curModule = m_builder.get_default_module(src::location::dummy().record());
+      start_module();
+    }
 
-    pointer res = m_root;
+    pointer res = m_curModule;
     auto eList = expression_list(scope_level::Global);
     if (!eList.empty())
     {
       res = eList.back();
-      m_root->adopt(std::move(eList));
+      m_curModule->adopt(std::move(eList));
     }
 
     return res;
   }
 
-  parser::pointer parser::operator()(string_t str, loc& srcLoc) noexcept
+  parser::pointer parser::operator()(string_t str, loc_t& srcLoc) noexcept
   {
+    if (!m_curModule)
+    {
+      auto loc = srcLoc.record();
+      if (srcLoc.is_dummy())
+        m_curModule = m_builder.get_default_module(loc);
+      else
+        m_curModule = m_builder.make_module(loc->file().stem().string(), loc);
+
+      start_module();
+    }
     m_lex.attach_loc(srcLoc);
     auto res = operator()(str);
     srcLoc.add_line();
@@ -322,11 +337,12 @@ namespace tnac
     auto lastWD = fsys::current_path();
     fsys::current_path(input.directory());
     auto moduleName = input.extract_name();
-    utils::unused(moduleName);
 
-    // todo: module scope
+    m_curModule = m_builder.make_module(std::move(moduleName), loc.record());
+    start_module();
     auto parseRes = operator()(*inStr, loc);
     fsys::current_path(lastWD);
+    m_curModule = {};
     return parseRes;
   }
 
@@ -395,11 +411,20 @@ namespace tnac
 
   // Private members(Parsing)
 
+  void parser::start_module() noexcept
+  {
+    if (!m_curModule)
+      return;
+
+    // todo: append to root
+    // todo: scope
+  }
+
   void parser::init_root() noexcept
   {
     if (!m_root)
     {
-      m_root = m_builder.make_scope({});
+      m_root = m_builder.make_root();
       new_scope(semantics::scope_kind::Global);
     }
   }

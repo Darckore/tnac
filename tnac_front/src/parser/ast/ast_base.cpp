@@ -62,15 +62,20 @@ namespace tnac::ast
     child->make_child_of(this);
   }
 
+
   // Scope
 
   scope::~scope() noexcept = default;
 
   scope::scope(elem_list children) noexcept :
-    node{ node::Scope }
+    scope{ node::Scope }
   {
     adopt(std::move(children));
   }
+
+  scope::scope(kind k) noexcept :
+    node{ k }
+  {}
 
   void scope::adopt(elem_list children) noexcept
   {

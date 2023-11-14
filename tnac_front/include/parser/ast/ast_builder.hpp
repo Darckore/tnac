@@ -39,6 +39,21 @@ namespace tnac::ast
 
   public: // General
     //
+    // Creates a root node
+    //
+    root* make_root() noexcept;
+
+    //
+    // Creates a module definition
+    //
+    module_def* make_module(buf_t name, src::loc_wrapper loc) noexcept;
+
+    //
+    // Returns a default module
+    //
+    module_def* get_default_module(src::loc_wrapper loc) noexcept;
+
+    //
     // Creates a scope
     //
     scope* make_scope(scope::elem_list children) noexcept;
