@@ -44,6 +44,8 @@ namespace tnac::rt::out
     switch (root->what())
     {
     case Error:      print(cast<ast::error_expr>(*root));  break;
+    case Root:       print(cast<ast::root>(*root));        break;
+    case Module:     print(cast<ast::module_def>(*root));  break;
     case Scope:      print(cast<ast::scope>(*root));       break;
     case Literal:    print(cast<ast::lit_expr>(*root));    break;
     case Identifier: print(cast<ast::id_expr>(*root));     break;
@@ -68,6 +70,24 @@ namespace tnac::rt::out
 
     default: UTILS_ASSERT(false); break;
     }
+  }
+
+  void lister::print(const ast::root& root) noexcept
+  {
+    for (auto mod : root.modules())
+      print(mod);
+  }
+
+  void lister::print(const ast::module_def& mod) noexcept
+  {
+    endl();
+    auto name = mod.is_fake() ? "<fake>"sv : mod.name();
+    comment_style();
+    out() << "`Module: " << name << '`';
+    reset_style();
+    endl();
+    endl();
+    print(utils::cast<ast::scope>(mod));
   }
 
   void lister::print(const ast::scope& scope) noexcept
@@ -308,7 +328,7 @@ namespace tnac::rt::out
     for (;;)
     {
       auto next = res->parent();
-      if (!next || next->is(ast::node_kind::Scope))
+      if (!next || next->is_any(ast::node_kind::Scope, ast::node_kind::Module))
         break;
       res = next;
     }
@@ -340,12 +360,11 @@ namespace tnac::rt::out
 
   void lister::indent(const ast::node& cur) noexcept
   {
-    static constexpr auto scopeId = ast::node_kind::Scope;
-    if (cur.is(scopeId))
+    if (cur.is_any(ast::node_kind::Scope, ast::node_kind::Module))
       return;
 
     if (auto parent = cur.parent();
-            !parent || !parent->is(scopeId))
+            !parent || !parent->is_any(ast::node_kind::Scope, ast::node_kind::Module))
     {
       return;
     }
@@ -415,5 +434,10 @@ namespace tnac::rt::out
     if (!m_styles) return;
     reset_style();
   }
-
+  void lister::comment_style() noexcept
+  {
+    if (!m_styles) return;
+    reset_style();
+    fmt::add_clr(out(), fmt::clr::Blue);
+  }
 }

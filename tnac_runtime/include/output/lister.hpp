@@ -29,6 +29,10 @@ namespace tnac::rt::out
   private:
     void print(const ast::node* root) noexcept;
 
+    void print(const ast::root& root) noexcept;
+    
+    void print(const ast::module_def& mod) noexcept;
+
     void print(const ast::scope& scope) noexcept;
 
     void print(const ast::assign_expr& expr) noexcept;
@@ -97,6 +101,7 @@ namespace tnac::rt::out
     void kw_style() noexcept;
     void lit_style() noexcept;
     void default_style() noexcept;
+    void comment_style() noexcept;
 
   private:
     out_stream* m_out{ &std::cout };
