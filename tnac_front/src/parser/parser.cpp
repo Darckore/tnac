@@ -324,6 +324,7 @@ namespace tnac
     auto parseRes = operator()(*inStr, loc);
     fsys::current_path(lastWD);
     m_curModule = {};
+    end_scope();
     return parseRes;
   }
 
@@ -405,7 +406,8 @@ namespace tnac
       m_curModule = m_builder.make_module(loc.file().stem().string(), locw);
 
     m_root->append(*m_curModule);
-    // todo: scope
+    new_scope(semantics::scope_kind::Module);
+    m_sema.visit_module_def(*m_curModule);
   }
 
   void parser::init_root() noexcept
@@ -575,7 +577,7 @@ namespace tnac
     auto pos = name;
     if (name.is(token::KwFunction))
     {
-      name = m_sema.contrive_name();
+      name = token{ m_sema.contrive_name(), token::Identifier };
     }
 
     auto funcDecl = m_builder.make_func_decl(name, pos, *def, std::move(params));

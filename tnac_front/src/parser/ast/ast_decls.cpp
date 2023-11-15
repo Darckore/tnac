@@ -45,6 +45,7 @@ namespace tnac::ast
 
   const semantics::symbol& decl::symbol() const noexcept
   {
+    UTILS_ASSERT(static_cast<bool>(m_symbol));
     return *m_symbol;
   }
   semantics::symbol& decl::symbol() noexcept

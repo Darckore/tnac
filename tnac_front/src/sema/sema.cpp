@@ -41,18 +41,18 @@ namespace tnac
       auto&& var = m_symTab.add_variable(name, m_curScope, loc);
       decl.attach_symbol(var);
     }
-      break;
+    break;
 
     case ParamDecl:
     {
       decl.attach_symbol(m_symTab.add_parameter(name, m_curScope, loc));
     }
-      break;
+    break;
 
     case FuncDecl:
     {
       using namespace semantics;
-      UTILS_ASSERT(static_cast<bool>(m_curScope) && m_curScope->is_function());
+      UTILS_ASSERT(m_curScope && m_curScope->is_function());
       auto targetScope = m_curScope->enclosing();
       auto&& declParams = utils::cast<FuncDecl>(decl).params();
       function::param_list params;
@@ -75,12 +75,24 @@ namespace tnac
     }
   }
 
-  token sema::contrive_name() noexcept
+  void sema::visit_module_def(ast::module_def& def) noexcept
+  {
+    UTILS_ASSERT(m_curScope && m_curScope->is_module());
+    auto targetScope = m_curScope->enclosing();
+    auto name = def.is_fake() ?
+      contrive_name() :
+      def.name();
+    auto&& sym = m_symTab.add_module(name, targetScope, def.at());
+    def.attach_symbol(sym);
+    m_curScope->attach_symbol(sym);
+  }
+
+  string_t sema::contrive_name() noexcept
   {
     static constexpr auto namePrefix{ "`__anon_entity__"sv };
     const auto nameIdx = m_generatedNames.size();
     auto entry = m_generatedNames.emplace(buf_t{ namePrefix } + std::to_string(nameIdx));
-    return { *entry.first, token::Identifier };
+    return *entry.first;
   }
 
 }

@@ -166,6 +166,11 @@ namespace tnac::semantics
     function& add_function(name_t name, scope_ptr parent, func_params params, loc_t loc) noexcept;
 
     //
+    // Inserts a module reference to the specified scope
+    //
+    module_ref& add_module(name_t name, scope_ptr parent, loc_t loc) noexcept;
+
+    //
     // Looks for a symbol starting from the specified scope
     //
     sym_ptr lookup(name_t name, scope_ptr parent) noexcept;

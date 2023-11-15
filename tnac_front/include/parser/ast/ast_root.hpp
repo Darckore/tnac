@@ -5,6 +5,11 @@
 #pragma once
 #include "parser/ast/ast_base.hpp"
 
+namespace tnac::semantics
+{
+  class module_ref;
+}
+
 namespace tnac::ast
 {
   //
@@ -15,9 +20,11 @@ namespace tnac::ast
   public:
     using name_t = string_t;
     using loc_t  = src::loc_wrapper;
+    using sym_t  = semantics::module_ref;
 
   private:
     friend class builder;
+    friend class sema;
 
   public:
     CLASS_SPECIALS_NONE(module_def);
@@ -26,6 +33,11 @@ namespace tnac::ast
 
   protected:
     module_def(buf_t name, loc_t loc) noexcept;
+
+    //
+    // Attaches a symbol to this module. Called from sema on symbol creation
+    //
+    void attach_symbol(sym_t& sym) noexcept;
 
   public:
     //
@@ -48,6 +60,18 @@ namespace tnac::ast
     //
     bool is_fake() const noexcept;
 
+    //
+    // Returns the attached symbol
+    // 
+    // const version
+    //
+    const sym_t& symbol() const noexcept;
+
+    //
+    // Returns the attached symbol
+    // 
+    sym_t& symbol() noexcept;
+
   protected:
     //
     // Overrides the location with a new one
@@ -57,6 +81,7 @@ namespace tnac::ast
   private:
     buf_t m_name;
     loc_t m_loc;
+    sym_t* m_sym{};
   };
 
 

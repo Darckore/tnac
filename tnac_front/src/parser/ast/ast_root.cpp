@@ -12,6 +12,11 @@ namespace tnac::ast
     m_loc{ loc }
   {}
 
+  void module_def::attach_symbol(sym_t& sym) noexcept
+  {
+    m_sym = &sym;
+  }
+
   module_def::name_t module_def::name() const noexcept
   {
     return m_name;
@@ -30,6 +35,16 @@ namespace tnac::ast
   bool module_def::is_fake() const noexcept
   {
     return m_name.empty() && !m_loc;
+  }
+
+  const module_def::sym_t& module_def::symbol() const noexcept
+  {
+    UTILS_ASSERT(static_cast<bool>(m_sym));
+    return *m_sym;
+  }
+  module_def::sym_t& module_def::symbol() noexcept
+  {
+    return FROM_CONST(symbol);
   }
 
 

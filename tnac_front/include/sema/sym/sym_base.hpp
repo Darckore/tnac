@@ -15,7 +15,8 @@ namespace tnac::semantics
   {
     Variable,
     Parameter,
-    Function
+    Function,
+    Module
   };
 
 

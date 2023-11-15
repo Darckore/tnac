@@ -104,6 +104,11 @@ namespace tnac::semantics
     bool is_top_level() const noexcept;
 
     //
+    // Checks if the scope represents a module
+    //
+    bool is_module() const noexcept;
+
+    //
     // Checks if the scope represents a function body
     //
     bool is_function() const noexcept;

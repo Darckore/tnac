@@ -63,6 +63,10 @@ namespace tnac::semantics
   {
     return is_any(Global, Module);
   }
+  bool scope::is_module() const noexcept
+  {
+    return is(Module);
+  }
   bool scope::is_function() const noexcept
   {
     return is(Function);

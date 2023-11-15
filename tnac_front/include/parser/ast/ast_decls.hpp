@@ -33,8 +33,7 @@ namespace tnac::ast
     decl(kind k, const token& id, node* def) noexcept;
 
     //
-    // Attaches a symbol to this declarator. Called from the corresponding
-    // symbol object on its creation
+    // Attaches a symbol to this declarator. Called sema on symbol creation
     //
     void attach_symbol(semantics::symbol& sym) noexcept;
 

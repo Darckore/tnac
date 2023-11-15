@@ -49,9 +49,14 @@ namespace tnac
     void visit_decl(ast::decl& decl) noexcept;
 
     //
+    // Visits a newly created module definition and registers it in the symbol table
+    //
+    void visit_module_def(ast::module_def& def) noexcept;
+
+    //
     // Generates a random name
     //
-    token contrive_name() noexcept;
+    string_t contrive_name() noexcept;
 
     //
     // Returns an iterable collection of all declared variables
