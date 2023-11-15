@@ -128,8 +128,9 @@ namespace tnac::rt
     void print_modules(ast::command cmd) noexcept;
 
   private:
+    inline static const source_manager::path_t m_fake{ "REPL" };
+    
     source_manager m_srcMgr;
-    source_manager::path_t m_fake{ "REPL" };
     src::location m_loc;
     input_map m_inputs;
 

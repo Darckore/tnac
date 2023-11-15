@@ -9,6 +9,9 @@
 
   <Type Name="tnac::token">
     <DisplayString>{m_kind,en} ({m_value,sb})</DisplayString>
+    <Expand>
+      <Item Name="[location]">m_loc</Item>
+    </Expand>
   </Type>
 
 
@@ -47,6 +50,36 @@
   </Type>
 
 
+  <Type Name="tnac::src::location">
+    <DisplayString>location</DisplayString>
+    <Expand>
+      <Item Name="[filename]" Condition="m_path">*m_path</Item>
+      <Item Name="[filename]" Condition="!m_path">"&lt;dummy&gt;",sb</Item>
+      <Item Name="[src manager]" Condition="m_mgr">*m_mgr</Item>
+      <Item Name="[src manager]" Condition="!m_mgr">"&lt;dummy&gt;",sb</Item>
+      <Item Name="[line]">m_lineNumber</Item>
+      <Item Name="[column]">m_column</Item>
+    </Expand>
+  </Type>
+
+  <Type Name="tnac::src::loc_wrapper">
+    <DisplayString Condition="m_loc">loc wrapper</DisplayString>
+    <DisplayString Condition="!m_loc">loc wrapper (empty)</DisplayString>
+    <Expand>
+      <Item Name="[location]" Condition="m_loc">*m_loc</Item>
+      <Item Name="[location]" Condition="!m_loc">"&lt;empty&gt;",sb</Item>
+    </Expand>
+  </Type>
+
+  <Type Name="tnac::source_manager">
+    <DisplayString>source manager</DisplayString>
+    <Expand>
+      <Item Name="[files]">m_files</Item>
+      <Item Name="[stored locs]">m_locations</Item>
+    </Expand>
+  </Type>
+
+  
   <Type Name="tnac::semantics::scope">
     <DisplayString>scope</DisplayString>
     <Expand>
@@ -75,6 +108,16 @@
     </Expand>
   </Type>
 
+  <Type Name="tnac::semantics::module_sym">
+    <DisplayString>{m_kind,en} ({m_name,sb})</DisplayString>
+    <Expand>
+      <Item Name="[name]">m_name,sb</Item>
+      <Item Name="[parent]">*m_owner</Item>
+      <Item Name="[params]">m_params</Item>
+    </Expand>
+  </Type>
+
+  
   <Type Name="tnac::eval::function_type">
     <DisplayString Condition="m_func">function({m_func->m_name,sb})</DisplayString>
     <DisplayString Condition="!m_func">empty function</DisplayString>
@@ -91,6 +134,7 @@
     </Expand>
   </Type>
 
+  
   <Type Name="tnac::ast::decl">
     <DisplayString>{m_kind,en} ({m_id.m_value,sb})</DisplayString>
     <Expand>
@@ -144,6 +188,8 @@
     <Expand>
       <Item Name="[name]">m_name,sb</Item>
       <Item Name="[children]">m_children</Item>
+      <Item Name="[params]">m_params</Item>
+      <Item Name="[symbol]" Condition="m_sym">*m_sym</Item>
     </Expand>
   </Type>
 
@@ -243,4 +289,98 @@
     </Expand>
   </Type>
 
+
+  <Type Name="tnac::parser">
+    <DisplayString Condition="m_feedback">parser (handlers attached)</DisplayString>
+    <DisplayString Condition="!m_feedback">parser</DisplayString>
+    <Expand>
+      <Item Name="[lexer]">m_lex</Item>
+      <Item Name="[ast builder]">m_builder</Item>
+      <Item Name="[sema]">m_sema</Item>
+      <Item Name="[root]" Condition="m_root">*m_root</Item>
+      <Item Name="[root]" Condition="!m_root">"&lt;null&gt;",sb</Item>
+      <Item Name="[current module]" Condition="m_curModule">*m_curModule</Item>
+      <Item Name="[current module]" Condition="!m_curModule">"&lt;null&gt;",sb</Item>
+    </Expand>
+  </Type>
+
+  <Type Name="tnac::lex">
+    <DisplayString>lexer</DisplayString>
+    <Expand>
+      <Item Name="[buffer]">m_buf,sb</Item>
+      <Item Name="[peek]">m_preview</Item>
+      <Item Name="[from]">m_from</Item>
+      <Item Name="[to]">m_to</Item>
+    </Expand>
+  </Type>
+
+  <Type Name="tnac::ast::builder">
+    <DisplayString>ast builder</DisplayString>
+    <Expand>
+      <Item Name="[nodes]">m_store</Item>
+    </Expand>
+  </Type>
+
+  <Type Name="tnac::sema">
+    <DisplayString>sema</DisplayString>
+    <Expand>
+      <Item Name="[symbol table]">m_symTab</Item>
+      <Item Name="[current scope]" Condition="m_curScope">*m_curScope</Item>
+      <Item Name="[current scope]" Condition="!m_curScope">"&lt;null&gt;",sb</Item>
+      <Item Name="[fake names]">m_generatedNames</Item>
+    </Expand>
+  </Type>
+
+  <Type Name="tnac::semantics::sym_table">
+    <DisplayString>symbol table</DisplayString>
+    <Expand>
+      <Item Name="[collection]">m_names</Item>
+      <Item Name="[modules]">m_modules</Item>
+      <Item Name="[functions]">m_funcs</Item>
+      <Item Name="[variables]">m_vars</Item>
+      <Item Name="[scope store]">m_scopes</Item>
+      <Item Name="[sym store]">m_symbols</Item>
+    </Expand>
+  </Type>
+
+  <Type Name="tnac::src::file">
+    <DisplayString>source file</DisplayString>
+    <Expand>
+      <Item Name="[path]">m_path</Item>
+      <Item Name="[buffer]">m_buffer,sb</Item>
+      <Item Name="[source manager]">*m_mgr</Item>
+      <Item Name="[line info]">m_lines</Item>
+    </Expand>
+  </Type>
+
+  <Type Name="tnac::src::file::line">
+    <DisplayString>&lt;{beg}:{end}&gt;</DisplayString>
+  </Type>
+
+  <Type Name="tnac::core">
+    <DisplayString>tnac</DisplayString>
+    <Expand>
+      <Item Name="[parser]">m_parser</Item>
+      <Item Name="[sema]">m_sema</Item>
+      <Item Name="[source manager]">m_srcMgr</Item>
+      <Item Name="[builder]">m_astBuilder</Item>
+      <Item Name="[cmd interpreter]">m_cmdInterpreter</Item>
+      <Item Name="[cmd store]">m_cmdStore</Item>
+    </Expand>
+  </Type>
+
+  <Type Name="tnac::commands::store">
+    <DisplayString>command store</DisplayString>
+    <Expand>
+      <Item Name="[commands]">m_cmds</Item>
+    </Expand>
+  </Type>
+
+  <Type Name="tnac::cmd">
+    <DisplayString>command interpreter</DisplayString>
+    <Expand>
+      <Item Name="[store]">*m_cmdStore</Item>
+    </Expand>
+  </Type>
+  
 </AutoVisualizer>
