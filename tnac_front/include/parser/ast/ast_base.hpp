@@ -49,7 +49,7 @@ namespace tnac::ast
   {
   public:
     using kind = node_kind;
-    using enum kind;
+    using enum node_kind;
 
   private:
     friend class builder;

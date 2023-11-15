@@ -31,7 +31,7 @@ namespace tnac
 
   void sema::visit_decl(ast::decl& decl) noexcept
   {
-    using enum ast::node::kind;
+    using enum ast::node_kind;
     auto name = decl.name();
     auto loc = decl.pos().at();
     switch (decl.what())
