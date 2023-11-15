@@ -87,6 +87,12 @@ namespace tnac
     m_curScope->attach_symbol(sym);
   }
 
+  void sema::visit_module_entry(ast::module_def& def, module_params params, loc_t at) noexcept
+  {
+    def.attach_params(std::move(params));
+    def.override_loc(at);
+  }
+
   string_t sema::contrive_name() noexcept
   {
     static constexpr auto namePrefix{ "`__anon_entity__"sv };

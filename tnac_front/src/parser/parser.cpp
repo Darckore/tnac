@@ -484,7 +484,7 @@ namespace tnac
       next_tok();
     }
 
-    utils::unused(entryKw);
+    m_sema.visit_module_entry(*m_curModule, std::move(params), entryKw.at());
   }
 
   parser::expr_list parser::expression_list(scope_level scopeLvl) noexcept

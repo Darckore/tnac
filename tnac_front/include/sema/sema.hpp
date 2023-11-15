@@ -20,6 +20,9 @@ namespace tnac
 
     using fake_name_set = std::unordered_set<buf_t>;
 
+    using module_params = ast::module_def::param_list;
+    using loc_t         = src::loc_wrapper;
+
   public:
     CLASS_SPECIALS_NONE_CUSTOM(sema);
 
@@ -52,6 +55,11 @@ namespace tnac
     // Visits a newly created module definition and registers it in the symbol table
     //
     void visit_module_def(ast::module_def& def) noexcept;
+
+    //
+    // Visits an existing module definition and applies entry params and location
+    //
+    void visit_module_entry(ast::module_def& def, module_params params, loc_t at) noexcept;
 
     //
     // Generates a random name

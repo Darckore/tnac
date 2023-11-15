@@ -32,6 +32,14 @@ namespace tnac::ast
     m_loc = loc;
   }
 
+  void module_def::attach_params(param_list params) noexcept
+  {
+    UTILS_ASSERT(m_params.empty());
+    m_params = std::move(params);
+    for (auto p : m_params)
+      assume_ancestry(p);
+  }
+
   bool module_def::is_fake() const noexcept
   {
     return m_name.empty() && !m_loc;
@@ -45,6 +53,20 @@ namespace tnac::ast
   module_def::sym_t& module_def::symbol() noexcept
   {
     return FROM_CONST(symbol);
+  }
+
+  const module_def::param_list& module_def::params() const noexcept
+  {
+    return m_params;
+  }
+  module_def::param_list& module_def::params() noexcept
+  {
+    return FROM_CONST(params);
+  }
+
+  module_def::size_type module_def::param_count() const noexcept
+  {
+    return params().size();
   }
 
 

@@ -4,6 +4,7 @@
 
 #pragma once
 #include "parser/ast/ast_base.hpp"
+#include "parser/ast/ast_decls.hpp"
 
 namespace tnac::semantics
 {
@@ -21,6 +22,9 @@ namespace tnac::ast
     using name_t = string_t;
     using loc_t  = src::loc_wrapper;
     using sym_t  = semantics::module_ref;
+    
+    using param_list = func_decl::param_list;
+    using size_type  = param_list::size_type;
 
   private:
     friend class builder;
@@ -72,16 +76,39 @@ namespace tnac::ast
     // 
     sym_t& symbol() noexcept;
 
+    //
+    // Returns module parameter list
+    //
+    // const version
+    //
+    const param_list& params() const noexcept;
+
+    //
+    // Returns module parameter list
+    //
+    param_list& params() noexcept;
+
+    //
+    // Returns the number of parameters
+    //
+    size_type param_count() const noexcept;
+
   protected:
     //
     // Overrides the location with a new one
     //
     void override_loc(loc_t loc) noexcept;
 
+    //
+    // Overrides the location with a new one
+    //
+    void attach_params(param_list params) noexcept;
+
   private:
     buf_t m_name;
     loc_t m_loc;
     sym_t* m_sym{};
+    param_list m_params;
   };
 
 
