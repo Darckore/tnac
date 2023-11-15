@@ -80,13 +80,19 @@ namespace tnac::rt::out
 
   void lister::print(const ast::module_def& mod) noexcept
   {
-    endl();
     auto name = mod.is_fake() ? "<fake>"sv : mod.name();
     comment_style();
     out() << "`Module: " << name << '`';
-    reset_style();
+    default_style();
     endl();
-    endl();
+    if (auto&& params = mod.params(); !params.empty())
+    {
+      kw_style();
+      out() << "_entry ";
+      print_params(params);
+      endl();
+      default_style();
+    }
     print(utils::cast<ast::scope>(mod));
   }
 
@@ -290,20 +296,7 @@ namespace tnac::rt::out
   void lister::print(const ast::func_decl& decl) noexcept
   {
     print_token(decl.pos(), false);
-    out() << '(';
-
-    auto idx = std::size_t{};
-    const auto size = decl.param_count();
-    for (auto param : decl.params())
-    {
-      print(param);
-      ++idx;
-
-      if (idx != size)
-        out() << ", ";
-    }
-
-    out() << ')';
+    print_params(decl.params());
 
     if (auto&& body = decl.body(); !body.children().empty())
     {
@@ -356,6 +349,24 @@ namespace tnac::rt::out
     }
 
     out() << close << ' ';
+  }
+
+  void lister::print_params(const params_t& params) noexcept
+  {
+    out() << '(';
+
+    auto idx = std::size_t{};
+    const auto size = params.size();
+    for (auto param : params)
+    {
+      print(param);
+      ++idx;
+
+      if (idx != size)
+        out() << ", ";
+    }
+
+    out() << ')';
   }
 
   void lister::indent(const ast::node& cur) noexcept

@@ -209,6 +209,9 @@ namespace tnac::ast
 
       if (preview(m))
       {
+        for (auto p : m->params())
+          visit_root(p);
+
         for (auto child : m->children())
         {
           visit_root(child);

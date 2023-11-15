@@ -78,13 +78,16 @@ namespace tnac::rt::out
     void print(const ast::func_decl& decl) noexcept;
 
   private:
-    using args_t = ast::list<ast::expr>::elem_list;
+    using args_t   = ast::list<ast::expr>::elem_list;
+    using params_t = std::vector<ast::param_decl*>;
 
     const ast::node& nearest_to_scope(const ast::node& src) noexcept;
 
     void print_invocation(const ast::invocation& expr) noexcept;
 
     void print_args(const args_t& args, char_t open, char_t close) noexcept;
+
+    void print_params(const params_t& params) noexcept;
 
     void indent(const ast::node& cur) noexcept;
 
