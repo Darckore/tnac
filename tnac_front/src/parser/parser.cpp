@@ -288,12 +288,13 @@ namespace tnac
 
     pointer res = m_curModule;
     auto eList = expression_list(scope_level::Global);
-    if (!eList.empty())
+    if (eList.empty())
     {
-      res = eList.back();
-      m_curModule->adopt(std::move(eList));
+      return m_root;
     }
 
+    res = eList.back();
+    m_curModule->adopt(std::move(eList));
     return res;
   }
 
