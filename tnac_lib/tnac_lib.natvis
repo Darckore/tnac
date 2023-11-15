@@ -132,6 +132,21 @@
     </Expand>
   </Type>
 
+  <Type Name="tnac::ast::root">
+    <DisplayString>{m_kind,en}</DisplayString>
+    <Expand>
+      <Item Name="[modules]">m_modules</Item>
+    </Expand>
+  </Type>
+
+  <Type Name="tnac::ast::module_def">
+    <DisplayString>{m_kind,en}</DisplayString>
+    <Expand>
+      <Item Name="[name]">m_name,sb</Item>
+      <Item Name="[children]">m_children</Item>
+    </Expand>
+  </Type>
+
   <Type Name="tnac::ast::binary_expr">
     <DisplayString>{m_kind,en} ({m_op})</DisplayString>
     <Expand>

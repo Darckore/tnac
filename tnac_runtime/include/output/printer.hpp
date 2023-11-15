@@ -28,6 +28,10 @@ namespace tnac::rt::out
     void enable_styles() noexcept;
 
   public:
+    void visit(const ast::root& root) noexcept;
+
+    void visit(const ast::module_def& moduleDef) noexcept;
+
     void visit(const ast::scope& scope) noexcept;
 
     void visit(const ast::assign_expr& expr) noexcept;

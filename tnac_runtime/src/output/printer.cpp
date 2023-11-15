@@ -33,6 +33,32 @@ namespace tnac::rt::out
     m_styles = true;
   }
 
+  void ast_printer::visit(const ast::root& root) noexcept
+  {
+    indent();
+    node_designator("<root>"sv);
+    additional_info(root);
+    endl();
+    push_parent(root.modules().size());
+  }
+
+  void ast_printer::visit(const ast::module_def& moduleDef) noexcept
+  {
+    indent();
+    if (moduleDef.is_fake())
+    {
+      node_designator("<Fake module>"sv);
+    }
+    else
+    {
+      node_designator("<module: "sv);
+      out() << moduleDef.name();
+      node_designator(">"sv);
+    }
+    additional_info(moduleDef);
+    endl();
+    push_parent(moduleDef.children().size());
+  }
 
   void ast_printer::visit(const ast::scope& scope) noexcept
   {

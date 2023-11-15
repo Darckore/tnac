@@ -75,5 +75,26 @@ namespace tnac::ast
 
   protected:
     root() noexcept;
+
+  public:
+    //
+    // Returns the current list of modules
+    // 
+    // const version
+    //
+    const elem_list& modules() const noexcept;
+
+    //
+    // Returns the current list of modules
+    // 
+    elem_list& modules() noexcept;
+
+    //
+    // Adds a new module
+    //
+    void append(reference modDef) noexcept;
+
+  private:
+    elem_list m_modules;
   };
 }

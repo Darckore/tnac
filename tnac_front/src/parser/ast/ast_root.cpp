@@ -41,4 +41,19 @@ namespace tnac::ast
     node{ kind::Root }
   {}
 
+  const root::elem_list& root::modules() const noexcept
+  {
+    return m_modules;
+  }
+  root::elem_list& root::modules() noexcept
+  {
+    return FROM_CONST(modules);
+  }
+
+  void root::append(reference modDef) noexcept
+  {
+    assume_ancestry(&modDef);
+    m_modules.emplace_back(&modDef);
+  }
+
 }

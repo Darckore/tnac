@@ -187,12 +187,12 @@ namespace tnac::ast
 
       if (preview(r))
       {
-        //for (auto child : r->children())
-        //{
-        //  visit_root(child);
-        //  if (!exit_child())
-        //    break;
-        //}
+        for (auto child : r->modules())
+        {
+          visit_root(child);
+          if (!exit_child())
+            break;
+        }
       }
 
       if constexpr (is_bottom_up())

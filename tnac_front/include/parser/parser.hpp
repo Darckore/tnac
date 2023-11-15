@@ -159,7 +159,7 @@ namespace tnac
     //
     // Opens scope for the current module
     //
-    void start_module() noexcept;
+    void start_module(loc_t& loc) noexcept;
 
     //
     // Inits the ast root if it doesn't yet exist
