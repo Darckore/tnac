@@ -110,6 +110,26 @@ namespace tnac::semantics
     return FROM_CONST(func);
   }
 
+  const module_ref* scope::to_module() const noexcept
+  {
+    return utils::try_cast<module_ref>(sym());
+  }
+  module_ref* scope::to_module() noexcept
+  {
+    return FROM_CONST(to_module);
+  }
+
+  const module_ref& scope::mod() const noexcept
+  {
+    auto msym = to_module();
+    UTILS_ASSERT(static_cast<bool>(msym));
+    return *msym;
+  }
+  module_ref& scope::mod() noexcept
+  {
+    return FROM_CONST(mod);
+  }
+
 
   // Protected members
 

@@ -16,6 +16,9 @@ namespace tnac::rt::out
   class sym_printer final
   {
   public:
+    using params_t = std::vector<semantics::parameter*>;
+
+  public:
     CLASS_SPECIALS_NONE_CUSTOM(sym_printer);
 
     ~sym_printer() noexcept;
@@ -64,6 +67,8 @@ namespace tnac::rt::out
 
     void print_scope(const semantics::scope* scope) noexcept;
 
+    void print_module(const semantics::module_ref& modRef) noexcept;
+
     void print_var(const semantics::variable& var) noexcept;
 
     void print_param(const semantics::parameter& par) noexcept;
@@ -71,6 +76,8 @@ namespace tnac::rt::out
     void print_func(const semantics::function& func) noexcept;
 
     void print_sym(const semantics::symbol& sym) noexcept;
+
+    void print_params(const params_t& params, bool omitIfEmpty) noexcept;
 
   private:
     out_stream* m_out{ &std::cout };
