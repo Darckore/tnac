@@ -89,9 +89,9 @@ namespace tnac::rt::out
     {
       kw_style();
       out() << "_entry ";
+      default_style();
       print_params(params);
       endl();
-      default_style();
     }
     print(utils::cast<ast::scope>(mod));
   }
