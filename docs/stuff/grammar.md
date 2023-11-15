@@ -3,6 +3,16 @@
 This is the complete tnac grammar
 
 ```
+program:
+  module-def
+
+module-def:
+  entry-def scope
+  scope
+
+entry-def:
+  _entry func-params
+
 scope:
   expr-list
 

@@ -84,7 +84,8 @@ namespace tnac
     KwFalse,
     KwI,
     KwE,
-    KwPi
+    KwPi,
+    KwEntry
   };
 
   //
@@ -169,7 +170,8 @@ namespace tnac
                     KwFalse,
                     KwI,
                     KwE,
-                    KwPi);
+                    KwPi,
+                    KwEntry);
     }
 
     auto is_literal() const noexcept

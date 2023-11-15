@@ -192,6 +192,11 @@ namespace tnac::detail
       return tok.is_any(KwComplex, KwFraction, KwInt, KwFloat, KwBool);
     }
 
+    auto is_entry(const token& tok) noexcept
+    {
+      return tok.is(token::KwEntry);
+    }
+
     auto is_expr_starter(const token& tok) noexcept
     {
       return tok.is_literal() ||
