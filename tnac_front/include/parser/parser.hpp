@@ -187,6 +187,16 @@ namespace tnac
     ast::expr* error_expr(const token& pos, string_t msg, err_pos at) noexcept;
 
     //
+    // Parses the program
+    //
+    pointer program(string_t input, loc_t& loc) noexcept;
+
+    //
+    // Parses module entry
+    //
+    void entry() noexcept;
+
+    //
     // Parses a list of expressions
     //
     expr_list expression_list(scope_level scopeLvl) noexcept;

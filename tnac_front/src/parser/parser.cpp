@@ -287,27 +287,13 @@ namespace tnac
 
   parser::pointer parser::operator()(string_t str) noexcept
   {
-    m_lastConsumed.reset();
-    m_lex(str);
-    start_module(src::location::dummy());
-
-    pointer res = m_curModule;
-    auto eList = expression_list(scope_level::Global);
-    if (eList.empty())
-    {
-      return m_root;
-    }
-
-    res = eList.back();
-    m_curModule->adopt(std::move(eList));
-    return res;
+    return program(str, src::location::dummy());
   }
 
   parser::pointer parser::operator()(string_t str, loc_t& srcLoc) noexcept
   {
-    start_module(srcLoc);
     m_lex.attach_loc(srcLoc);
-    auto res = operator()(str);
+    auto res = program(str, srcLoc);
     srcLoc.add_line();
     m_lex.detach_loc();
     return res;
@@ -414,6 +400,7 @@ namespace tnac
     m_root->append(*m_curModule);
     new_scope(semantics::scope_kind::Module);
     m_sema.visit_module_def(*m_curModule);
+    entry();
   }
 
   void parser::init_root() noexcept
@@ -453,6 +440,51 @@ namespace tnac
       m_feedback->parse_error(*errExpr);
 
     return errExpr;
+  }
+
+  parser::pointer parser::program(string_t input, loc_t& loc) noexcept
+  {
+    m_lastConsumed.reset();
+    m_lex(input);
+    start_module(loc);
+
+    pointer res = m_curModule;
+    auto eList = expression_list(scope_level::Global);
+    if (eList.empty())
+    {
+      return m_root;
+    }
+
+    res = eList.back();
+    m_curModule->adopt(std::move(eList));
+    return res;
+  }
+
+  void parser::entry() noexcept
+  {
+    if (!detail::is_entry(peek_next()))
+      return;
+
+    auto entryKw = next_tok();
+    if (auto&& op = peek_next(); !detail::is_open_paren(op))
+    {
+      error_expr(op, diag::expected('('), err_pos::Current);
+      return;
+    }
+
+    next_tok();
+    auto params = formal_params();
+    if (auto&& cp = peek_next(); !detail::is_close_paren(cp))
+    {
+      auto opt = error_expr(cp, diag::expected(')'), err_pos::Last);
+      params.push_back(m_builder.make_param_decl(cp, opt));
+    }
+    else
+    {
+      next_tok();
+    }
+
+    utils::unused(entryKw);
   }
 
   parser::expr_list parser::expression_list(scope_level scopeLvl) noexcept
