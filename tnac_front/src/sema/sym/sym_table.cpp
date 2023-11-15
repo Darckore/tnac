@@ -39,6 +39,7 @@ namespace tnac::semantics
   module_sym& sym_table::add_module(name_t name, scope_ptr parent, loc_t loc) noexcept
   {
     auto&& newModule = *make_symbol<module_sym>(name, parent, loc);
+    store_module(newModule);
     return newModule;
   }
 
@@ -62,6 +63,11 @@ namespace tnac::semantics
   sym_table::func_container sym_table::funcs() const noexcept
   {
     return { m_funcs.begin(), m_funcs.end() };
+  }
+
+  sym_table::module_container sym_table::modules() const noexcept
+  {
+    return { m_modules.begin(), m_modules.end() };
   }
 
   // Private members
@@ -126,6 +132,11 @@ namespace tnac::semantics
   void sym_table::store_function(function& func) noexcept
   {
     store_sym(func, m_funcs);
+  }
+
+  void sym_table::store_module(module_sym& mod) noexcept
+  {
+    store_sym(mod, m_modules);
   }
 
 }

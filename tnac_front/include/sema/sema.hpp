@@ -83,6 +83,14 @@ namespace tnac
       return m_symTab.funcs();
     }
 
+    //
+    // Returns an iterable collection of all declared modules
+    //
+    auto modules() const noexcept
+    {
+      return m_symTab.modules();
+    }
+
   private:
     //
     // Creates symbol params from AST-related params

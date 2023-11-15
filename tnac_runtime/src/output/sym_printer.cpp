@@ -39,7 +39,7 @@ namespace tnac::rt::out
       }
       if (m_styles) fmt::clear_clr(out());
 
-      if (utils::eq_any(kind, Function, Block))
+      if (kind != Global)
       {
         out() << "<=";
         print_scope(scope->encl_skip_internal());
@@ -95,6 +95,7 @@ namespace tnac::rt::out
     case Variable:  print_var(utils::cast<Variable>(sym));    break;
     case Function:  print_func(utils::cast<Function>(sym));   break;
     case Parameter: print_param(utils::cast<Parameter>(sym)); break;
+    case Module:    print_module(utils::cast<Module>(sym));   break;
 
     default: break;
     }

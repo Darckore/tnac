@@ -88,6 +88,13 @@ namespace tnac
       return m_sema.funcs();
     }
 
+    // Returns an iterable collection of all declared modules
+    //
+    auto modules() const noexcept
+    {
+      return m_sema.modules();
+    }
+
   private:
     feedback* m_feedback{};
     sema m_sema;

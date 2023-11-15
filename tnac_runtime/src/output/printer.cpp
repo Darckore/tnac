@@ -57,7 +57,7 @@ namespace tnac::rt::out
     }
     additional_info(moduleDef);
     endl();
-    push_parent(moduleDef.children().size());
+    push_parent(moduleDef.children().size() + moduleDef.param_count());
   }
 
   void ast_printer::visit(const ast::scope& scope) noexcept

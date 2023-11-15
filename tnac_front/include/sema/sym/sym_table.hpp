@@ -130,10 +130,12 @@ namespace tnac::semantics
     using scope_map = table<scope_ptr, sym_ptr>;
     using name_map  = table<name_t, scope_map>;
 
-    using var_collection  = sym_collection<variable>;
-    using var_container   = sym_container<variable>;
-    using func_collection = sym_collection<function>;
-    using func_container  = sym_container<function>;
+    using var_collection    = sym_collection<variable>;
+    using var_container     = sym_container<variable>;
+    using func_collection   = sym_collection<function>;
+    using func_container    = sym_container<function>;
+    using module_collection = sym_collection<module_sym>;
+    using module_container  = sym_container<module_sym>;
 
     using loc_t = symbol::loc_t;
     using func_params = function::param_list;
@@ -189,6 +191,11 @@ namespace tnac::semantics
     // Returns an iterable collection of all declared functions
     //
     func_container funcs() const noexcept;
+
+    //
+    // Returns an iterable collection of all declared modules
+    //
+    module_container modules() const noexcept;
 
   private:
     //
@@ -272,11 +279,18 @@ namespace tnac::semantics
     //
     void store_function(function& func) noexcept;
 
+    //
+    // Stores a module in the collection which holds all modules in the program
+    // along with their scopes
+    //
+    void store_module(module_sym& mod) noexcept;
+
   private:
     name_map m_names;
     scope_store m_scopes;
     sym_store m_symbols;
     var_collection m_vars;
     func_collection m_funcs;
+    module_collection m_modules;
   };
 }

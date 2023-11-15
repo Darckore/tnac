@@ -122,6 +122,11 @@ namespace tnac::rt
     //
     void print_funcs(ast::command cmd) noexcept;
 
+    //
+    // #modules <'path'>
+    //
+    void print_modules(ast::command cmd) noexcept;
+
   private:
     source_manager m_srcMgr;
     source_manager::path_t m_fake{ "REPL" };

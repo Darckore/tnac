@@ -67,6 +67,9 @@ namespace tnac::rt
     core.declare_cmd("funcs"sv, params{ String }, size_type{},
          [this](auto c) noexcept { print_funcs(std::move(c)); });
 
+    core.declare_cmd("modules"sv, params{ String }, size_type{},
+         [this](auto c) noexcept { print_modules(std::move(c)); });
+
     core.declare_cmd("bin"sv, [this](auto) noexcept { m_state->set_base(2); });
     core.declare_cmd("oct"sv, [this](auto) noexcept { m_state->set_base(8); });
     core.declare_cmd("dec"sv, [this](auto) noexcept { m_state->set_base(10); });
@@ -223,6 +226,14 @@ namespace tnac::rt
     print_cmd(cmd, [this]
       {
         print_symbols(m_state->tnac_core().functions());
+      });
+  }
+
+  void repl::print_modules(ast::command cmd) noexcept
+  {
+    print_cmd(cmd, [this]
+      {
+        print_symbols(m_state->tnac_core().modules());
       });
   }
 }
