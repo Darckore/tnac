@@ -759,7 +759,7 @@ namespace tnac::tests
 
     auto ast = core.parse("#command p1 p2"sv);
     ASSERT_NE(ast, nullptr);
-    EXPECT_TRUE(ast->is(Module));
+    EXPECT_TRUE(ast->is(Root));
 
     ast = core.parse("#command p1 p2 : 2 + 2"sv);
     ASSERT_NE(ast, nullptr);
@@ -778,7 +778,7 @@ namespace tnac::tests
 
     auto ast = core.parse("#command p1 p2"sv);
     ASSERT_NE(ast, nullptr);
-    EXPECT_TRUE(ast->is(Module));
+    EXPECT_TRUE(ast->is(Root));
 
     ast = core.parse("#command p1 p2 : 2 + 2"sv);
     ASSERT_NE(ast, nullptr);
