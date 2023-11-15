@@ -84,6 +84,12 @@ namespace tnac::semantics
     //
     loc_t at() const noexcept;
 
+  protected:
+    //
+    // Overrides the attached location
+    //
+    void override_location(loc_t loc) noexcept;
+
   private:
     scope* m_owner{};
     name_t m_name;

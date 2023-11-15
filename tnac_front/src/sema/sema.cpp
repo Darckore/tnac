@@ -51,19 +51,10 @@ namespace tnac
 
     case FuncDecl:
     {
-      using namespace semantics;
       UTILS_ASSERT(m_curScope && m_curScope->is_function());
       auto targetScope = m_curScope->enclosing();
       auto&& declParams = utils::cast<FuncDecl>(decl).params();
-      function::param_list params;
-      params.reserve(declParams.size());
-      for (auto&& param : declParams)
-      {
-        auto paramSym = utils::try_cast<parameter>(&param->symbol());
-        UTILS_ASSERT(paramSym);
-        params.emplace_back(paramSym);
-      }
-      auto&& sym = m_symTab.add_function(name, targetScope, std::move(params), loc);
+      auto&& sym = m_symTab.add_function(name, targetScope, make_params(declParams), loc);
       decl.attach_symbol(sym);
       m_curScope->attach_symbol(sym);
     }
@@ -82,15 +73,20 @@ namespace tnac
     auto name = def.is_fake() ?
       contrive_name() :
       def.name();
+
     auto&& sym = m_symTab.add_module(name, targetScope, def.at());
     def.attach_symbol(sym);
     m_curScope->attach_symbol(sym);
   }
 
-  void sema::visit_module_entry(ast::module_def& def, module_params params, loc_t at) noexcept
+  void sema::visit_module_entry(ast::module_def& def, ast_params params, loc_t at) noexcept
   {
     def.attach_params(std::move(params));
     def.override_loc(at);
+
+    auto&& sym = def.symbol();
+    sym.attach_params(make_params(def.params()));
+    sym.override_location(at);
   }
 
   string_t sema::contrive_name() noexcept
@@ -99,6 +95,23 @@ namespace tnac
     const auto nameIdx = m_generatedNames.size();
     auto entry = m_generatedNames.emplace(buf_t{ namePrefix } + std::to_string(nameIdx));
     return *entry.first;
+  }
+
+
+  // Private members
+
+  sema::symbol_params sema::make_params(const ast_params& src) const noexcept
+  {
+    symbol_params params;
+    params.reserve(src.size());
+    for (auto&& param : src)
+    {
+      auto paramSym = utils::try_cast<semantics::parameter>(&param->symbol());
+      UTILS_ASSERT(paramSym);
+      params.emplace_back(paramSym);
+    }
+
+    return params;
   }
 
 }

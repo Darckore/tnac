@@ -36,9 +36,9 @@ namespace tnac::semantics
     return newFunc;
   }
 
-  module_ref& sym_table::add_module(name_t name, scope_ptr parent, loc_t loc) noexcept
+  module_sym& sym_table::add_module(name_t name, scope_ptr parent, loc_t loc) noexcept
   {
-    auto&& newModule = *make_symbol<module_ref>(name, parent, loc);
+    auto&& newModule = *make_symbol<module_sym>(name, parent, loc);
     return newModule;
   }
 

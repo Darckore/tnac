@@ -13,7 +13,7 @@ namespace tnac::semantics
 {
   class symbol;
   class function;
-  class module_ref;
+  class module_sym;
 }
 
 namespace tnac::semantics
@@ -165,24 +165,24 @@ namespace tnac::semantics
     // 
     // const version
     //
-    const module_ref* to_module() const noexcept;
+    const module_sym* to_module() const noexcept;
 
     //
     // Attempts to cast the attached symbol to module
     //
-    module_ref* to_module() noexcept;
+    module_sym* to_module() noexcept;
 
     //
     // Casts the attached symbol to module without checking if one is attached
     // 
     // const version
     //
-    const module_ref& mod() const noexcept;
+    const module_sym& mod() const noexcept;
 
     //
     // Casts the attached symbol to module without checking if one is attached
     //
-    module_ref& mod() noexcept;
+    module_sym& mod() noexcept;
 
   protected:
     //

@@ -53,7 +53,7 @@ namespace tnac::rt::out
     }
   }
 
-  void sym_printer::print_module(const semantics::module_ref& modRef) noexcept
+  void sym_printer::print_module(const semantics::module_sym& modRef) noexcept
   {
     if (m_styles) fmt::clear_clr(out());
     if (m_styles) fmt::add_clr(out(), fmt::clr::BoldCyan);

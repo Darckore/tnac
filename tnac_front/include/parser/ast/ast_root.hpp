@@ -8,7 +8,7 @@
 
 namespace tnac::semantics
 {
-  class module_ref;
+  class module_sym;
 }
 
 namespace tnac::ast
@@ -21,7 +21,7 @@ namespace tnac::ast
   public:
     using name_t = string_t;
     using loc_t  = src::loc_wrapper;
-    using sym_t  = semantics::module_ref;
+    using sym_t  = semantics::module_sym;
     
     using param_list = func_decl::param_list;
     using size_type  = param_list::size_type;

@@ -168,7 +168,7 @@ namespace tnac::semantics
     //
     // Inserts a module reference to the specified scope
     //
-    module_ref& add_module(name_t name, scope_ptr parent, loc_t loc) noexcept;
+    module_sym& add_module(name_t name, scope_ptr parent, loc_t loc) noexcept;
 
     //
     // Looks for a symbol starting from the specified scope

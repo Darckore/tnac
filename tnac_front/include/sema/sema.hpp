@@ -20,7 +20,8 @@ namespace tnac
 
     using fake_name_set = std::unordered_set<buf_t>;
 
-    using module_params = ast::module_def::param_list;
+    using ast_params    = std::vector<ast::param_decl*>;
+    using symbol_params = std::vector<semantics::parameter*>;
     using loc_t         = src::loc_wrapper;
 
   public:
@@ -59,7 +60,7 @@ namespace tnac
     //
     // Visits an existing module definition and applies entry params and location
     //
-    void visit_module_entry(ast::module_def& def, module_params params, loc_t at) noexcept;
+    void visit_module_entry(ast::module_def& def, ast_params params, loc_t at) noexcept;
 
     //
     // Generates a random name
@@ -81,6 +82,12 @@ namespace tnac
     {
       return m_symTab.funcs();
     }
+
+  private:
+    //
+    // Creates symbol params from AST-related params
+    //
+    symbol_params make_params(const ast_params& src) const noexcept;
 
   private:
     semantics::sym_table m_symTab;

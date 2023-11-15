@@ -44,4 +44,13 @@ namespace tnac::semantics
   {
     return m_location;
   }
+
+
+  // Protected members
+
+  void symbol::override_location(loc_t loc) noexcept
+  {
+    m_location = loc;
+  }
+
 }

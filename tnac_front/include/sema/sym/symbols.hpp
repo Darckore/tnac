@@ -11,4 +11,4 @@
 TYPE_TO_ID_ASSOCIATION(tnac::semantics::variable,   tnac::semantics::sym_kind::Variable);
 TYPE_TO_ID_ASSOCIATION(tnac::semantics::parameter,  tnac::semantics::sym_kind::Parameter);
 TYPE_TO_ID_ASSOCIATION(tnac::semantics::function,   tnac::semantics::sym_kind::Function);
-TYPE_TO_ID_ASSOCIATION(tnac::semantics::module_ref, tnac::semantics::sym_kind::Module);
+TYPE_TO_ID_ASSOCIATION(tnac::semantics::module_sym, tnac::semantics::sym_kind::Module);

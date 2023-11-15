@@ -67,7 +67,7 @@ namespace tnac::rt::out
 
     void print_scope(const semantics::scope* scope) noexcept;
 
-    void print_module(const semantics::module_ref& modRef) noexcept;
+    void print_module(const semantics::module_sym& modRef) noexcept;
 
     void print_var(const semantics::variable& var) noexcept;
 
