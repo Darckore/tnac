@@ -16,6 +16,7 @@ namespace tnac::ast
     Root,
     Scope,
     Module,
+    Import,
 
     // Expressions
     Literal,

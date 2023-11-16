@@ -152,6 +152,11 @@ namespace tnac
     //
     static string_t empty_cond() noexcept;
 
+    //
+    // Returns an 'empty import name' message
+    //
+    static string_t empty_import() noexcept;
+
   public: // Commands
     //
     // Returns an 'unknown command' message

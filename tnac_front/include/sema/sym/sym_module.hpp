@@ -49,4 +49,25 @@ namespace tnac::semantics
   private:
     param_list m_params;
   };
+
+
+  //
+  // Symbol which refers to a scope
+  //
+  class scope_ref final : public symbol
+  {
+  private:
+    friend class sym_table;
+
+  public:
+    CLASS_SPECIALS_NONE(scope_ref);
+
+    virtual ~scope_ref() noexcept;
+
+  protected:
+    scope_ref(scope& owner, name_t name, scope& referenced, loc_t loc) noexcept;
+
+  private:
+    scope* m_referenced{};
+  };
 }

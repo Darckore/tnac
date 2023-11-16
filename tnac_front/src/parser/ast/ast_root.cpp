@@ -1,9 +1,36 @@
 #include "parser/ast/ast.hpp"
 
-namespace tnac::ast
+namespace tnac::ast // Import directive
 {
-  // Module definition
+  import_dir::~import_dir() noexcept = default;
 
+  import_dir::import_dir(const token& pos, elem_list name) noexcept :
+    node{ kind::Import },
+    m_pos{ pos },
+    m_name{ std::move(name) }
+  {
+    for (auto part : m_name)
+      assume_ancestry(part);
+  }
+
+  const token& import_dir::pos() const noexcept
+  {
+    return m_pos;
+  }
+
+  const import_dir::elem_list& import_dir::name() const noexcept
+  {
+    return m_name;
+  }
+  import_dir::elem_list& import_dir::name() noexcept
+  {
+    return FROM_CONST(name);
+  }
+}
+
+
+namespace tnac::ast // Module definition
+{
   module_def::~module_def() noexcept = default;
 
   module_def::module_def(buf_t name, loc_t loc) noexcept :
@@ -69,9 +96,11 @@ namespace tnac::ast
     return params().size();
   }
 
+}
 
-  // Root
 
+namespace tnac::ast // Root
+{
   root::~root() noexcept = default;
 
   root::root() noexcept :

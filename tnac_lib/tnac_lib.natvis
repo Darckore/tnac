@@ -117,6 +117,15 @@
     </Expand>
   </Type>
 
+  <Type Name="tnac::semantics::scope_ref">
+    <DisplayString>{m_kind,en} ({m_name,sb})</DisplayString>
+    <Expand>
+      <Item Name="[name]">m_name,sb</Item>
+      <Item Name="[referenced]">*m_referenced</Item>
+      <Item Name="[parent]">*m_owner</Item>
+    </Expand>
+  </Type>
+
   
   <Type Name="tnac::eval::function_type">
     <DisplayString Condition="m_func">function({m_func->m_name,sb})</DisplayString>
@@ -190,6 +199,14 @@
       <Item Name="[children]">m_children</Item>
       <Item Name="[params]">m_params</Item>
       <Item Name="[symbol]" Condition="m_sym">*m_sym</Item>
+    </Expand>
+  </Type>
+
+  <Type Name="tnac::ast::import_dir">
+    <DisplayString>{m_kind,en}</DisplayString>
+    <Expand>
+      <Item Name="[name]">m_name</Item>
+      <Item Name="[pos]">m_pos</Item>
     </Expand>
   </Type>
 

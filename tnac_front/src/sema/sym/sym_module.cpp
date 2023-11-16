@@ -1,6 +1,6 @@
 #include "sema/sym/sym_module.hpp"
 
-namespace tnac::semantics
+namespace tnac::semantics // Module
 {
   // Special members
 
@@ -40,4 +40,16 @@ namespace tnac::semantics
   {
     symbol::override_location(loc);
   }
+}
+
+namespace tnac::semantics // Scope ref
+{
+  // Special members
+
+  scope_ref::~scope_ref() noexcept = default;
+
+  scope_ref::scope_ref(scope& owner, name_t name, scope& referenced, loc_t loc) noexcept :
+    symbol{ kind::ScopeRef, name, owner, loc },
+    m_referenced{ &referenced }
+  {}
 }

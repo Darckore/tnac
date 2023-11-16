@@ -225,6 +225,14 @@ namespace tnac::ast
     }
 
     //
+    // Visits an import directive
+    //
+    void visit_impl(dest<import_dir> imp) noexcept
+    {
+      visit(imp);
+    }
+
+    //
     // Visits a scope
     //
     void visit_impl(dest<scope> s) noexcept
@@ -594,8 +602,9 @@ namespace tnac::ast
 
       switch (cur.what())
       {
-      case Root:       visit_impl(&cast<root>(cur));  break;
+      case Root:       visit_impl(&cast<root>(cur));        break;
       case Module:     visit_impl(&cast<module_def>(cur));  break;
+      case Import:     visit_impl(&cast<import_dir>(cur));  break;
       case Scope:      visit_impl(&cast<scope>(cur));       break;
       case Result:     visit_impl(&cast<result_expr>(cur)); break;
       case Ret:        visit_impl(&cast<ret_expr>(cur));    break;

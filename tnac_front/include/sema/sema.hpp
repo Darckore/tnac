@@ -63,6 +63,11 @@ namespace tnac
     void visit_module_entry(ast::module_def& def, ast_params params, loc_t at) noexcept;
 
     //
+    // Visits a part of an import name
+    //
+    semantics::symbol& visit_import_component(const token& id) noexcept;
+
+    //
     // Generates a random name
     //
     string_t contrive_name() noexcept;

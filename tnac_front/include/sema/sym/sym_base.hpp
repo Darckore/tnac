@@ -16,7 +16,8 @@ namespace tnac::semantics
     Variable,
     Parameter,
     Function,
-    Module
+    Module,
+    ScopeRef
   };
 
 

@@ -43,6 +43,11 @@ namespace tnac::semantics
     return newModule;
   }
 
+  scope_ref& sym_table::add_scope_ref(name_t name, scope_ptr parent, loc_t loc, scope& referenced) noexcept
+  {
+    return *make_symbol<scope_ref>(name, parent, referenced, loc);
+  }
+
   sym_table::sym_ptr sym_table::lookup(name_t name, scope_ptr parent) noexcept
   {
     auto scopes = lookup(name);

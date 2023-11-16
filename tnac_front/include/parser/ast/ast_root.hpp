@@ -13,6 +13,51 @@ namespace tnac::semantics
 
 namespace tnac::ast
 {
+  class id_expr;
+}
+
+namespace tnac::ast
+{
+  //
+  // Import directive
+  //
+  class import_dir final : public list<id_expr>, public node
+  {
+  private:
+    friend class builder;
+
+  public:
+    CLASS_SPECIALS_NONE(import_dir);
+
+    virtual ~import_dir() noexcept;
+
+  protected:
+    import_dir(const token& pos, elem_list name) noexcept;
+
+  public:
+    //
+    // Returns the position of the 'import' keyword
+    //
+    const token& pos() const noexcept;
+
+    //
+    // Returns a reference to the name container
+    // 
+    // const version
+    //
+    const elem_list& name() const noexcept;
+
+    //
+    // Returns a reference to the name container
+    //
+    elem_list& name() noexcept;
+
+  private:
+    token m_pos;
+    elem_list m_name;
+  };
+
+
   //
   // Module definition
   //
@@ -22,7 +67,7 @@ namespace tnac::ast
     using name_t = string_t;
     using loc_t  = src::loc_wrapper;
     using sym_t  = semantics::module_sym;
-    
+
     using param_list = func_decl::param_list;
     using size_type  = param_list::size_type;
 

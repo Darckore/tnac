@@ -54,6 +54,11 @@ namespace tnac::ast
     module_def* get_default_module(src::loc_wrapper loc) noexcept;
 
     //
+    // Creates an import directive
+    //
+    import_dir* make_import(const token& pos, import_dir::elem_list name) noexcept;
+
+    //
     // Creates a scope
     //
     scope* make_scope(scope::elem_list children) noexcept;

@@ -163,6 +163,10 @@ namespace tnac::detail
     {
       return tok.is(token::Comma);
     }
+    auto is_dot(const token& tok) noexcept
+    {
+      return tok.is(token::Dot);
+    }
     auto is_semi(const token& tok) noexcept
     {
       return tok.is(token::Semicolon);
@@ -195,6 +199,11 @@ namespace tnac::detail
     auto is_entry(const token& tok) noexcept
     {
       return tok.is(token::KwEntry);
+    }
+
+    auto is_import(const token& tok) noexcept
+    {
+      return tok.is(token::KwImport);
     }
 
     auto is_expr_starter(const token& tok) noexcept
@@ -400,6 +409,7 @@ namespace tnac
     m_root->append(*m_curModule);
     new_scope(semantics::scope_kind::Module);
     m_sema.visit_module_def(*m_curModule);
+    import_seq();
     entry();
   }
 
@@ -485,6 +495,59 @@ namespace tnac
     }
 
     m_sema.visit_module_entry(*m_curModule, std::move(params), entryKw.at());
+  }
+
+  void parser::import_seq() noexcept
+  {
+    auto dummy = import_dir();
+    utils::unused(dummy);
+  }
+
+  ast::import_dir* parser::import_dir() noexcept
+  {
+    if (!detail::is_import(peek_next()))
+      return {};
+
+    auto importKw = next_tok();
+    
+    import_name name;
+    auto depth = 0u;
+    bool fail{};
+    while (peek_next().is_identifier())
+    {
+      auto id = next_tok();
+      ++depth;
+      auto&& sym = m_sema.visit_import_component(id);
+      name.emplace_back(m_builder.make_id(id, sym));
+
+      if (!detail::is_dot(peek_next()))
+        break;
+
+      next_tok();
+      if (auto&& next = peek_next(); !next.is_identifier())
+      {
+        fail = true;
+        error_expr(next, diag::expected_id(), err_pos::Last);
+        break;
+      }
+    }
+
+    while (depth)
+    {
+      --depth;
+      end_scope();
+    }
+
+    if (name.empty())
+    {
+      fail = true;
+      error_expr(importKw, diag::empty_import(), err_pos::Last);
+    }
+
+    if (fail)
+      return {};
+
+    return m_builder.make_import(importKw, std::move(name));
   }
 
   parser::expr_list parser::expression_list(scope_level scopeLvl) noexcept

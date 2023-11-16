@@ -148,6 +148,11 @@ namespace tnac
     return "Condition can't be empty"sv;
   }
 
+  string_t diag::empty_import() noexcept
+  {
+    return "Expected import name"sv;
+  }
+
 
   // Public members(Commands)
 

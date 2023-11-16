@@ -52,6 +52,7 @@ namespace tnac
 
     using expr_list      = ast::scope::elem_list;
     using param_list     = ast::func_decl::param_list;
+    using import_name    = ast::import_dir::elem_list;
 
     using loc_t    = src::location;
     using tok_opt = lex::token_opt;
@@ -195,6 +196,16 @@ namespace tnac
     // Parses module entry
     //
     void entry() noexcept;
+
+    //
+    // Parses imports
+    //
+    void import_seq() noexcept;
+
+    //
+    // Parses an import directive
+    //
+    ast::import_dir* import_dir() noexcept;
 
     //
     // Parses a list of expressions

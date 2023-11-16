@@ -15,6 +15,7 @@ TYPE_TO_ID_ASSOCIATION(tnac::ast::error_expr, tnac::ast::node_kind::Error);
 TYPE_TO_ID_ASSOCIATION(tnac::ast::root,       tnac::ast::node_kind::Root);
 TYPE_TO_ID_ASSOCIATION(tnac::ast::scope,      tnac::ast::node_kind::Scope);
 TYPE_TO_ID_ASSOCIATION(tnac::ast::module_def, tnac::ast::node_kind::Module);
+TYPE_TO_ID_ASSOCIATION(tnac::ast::import_dir, tnac::ast::node_kind::Import);
 
 TYPE_TO_ID_ASSOCIATION(tnac::ast::lit_expr,    tnac::ast::node_kind::Literal);
 TYPE_TO_ID_ASSOCIATION(tnac::ast::id_expr,     tnac::ast::node_kind::Identifier);

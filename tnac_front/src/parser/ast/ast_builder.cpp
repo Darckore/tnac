@@ -28,6 +28,11 @@ namespace tnac::ast
     return &fake;
   }
 
+  import_dir* builder::make_import(const token& pos, import_dir::elem_list name) noexcept
+  {
+    return make<import_dir>(pos, std::move(name));
+  }
+
   scope* builder::make_scope(scope::elem_list children) noexcept
   {
     return make<scope>(std::move(children));
