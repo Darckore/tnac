@@ -196,7 +196,8 @@ namespace tnac
           { "i",      tok_kind::KwI },
           { "pi",     tok_kind::KwPi },
           { "e",      tok_kind::KwE },
-          { "entry",  tok_kind::KwEntry }
+          { "entry",  tok_kind::KwEntry },
+          { "import", tok_kind::KwImport }
         };
 
         constexpr auto err = tok_kind::Error;
