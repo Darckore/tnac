@@ -52,4 +52,16 @@ namespace tnac::semantics // Scope ref
     symbol{ kind::ScopeRef, name, owner, loc },
     m_referenced{ &referenced }
   {}
+
+
+  // Public members
+
+  const scope& scope_ref::referenced() const noexcept
+  {
+    return *m_referenced;
+  }
+  scope& scope_ref::referenced() noexcept
+  {
+    return FROM_CONST(referenced);
+  }
 }

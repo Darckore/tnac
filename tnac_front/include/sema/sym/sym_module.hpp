@@ -67,6 +67,10 @@ namespace tnac::semantics
   protected:
     scope_ref(scope& owner, name_t name, scope& referenced, loc_t loc) noexcept;
 
+  public:
+    const scope& referenced() const noexcept;
+    scope& referenced() noexcept;
+
   private:
     scope* m_referenced{};
   };

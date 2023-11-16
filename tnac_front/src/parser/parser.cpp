@@ -499,8 +499,8 @@ namespace tnac
 
   void parser::import_seq() noexcept
   {
-    auto dummy = import_dir();
-    utils::unused(dummy);
+    while(auto dummy = import_dir())
+      utils::unused(dummy);
   }
 
   ast::import_dir* parser::import_dir() noexcept
@@ -517,13 +517,20 @@ namespace tnac
     {
       auto id = next_tok();
       ++depth;
-      auto&& sym = m_sema.visit_import_component(id);
-      name.emplace_back(m_builder.make_id(id, sym));
 
-      if (!detail::is_dot(peek_next()))
+      if (detail::is_dot(peek_next()))
+      {
+        next_tok();
+        auto&& sym = m_sema.visit_import_component(id);
+        name.emplace_back(m_builder.make_id(id, sym));
+      }
+      else
+      {
+        // todo: load file and make an id expr from it
+        // todo: add the last name part
         break;
+      }
 
-      next_tok();
       if (auto&& next = peek_next(); !next.is_identifier())
       {
         fail = true;

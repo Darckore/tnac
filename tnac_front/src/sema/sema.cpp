@@ -93,10 +93,19 @@ namespace tnac
   {
     auto name = id.value();
     auto loc  = id.at();
-    auto&& newScope = m_symTab.add_scope(m_curScope, semantics::scope::Block);
-    auto&& sym = m_symTab.add_scope_ref(name, m_curScope, loc, newScope);
-    m_curScope = &newScope;
-    return sym;
+    auto sym = utils::try_cast<semantics::scope_ref>(m_symTab.scoped_lookup(name, m_curScope));
+    if (!sym)
+    {
+      auto&& newScope = m_symTab.add_scope(m_curScope, semantics::scope::Block);
+      sym = &m_symTab.add_scope_ref(name, m_curScope, loc, newScope);
+      m_curScope = &newScope;
+    }
+    else
+    {
+      m_curScope = &sym->referenced();
+    }
+
+    return *sym;
   }
 
   string_t sema::contrive_name() noexcept
