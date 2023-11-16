@@ -4,7 +4,15 @@ This is the complete tnac grammar
 
 ```
 program:
+  import-seq module-def
   module-def
+
+import-seq:
+  import-directive
+  import-seq import-directive
+
+import-directive:
+  _import compound-name
 
 module-def:
   entry-def scope
@@ -197,6 +205,10 @@ command:
 
 keyword:
   '_' id-sequence
+
+compound-name:
+  identifier
+  compound-name '.' identifier
 
 identifier:
   identifier-start id-sequence
