@@ -38,11 +38,11 @@ namespace tnac::tests
 {
   TEST(lexer, t_token_list)
   {
-    constexpr auto input = "= + - ~ * / && & ^ || | ** // ! ? == != < > <= >= -> : , ; ( ) { } [ ] _true _false 1 01 0b1 0x1 1.0 id #cmd"sv;
+    constexpr auto input = ". = + - ~ * / && & ^ || | ** // ! ? == != < > <= >= -> : , ; ( ) { } [ ] _true _false 1 01 0b1 0x1 1.0 id #cmd"sv;
 
     using enum tok_kind;
     constexpr std::array testArr{
-      Assign, Plus, Minus, Tilde, Asterisk, Slash,
+      Dot, Assign, Plus, Minus, Tilde, Asterisk, Slash,
       LogAnd, Amp, Hat, LogOr, Pipe, Pow, Root, Exclamation, Question,
       Eq, NotEq, Less, Greater, LessEq, GreaterEq, Arrow,
       ExprSep, Comma, Semicolon,
@@ -57,11 +57,11 @@ namespace tnac::tests
 
   TEST(lexer, t_token_list_dense)
   {
-    constexpr auto input = "=+-~*/&&&^|||**//!?<><=>===!=->:(){}[],;0.1"sv;
+    constexpr auto input = ".=+-~*/&&&^|||**//!?<><=>===!=->:(){}[],;0.1"sv;
 
     using enum tok_kind;
     constexpr std::array testArr{
-      Assign, Plus, Minus, Tilde, Asterisk, Slash,
+      Dot, Assign, Plus, Minus, Tilde, Asterisk, Slash,
       LogAnd, Amp, Hat, LogOr, Pipe, Pow, Root, Exclamation, Question,
       Less, Greater, LessEq, GreaterEq, Eq, NotEq, Arrow, ExprSep,
       ParenOpen, ParenClose, CurlyOpen, CurlyClose, BracketOpen, BracketClose,
@@ -89,7 +89,7 @@ namespace tnac::tests
 
   TEST(lexer, t_nums_bad)
   {
-    constexpr auto failures = "0. .1 08 1.2.3 0xabcdr 0xab.c 0b111.1 0b 0x 0b2 256a"sv;
+    constexpr auto failures = "0. 08 0xabcdr 0b 0x 0b2 256a"sv;
 
     using enum tok_kind;
     all_same(failures, Error);

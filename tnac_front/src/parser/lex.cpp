@@ -107,10 +107,15 @@ namespace tnac
       {
         return c == '`';
       }
+      constexpr auto is_dot(char_t c) noexcept
+      {
+        return c == '.';
+      }
       constexpr auto is_separator(char_t c) noexcept
       {
         return is_expr_separator(c) ||
                is_comma(c)          ||
+               is_dot(c)            ||
                is_semi(c)           ||
                is_paren(c)          ||
                is_curly(c)          ||
@@ -120,10 +125,6 @@ namespace tnac
                is_operator(c);
       }
 
-      constexpr auto is_dot(char_t c) noexcept
-      {
-        return c == '.';
-      }
       constexpr auto is_zero_digit(char_t c) noexcept
       {
         return c == '0';
@@ -400,7 +401,7 @@ namespace tnac
       advance();
       const auto next = peek_char();
 
-      if (detail::is_separator(next))
+      if (detail::is_separator(next) && !detail::is_dot(next))
         return consume(IntDec); // literal 0 is decimal
       
       if (detail::is_bin_prefix(next))
@@ -411,7 +412,7 @@ namespace tnac
 
       if (constexpr auto oct = 8u; detail::is_digit(next, oct) && digit_seq(oct))
       {
-        if (detail::is_separator(peek_char()))
+        if (auto c = peek_char(); detail::is_separator(c) && !detail::is_dot(c))
           return consume(IntOct);
       }
     }
@@ -449,7 +450,7 @@ namespace tnac
     if (!digit_seq(dec) && !detail::is_dot(peek_char()))
       return consume(Error);
 
-    if (const auto next = peek_char(); detail::is_separator(next))
+    if (const auto next = peek_char(); detail::is_separator(next) && !detail::is_dot(next))
     {
       result = leadingZero ? Error : IntDec;
     }
@@ -549,6 +550,7 @@ namespace tnac
     auto resKind = Eol;
     switch (next)
     {
+    case '.': resKind = Dot;                               break;
     case '!': resKind = try_next('=', NotEq, Exclamation); break;
     case '?': resKind = Question;                          break;
     case '<': resKind = try_next('=', LessEq, Less);       break;
@@ -588,6 +590,7 @@ namespace tnac
     auto resKind = Eol;
     switch (next)
     {
+    case '.': resKind = Dot;          break;
     case ':': resKind = ExprSep;      break;
     case '(': resKind = ParenOpen;    break;
     case ')': resKind = ParenClose;   break;

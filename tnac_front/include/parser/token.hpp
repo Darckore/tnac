@@ -29,6 +29,7 @@ namespace tnac
     String,
 
     // Operators
+    Dot,
     Exclamation,
     Question,
     Plus,
