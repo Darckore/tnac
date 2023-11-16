@@ -38,7 +38,7 @@ namespace tnac
       {
         constexpr std::array ops{
           '+', '-', '~', '*', '/', '%', '&', '^', '|', '=', '!',
-          '?', '<', '>'
+          '?', '<', '>', '.'
         };
 
         return is_in_range(c, ops.begin(), ops.end());
@@ -591,7 +591,6 @@ namespace tnac
     auto resKind = Eol;
     switch (next)
     {
-    case '.': resKind = Dot;          break;
     case ':': resKind = ExprSep;      break;
     case '(': resKind = ParenOpen;    break;
     case ')': resKind = ParenClose;   break;

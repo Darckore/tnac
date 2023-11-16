@@ -282,7 +282,7 @@ unary-operator: one of
   + - ~ ! ?
 
 operator: one of
-  + - ~ * / % | ^ & ! ? = ** // < > <= >= == != && ||
+  . + - ~ * / % | ^ & ! ? = ** // < > <= >= == != && ||
 
 string-literal:
   ' anything '
