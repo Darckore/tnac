@@ -317,5 +317,6 @@ hex-digit: one of
 
 comment:
   ` anything `
+  \ anything '\n'
 
 ```

@@ -105,7 +105,17 @@ namespace tnac
       }
       constexpr auto is_comment(char_t c) noexcept
       {
-        return c == '`';
+        return utils::eq_any(c, '`', '\\');
+      }
+      constexpr auto is_comment_terminator(char_t c, char_t t) noexcept
+      {
+        if (t == '\0')
+          return true;
+        if (c == '`')
+          return t == c;
+        if (c == '\\')
+          return is_newline(t);
+        return false;
       }
       constexpr auto is_dot(char_t c) noexcept
       {
@@ -351,16 +361,17 @@ namespace tnac
 
   bool lex::skip_comment() noexcept
   {
+    const auto start = peek_char();
     if (!detail::is_comment(peek_char()))
       return true;
 
     advance();
-    while (good() && !detail::is_comment(peek_char()))
+    while (good() && !detail::is_comment_terminator(start, peek_char()))
     {
       advance();
     }
 
-    if (!detail::is_comment(peek_char()))
+    if (!detail::is_comment_terminator(start, peek_char()))
     {
       return false;
     }
