@@ -338,6 +338,11 @@ namespace tnac
     return FROM_CONST(root);
   }
 
+  parser parser::branch() const noexcept
+  {
+    return { m_builder, m_sema, m_feedback, m_root };
+  }
+
 
   // Private members(Semantics)
 

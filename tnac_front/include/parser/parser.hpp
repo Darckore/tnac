@@ -131,6 +131,11 @@ namespace tnac
     //
     root_ptr root() noexcept;
 
+    //
+    // Creates a new instance of the parser, maintaining the current root node
+    //
+    parser branch() const noexcept;
+
   private: // semantics
     //
     // Instructs sema to open a new scope
