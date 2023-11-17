@@ -189,8 +189,7 @@ type-name:
   type-keyword
 
 type-keyword: one of
-  _cplx
-  _frac
+  _cplx _frac _int _flt _bool
 
 args:
   '(' arg-list ')'
@@ -282,7 +281,7 @@ unary-operator: one of
   + - ~ ! ?
 
 operator: one of
-  . + - ~ * / % | ^ & ! ? = ** // < > <= >= == != && ||
+  . + - ~ * / % | ^ & ! ? = ** // < > <= >= == != && || ->
 
 string-literal:
   ' anything '
