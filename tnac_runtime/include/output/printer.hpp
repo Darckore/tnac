@@ -122,6 +122,8 @@ namespace tnac::rt::out
 
     void print_value(eval::value v) noexcept;
 
+    void print_module_name(const ast::module_def& moduleDef) noexcept;
+
   private:
     child_tracker m_indetations;
     out_stream* m_out{ &std::cout };

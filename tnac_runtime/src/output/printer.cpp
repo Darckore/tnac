@@ -1,4 +1,5 @@
 #include "output/printer.hpp"
+#include "sema/sym/symbols.hpp"
 #include "output/formatting.hpp"
 
 namespace tnac::rt::out
@@ -71,7 +72,7 @@ namespace tnac::rt::out
     else
     {
       node_designator("<module: "sv);
-      out() << moduleDef.name();
+      print_module_name(moduleDef);
       node_designator(">"sv);
     }
     additional_info(moduleDef);
@@ -494,5 +495,33 @@ namespace tnac::rt::out
     out() << "<value: ";
     value_printer{}(v, 10, out());
     out() << '>';
+  }
+
+  void ast_printer::print_module_name(const ast::module_def& moduleDef) noexcept
+  {
+    auto&& sym = moduleDef.symbol();
+    std::vector<string_t> nameParts;
+
+    auto symScope = &sym.owner_scope();
+    while (symScope)
+    {
+      auto scopeRef = symScope->to_scope_ref();
+      if (scopeRef)
+      {
+        nameParts.emplace_back(scopeRef->name());
+      }
+      else if (auto mod = symScope->to_module())
+      {
+        nameParts.emplace_back(mod->name());
+      }
+      symScope = symScope->enclosing();
+    }
+
+    for (auto part : nameParts | views::reverse)
+    {
+      out() << part << '.';
+    }
+
+    out() << moduleDef.name();
   }
 }
