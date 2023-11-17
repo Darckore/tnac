@@ -310,6 +310,9 @@ namespace tnac
 
   parser::pointer parser::operator()(src::file& input) noexcept
   {
+    if (auto parsed = input.parsed_ast())
+      return parsed;
+
     auto loc = input.make_location();
     auto inStr = input.get_contents();
     if (!inStr)
@@ -324,6 +327,7 @@ namespace tnac
     fsys::current_path(input.directory());
     auto parseRes = operator()(*inStr, loc);
     fsys::current_path(lastWD);
+    input.attach_ast(*m_curModule);
     m_curModule = {};
     end_scope();
     return parseRes;

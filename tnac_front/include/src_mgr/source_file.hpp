@@ -18,6 +18,11 @@ namespace tnac
   class source_manager;
 }
 
+namespace tnac::ast
+{
+  class module_def;
+}
+
 namespace tnac::src
 {
   //
@@ -113,6 +118,23 @@ namespace tnac::src
     //
     void add_line_info(src::loc_wrapper loc) noexcept;
 
+    //
+    // Attaches AST of the resulting module
+    //
+    void attach_ast(ast::module_def& mod) noexcept;
+
+    //
+    // Returns the previously cached AST
+    // 
+    // const version
+    //
+    const ast::module_def* parsed_ast() const noexcept;
+
+    //
+    // Returns the previously cached AST
+    //
+    ast::module_def* parsed_ast() noexcept;
+
   private:
     //
     // Reads the entire file into the internal buffer
@@ -123,6 +145,7 @@ namespace tnac::src
     path_t m_path{};
     buf_t m_buffer;
     source_manager* m_mgr{};
+    ast::module_def* m_parsed{};
     lines_t m_lines;
   };
 }

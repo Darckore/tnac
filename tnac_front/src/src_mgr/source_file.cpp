@@ -128,6 +128,21 @@ namespace tnac::src
     m_lines.emplace_back(beg, end);
   }
 
+  void file::attach_ast(ast::module_def& mod) noexcept
+  {
+    UTILS_ASSERT(!m_parsed);
+    m_parsed = &mod;
+  }
+
+  const ast::module_def* file::parsed_ast() const noexcept
+  {
+    return m_parsed;
+  }
+  ast::module_def* file::parsed_ast() noexcept
+  {
+    return FROM_CONST(parsed_ast);
+  }
+
 
   // Private members
 

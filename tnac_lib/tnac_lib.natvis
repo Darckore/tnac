@@ -79,6 +79,22 @@
     </Expand>
   </Type>
 
+  <Type Name="tnac::src::file">
+    <DisplayString>source file</DisplayString>
+    <Expand>
+      <Item Name="[path]">m_path</Item>
+      <Item Name="[buffer]">m_buffer,sb</Item>
+      <Item Name="[source manager]">*m_mgr</Item>
+      <Item Name="[ast]" Condition="m_parsed">*m_parsed</Item>
+      <Item Name="[ast]" Condition="!m_parsed">"&lt;not parsed&gt;",sb</Item>
+      <Item Name="[line info]">m_lines</Item>
+    </Expand>
+  </Type>
+
+  <Type Name="tnac::src::file::line">
+    <DisplayString>&lt;{beg}:{end}&gt;</DisplayString>
+  </Type>
+
   
   <Type Name="tnac::semantics::scope">
     <DisplayString>scope</DisplayString>
@@ -361,19 +377,6 @@
     </Expand>
   </Type>
 
-  <Type Name="tnac::src::file">
-    <DisplayString>source file</DisplayString>
-    <Expand>
-      <Item Name="[path]">m_path</Item>
-      <Item Name="[buffer]">m_buffer,sb</Item>
-      <Item Name="[source manager]">*m_mgr</Item>
-      <Item Name="[line info]">m_lines</Item>
-    </Expand>
-  </Type>
-
-  <Type Name="tnac::src::file::line">
-    <DisplayString>&lt;{beg}:{end}&gt;</DisplayString>
-  </Type>
 
   <Type Name="tnac::core">
     <DisplayString>tnac</DisplayString>
