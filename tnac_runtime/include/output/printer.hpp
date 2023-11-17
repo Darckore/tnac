@@ -32,6 +32,8 @@ namespace tnac::rt::out
 
     void visit(const ast::module_def& moduleDef) noexcept;
 
+    void visit(const ast::import_dir& id) noexcept;
+
     void visit(const ast::scope& scope) noexcept;
 
     void visit(const ast::assign_expr& expr) noexcept;

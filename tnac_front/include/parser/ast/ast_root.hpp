@@ -68,8 +68,9 @@ namespace tnac::ast
     using loc_t  = src::loc_wrapper;
     using sym_t  = semantics::module_sym;
 
-    using param_list = func_decl::param_list;
-    using size_type  = param_list::size_type;
+    using import_list = list<import_dir>::elem_list;
+    using param_list  = list<param_decl>::elem_list;
+    using size_type   = param_list::size_type;
 
   private:
     friend class builder;
@@ -138,6 +139,28 @@ namespace tnac::ast
     //
     size_type param_count() const noexcept;
 
+    //
+    // Adds an import directive
+    //
+    void add_import(ast::import_dir& id) noexcept;
+
+    //
+    // Returns the import list
+    // 
+    // const version
+    //
+    const import_list& imports() const noexcept;
+
+    //
+    // Returns the import list
+    //
+    import_list& imports() noexcept;
+
+    //
+    // Returns the number of imports
+    //
+    size_type import_count() const noexcept;
+
   protected:
     //
     // Overrides the location with a new one
@@ -154,6 +177,7 @@ namespace tnac::ast
     loc_t m_loc;
     sym_t* m_sym{};
     param_list m_params;
+    import_list m_imports;
   };
 
 

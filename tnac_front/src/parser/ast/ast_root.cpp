@@ -96,6 +96,25 @@ namespace tnac::ast // Module definition
     return params().size();
   }
 
+  void module_def::add_import(ast::import_dir& id) noexcept
+  {
+    m_imports.emplace_back(&id);
+    assume_ancestry(&id);
+  }
+
+  const module_def::import_list& module_def::imports() const noexcept
+  {
+    return m_imports;
+  }
+  module_def::import_list& module_def::imports() noexcept
+  {
+    return FROM_CONST(imports);
+  }
+
+  module_def::size_type module_def::import_count() const noexcept
+  {
+    return m_imports.size();
+  }
 }
 
 

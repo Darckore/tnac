@@ -212,6 +212,9 @@ namespace tnac::ast
         for (auto p : m->params())
           visit_root(p);
 
+        for (auto i : m->imports())
+          visit_root(i);
+
         for (auto child : m->children())
         {
           visit_root(child);

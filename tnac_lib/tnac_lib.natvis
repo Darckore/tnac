@@ -198,6 +198,7 @@
       <Item Name="[name]">m_name,sb</Item>
       <Item Name="[children]">m_children</Item>
       <Item Name="[params]">m_params</Item>
+      <Item Name="[imports]">m_imports</Item>
       <Item Name="[symbol]" Condition="m_sym">*m_sym</Item>
     </Expand>
   </Type>

@@ -42,6 +42,25 @@ namespace tnac::rt::out
     push_parent(root.modules().size());
   }
 
+  void ast_printer::visit(const ast::import_dir& id) noexcept
+  {
+    indent();
+    node_designator("<import: "sv);
+    auto&& name = id.name();
+    if (!name.empty())
+    {
+      for (auto last = name.back(); auto part : name)
+      {
+        out() << part->name();
+        if (part != last)
+          out() << '.';
+      }
+    }
+    node_designator(">"sv);
+    additional_info(id);
+    endl();
+  }
+
   void ast_printer::visit(const ast::module_def& moduleDef) noexcept
   {
     indent();
@@ -57,7 +76,7 @@ namespace tnac::rt::out
     }
     additional_info(moduleDef);
     endl();
-    push_parent(moduleDef.children().size() + moduleDef.param_count());
+    push_parent(moduleDef.children().size() + moduleDef.param_count() + moduleDef.import_count());
   }
 
   void ast_printer::visit(const ast::scope& scope) noexcept
@@ -98,7 +117,7 @@ namespace tnac::rt::out
 
   void ast_printer::visit(const ast::var_decl& decl) noexcept
   {
-    out() << " <VarName: "; 
+    out() << "<VarName: "; 
     node_value(decl.name()); 
     out() << '>';
     additional_info(decl);
@@ -108,7 +127,7 @@ namespace tnac::rt::out
   void ast_printer::visit(const ast::param_decl& decl) noexcept
   {
     indent();
-    out() << " <Function parameter: "; 
+    out() << "<Function parameter: "; 
     node_value(decl.name());
     out() << '>';
     additional_info(decl);

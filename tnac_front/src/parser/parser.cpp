@@ -504,8 +504,8 @@ namespace tnac
 
   void parser::import_seq() noexcept
   {
-    while(auto dummy = import_dir())
-      utils::unused(dummy);
+    while(auto newImport = import_dir())
+      m_curModule->add_import(*newImport);
   }
 
   ast::import_dir* parser::import_dir() noexcept
