@@ -33,6 +33,8 @@ namespace tnac::rt::out
     
     void print(const ast::module_def& mod) noexcept;
 
+    void print(const ast::import_dir& id) noexcept;
+
     void print(const ast::scope& scope) noexcept;
 
     void print(const ast::assign_expr& expr) noexcept;

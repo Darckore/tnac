@@ -46,6 +46,7 @@ namespace tnac::rt::out
     case Error:      print(cast<ast::error_expr>(*root));  break;
     case Root:       print(cast<ast::root>(*root));        break;
     case Module:     print(cast<ast::module_def>(*root));  break;
+    case Import:     print(cast<ast::import_dir>(*root));  break;
     case Scope:      print(cast<ast::scope>(*root));       break;
     case Literal:    print(cast<ast::lit_expr>(*root));    break;
     case Identifier: print(cast<ast::id_expr>(*root));     break;
@@ -85,6 +86,10 @@ namespace tnac::rt::out
     out() << "`Module: " << name << '`';
     default_style();
     endl();
+    for (auto importDir : mod.imports())
+    {
+      print(importDir);
+    }
     if (auto&& params = mod.params(); !params.empty())
     {
       kw_style();
@@ -94,6 +99,24 @@ namespace tnac::rt::out
       endl();
     }
     print(utils::cast<ast::scope>(mod));
+  }
+
+  void lister::print(const ast::import_dir& id) noexcept
+  {
+    kw_style();
+    out() << "_import ";
+    default_style();
+    auto&& name = id.name();
+    if (!name.empty())
+    {
+      for (auto last = name.back(); auto part : name)
+      {
+        print_token(part->pos(), false);
+        if (part != last)
+          out() << '.';
+      }
+    }
+    endl();
   }
 
   void lister::print(const ast::scope& scope) noexcept
