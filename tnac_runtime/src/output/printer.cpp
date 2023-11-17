@@ -52,9 +52,16 @@ namespace tnac::rt::out
     {
       for (auto last = name.back(); auto part : name)
       {
-        out() << part->name();
+        auto partName = part->name();
         if (part != last)
+        {
+          node_value(partName);
           out() << '.';
+        }
+        else
+        {
+          module_name(partName);
+        }
       }
     }
     node_designator(">"sv);
@@ -432,6 +439,13 @@ namespace tnac::rt::out
     if (m_styles) fmt::clear_clr(out());
   }
 
+  void ast_printer::module_name(string_t str) noexcept
+  {
+    if (m_styles) fmt::add_clr(out(), fmt::clr::BoldCyan);
+    out() << str;
+    if (m_styles) fmt::clear_clr(out());
+  }
+
   void ast_printer::invalid_mark(const ast::node& n) noexcept
   {
     if (!n.is_valid())
@@ -440,7 +454,7 @@ namespace tnac::rt::out
 
   void ast_printer::location_info(src::loc_wrapper loc) noexcept
   {
-    if (m_styles) fmt::add_clr(out(), fmt::clr::White);
+    if (m_styles) fmt::add_clr(out(), fmt::clr::Yellow);
     out() << " (" << loc << ')';
     if (m_styles) fmt::clear_clr(out());
   }
@@ -457,6 +471,12 @@ namespace tnac::rt::out
   }
 
   void ast_printer::additional_info(const ast::decl& d) noexcept
+  {
+    location_info(d.pos().at());
+    invalid_mark(d);
+  }
+
+  void ast_printer::additional_info(const ast::import_dir& d) noexcept
   {
     location_info(d.pos().at());
     invalid_mark(d);
@@ -519,9 +539,10 @@ namespace tnac::rt::out
 
     for (auto part : nameParts | views::reverse)
     {
-      out() << part << '.';
+      node_value(part);
+      out() << '.';
     }
 
-    out() << moduleDef.name();
+    module_name(moduleDef.name());
   }
 }

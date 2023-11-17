@@ -102,6 +102,8 @@ namespace tnac::rt::out
 
     void node_value(string_t str) noexcept;
 
+    void module_name(string_t str) noexcept;
+
     void invalid_mark(const ast::node& n) noexcept;
 
     void location_info(src::loc_wrapper loc) noexcept;
@@ -111,6 +113,8 @@ namespace tnac::rt::out
     void additional_info(const ast::expr& e) noexcept;
 
     void additional_info(const ast::decl& d) noexcept;
+    
+    void additional_info(const ast::import_dir& d) noexcept;
 
     void endl() noexcept;
 
