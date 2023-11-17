@@ -543,6 +543,13 @@ namespace tnac
       }
       else
       {
+        if (auto existing = m_sema.find(idName))
+        {
+          auto cur = m_curModule->name();
+          m_curModule->adopt({ error_expr(id, diag::circular_ref(idName, cur), err_pos::Current) });
+          return {};
+        }
+
         if (!m_feedback || !m_feedback->load_file(std::move(loadPath)))
         {
           m_curModule->adopt({ error_expr(id, diag::import_failed(idName), err_pos::Current) });

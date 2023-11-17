@@ -162,6 +162,11 @@ namespace tnac
     //
     static string_t import_failed(string_t name) noexcept;
 
+    //
+    // Returns an 'circular reference' message
+    //
+    static string_t circular_ref(string_t last, string_t cur) noexcept;
+
   public: // Commands
     //
     // Returns an 'unknown command' message

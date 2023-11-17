@@ -12,6 +12,7 @@ namespace tnac::detail
   static constexpr auto expectedAfterCh{ "Expected '{}' after {}"sv };
 
   static constexpr auto failedImport{ "Unable to import module '{}'"sv };
+  static constexpr auto circularImport{ "Circular reference between modules '{}' and '{}'"sv };
 
   static constexpr auto wrongCmdArgType{ "Command argument {} has an unexpected type"sv };
   static constexpr auto wrongCmdArg{ "Unrecognised argument '{}' at index {}"sv };
@@ -158,6 +159,11 @@ namespace tnac
   string_t diag::import_failed(string_t name) noexcept
   {
     return format(detail::failedImport, name);
+  }
+
+  string_t diag::circular_ref(string_t last, string_t cur) noexcept
+  {
+    return format(detail::circularImport, last, cur);
   }
 
 
