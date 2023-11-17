@@ -70,6 +70,9 @@ namespace tnac::rt
     core.declare_cmd("modules"sv, params{ String }, size_type{},
          [this](auto c) noexcept { print_modules(std::move(c)); });
 
+    core.declare_cmd("env"sv, params{ String }, size_type{},
+         [this](auto c) noexcept { print_all(std::move(c)); });
+
     core.declare_cmd("bin"sv, [this](auto) noexcept { m_state->set_base(2); });
     core.declare_cmd("oct"sv, [this](auto) noexcept { m_state->set_base(8); });
     core.declare_cmd("dec"sv, [this](auto) noexcept { m_state->set_base(10); });
@@ -235,5 +238,61 @@ namespace tnac::rt
       {
         print_symbols(m_state->tnac_core().modules());
       });
+  }
+
+  void repl::print_all(ast::command cmd) noexcept
+  {
+    using ast::command;
+    using cmd_args = command::arg_list;
+    auto loc = cmd.pos().at();
+    auto cTok = [loc](string_t val) noexcept
+      {
+        return token{ val, token::Command, loc };
+      };
+    auto sTok = [loc](string_t val) noexcept
+      {
+        return token{ val, token::String, loc };
+      };
+
+    buf_t fAst;
+    buf_t fList;
+    buf_t fVars;
+    buf_t fFuncs;
+    buf_t fMods;
+
+    cmd_args aAst;
+    cmd_args aList;
+    cmd_args aVars;
+    cmd_args aFuncs;
+    cmd_args aMods;
+
+    using size_type = ast::command::size_type;
+    bool hasOut{};
+    if (cmd.arg_count())
+    {
+      auto dir = cmd[size_type{}].value();
+      hasOut = true;
+      fAst.append(dir).append("out.ast");
+      aAst.emplace_back(sTok(fAst));
+      fList.append(dir).append("out.tnac");
+      aList.emplace_back(sTok(fList));
+      fVars.append(dir).append("tnvars");
+      aVars.emplace_back(sTok(fVars));
+      fFuncs.append(dir).append("tnfuncs");
+      aFuncs.emplace_back(sTok(fFuncs));
+      fMods.append(dir).append("tnmodules");
+      aMods.emplace_back(sTok(fMods));
+    }
+
+    if(!hasOut) m_state->out() << "==========  AST    ==========\n";
+    on_command({ cTok("ast"sv), std::move(aAst) });
+    if (!hasOut) m_state->out() << "==========  CODE   ==========\n";
+    on_command({ cTok("list"sv), std::move(aList) });
+    if (!hasOut) m_state->out() << "========== MODULES ==========\n";
+    on_command({ cTok("modules"sv), std::move(aMods) });
+    if (!hasOut) m_state->out() << "==========  FUNCS  ==========\n";
+    on_command({ cTok("funcs"sv), std::move(aFuncs) });
+    if (!hasOut) m_state->out() << "==========  VARS   ==========\n";
+    on_command({ cTok("vars"sv), std::move(aVars) });
   }
 }

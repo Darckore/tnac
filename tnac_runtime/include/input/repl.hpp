@@ -127,6 +127,11 @@ namespace tnac::rt
     //
     void print_modules(ast::command cmd) noexcept;
 
+    //
+    // #print_all <'path'>
+    //
+    void print_all(ast::command cmd) noexcept;
+
   private:
     inline static const source_manager::path_t m_fake{ "REPL" };
     

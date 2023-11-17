@@ -54,9 +54,6 @@ namespace tnac::ast
   //
   class command final
   {
-  private:
-    friend class tnac::parser;
-
   public:
     using arg_list = std::vector<token>;
     using iterator = arg_list::const_iterator;
@@ -69,7 +66,6 @@ namespace tnac::ast
 
     ~command() noexcept;
 
-  protected:
     command(const token& cmd, arg_list args) noexcept;
 
   public:
