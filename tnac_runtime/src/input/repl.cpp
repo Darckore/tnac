@@ -144,6 +144,7 @@ namespace tnac::rt
 
   void repl::on_exit() noexcept
   {
+    fmt::println(m_state->out(), fmt::clr::BoldYellow, "Goody-bye"sv);
     m_state->stop();
   }
 
