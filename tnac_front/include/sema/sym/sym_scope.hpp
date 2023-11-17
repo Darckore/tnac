@@ -14,6 +14,7 @@ namespace tnac::semantics
   class symbol;
   class function;
   class module_sym;
+  class scope_ref;
 }
 
 namespace tnac::semantics
@@ -183,6 +184,30 @@ namespace tnac::semantics
     // Casts the attached symbol to module without checking if one is attached
     //
     module_sym& mod() noexcept;
+
+    //
+    // Attempts to cast the attached symbol to scope reference
+    // 
+    // const version
+    //
+    const scope_ref* to_scope_ref() const noexcept;
+
+    //
+    // Attempts to cast the attached symbol to scope reference
+    //
+    scope_ref* to_scope_ref() noexcept;
+
+    //
+    // Casts the attached symbol to scope reference without checking if one is attached
+    // 
+    // const version
+    //
+    const scope_ref& sc_ref() const noexcept;
+
+    //
+    // Casts the attached symbol to scope reference without checking if one is attached
+    //
+    scope_ref& sc_ref() noexcept;
 
   protected:
     //

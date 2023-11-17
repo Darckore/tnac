@@ -98,6 +98,7 @@ namespace tnac
     {
       auto&& newScope = m_symTab.add_scope(m_curScope, semantics::scope::Block);
       sym = &m_symTab.add_scope_ref(name, m_curScope, loc, newScope);
+      newScope.attach_symbol(*sym);
       m_curScope = &newScope;
     }
     else

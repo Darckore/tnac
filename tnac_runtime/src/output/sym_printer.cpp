@@ -32,10 +32,10 @@ namespace tnac::rt::out
       const auto kind = scope->kind();
       switch (kind)
       {
-      case Global:   out() << "Global";          break;
-      case Module:   print_module(scope->mod()); break;
-      case Function: print_func(scope->func());  break;
-      case Block:    out() << "Internal";        break;
+      case Global:   out() << "Global";            break;
+      case Module:   print_module(scope->mod());   break;
+      case Function: print_func(scope->func());    break;
+      case Block:    print_internal_scope(*scope); break;
       }
       if (m_styles) fmt::clear_clr(out());
 
@@ -85,6 +85,26 @@ namespace tnac::rt::out
     out() << func.name();
     if (m_styles) fmt::clear_clr(out());
     print_params(func.params(), false);
+  }
+
+  void sym_printer::print_internal_scope(const semantics::scope& scope) noexcept
+  {
+    auto scRef = scope.to_scope_ref();
+    if (!scRef)
+    {
+      out() << "Internal";
+      return;
+    }
+
+    print_scope_ref(*scRef);
+  }
+
+  void sym_printer::print_scope_ref(const semantics::scope_ref& sr) noexcept
+  {
+    if (m_styles) fmt::clear_clr(out());
+    if (m_styles) fmt::add_clr(out(), fmt::clr::BoldWhite);
+    out() << sr.name();
+    if (m_styles) fmt::clear_clr(out());
   }
 
   void sym_printer::print_sym(const semantics::symbol& sym) noexcept

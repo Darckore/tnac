@@ -35,6 +35,9 @@ namespace tnac::semantics
       if (encl->is_function() || encl->is_top_level())
         break;
 
+      if (encl->has_sym())
+        break;
+
       encl = encl->enclosing();
     }
     return encl;
@@ -128,6 +131,26 @@ namespace tnac::semantics
   module_sym& scope::mod() noexcept
   {
     return FROM_CONST(mod);
+  }
+
+  const scope_ref* scope::to_scope_ref() const noexcept
+  {
+    return utils::try_cast<scope_ref>(sym());
+  }
+  scope_ref* scope::to_scope_ref() noexcept
+  {
+    return FROM_CONST(to_scope_ref);
+  }
+
+  const scope_ref& scope::sc_ref() const noexcept
+  {
+    auto sr = to_scope_ref();
+    UTILS_ASSERT(static_cast<bool>(sr));
+    return *sr;
+  }
+  scope_ref& scope::sc_ref() noexcept
+  {
+    return FROM_CONST(sc_ref);
   }
 
 

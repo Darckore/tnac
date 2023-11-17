@@ -75,6 +75,10 @@ namespace tnac::rt::out
 
     void print_func(const semantics::function& func) noexcept;
 
+    void print_internal_scope(const semantics::scope& scope) noexcept;
+
+    void print_scope_ref(const semantics::scope_ref& sr) noexcept;
+
     void print_sym(const semantics::symbol& sym) noexcept;
 
     void print_params(const params_t& params, bool omitIfEmpty) noexcept;
