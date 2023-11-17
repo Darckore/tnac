@@ -157,6 +157,11 @@ namespace tnac
     //
     static string_t empty_import() noexcept;
 
+    //
+    // Returns an 'import failed' message
+    //
+    static string_t import_failed(string_t name) noexcept;
+
   public: // Commands
     //
     // Returns an 'unknown command' message

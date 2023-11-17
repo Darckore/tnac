@@ -11,6 +11,8 @@ namespace tnac::detail
   static constexpr auto expectedAfter{ "Expected {} after {}"sv };
   static constexpr auto expectedAfterCh{ "Expected '{}' after {}"sv };
 
+  static constexpr auto failedImport{ "Unable to import module '{}'"sv };
+
   static constexpr auto wrongCmdArgType{ "Command argument {} has an unexpected type"sv };
   static constexpr auto wrongCmdArg{ "Unrecognised argument '{}' at index {}"sv };
 
@@ -151,6 +153,11 @@ namespace tnac
   string_t diag::empty_import() noexcept
   {
     return "Expected import name"sv;
+  }
+
+  string_t diag::import_failed(string_t name) noexcept
+  {
+    return format(detail::failedImport, name);
   }
 
 

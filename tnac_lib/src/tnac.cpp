@@ -33,12 +33,24 @@ namespace tnac
 
   bool core::process_file(fname_t fname) noexcept
   {
-    auto file = load_source(std::move(fname));
-    if (!file)
-      return false;
+    auto loadRes = m_srcMgr.load(std::move(fname));
+    if (!loadRes)
+    {
+      fname = std::move(loadRes.error().second);
+      fname.replace_extension("tnac");
+      loadRes = m_srcMgr.load(std::move(fname));
+    }
 
-    parse(*file);
-    return true;
+    if (loadRes)
+    {
+      auto file = *loadRes;
+      parse(*file);
+      return true;
+    }
+
+    auto&& err = loadRes.error();
+    m_feedback->error(diag::file_load_failure(err.second, err.first.message()));
+    return false;
   }
 
   ast::node* core::parse(string_t input) noexcept
@@ -53,7 +65,11 @@ namespace tnac
 
   ast::node* core::parse(src::file& file) noexcept
   {
-    m_parser(file);
+    if (!get_ast())
+      m_parser(file);
+    else
+      m_parser.branch()(file);
+
     return get_ast();
   }
 

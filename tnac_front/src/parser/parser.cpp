@@ -517,47 +517,57 @@ namespace tnac
     
     import_name name;
     auto depth = 0u;
-    bool fail{};
+    SCOPE_GUARD(while (depth)
+    {
+      --depth;
+      end_scope();
+    });
+
+    fsys::path loadPath{};
     while (peek_next().is_identifier())
     {
       auto id = next_tok();
-      ++depth;
+      auto idName = id.value();
+      loadPath /= idName;
 
       if (detail::is_dot(peek_next()))
       {
         next_tok();
         auto&& sym = m_sema.visit_import_component(id);
+        ++depth;
         name.emplace_back(m_builder.make_id(id, sym));
       }
       else
       {
-        // todo: load file and make an id expr from it
-        // todo: add the last name part
+        if (!m_feedback || !m_feedback->load_file(std::move(loadPath)))
+        {
+          m_curModule->adopt({ error_expr(id, diag::import_failed(idName), err_pos::Current) });
+          return {};
+        }
+
+        auto moduleSym = utils::try_cast<semantics::module_sym>(m_sema.find(idName, true));
+        if (!moduleSym)
+        {
+          m_curModule->adopt({ error_expr(id, diag::import_failed(idName), err_pos::Current) });
+          return {};
+        }
+
+        name.emplace_back(m_builder.make_id(id, *moduleSym));
         break;
       }
 
       if (auto&& next = peek_next(); !next.is_identifier())
       {
-        fail = true;
-        error_expr(next, diag::expected_id(), err_pos::Last);
-        break;
+        m_curModule->adopt({ error_expr(next, diag::expected_id(), err_pos::Last) });
+        return {};
       }
-    }
-
-    while (depth)
-    {
-      --depth;
-      end_scope();
     }
 
     if (name.empty())
     {
-      fail = true;
-      error_expr(importKw, diag::empty_import(), err_pos::Last);
-    }
-
-    if (fail)
+      m_curModule->adopt({ error_expr(importKw, diag::empty_import(), err_pos::Last) });
       return {};
+    }
 
     return m_builder.make_import(importKw, std::move(name));
   }
