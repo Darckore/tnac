@@ -24,7 +24,7 @@
             <Keywords name="Folders in comment, open"></Keywords>
             <Keywords name="Folders in comment, middle"></Keywords>
             <Keywords name="Folders in comment, close"></Keywords>
-            <Keywords name="Keywords1">_fn _entry _import _ret</Keywords>
+            <Keywords name="Keywords1">_fn _entry _import _ret _as</Keywords>
             <Keywords name="Keywords2">_cplx _frac _int _flt _bool</Keywords>
             <Keywords name="Keywords3">_true _false _i _pi _e _result</Keywords>
             <Keywords name="Keywords4">#</Keywords>
