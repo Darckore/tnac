@@ -12,13 +12,13 @@ namespace tnac
     m_parser{ m_astBuilder, m_sema, &fb },
     m_cmdInterpreter{ m_cmdStore, fb }
   {
-    m_feedback->on_load_request([this](fname_t path) noexcept { return load(std::move(path)); });
+    m_feedback->on_load_request([this](fname_t path) noexcept { return process_file(std::move(path)); });
   }
 
 
   // Public members
 
-  src::file* core::load(fname_t fname) noexcept
+  src::file* core::load_source(fname_t fname) noexcept
   {
     auto loadRes = m_srcMgr.load(std::move(fname));
     if (!loadRes)
@@ -29,6 +29,16 @@ namespace tnac
     }
 
     return *loadRes;
+  }
+
+  bool core::process_file(fname_t fname) noexcept
+  {
+    auto file = load_source(std::move(fname));
+    if (!file)
+      return false;
+
+    parse(*file);
+    return true;
   }
 
   ast::node* core::parse(string_t input) noexcept

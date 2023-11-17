@@ -34,7 +34,7 @@ namespace tnac
     concept cmd_handler = std::is_nothrow_invocable_r_v<void, F, ast::command&&>;
 
     template <typename F>
-    concept file_loader = std::is_nothrow_invocable_r_v<src::file*, F, fsys::path>;
+    concept file_loader = std::is_nothrow_invocable_r_v<bool, F, fsys::path>;
   }
 }
 
@@ -51,7 +51,7 @@ namespace tnac
     using perr_handler_t = std::move_only_function<void(const ast::error_expr&) noexcept>;
     using cerr_handler_t = std::move_only_function<void(const token&, string_t) noexcept>;
     using cmd_handler_t  = std::move_only_function<void(ast::command&&) noexcept>;
-    using file_loader_t  = std::move_only_function<src::file*(fsys::path) noexcept>;
+    using file_loader_t  = std::move_only_function<bool(fsys::path) noexcept>;
 
   public:
     CLASS_SPECIALS_NONE_CUSTOM(feedback);
@@ -130,7 +130,7 @@ namespace tnac
     //
     // Invokes the file loader
     //
-    src::file* load_file(fsys::path path) noexcept;
+    bool load_file(fsys::path path) noexcept;
 
   private:
     gerr_handler_t m_genericErrorHandler;

@@ -31,7 +31,13 @@ namespace tnac
     //
     // Loads the specified source file
     //
-    src::file* load(fname_t fname) noexcept;
+    src::file* load_source(fname_t fname) noexcept;
+
+    //
+    // Loads a file by the given path
+    // Also, performs parsing and compilation
+    //
+    bool process_file(fname_t fname) noexcept;
 
     //
     // Parses the given input and returns the parse result

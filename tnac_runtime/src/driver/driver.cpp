@@ -31,14 +31,10 @@ namespace tnac::rt
       return;
     }
 
-    auto inputFile = m_tnac.load(m_settings.run_on());
-    if (!inputFile)
+    if (!m_feedback.load_file(m_settings.run_on()))
     {
       return;
     }
-
-    auto parseRes = m_tnac.parse(*inputFile);
-    utils::unused(parseRes);
 
     // todo: compile
   }
