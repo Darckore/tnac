@@ -12,7 +12,7 @@ namespace tnac::semantics
   //
   // Symbol corresponding to a function
   //
-  class function final : public symbol
+  class function : public symbol
   {
   public:
     using param_list = std::vector<parameter*>;
@@ -29,11 +29,16 @@ namespace tnac::semantics
   protected:
     function(scope& owner, name_t name, param_list params, loc_t loc) noexcept;
 
+    function(kind k, scope& owner, name_t name, param_list params, loc_t loc) noexcept;
+
   public:
     size_type param_count() const noexcept;
 
     const param_list& params() const noexcept;
     param_list& params() noexcept;
+
+  protected:
+    void attach_params(param_list params) noexcept;
 
   private:
     param_list m_params;

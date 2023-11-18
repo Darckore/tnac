@@ -7,7 +7,11 @@ namespace tnac::semantics
   function::~function() noexcept = default;
 
   function::function(scope& owner, name_t name, param_list params, loc_t loc) noexcept :
-    symbol{ kind::Function, name, owner, loc },
+    function{ kind::Function, owner, name, std::move(params), loc }
+  {}
+
+  function::function(kind k, scope& owner, name_t name, param_list params, loc_t loc) noexcept :
+    symbol{ k, name, owner, loc },
     m_params{ std::move(params) }
   {}
 
@@ -27,4 +31,14 @@ namespace tnac::semantics
   {
     return FROM_CONST(params);
   }
+
+
+  // Protected members
+
+  void function::attach_params(param_list params) noexcept
+  {
+    UTILS_ASSERT(m_params.empty());
+    m_params = std::move(params);
+  }
+
 }
