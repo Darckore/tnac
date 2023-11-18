@@ -68,6 +68,11 @@ namespace tnac
     semantics::symbol& visit_import_component(const token& id) noexcept;
 
     //
+    // Visits an alias declaration of an imported module
+    //
+    semantics::symbol& visit_import_alias(const token& id, semantics::module_sym& src) noexcept;
+
+    //
     // Generates a random name
     //
     string_t contrive_name() noexcept;

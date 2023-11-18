@@ -224,6 +224,7 @@
     <Expand>
       <Item Name="[name]">m_name</Item>
       <Item Name="[pos]">m_pos</Item>
+      <Item Name="[alias]" Condition="m_aliasName">*m_aliasName</Item>
     </Expand>
   </Type>
 

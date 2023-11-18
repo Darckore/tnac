@@ -56,7 +56,7 @@ namespace tnac::ast
     //
     // Creates an import directive
     //
-    import_dir* make_import(const token& pos, import_dir::elem_list name) noexcept;
+    import_dir* make_import(const token& pos, import_dir::elem_list name, import_dir::pointer alias) noexcept;
 
     //
     // Creates a scope

@@ -175,7 +175,8 @@ namespace tnac
                     KwE,
                     KwPi,
                     KwEntry,
-                    KwImport);
+                    KwImport,
+                    KwAs);
     }
 
     auto is_literal() const noexcept

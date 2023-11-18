@@ -32,7 +32,7 @@ namespace tnac::ast
     virtual ~import_dir() noexcept;
 
   protected:
-    import_dir(const token& pos, elem_list name) noexcept;
+    import_dir(const token& pos, elem_list name, pointer aliasName) noexcept;
 
   public:
     //
@@ -52,9 +52,24 @@ namespace tnac::ast
     //
     elem_list& name() noexcept;
 
+    //
+    // Returns the alias for the imported module if
+    // one is defined
+    // 
+    // const version
+    //
+    const_pointer alias_name() const noexcept;
+
+    //
+    // Returns the alias for the imported module if
+    // one is defined
+    //
+    pointer alias_name() noexcept;
+
   private:
     token m_pos;
     elem_list m_name;
+    pointer m_aliasName{};
   };
 
 

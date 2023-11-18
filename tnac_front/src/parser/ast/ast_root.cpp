@@ -4,11 +4,13 @@ namespace tnac::ast // Import directive
 {
   import_dir::~import_dir() noexcept = default;
 
-  import_dir::import_dir(const token& pos, elem_list name) noexcept :
+  import_dir::import_dir(const token& pos, elem_list name, pointer aliasName) noexcept :
     node{ kind::Import },
     m_pos{ pos },
-    m_name{ std::move(name) }
+    m_name{ std::move(name) },
+    m_aliasName{ aliasName }
   {
+    assume_ancestry(aliasName);
     for (auto part : m_name)
       assume_ancestry(part);
   }
@@ -25,6 +27,15 @@ namespace tnac::ast // Import directive
   import_dir::elem_list& import_dir::name() noexcept
   {
     return FROM_CONST(name);
+  }
+
+  import_dir::const_pointer import_dir::alias_name() const noexcept
+  {
+    return m_aliasName;
+  }
+  import_dir::pointer import_dir::alias_name() noexcept
+  {
+    return FROM_CONST(alias_name);
   }
 }
 

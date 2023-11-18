@@ -12,7 +12,10 @@ import-seq:
   import-seq import-directive
 
 import-directive:
-  _import compound-name [_as identifier]
+  _import compound-name [alias-decl]
+
+alias-decl:
+  _as identifier
 
 module-def:
   entry-def scope

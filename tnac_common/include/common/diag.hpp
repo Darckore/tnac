@@ -143,6 +143,11 @@ namespace tnac
     static string_t param_redef() noexcept;
 
     //
+    // Returns a 'name redefinition' error
+    //
+    static string_t name_redef() noexcept;
+
+    //
     // Returns an 'expression not allowed' message
     //
     static string_t expr_not_allowed() noexcept;

@@ -205,6 +205,10 @@ namespace tnac::detail
     {
       return tok.is(token::KwImport);
     }
+    auto is_alias_kw(const token& tok) noexcept
+    {
+      return tok.is(token::KwAs);
+    }
 
     auto is_expr_starter(const token& tok) noexcept
     {
@@ -518,7 +522,20 @@ namespace tnac
       return {};
 
     auto importKw = next_tok();
-    
+    auto name = imported_module_name();
+    if (name.empty())
+    {
+      m_curModule->adopt({ error_expr(importKw, diag::empty_import(), err_pos::Last) });
+      return {};
+    }
+
+    auto&& sym = utils::cast<semantics::module_sym>(name.back()->symbol());
+    auto aliasName = module_alias(sym);
+    return m_builder.make_import(importKw, std::move(name), aliasName);
+  }
+
+  parser::import_name parser::imported_module_name() noexcept
+  {
     import_name name;
     auto depth = 0u;
     SCOPE_GUARD(while (depth)
@@ -574,13 +591,31 @@ namespace tnac
       }
     }
 
-    if (name.empty())
+    return name;
+  }
+
+  parser::import_alias parser::module_alias(semantics::module_sym& src) noexcept
+  {
+    if (!detail::is_alias_kw(peek_next()))
+      return {};
+
+    next_tok();
+    if (auto&& next = peek_next(); !next.is_identifier())
     {
-      m_curModule->adopt({ error_expr(importKw, diag::empty_import(), err_pos::Last) });
+      m_curModule->adopt({ error_expr(next, diag::expected_id(), err_pos::Last) });
       return {};
     }
 
-    return m_builder.make_import(importKw, std::move(name));
+    auto id = next_tok();
+    auto name = id.value();
+    if (auto existingSym = m_sema.find(name))
+    {
+      m_curModule->adopt({ error_expr(id, diag::name_redef(), err_pos::Current) });
+      return {};
+    }
+
+    auto&& aliasSym = m_sema.visit_import_alias(id, src);
+    return m_builder.make_id(id, aliasSym);
   }
 
   parser::expr_list parser::expression_list(scope_level scopeLvl) noexcept

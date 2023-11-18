@@ -141,6 +141,11 @@ namespace tnac
     return "Function parameter redifinition"sv;
   }
 
+  string_t diag::name_redef() noexcept
+  {
+    return "Name redifinition"sv;
+  }
+
   string_t diag::expr_not_allowed() noexcept
   {
     return "Expression is not allowed here"sv;

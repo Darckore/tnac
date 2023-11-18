@@ -116,6 +116,13 @@ namespace tnac::rt::out
           out() << '.';
       }
     }
+    if (auto alias = id.alias_name())
+    {
+      kw_style();
+      out() << " _as ";
+      default_style();
+      print_token(alias->pos(), false);
+    }
     endl();
   }
 

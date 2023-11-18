@@ -109,6 +109,16 @@ namespace tnac
     return *sym;
   }
 
+  semantics::symbol& sema::visit_import_alias(const token& id, semantics::module_sym& src) noexcept
+  {
+    auto name = id.value();
+    auto loc = id.at();
+
+    auto&& aliasScope = m_symTab.add_scope(m_curScope, semantics::scope::Module);
+    aliasScope.attach_symbol(src);
+    return m_symTab.add_scope_ref(name, m_curScope, loc, aliasScope);
+  }
+
   string_t sema::contrive_name() noexcept
   {
     static constexpr auto namePrefix{ "`__anon_entity__"sv };

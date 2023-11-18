@@ -67,6 +67,17 @@ namespace tnac::rt::out
     node_designator(">"sv);
     additional_info(id);
     endl();
+    if (auto alias = id.alias_name())
+    {
+      push_parent(1u);
+      indent();
+      node_designator("Alias "sv);
+      out() << '\'';
+      module_name(alias->name());
+      out() << "' ";
+      additional_info(*alias);
+      endl();
+    }
   }
 
   void ast_printer::visit(const ast::module_def& moduleDef) noexcept
