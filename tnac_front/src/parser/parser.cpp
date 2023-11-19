@@ -896,7 +896,7 @@ namespace tnac
   ast::expr* parser::unary_expr() noexcept
   {
     if (!detail::is_unary_op(peek_next()))
-      return call_expr();
+      return dot_expr();
 
     auto op = next_tok();
     auto exp = unary_expr();
@@ -1052,6 +1052,11 @@ namespace tnac
     }
 
     return res;
+  }
+
+  ast::expr* parser::dot_expr() noexcept
+  {
+    return call_expr();
   }
 
   ast::expr* parser::cond_expr() noexcept

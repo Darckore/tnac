@@ -335,6 +335,11 @@ namespace tnac
     ast::expr* call_expr() noexcept;
 
     //
+    // Parses a dot expression
+    //
+    ast::expr* dot_expr() noexcept;
+
+    //
     // Parses a conditional expression
     //
     ast::expr* cond_expr() noexcept;
