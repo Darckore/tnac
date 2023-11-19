@@ -514,6 +514,24 @@ namespace tnac::ast
     }
 
     //
+    // Visits a dot expression
+    //
+    void visit_impl(dest<dot_expr> dot) noexcept
+    {
+      if constexpr (is_top_down())
+        visit(dot);
+
+      if (preview(dot))
+      {
+        visit_root(&dot->accessed());
+        visit_root(&dot->accessor());
+      }
+
+      if constexpr (is_bottom_up())
+        visit(dot);
+    }
+
+    //
     // Visits a condition pattern
     //
     void visit_impl(dest<pattern> ptrn) noexcept
@@ -629,6 +647,7 @@ namespace tnac::ast
       case Pattern:    visit_impl(&cast<pattern>(cur));     break;
       case CondShort:  visit_impl(&cast<cond_short>(cur));  break;
       case Cond:       visit_impl(&cast<cond_expr>(cur));   break;
+      case Dot:        visit_impl(&cast<dot_expr>(cur));    break;
       case Error:      visit_impl(&cast<error_expr>(cur));  break;
       }
     }

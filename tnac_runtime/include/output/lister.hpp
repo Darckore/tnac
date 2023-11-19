@@ -65,6 +65,8 @@ namespace tnac::rt::out
 
     void print(const ast::cond_expr& expr) noexcept;
 
+    void print(const ast::dot_expr& expr) noexcept;
+
     void print(const ast::pattern& expr) noexcept;
 
     void print(const ast::matcher& expr) noexcept;

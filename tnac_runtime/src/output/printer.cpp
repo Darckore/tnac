@@ -274,6 +274,15 @@ namespace tnac::rt::out
     push_parent(2u);
   }
 
+  void ast_printer::visit(const ast::dot_expr& dot) noexcept
+  {
+    indent();
+    node_designator("Dot expression"sv);
+    additional_info(dot);
+    endl();
+    push_parent(2u);
+  }
+
   void ast_printer::visit(const ast::pattern& pat) noexcept
   {
     indent();

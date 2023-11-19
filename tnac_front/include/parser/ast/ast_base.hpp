@@ -36,6 +36,7 @@ namespace tnac::ast
     CondShort,
     Matcher,
     Pattern,
+    Dot,
 
     // Decls,
     VarDecl,

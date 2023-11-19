@@ -64,6 +64,8 @@ namespace tnac::rt::out
 
     void visit(const ast::cond_expr& expr) noexcept;
 
+    void visit(const ast::dot_expr& expr) noexcept;
+
     void visit(const ast::pattern& ptrn) noexcept;
 
     void visit(const ast::matcher& matcher) noexcept;

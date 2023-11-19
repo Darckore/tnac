@@ -1056,7 +1056,11 @@ namespace tnac
 
   ast::expr* parser::dot_expr() noexcept
   {
-    return call_expr();
+    auto res = call_expr();
+
+    // magic
+
+    return res;
   }
 
   ast::expr* parser::cond_expr() noexcept

@@ -276,6 +276,54 @@ namespace tnac::ast
 
 
   //
+  // Dot expression
+  // Represents a member access
+  //
+  class dot_expr final : public expr
+  {
+  private:
+    friend class builder;
+
+  public:
+    CLASS_SPECIALS_NONE(dot_expr);
+
+    virtual ~dot_expr() noexcept;
+
+  protected:
+    dot_expr(expr& accd, expr& accr) noexcept;
+
+  public:
+    //
+    // Returns a reference to the accessed expression
+    // 
+    // const version
+    //
+    const expr& accessed() const noexcept;
+
+    //
+    // Returns a reference to the accessed expression
+    //
+    expr& accessed() noexcept;
+
+    //
+    // Returns a reference to the accessor
+    // 
+    // const version
+    //
+    const expr& accessor() const noexcept;
+
+    //
+    // Returns a reference to the accessor
+    //
+    expr& accessor() noexcept;
+
+  private:
+    expr* m_accessed{};
+    expr* m_accessor{};
+  };
+
+
+  //
   // Array expression
   // Represents an array instantiation
   //

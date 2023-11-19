@@ -63,6 +63,7 @@ namespace tnac::rt::out
     case Ret:        print(cast<ast::ret_expr>(*root));    break;
     case CondShort:  print(cast<ast::cond_short>(*root));  break;
     case Cond:       print(cast<ast::cond_expr>(*root));   break;
+    case Dot:        print(cast<ast::dot_expr>(*root));    break;
     case Pattern:    print(cast<ast::pattern>(*root));     break;
     case Matcher:    print(cast<ast::matcher>(*root));     break;
     case VarDecl:    print(cast<ast::var_decl>(*root));    break;
@@ -272,6 +273,13 @@ namespace tnac::rt::out
     }
 
     out() << "; ";
+  }
+
+  void lister::print(const ast::dot_expr& expr) noexcept
+  {
+    print(&expr.accessed());
+    out() << '.';
+    print(&expr.accessor());
   }
 
   void lister::print(const ast::pattern& expr) noexcept

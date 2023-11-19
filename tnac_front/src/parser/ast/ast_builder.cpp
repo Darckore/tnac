@@ -125,6 +125,11 @@ namespace tnac::ast
     return make<cond_short>(condition, onTrue, onFalse, sc);
   }
 
+  dot_expr* builder::make_dot(expr& accessed, expr& accessor) noexcept
+  {
+    return make<dot_expr>(accessed, accessor);
+  }
+
 
   // Public members(Declarators)
 

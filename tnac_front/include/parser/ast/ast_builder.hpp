@@ -150,6 +150,11 @@ namespace tnac::ast
     //
     cond_short* make_short_cond(expr& condition, expr* onTrue, expr* onFalse, scope& sc) noexcept;
 
+    //
+    // Creates a dot expression
+    //
+    dot_expr* make_dot(expr& accessed, expr& accessor) noexcept;
+
   public: // Declarations
     //
     // Makes a decl expression

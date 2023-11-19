@@ -183,7 +183,7 @@ namespace tnac::ast  // Binary expr
 }
 
 
-namespace tnac::ast  // Assign expression
+namespace tnac::ast // Assign expression
 {
   // Special members
 
@@ -192,6 +192,44 @@ namespace tnac::ast  // Assign expression
   assign_expr::assign_expr(expr& assignee, expr& assigned, const token& op) noexcept :
     binary_expr{ kind::Assign, assignee, assigned, op }
   {}
+}
+
+
+namespace tnac::ast // Dot expression
+{
+  // Special members
+
+  dot_expr::~dot_expr() noexcept = default;
+
+  dot_expr::dot_expr(expr& accd, expr& accr) noexcept :
+    expr{ kind::Dot, accd.pos() },
+    m_accessed{ &accd },
+    m_accessor{ &accr }
+  {
+    assume_ancestry(m_accessed);
+    assume_ancestry(m_accessor);
+  }
+
+
+  // Public members
+
+  const expr& dot_expr::accessed() const noexcept
+  {
+    return *m_accessed;
+  }
+  expr& dot_expr::accessed() noexcept
+  {
+    return FROM_CONST(accessed);
+  }
+
+  const expr& dot_expr::accessor() const noexcept
+  {
+    return *m_accessor;
+  }
+  expr& dot_expr::accessor() noexcept
+  {
+    return FROM_CONST(accessor);
+  }
 }
 
 
