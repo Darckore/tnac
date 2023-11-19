@@ -12,7 +12,7 @@ namespace tnac::semantics // Variable
 }
 
 
-namespace tnac::semantics  // Parameter
+namespace tnac::semantics // Parameter
 {
   // Special members
 

@@ -1,8 +1,8 @@
 #include "parser/ast/ast_util.hpp"
 
-namespace tnac::ast
+namespace tnac::ast // Error expr
 {
-  // Error expr
+  // Special members
 
   error_expr::~error_expr() noexcept = default;
 
@@ -13,6 +13,9 @@ namespace tnac::ast
     make_invalid();
   }
 
+
+  // Public members
+
   const token& error_expr::at() const noexcept
   {
     return pos();
@@ -22,9 +25,12 @@ namespace tnac::ast
   {
     return m_errMsg;
   }
+}
 
 
-  // Command
+namespace tnac::ast  // Command
+{
+  // Special members
 
   command::~command() noexcept = default;
 
@@ -32,6 +38,9 @@ namespace tnac::ast
     m_cmd{ cmd },
     m_args{ std::move(args) }
   {}
+
+
+  // Public members
 
   const token& command::operator[](size_type idx) const noexcept
   {

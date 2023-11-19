@@ -33,8 +33,16 @@ namespace tnac::semantics
     module_sym(scope& owner, name_t name, loc_t loc) noexcept;
 
   protected:
+    //
+    // Allows sema to attach params
+    // Needed since module entry definition is completely optional
+    //
     void attach_params(param_list params) noexcept;
 
+    //
+    // Allows sema to attach location of the _entry definition
+    // Needed since module entry definition is completely optional
+    //
     void override_location(loc_t loc) noexcept;
   };
 
@@ -56,7 +64,16 @@ namespace tnac::semantics
     scope_ref(scope& owner, name_t name, scope& referenced, loc_t loc) noexcept;
 
   public:
+    //
+    // Returns the scope it references
+    // 
+    // const version
+    //
     const scope& referenced() const noexcept;
+
+    //
+    // Returns the scope it references
+    //
     scope& referenced() noexcept;
 
   private:

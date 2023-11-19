@@ -99,11 +99,6 @@ namespace tnac::ast
   protected:
     module_def(buf_t name, loc_t loc) noexcept;
 
-    //
-    // Attaches a symbol to this module. Called from sema on symbol creation
-    //
-    void attach_symbol(sym_t& sym) noexcept;
-
   public:
     //
     // Returns the module name
@@ -186,6 +181,11 @@ namespace tnac::ast
     // Overrides the location with a new one
     //
     void attach_params(param_list params) noexcept;
+
+    //
+    // Attaches a symbol to this module. Called from sema on symbol creation
+    //
+    void attach_symbol(sym_t& sym) noexcept;
 
   private:
     buf_t m_name;

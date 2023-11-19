@@ -2,6 +2,8 @@
 
 namespace tnac::ast // Import directive
 {
+  // Special members
+
   import_dir::~import_dir() noexcept = default;
 
   import_dir::import_dir(const token& pos, elem_list name, pointer aliasName) noexcept :
@@ -14,6 +16,9 @@ namespace tnac::ast // Import directive
     for (auto part : m_name)
       assume_ancestry(part);
   }
+
+
+  // Public members
 
   const token& import_dir::pos() const noexcept
   {
@@ -42,6 +47,8 @@ namespace tnac::ast // Import directive
 
 namespace tnac::ast // Module definition
 {
+  // Special members
+
   module_def::~module_def() noexcept = default;
 
   module_def::module_def(buf_t name, loc_t loc) noexcept :
@@ -50,10 +57,8 @@ namespace tnac::ast // Module definition
     m_loc{ loc }
   {}
 
-  void module_def::attach_symbol(sym_t& sym) noexcept
-  {
-    m_sym = &sym;
-  }
+
+  // Public members
 
   module_def::name_t module_def::name() const noexcept
   {
@@ -63,19 +68,6 @@ namespace tnac::ast // Module definition
   module_def::loc_t module_def::at() const noexcept
   {
     return m_loc;
-  }
-
-  void module_def::override_loc(loc_t loc) noexcept
-  {
-    m_loc = loc;
-  }
-
-  void module_def::attach_params(param_list params) noexcept
-  {
-    UTILS_ASSERT(m_params.empty());
-    m_params = std::move(params);
-    for (auto p : m_params)
-      assume_ancestry(p);
   }
 
   bool module_def::is_fake() const noexcept
@@ -126,16 +118,42 @@ namespace tnac::ast // Module definition
   {
     return m_imports.size();
   }
+
+
+  // Protected members
+
+  void module_def::override_loc(loc_t loc) noexcept
+  {
+    m_loc = loc;
+  }
+
+  void module_def::attach_params(param_list params) noexcept
+  {
+    UTILS_ASSERT(m_params.empty());
+    m_params = std::move(params);
+    for (auto p : m_params)
+      assume_ancestry(p);
+  }
+
+  void module_def::attach_symbol(sym_t& sym) noexcept
+  {
+    m_sym = &sym;
+  }
 }
 
 
 namespace tnac::ast // Root
 {
+  // Special members
+
   root::~root() noexcept = default;
 
   root::root() noexcept :
     node{ kind::Root }
   {}
+
+
+  // Public members
 
   const root::elem_list& root::modules() const noexcept
   {

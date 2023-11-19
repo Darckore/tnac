@@ -32,12 +32,28 @@ namespace tnac::semantics
     function(kind k, scope& owner, name_t name, param_list params, loc_t loc) noexcept;
 
   public:
+    //
+    // Returns the numbers of parameters
+    // Same as params().size(), just shorter
+    //
     size_type param_count() const noexcept;
 
+    //
+    // Returns the list of function parameters
+    // 
+    // const version
+    //
     const param_list& params() const noexcept;
+
+    //
+    // Returns the list of function parameters
+    //
     param_list& params() noexcept;
 
   protected:
+    //
+    // Allows derived classes to attach parameter lists later
+    //
     void attach_params(param_list params) noexcept;
 
   private:

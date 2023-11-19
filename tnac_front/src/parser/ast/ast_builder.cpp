@@ -7,9 +7,8 @@ namespace tnac::ast
   builder::builder() noexcept = default;
   builder::~builder() noexcept = default;
 
-  // Public members
 
-  // General
+  // Public members(General)
 
   root* builder::make_root() noexcept
   {
@@ -43,7 +42,8 @@ namespace tnac::ast
     return make<error_expr>(pos, msg);
   }
 
-  // Expressions
+
+  // Public members(Expressions)
 
   result_expr* builder::make_result(const token& tok) noexcept
   {
@@ -126,7 +126,7 @@ namespace tnac::ast
   }
 
 
-  // Declarators
+  // Public members(Declarators)
 
   decl_expr* builder::make_decl_expr(decl& d) noexcept
   {
@@ -147,7 +147,4 @@ namespace tnac::ast
   {
     return make<func_decl>(func, pos, def, std::move(params));
   }
-
-  // Private members
-
 }

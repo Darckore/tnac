@@ -23,6 +23,7 @@ namespace tnac::semantics // Module
   }
 }
 
+
 namespace tnac::semantics // Scope ref
 {
   // Special members

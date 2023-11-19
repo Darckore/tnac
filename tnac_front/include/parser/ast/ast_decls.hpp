@@ -32,11 +32,6 @@ namespace tnac::ast
     
     decl(kind k, const token& id, node* def) noexcept;
 
-    //
-    // Attaches a symbol to this declarator. Called sema on symbol creation
-    //
-    void attach_symbol(semantics::symbol& sym) noexcept;
-
   public:
     //
     // Returns the entity name
@@ -72,6 +67,12 @@ namespace tnac::ast
     // 
     semantics::symbol& symbol() noexcept;
 
+  protected:
+    //
+    // Attaches a symbol to this declarator. Called sema on symbol creation
+    //
+    void attach_symbol(semantics::symbol& sym) noexcept;
+
   private:
     node* m_def{};
     semantics::symbol* m_symbol{};
@@ -83,6 +84,7 @@ namespace tnac::ast
   {
     return d.what();
   }
+
 
   //
   // Decl expression. Holds the declarator corresponding to the declared entity

@@ -1,8 +1,8 @@
 #include "parser/ast/ast_decls.hpp"
 
-namespace tnac::ast
+namespace tnac::ast // Base declarator
 {
-  // Base declarator
+  // Special members
 
   decl::~decl() noexcept = default;
 
@@ -19,10 +19,8 @@ namespace tnac::ast
     decl{ k, id, id, def }
   {}
 
-  void decl::attach_symbol(semantics::symbol& sym) noexcept
-  {
-    m_symbol = &sym;
-  }
+
+  // Public members
 
   string_t decl::name() const noexcept
   {
@@ -54,7 +52,18 @@ namespace tnac::ast
   }
 
 
-  // Decl Expression
+  // Protected members
+
+  void decl::attach_symbol(semantics::symbol& sym) noexcept
+  {
+    m_symbol = &sym;
+  }
+}
+
+
+namespace tnac::ast // Decl Expression
+{
+  // Special members
 
   decl_expr::~decl_expr() noexcept = default;
 
@@ -65,6 +74,9 @@ namespace tnac::ast
     assume_ancestry(m_decl);
   }
 
+
+  // Public members
+
   const decl& decl_expr::declarator() const noexcept
   {
     return *m_decl;
@@ -73,15 +85,21 @@ namespace tnac::ast
   {
     return FROM_CONST(declarator);
   }
+}
 
 
-  // Variable decl
+namespace tnac::ast // Variable decl
+{
+  // Special members
 
   var_decl::~var_decl() noexcept = default;
 
   var_decl::var_decl(const token& var, expr& initialiser) noexcept :
     decl{ kind::VarDecl, var, &initialiser }
   {}
+
+
+  // Public members
 
   const expr& var_decl::initialiser() const noexcept
   {
@@ -91,18 +109,24 @@ namespace tnac::ast
   {
     return FROM_CONST(initialiser);
   }
+}
 
 
-  // Parameter decl
+namespace tnac::ast // Parameter decl
+{
+  // Special members
 
   param_decl::~param_decl() noexcept = default;
 
   param_decl::param_decl(const token& paramName, expr* opt) noexcept :
     decl{ kind::ParamDecl, paramName, opt }
   {}
+}
 
 
-  // Function decl
+namespace tnac::ast // Function decl
+{
+  // Special members
 
   func_decl::~func_decl() noexcept = default;
 
@@ -113,6 +137,9 @@ namespace tnac::ast
     for (auto p : m_params)
       assume_ancestry(p);
   }
+
+
+  // Public members
 
   const func_decl::param_list& func_decl::params() const noexcept
   {

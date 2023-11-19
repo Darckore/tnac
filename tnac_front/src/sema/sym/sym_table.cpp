@@ -9,6 +9,7 @@ namespace tnac::semantics
 
   sym_table::sym_table() noexcept = default;
 
+
   // Public members
 
   scope& sym_table::add_scope(scope_ptr parent, scope_kind kind) noexcept
@@ -74,6 +75,7 @@ namespace tnac::semantics
   {
     return { m_modules.begin(), m_modules.end() };
   }
+
 
   // Private members
 

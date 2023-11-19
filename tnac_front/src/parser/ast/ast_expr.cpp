@@ -1,8 +1,8 @@
 #include "parser/ast/ast_expr.hpp"
 
-namespace tnac::ast
+namespace tnac::ast // Base expr
 {
-  // Base expr
+  // Special members
 
   expr::~expr() noexcept = default;
 
@@ -11,22 +11,31 @@ namespace tnac::ast
     m_pos{ tok }
   {}
 
+
+  // Public members
+
   const token& expr::pos() const noexcept
   {
     return m_pos;
   }
+}
 
 
-  // Result expr
+namespace tnac::ast // Result expr
+{
+  // Special members
 
   result_expr::~result_expr() noexcept = default;
 
   result_expr::result_expr(const token& tok) noexcept :
     expr{ kind::Result, tok }
   {}
+}
 
 
-  // Ret expression
+namespace tnac::ast // Ret expression
+{
+  // Special members
 
   ret_expr::~ret_expr() noexcept = default;
 
@@ -37,6 +46,9 @@ namespace tnac::ast
     assume_ancestry(m_retVal);
   }
 
+
+  // Public members
+
   const expr& ret_expr::returned_value() const noexcept
   {
     return *m_retVal;
@@ -45,18 +57,24 @@ namespace tnac::ast
   {
     return FROM_CONST(returned_value);
   }
+}
 
 
-  // Literal expr
+namespace tnac::ast // Literal expr
+{
+  // Special members
 
   lit_expr::~lit_expr() noexcept = default;
 
   lit_expr::lit_expr(const token& tok) noexcept :
     expr{ kind::Literal, tok }
   {}
+}
 
 
-  // Id expr
+namespace tnac::ast // Id expr
+{
+  // Special members
 
   id_expr::~id_expr() noexcept = default;
 
@@ -64,6 +82,9 @@ namespace tnac::ast
     expr{ kind::Identifier, tok },
     m_sym{ &sym }
   {}
+
+
+  // Public members
 
   string_t id_expr::name() const noexcept
   {
@@ -78,9 +99,12 @@ namespace tnac::ast
   {
     return FROM_CONST(symbol);
   }
+}
 
 
-  // Unary expr
+namespace tnac::ast  // Unary expr
+{
+  // Special members
 
   unary_expr::~unary_expr() noexcept = default;
 
@@ -90,6 +114,9 @@ namespace tnac::ast
   {
     assume_ancestry(m_expr);
   }
+
+
+  // Public members
 
   const token& unary_expr::op() const noexcept
   {
@@ -104,9 +131,12 @@ namespace tnac::ast
   {
     return FROM_CONST(operand);
   }
+}
 
 
-  // Binary expr
+namespace tnac::ast  // Binary expr
+{
+  // Special members
 
   binary_expr::~binary_expr() noexcept = default;
 
@@ -124,6 +154,9 @@ namespace tnac::ast
     binary_expr{ kind::Binary, left, right, op }
   {
   }
+
+
+  // Public members
 
   const token& binary_expr::op() const noexcept
   {
@@ -147,18 +180,24 @@ namespace tnac::ast
   {
     return FROM_CONST(right);
   }
+}
 
 
-  // Assign expression
+namespace tnac::ast  // Assign expression
+{
+  // Special members
 
   assign_expr::~assign_expr() noexcept = default;
 
   assign_expr::assign_expr(expr& assignee, expr& assigned, const token& op) noexcept :
     binary_expr{ kind::Assign, assignee, assigned, op }
   {}
+}
 
 
-  // Array expr
+namespace tnac::ast  // Array expr
+{
+  // Special members
 
   array_expr::~array_expr() noexcept = default;
 
@@ -172,6 +211,9 @@ namespace tnac::ast
     }
   }
 
+
+  // Public members
+
   const array_expr::elem_list& array_expr::elements() const noexcept
   {
     return m_elements;
@@ -180,9 +222,12 @@ namespace tnac::ast
   {
     return FROM_CONST(elements);
   }
+}
 
 
-  // Paren expr
+namespace tnac::ast // Paren expr
+{
+  // Special members
 
   paren_expr::~paren_expr() noexcept = default;
 
@@ -193,6 +238,9 @@ namespace tnac::ast
     assume_ancestry(m_expr);
   }
 
+
+  // Public members
+
   const expr& paren_expr::internal_expr() const noexcept
   {
     return *m_expr;
@@ -201,9 +249,12 @@ namespace tnac::ast
   {
     return FROM_CONST(internal_expr);
   }
+}
 
 
-  // Abs expr
+namespace tnac::ast // Abs expr
+{
+  // Special members
 
   abs_expr::~abs_expr() noexcept = default;
 
@@ -214,6 +265,9 @@ namespace tnac::ast
     assume_ancestry(m_expr);
   }
 
+
+  // Public members
+
   const expr& abs_expr::expression() const noexcept
   {
     return *m_expr;
@@ -222,9 +276,12 @@ namespace tnac::ast
   {
     return FROM_CONST(expression);
   }
+}
 
 
-  // Invocation
+namespace tnac::ast // Invocation
+{
+  // Special members
 
   invocation::~invocation() noexcept = default;
 
@@ -237,6 +294,9 @@ namespace tnac::ast
       assume_ancestry(arg);
     }
   }
+
+
+  // Public members
 
   const token& invocation::name() const noexcept
   {
@@ -251,9 +311,12 @@ namespace tnac::ast
   {
     return FROM_CONST(args);
   }
+}
 
 
-  // Typed expr
+namespace tnac::ast // Typed expr
+{
+  // Special members
 
   typed_expr::~typed_expr() noexcept = default;
 
@@ -262,13 +325,19 @@ namespace tnac::ast
   {
   }
 
+
+  // Public members
+
   const token& typed_expr::type_name() const noexcept
   {
     return name();
   }
+}
 
 
-  // Call expr
+namespace tnac::ast // Call expr
+{
+  // Special members
 
   call_expr::~call_expr() noexcept = default;
 
@@ -283,6 +352,9 @@ namespace tnac::ast
       assume_ancestry(arg);
     }
   }
+
+
+  // Public members
 
   const expr& call_expr::callable() const noexcept
   {
@@ -301,9 +373,12 @@ namespace tnac::ast
   {
     return FROM_CONST(args);
   }
+}
 
 
-  // Matcher
+namespace tnac::ast // Matcher
+{
+  // Special members
 
   matcher::~matcher() noexcept = default;
 
@@ -313,6 +388,9 @@ namespace tnac::ast
   {
     assume_ancestry(checkedExpr);
   }
+
+
+  // Public members
 
   bool matcher::is_default() const noexcept
   {
@@ -340,9 +418,12 @@ namespace tnac::ast
   {
     return FROM_CONST(checked);
   }
+}
 
 
-  // Pattern
+namespace tnac::ast // Pattern
+{
+  // Special members
 
   pattern::~pattern() noexcept = default;
 
@@ -354,6 +435,9 @@ namespace tnac::ast
     assume_ancestry(&matcherExpr);
     assume_ancestry(&body);
   }
+
+
+  // Public members
 
   const expr& pattern::matcher() const noexcept
   {
@@ -372,9 +456,12 @@ namespace tnac::ast
   {
     return FROM_CONST(body);
   }
+}
 
 
-  // Conditional expr
+namespace tnac::ast // Conditional expr
+{
+  // Special members
 
   cond_expr::~cond_expr() noexcept = default;
 
@@ -386,6 +473,9 @@ namespace tnac::ast
     assume_ancestry(&condition);
     assume_ancestry(&body);
   }
+
+
+  // Public members
 
   const expr& cond_expr::cond() const noexcept
   {
@@ -404,9 +494,12 @@ namespace tnac::ast
   {
     return FROM_CONST(patterns);
   }
+}
 
 
-  // Conditional shorthand expr
+namespace tnac::ast // Conditional shorthand expr
+{
+  // Special members
 
   cond_short::~cond_short() noexcept = default;
 
@@ -421,6 +514,9 @@ namespace tnac::ast
     assume_ancestry(onFalse);
     assume_ancestry(&sc);
   }
+
+
+  // Public members
 
   const expr& cond_short::cond() const noexcept
   {

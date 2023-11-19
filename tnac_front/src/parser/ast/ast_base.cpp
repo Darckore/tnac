@@ -1,14 +1,17 @@
 #include "parser/ast/ast.hpp"
 
-namespace tnac::ast
+namespace tnac::ast // Base node
 {
-  // Base node
+  // Special members
 
   node::~node() noexcept = default;
 
   node::node(kind k) noexcept :
     m_kind{ k }
   {}
+
+
+  // Public members
 
   const node* node::parent() const noexcept
   {
@@ -33,6 +36,9 @@ namespace tnac::ast
   {
     return m_valid;
   }
+
+
+  // Protected members
 
   void node::make_invalid() noexcept
   {
@@ -61,9 +67,12 @@ namespace tnac::ast
 
     child->make_child_of(this);
   }
+}
 
 
-  // Scope
+namespace tnac::ast // Scope
+{
+  // Special members
 
   scope::~scope() noexcept = default;
 
@@ -76,6 +85,9 @@ namespace tnac::ast
   scope::scope(kind k) noexcept :
     node{ k }
   {}
+
+
+  // Public members
 
   void scope::adopt(elem_list children) noexcept
   {
