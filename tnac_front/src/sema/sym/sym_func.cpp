@@ -6,13 +6,14 @@ namespace tnac::semantics
 
   function::~function() noexcept = default;
 
-  function::function(scope& owner, name_t name, param_list params, loc_t loc) noexcept :
-    function{ kind::Function, owner, name, std::move(params), loc }
+  function::function(scope& owner, name_t name, param_list params, scope& owned, loc_t loc) noexcept :
+    function{ kind::Function, owner, name, std::move(params), owned, loc }
   {}
 
-  function::function(kind k, scope& owner, name_t name, param_list params, loc_t loc) noexcept :
+  function::function(kind k, scope& owner, name_t name, param_list params, scope& owned, loc_t loc) noexcept :
     symbol{ k, name, owner, loc },
-    m_params{ std::move(params) }
+    m_params{ std::move(params) },
+    m_ownedScope{ &owned }
   {}
 
 
@@ -30,6 +31,15 @@ namespace tnac::semantics
   function::param_list& function::params() noexcept
   {
     return FROM_CONST(params);
+  }
+
+  const scope& function::owned_scope() const noexcept
+  {
+    return *m_ownedScope;
+  }
+  scope& function::owned_scope() noexcept
+  {
+    return FROM_CONST(owned_scope);
   }
 
 

@@ -30,16 +30,16 @@ namespace tnac::semantics
     return *make_symbol<parameter>(name, parent, loc);
   }
 
-  function& sym_table::add_function(name_t name, scope_ptr parent, func_params params, loc_t loc) noexcept
+  function& sym_table::add_function(name_t name, scope_ptr parent, func_params params, loc_t loc, scope& owned) noexcept
   {
-    auto&& newFunc = *make_symbol<function>(name, parent, std::move(params), loc);
+    auto&& newFunc = *make_symbol<function>(name, parent, std::move(params), owned, loc);
     store_function(newFunc);
     return newFunc;
   }
 
-  module_sym& sym_table::add_module(name_t name, scope_ptr parent, loc_t loc) noexcept
+  module_sym& sym_table::add_module(name_t name, scope_ptr parent, loc_t loc, scope& owned) noexcept
   {
-    auto&& newModule = *make_symbol<module_sym>(name, parent, loc);
+    auto&& newModule = *make_symbol<module_sym>(name, parent, owned, loc);
     store_module(newModule);
     return newModule;
   }

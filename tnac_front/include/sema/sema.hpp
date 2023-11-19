@@ -73,6 +73,17 @@ namespace tnac
     semantics::symbol& visit_import_alias(const token& id, semantics::module_sym& src) noexcept;
 
     //
+    // Attempts to enter the scope referred to by an id
+    //
+    bool try_resolve_scope(const token& id) noexcept;
+
+    //
+    // Returns to the previously saved scope
+    // Used in nested lookups to get to the state before they occurred
+    //
+    void rollback() noexcept;
+
+    //
     // Generates a random name
     //
     string_t contrive_name() noexcept;
@@ -111,5 +122,6 @@ namespace tnac
     semantics::sym_table m_symTab;
     fake_name_set m_generatedNames;
     semantics::scope* m_curScope{};
+    semantics::scope* m_prevScope{};
   };
 }

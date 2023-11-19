@@ -172,6 +172,11 @@ namespace tnac
     //
     static string_t circular_ref(string_t last, string_t cur) noexcept;
 
+    //
+    // Returns the 'literal after dot' message
+    //
+    static string_t lit_after_dot() noexcept;
+
   public: // Commands
     //
     // Returns an 'unknown command' message

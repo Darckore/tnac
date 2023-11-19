@@ -121,6 +121,7 @@
       <Item Name="[name]">m_name,sb</Item>
       <Item Name="[parent]">*m_owner</Item>
       <Item Name="[params]">m_params</Item>
+      <Item Name="[own scope]">*m_ownedScope</Item>
     </Expand>
   </Type>
 
@@ -130,6 +131,7 @@
       <Item Name="[name]">m_name,sb</Item>
       <Item Name="[parent]">*m_owner</Item>
       <Item Name="[params]">m_params</Item>
+      <Item Name="[own scope]">*m_ownedScope</Item>
     </Expand>
   </Type>
 
@@ -233,6 +235,14 @@
     <Expand>
       <Item Name="[left]">*m_left</Item>
       <Item Name="[right]">*m_right</Item>
+    </Expand>
+  </Type>
+
+  <Type Name="tnac::ast::dot_expr">
+    <DisplayString>{m_kind,en}</DisplayString>
+    <Expand>
+      <Item Name="[accessed]">*m_accessed</Item>
+      <Item Name="[accessor]">*m_accessor</Item>
     </Expand>
   </Type>
 
@@ -362,6 +372,8 @@
       <Item Name="[symbol table]">m_symTab</Item>
       <Item Name="[current scope]" Condition="m_curScope">*m_curScope</Item>
       <Item Name="[current scope]" Condition="!m_curScope">"&lt;null&gt;",sb</Item>
+      <Item Name="[previous]" Condition="m_prevScope">*m_prevScope</Item>
+      <Item Name="[previous]" Condition="!m_prevScope">"&lt;null&gt;",sb</Item>
       <Item Name="[fake names]">m_generatedNames</Item>
     </Expand>
   </Type>

@@ -1038,7 +1038,7 @@ namespace tnac
   ast::expr* parser::call_expr() noexcept
   {
     auto res = primary_expr();
-    
+
     while (detail::is_open_paren(peek_next()))
     {
       next_tok();
@@ -1057,9 +1057,34 @@ namespace tnac
   ast::expr* parser::dot_expr() noexcept
   {
     auto res = call_expr();
+    if (!detail::is_dot(peek_next()))
+      return res;
 
-    // magic
+    auto accessor = res;
+    while (detail::is_dot(peek_next()))
+    {
+      using enum ast::node_kind;
+      next_tok();
 
+      if (accessor->is(Identifier))
+      {
+        auto&& id = utils::cast<ast::id_expr>(*accessor);
+        if (!m_sema.try_resolve_scope(id.pos()))
+        {
+          // todo: unresiolved
+        }
+      }
+
+      accessor = call_expr();
+      if (accessor->is(Literal))
+      {
+        accessor = error_expr(accessor->pos(), diag::lit_after_dot(), err_pos::Current);
+      }
+
+      res = m_builder.make_dot(*res, *accessor);
+    }
+
+    m_sema.rollback();
     return res;
   }
 

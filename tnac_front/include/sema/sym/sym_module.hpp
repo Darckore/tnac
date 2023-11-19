@@ -30,7 +30,7 @@ namespace tnac::semantics
     virtual ~module_sym() noexcept;
 
   protected:
-    module_sym(scope& owner, name_t name, loc_t loc) noexcept;
+    module_sym(scope& owner, name_t name, scope& modScope, loc_t loc) noexcept;
 
   protected:
     //

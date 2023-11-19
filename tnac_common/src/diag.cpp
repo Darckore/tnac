@@ -171,6 +171,11 @@ namespace tnac
     return format(detail::circularImport, last, cur);
   }
 
+  string_t diag::lit_after_dot() noexcept
+  {
+    return "Literal is not allowed as an accessor after '.'"sv;
+  }
+
 
   // Public members(Commands)
 

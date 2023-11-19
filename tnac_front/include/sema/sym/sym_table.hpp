@@ -165,12 +165,12 @@ namespace tnac::semantics
     //
     // Inserts a function to the specified scope
     //
-    function& add_function(name_t name, scope_ptr parent, func_params params, loc_t loc) noexcept;
+    function& add_function(name_t name, scope_ptr parent, func_params params, loc_t loc, scope& owned) noexcept;
 
     //
     // Inserts a module to the specified scope
     //
-    module_sym& add_module(name_t name, scope_ptr parent, loc_t loc) noexcept;
+    module_sym& add_module(name_t name, scope_ptr parent, loc_t loc, scope& owned) noexcept;
 
     //
     // Inserts a scope reference to the specified scope

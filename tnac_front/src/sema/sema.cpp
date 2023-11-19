@@ -54,7 +54,7 @@ namespace tnac
       UTILS_ASSERT(m_curScope && m_curScope->is_function());
       auto targetScope = m_curScope->enclosing();
       auto&& declParams = utils::cast<FuncDecl>(decl).params();
-      auto&& sym = m_symTab.add_function(name, targetScope, make_params(declParams), loc);
+      auto&& sym = m_symTab.add_function(name, targetScope, make_params(declParams), loc, *m_curScope);
       decl.attach_symbol(sym);
       m_curScope->attach_symbol(sym);
     }
@@ -74,7 +74,7 @@ namespace tnac
       contrive_name() :
       def.name();
 
-    auto&& sym = m_symTab.add_module(name, targetScope, def.at());
+    auto&& sym = m_symTab.add_module(name, targetScope, def.at(), *m_curScope);
     def.attach_symbol(sym);
     m_curScope->attach_symbol(sym);
   }
@@ -117,6 +117,40 @@ namespace tnac
     auto&& aliasScope = m_symTab.add_scope(m_curScope, semantics::scope::Module);
     aliasScope.attach_symbol(src);
     return m_symTab.add_scope_ref(name, m_curScope, loc, aliasScope);
+  }
+
+  bool sema::try_resolve_scope(const token& id) noexcept
+  {
+    if (!m_prevScope)
+      m_prevScope = m_curScope;
+
+    auto name = id.value();
+    auto sym = find(name);
+    
+    if (auto scopeRef = utils::try_cast<semantics::scope_ref>(sym))
+    {
+      m_curScope = &scopeRef->referenced();
+      return true;
+    }
+
+    using enum semantics::sym_kind;
+    if (sym->is_any(Module, Function))
+    {
+      auto&& ref = utils::cast<semantics::function>(*sym);
+      m_curScope = &ref.owned_scope();
+      return true;
+    }
+
+    return false;
+  }
+
+  void sema::rollback() noexcept
+  {
+    if (!m_prevScope)
+      return;
+
+    m_curScope = m_prevScope;
+    m_prevScope = {};
   }
 
   string_t sema::contrive_name() noexcept

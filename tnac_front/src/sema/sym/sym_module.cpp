@@ -6,9 +6,10 @@ namespace tnac::semantics // Module
 
   module_sym::~module_sym() noexcept = default;
 
-  module_sym::module_sym(scope& owner, name_t name, loc_t loc) noexcept :
-    function{ kind::Module, owner, name, {}, loc }
+  module_sym::module_sym(scope& owner, name_t name, scope& modScope, loc_t loc) noexcept :
+    function{ kind::Module, owner, name, {}, modScope, loc }
   {}
+
 
   // Protected members
 

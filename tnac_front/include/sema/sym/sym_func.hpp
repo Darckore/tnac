@@ -27,9 +27,9 @@ namespace tnac::semantics
     virtual ~function() noexcept;
 
   protected:
-    function(scope& owner, name_t name, param_list params, loc_t loc) noexcept;
+    function(scope& owner, name_t name, param_list params, scope& owned, loc_t loc) noexcept;
 
-    function(kind k, scope& owner, name_t name, param_list params, loc_t loc) noexcept;
+    function(kind k, scope& owner, name_t name, param_list params, scope& owned, loc_t loc) noexcept;
 
   public:
     //
@@ -50,6 +50,18 @@ namespace tnac::semantics
     //
     param_list& params() noexcept;
 
+    //
+    // Returns the underlying scope
+    // 
+    // const version
+    //
+    const scope& owned_scope() const noexcept;
+
+    //
+    // Returns the underlying scope
+    //
+    scope& owned_scope() noexcept;
+
   protected:
     //
     // Allows derived classes to attach parameter lists later
@@ -58,5 +70,6 @@ namespace tnac::semantics
 
   private:
     param_list m_params;
+    scope* m_ownedScope{};
   };
 }
