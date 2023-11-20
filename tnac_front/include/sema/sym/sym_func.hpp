@@ -55,12 +55,12 @@ namespace tnac::semantics
     // 
     // const version
     //
-    const scope& owned_scope() const noexcept;
+    const scope& own_scope() const noexcept;
 
     //
     // Returns the underlying scope
     //
-    scope& owned_scope() noexcept;
+    scope& own_scope() noexcept;
 
   protected:
     //

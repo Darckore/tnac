@@ -33,13 +33,13 @@ namespace tnac::semantics
     return FROM_CONST(params);
   }
 
-  const scope& function::owned_scope() const noexcept
+  const scope& function::own_scope() const noexcept
   {
     return *m_ownedScope;
   }
-  scope& function::owned_scope() noexcept
+  scope& function::own_scope() noexcept
   {
-    return FROM_CONST(owned_scope);
+    return FROM_CONST(own_scope);
   }
 
 

@@ -3,10 +3,9 @@
 
 namespace tnac
 {
-  sema::scope_guard::scope_guard(sema& s, semantics::scope* newScope, bool alive) noexcept :
+  sema::scope_guard::scope_guard(sema& s, semantics::scope* newScope) noexcept :
     m_sema{ &s },
-    m_scope{ m_sema->m_curScope },
-    m_alive{ alive }
+    m_scope{ m_sema->m_curScope }
   {
     if (m_alive)
     {
@@ -82,7 +81,7 @@ namespace tnac
 
   sema::scope_guard sema::assume_scope(semantics::scope& scope) noexcept
   {
-    return { *this, &scope, true };
+    return { *this, &scope };
   }
 
   sema::sym_ptr sema::find(string_t name, bool currentOnly /*= false*/) noexcept
@@ -188,10 +187,21 @@ namespace tnac
   {
     auto name = id.value();
     auto loc = id.at();
+    return m_symTab.add_scope_ref(name, m_curScope, loc, src.own_scope());
+  }
 
-    auto&& aliasScope = m_symTab.add_scope(m_curScope, semantics::scope::Module);
-    aliasScope.attach_symbol(src);
-    return m_symTab.add_scope_ref(name, m_curScope, loc, aliasScope);
+  sema::scope_guard sema::try_resolve_scope(ast::expr& expr) noexcept
+  {
+    auto found = m_curScope;
+    if (auto sym = extract_sym(expr))
+    {
+      using enum semantics::sym_kind;
+      if (sym->is_any(Module, Function))
+        found = &utils::cast<Function>(*sym).own_scope();
+      else if (auto sr = utils::try_cast<ScopeRef>(sym))
+        found = &sr->referenced();
+    }
+    return { *this, found };
   }
 
   string_t sema::contrive_name() noexcept
@@ -204,6 +214,17 @@ namespace tnac
 
 
   // Private members
+
+  semantics::symbol* sema::extract_sym(ast::expr& expr) const noexcept
+  {
+    if (auto dot = utils::try_cast<ast::dot_expr>(&expr))
+      return extract_sym(dot->accessor());
+
+    if (auto id = utils::try_cast<ast::id_expr>(&expr))
+      return &id->symbol();
+
+    return {};
+  }
 
   sema::symbol_params sema::make_params(const ast_params& src) const noexcept
   {

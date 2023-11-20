@@ -24,7 +24,7 @@ namespace tnac
       friend class sema;
 
     protected:
-      scope_guard(sema& s, semantics::scope* newScope, bool alive) noexcept;
+      scope_guard(sema& s, semantics::scope* newScope) noexcept;
 
     public:
       scope_guard() = delete;
@@ -44,7 +44,7 @@ namespace tnac
     private:
       sema* m_sema;
       semantics::scope* m_scope{};
-      bool m_alive{};
+      bool m_alive{ true };
     };
 
   public:
@@ -117,6 +117,11 @@ namespace tnac
     semantics::symbol& visit_import_alias(const token& id, semantics::module_sym& src) noexcept;
 
     //
+    // Attempts to resolve scope based on an expression
+    //
+    scope_guard try_resolve_scope(ast::expr& expr) noexcept;
+
+    //
     // Generates a random name
     //
     string_t contrive_name() noexcept;
@@ -146,6 +151,11 @@ namespace tnac
     }
 
   private:
+    //
+    // Attempts to extract a symbol from an expression
+    //
+    semantics::symbol* extract_sym(ast::expr& expr) const noexcept;
+
     //
     // Creates symbol params from AST-related params
     //

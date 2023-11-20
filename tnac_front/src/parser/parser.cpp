@@ -1065,7 +1065,8 @@ namespace tnac
     auto&& prevScope = *m_sema.current_scope();
     while (detail::is_dot(peek_next()))
     {
-      res = accessor(*res, prevScope);
+      auto accr = accessor(*res, prevScope);
+      res = m_builder.make_dot(*res, *accr);
     }
 
     return res;
@@ -1073,7 +1074,7 @@ namespace tnac
 
   ast::expr* parser::accessor(ast::expr& accd, semantics::scope& prevScope) noexcept
   {
-    utils::unused(accd);
+    auto sg = m_sema.try_resolve_scope(accd);
     next_tok();
     auto accr = primary_expr();
     if (accr->is(ast::node_kind::Literal))
@@ -1081,7 +1082,7 @@ namespace tnac
       return error_expr(accr->pos(), diag::lit_after_dot(), err_pos::Current);
     }
 
-    auto _ = m_sema.assume_scope(prevScope);
+    auto last = m_sema.assume_scope(prevScope);
     while (detail::is_open_paren(peek_next()))
     {
       accr = call_expr(*accr);
