@@ -1073,20 +1073,21 @@ namespace tnac
 
   ast::expr* parser::accessor(ast::expr& accd, semantics::scope& prevScope) noexcept
   {
+    utils::unused(accd);
     next_tok();
-    auto callee = primary_expr();
-    if (callee->is(ast::node_kind::Literal))
+    auto accr = primary_expr();
+    if (accr->is(ast::node_kind::Literal))
     {
-      return error_expr(callee->pos(), diag::lit_after_dot(), err_pos::Current);
+      return error_expr(accr->pos(), diag::lit_after_dot(), err_pos::Current);
     }
 
+    auto _ = m_sema.assume_scope(prevScope);
     while (detail::is_open_paren(peek_next()))
     {
-      auto _ = m_sema.assume_scope(prevScope);
-      callee = call_expr(*callee);
+      accr = call_expr(*accr);
     }
 
-    return m_builder.make_dot(accd, *callee);
+    return accr;
   }
 
   ast::expr* parser::cond_expr() noexcept
