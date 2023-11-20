@@ -163,7 +163,7 @@ namespace tnac::rt::out
   void lister::print(const ast::binary_expr& expr) noexcept
   {
     print(&expr.left());
-    print_token(expr.op(), true);
+    print_token(expr.op(), false);
     print(&expr.right());
   }
 
@@ -180,14 +180,14 @@ namespace tnac::rt::out
 
   void lister::print(const ast::paren_expr& expr) noexcept
   {
-    out() << "( ";
+    out() << "(";
     print(&expr.internal_expr());
     out() << ") ";
   }
 
   void lister::print(const ast::abs_expr& expr) noexcept
   {
-    out() << "| ";
+    out() << "|";
     print(&expr.expression());
     out() << "| ";
   }
@@ -205,12 +205,12 @@ namespace tnac::rt::out
 
   void lister::print(const ast::lit_expr& expr) noexcept
   {
-    print_token(expr.pos(), true);
+    print_token(expr.pos(), false);
   }
 
   void lister::print(const ast::id_expr& expr) noexcept
   {
-    print_token(expr.pos(), true);
+    print_token(expr.pos(), false);
   }
 
   void lister::print(const ast::ret_expr& expr) noexcept
@@ -233,11 +233,11 @@ namespace tnac::rt::out
 
   void lister::print(const ast::cond_short& expr) noexcept
   {
-    out() << "{ ";
+    out() << "{";
     print(&expr.cond());
     out() << '}';
 
-    out() << " -> { ";
+    out() << "->{";
     
     if (expr.has_true())
     {
@@ -249,12 +249,12 @@ namespace tnac::rt::out
       print(&expr.on_false());
     }
     
-    out() << "} ";
+    out() << "}";
   }
 
   void lister::print(const ast::cond_expr& expr) noexcept
   {
-    out() << "{ ";
+    out() << "{";
     print(&expr.cond());
     out() << '}';
 
@@ -266,10 +266,6 @@ namespace tnac::rt::out
       print(patterns);
       --m_indent;
       indent(nearest_to_scope(expr));
-    }
-    else
-    {
-      out() << ' ';
     }
 
     out() << "; ";
@@ -296,31 +292,31 @@ namespace tnac::rt::out
     }
 
     indent(expr);
-    out() << "; ";
+    out() << ";";
   }
 
   void lister::print(const ast::matcher& expr) noexcept
   {
-    out() << "{ ";
+    out() << "{";
     if (!expr.is_default() && !expr.is_unary())
     {
       if (!expr.has_implicit_op())
-        print_token(expr.pos(), true);
+        print_token(expr.pos(), false);
 
       print(&expr.checked());
     }
     if (expr.is_unary())
     {
-      print_token(expr.pos(), true);
+      print_token(expr.pos(), false);
     }
 
-    out() << "} -> ";
+    out() << "}->";
   }
 
   void lister::print(const ast::var_decl& decl) noexcept
   {
-    print_token(decl.pos(), true);
-    out() << "= ";
+    print_token(decl.pos(), false);
+    out() << "=";
     print(&decl.initialiser());
   }
 
@@ -374,7 +370,7 @@ namespace tnac::rt::out
 
   void lister::print_args(const args_t& args, char_t open, char_t close) noexcept
   {
-    out() << open << ' ';
+    out() << open;
     const auto size = args.size();
     auto idx = std::size_t{};
     for (auto arg : args)
@@ -386,7 +382,7 @@ namespace tnac::rt::out
         out() << ", ";
     }
 
-    out() << close << ' ';
+    out() << close;
   }
 
   void lister::print_params(const params_t& params) noexcept
