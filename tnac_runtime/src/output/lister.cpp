@@ -84,7 +84,7 @@ namespace tnac::rt::out
   {
     auto name = mod.is_fake() ? "<fake>"sv : mod.name();
     comment_style();
-    out() << "`Module: " << name << '`';
+    out() << "\\Module: " << name;
     default_style();
     endl();
     for (auto importDir : mod.imports())
@@ -180,16 +180,16 @@ namespace tnac::rt::out
 
   void lister::print(const ast::paren_expr& expr) noexcept
   {
-    out() << "(";
+    out() << '(';
     print(&expr.internal_expr());
-    out() << ") ";
+    out() << ')';
   }
 
   void lister::print(const ast::abs_expr& expr) noexcept
   {
-    out() << "|";
+    out() << '|';
     print(&expr.expression());
-    out() << "| ";
+    out() << '|';
   }
 
   void lister::print(const ast::typed_expr& expr) noexcept
@@ -227,7 +227,7 @@ namespace tnac::rt::out
   void lister::print(const ast::error_expr& expr) noexcept
   {
     if(m_styles) fmt::add_clr(out(), fmt::clr::BoldRed);
-    out() << "`" << expr.message() << "` ";
+    out() << "\\" << expr.message();
     default_style();
   }
 
