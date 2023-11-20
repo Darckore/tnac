@@ -14,6 +14,39 @@ namespace tnac
   //
   class sema final
   {
+  private:
+    //
+    // Holds a scope received from sema and restores it in the destructor
+    //
+    class scope_guard final
+    {
+    private:
+      friend class sema;
+
+    protected:
+      scope_guard(sema& s, semantics::scope* newScope, bool alive) noexcept;
+
+    public:
+      scope_guard() = delete;
+
+      ~scope_guard() noexcept;
+
+      scope_guard(const scope_guard& other) noexcept = delete;
+      scope_guard& operator=(const scope_guard& other) noexcept = delete;
+
+      scope_guard(scope_guard&& other) noexcept;
+      scope_guard& operator=(scope_guard&& other) noexcept;
+
+      explicit operator bool() const noexcept;
+
+      semantics::scope* get() noexcept;
+
+    private:
+      sema* m_sema;
+      semantics::scope* m_scope{};
+      bool m_alive{};
+    };
+
   public:
     using symbol = semantics::symbol;
     using sym_ptr = symbol*;
@@ -40,6 +73,17 @@ namespace tnac
     // Closes the current scope and makes its parent the current one
     //
     void close_scope() noexcept;
+
+    //
+    // Returns the current scope
+    //
+    semantics::scope* current_scope() noexcept;
+
+    //
+    // Assumes the given scope as the current one
+    // and returns a guard to the previous scope
+    //
+    scope_guard assume_scope(semantics::scope& scope) noexcept;
 
     //
     // Checks whether the specified symbol has previously been defined
@@ -71,17 +115,6 @@ namespace tnac
     // Visits an alias declaration of an imported module
     //
     semantics::symbol& visit_import_alias(const token& id, semantics::module_sym& src) noexcept;
-
-    //
-    // Attempts to enter the scope referred to by an id
-    //
-    bool try_resolve_scope(const token& id) noexcept;
-
-    //
-    // Returns to the previously saved scope
-    // Used in nested lookups to get to the state before they occurred
-    //
-    void rollback() noexcept;
 
     //
     // Generates a random name
@@ -122,6 +155,5 @@ namespace tnac
     semantics::sym_table m_symTab;
     fake_name_set m_generatedNames;
     semantics::scope* m_curScope{};
-    semantics::scope* m_prevScope{};
   };
 }

@@ -372,8 +372,6 @@
       <Item Name="[symbol table]">m_symTab</Item>
       <Item Name="[current scope]" Condition="m_curScope">*m_curScope</Item>
       <Item Name="[current scope]" Condition="!m_curScope">"&lt;null&gt;",sb</Item>
-      <Item Name="[previous]" Condition="m_prevScope">*m_prevScope</Item>
-      <Item Name="[previous]" Condition="!m_prevScope">"&lt;null&gt;",sb</Item>
       <Item Name="[fake names]">m_generatedNames</Item>
     </Expand>
   </Type>

@@ -3,6 +3,59 @@
 
 namespace tnac
 {
+  sema::scope_guard::scope_guard(sema& s, semantics::scope* newScope, bool alive) noexcept :
+    m_sema{ &s },
+    m_scope{ m_sema->m_curScope },
+    m_alive{ alive }
+  {
+    if (m_alive)
+    {
+      m_sema->m_curScope = newScope;
+    }
+  }
+
+  sema::scope_guard::~scope_guard() noexcept
+  {
+    if (m_alive)
+    {
+      m_sema->m_curScope = m_scope;
+    }
+  }
+
+  sema::scope_guard::scope_guard(scope_guard&& other) noexcept :
+    m_sema{ other.m_sema },
+    m_scope{ other.m_scope },
+    m_alive{ other.m_alive }
+  {
+    other.m_scope = {};
+    other.m_alive = false;
+  }
+  sema::scope_guard& sema::scope_guard::operator=(scope_guard&& other) noexcept
+  {
+    if (this != &other)
+    {
+      m_sema = other.m_sema;
+      m_scope = other.m_scope;
+      m_alive = other.m_alive;
+      other.m_scope = {};
+      other.m_alive = false;
+    }
+    return *this;
+  }
+
+  sema::scope_guard::operator bool() const noexcept
+  {
+    return m_alive;
+  }
+
+  semantics::scope* sema::scope_guard::get() noexcept
+  {
+    return m_scope;
+  }
+}
+
+namespace tnac
+{
   // Special members
 
   sema::~sema() noexcept = default;
@@ -20,6 +73,16 @@ namespace tnac
   {
     if(m_curScope)
       m_curScope = m_curScope->enclosing();
+  }
+
+  semantics::scope* sema::current_scope() noexcept
+  {
+    return m_curScope;
+  }
+
+  sema::scope_guard sema::assume_scope(semantics::scope& scope) noexcept
+  {
+    return { *this, &scope, true };
   }
 
   sema::sym_ptr sema::find(string_t name, bool currentOnly /*= false*/) noexcept
@@ -129,40 +192,6 @@ namespace tnac
     auto&& aliasScope = m_symTab.add_scope(m_curScope, semantics::scope::Module);
     aliasScope.attach_symbol(src);
     return m_symTab.add_scope_ref(name, m_curScope, loc, aliasScope);
-  }
-
-  bool sema::try_resolve_scope(const token& id) noexcept
-  {
-    if (!m_prevScope)
-      m_prevScope = m_curScope;
-
-    auto name = id.value();
-    auto sym = find(name);
-    
-    if (auto scopeRef = utils::try_cast<semantics::scope_ref>(sym))
-    {
-      m_curScope = &scopeRef->referenced();
-      return true;
-    }
-
-    using enum semantics::sym_kind;
-    if (sym->is_any(Module, Function))
-    {
-      auto&& ref = utils::cast<semantics::function>(*sym);
-      m_curScope = &ref.owned_scope();
-      return true;
-    }
-
-    return false;
-  }
-
-  void sema::rollback() noexcept
-  {
-    if (!m_prevScope)
-      return;
-
-    m_curScope = m_prevScope;
-    m_prevScope = {};
   }
 
   string_t sema::contrive_name() noexcept

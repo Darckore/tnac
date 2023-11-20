@@ -1041,51 +1041,52 @@ namespace tnac
 
     while (detail::is_open_paren(peek_next()))
     {
-      next_tok();
-      auto args = arg_list(token::ParenClose);
-
-      if (!detail::is_close_paren(peek_next()))
-        return error_expr(peek_next(), diag::expected(')'), err_pos::Last);
-
-      next_tok();
-      res = m_builder.make_call(*res, std::move(args));
+      res = call_expr(*res);
     }
 
     return res;
   }
 
+  ast::expr* parser::call_expr(ast::expr& callee) noexcept
+  {
+    next_tok();
+    auto args = arg_list(token::ParenClose);
+
+    if (!detail::is_close_paren(peek_next()))
+      return error_expr(peek_next(), diag::expected(')'), err_pos::Last);
+
+    next_tok();
+    return m_builder.make_call(callee, std::move(args));
+  }
+
   ast::expr* parser::dot_expr() noexcept
   {
     auto res = call_expr();
-    if (!detail::is_dot(peek_next()))
-      return res;
-
-    auto accessor = res;
+    auto&& prevScope = *m_sema.current_scope();
     while (detail::is_dot(peek_next()))
     {
-      using enum ast::node_kind;
-      next_tok();
-
-      if (accessor->is(Identifier))
-      {
-        auto&& id = utils::cast<ast::id_expr>(*accessor);
-        if (!m_sema.try_resolve_scope(id.pos()))
-        {
-          // todo: unresiolved
-        }
-      }
-
-      accessor = call_expr();
-      if (accessor->is(Literal))
-      {
-        accessor = error_expr(accessor->pos(), diag::lit_after_dot(), err_pos::Current);
-      }
-
-      res = m_builder.make_dot(*res, *accessor);
+      res = accessor(*res, prevScope);
     }
 
-    m_sema.rollback();
     return res;
+  }
+
+  ast::expr* parser::accessor(ast::expr& accd, semantics::scope& prevScope) noexcept
+  {
+    next_tok();
+    auto callee = primary_expr();
+    if (callee->is(ast::node_kind::Literal))
+    {
+      return error_expr(callee->pos(), diag::lit_after_dot(), err_pos::Current);
+    }
+
+    while (detail::is_open_paren(peek_next()))
+    {
+      auto _ = m_sema.assume_scope(prevScope);
+      callee = call_expr(*callee);
+    }
+
+    return m_builder.make_dot(accd, *callee);
   }
 
   ast::expr* parser::cond_expr() noexcept
