@@ -217,6 +217,9 @@ namespace tnac
 
   semantics::symbol* sema::extract_sym(ast::expr& expr) const noexcept
   {
+    if (auto par = utils::try_cast<ast::paren_expr>(&expr))
+      return extract_sym(par->internal_expr());
+
     if (auto dot = utils::try_cast<ast::dot_expr>(&expr))
       return extract_sym(dot->accessor());
 
