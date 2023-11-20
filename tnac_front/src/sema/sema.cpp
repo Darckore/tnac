@@ -31,6 +31,12 @@ namespace tnac
 
   void sema::visit_decl(ast::decl& decl) noexcept
   {
+    if (!m_curScope)
+    {
+      UTILS_ASSERT(false);
+      return;
+    }
+
     using enum ast::node_kind;
     auto name = decl.name();
     auto loc = decl.pos().at();
@@ -51,7 +57,7 @@ namespace tnac
 
     case FuncDecl:
     {
-      UTILS_ASSERT(m_curScope && m_curScope->is_function());
+      UTILS_ASSERT(m_curScope->is_function());
       auto targetScope = m_curScope->enclosing();
       auto&& declParams = utils::cast<FuncDecl>(decl).params();
       auto&& sym = m_symTab.add_function(name, targetScope, make_params(declParams), loc, *m_curScope);
@@ -68,7 +74,13 @@ namespace tnac
 
   void sema::visit_module_def(ast::module_def& def) noexcept
   {
-    UTILS_ASSERT(m_curScope && m_curScope->is_module());
+    if (!m_curScope)
+    {
+      UTILS_ASSERT(false);
+      return;
+    }
+
+    UTILS_ASSERT(m_curScope->is_module());
     auto targetScope = m_curScope->enclosing();
     auto name = def.is_fake() ?
       contrive_name() :
