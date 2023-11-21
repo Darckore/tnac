@@ -319,6 +319,11 @@ namespace tnac
     ast::expr* primary_expr() noexcept;
 
     //
+    // Parses an id expr
+    //
+    ast::expr* id_expr() noexcept;
+
+    //
     // Parses a typed expr
     //
     ast::expr* typed_expr() noexcept;

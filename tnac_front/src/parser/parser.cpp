@@ -972,18 +972,21 @@ namespace tnac
     if (detail::is_open_curly(next))
       return cond_expr();
 
-    if (next.is(token::Identifier))
-    {
-      auto sym = m_sema.find(next.value());
-
-      if (!sym)
-        return error_expr(next_tok(), diag::undef_id(), err_pos::Current);
-
-      return m_builder.make_id(next_tok(), *sym);
-    }
+    if (next.is_identifier())
+      return id_expr();
 
     auto err = next_tok();
     return error_expr(err, diag::expected_expr(), err_pos::Current);
+  }
+
+  ast::expr* parser::id_expr() noexcept
+  {
+    auto sym = m_sema.find(peek_next().value());
+
+    if (!sym)
+      return error_expr(next_tok(), diag::undef_id(), err_pos::Current);
+
+    return m_builder.make_id(next_tok(), *sym);
   }
 
   ast::expr* parser::anonimous_function() noexcept
