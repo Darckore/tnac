@@ -334,10 +334,9 @@ namespace tnac
     expr_list arg_list(tok_kind closing) noexcept;
 
     //
-    // Parses a call expression
-    // If the call is not present, produces an id expression
+    // Parses a postfix expression
     //
-    ast::expr* call_expr() noexcept;
+    ast::expr* postfix_expr() noexcept;
 
     //
     // Parses the call part of a call expression
@@ -347,12 +346,7 @@ namespace tnac
     //
     // Parses a dot expression
     //
-    ast::expr* dot_expr() noexcept;
-
-    //
-    // Parses a dot expression's accessor
-    //
-    ast::expr* accessor(ast::expr& accd, semantics::scope& prevScope) noexcept;
+    ast::expr* dot_expr(ast::expr& accd) noexcept;
 
     //
     // Parses a conditional expression

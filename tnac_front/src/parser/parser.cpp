@@ -896,7 +896,7 @@ namespace tnac
   ast::expr* parser::unary_expr() noexcept
   {
     if (!detail::is_unary_op(peek_next()))
-      return dot_expr();
+      return postfix_expr();
 
     auto op = next_tok();
     auto exp = unary_expr();
@@ -1038,13 +1038,26 @@ namespace tnac
     return res;
   }
 
-  ast::expr* parser::call_expr() noexcept
+  ast::expr* parser::postfix_expr() noexcept
   {
     auto res = primary_expr();
 
-    while (detail::is_open_paren(peek_next()))
+    for (;;)
     {
-      res = call_expr(*res);
+      auto&& next = peek_next();
+      if (detail::is_open_paren(next))
+      {
+        res = call_expr(*res);
+        continue;
+      }
+
+      if (detail::is_dot(next))
+      {
+        res = dot_expr(*res);
+        continue;
+      }
+
+      break;
     }
 
     return res;
@@ -1062,36 +1075,21 @@ namespace tnac
     return m_builder.make_call(callee, std::move(args));
   }
 
-  ast::expr* parser::dot_expr() noexcept
+  ast::expr* parser::dot_expr(ast::expr& accd) noexcept
   {
-    auto res = call_expr();
-    auto&& prevScope = *m_sema.current_scope();
-    while (detail::is_dot(peek_next()))
-    {
-      auto accr = accessor(*res, prevScope);
-      res = m_builder.make_dot(*res, *accr);
-    }
-
-    return res;
-  }
-
-  ast::expr* parser::accessor(ast::expr& accd, semantics::scope& prevScope) noexcept
-  {
-    auto sg = m_sema.try_resolve_scope(accd);
     next_tok();
-    auto accr = primary_expr();
-    if (accr->is(ast::node_kind::Literal))
-    {
-      return error_expr(accr->pos(), diag::lit_after_dot(), err_pos::Current);
-    }
+    auto sg = m_sema.try_resolve_scope(accd);
 
-    auto last = m_sema.assume_scope(prevScope);
-    while (detail::is_open_paren(peek_next()))
-    {
-      accr = call_expr(*accr);
-    }
+    auto&& next = peek_next();
 
-    return accr;
+    if(next.is_literal())
+      return error_expr(next, diag::lit_after_dot(), err_pos::Current);
+
+    if(!next.is_identifier())
+      return error_expr(next, diag::expected_id(), err_pos::Current);
+
+    auto accr = id_expr();
+    return m_builder.make_dot(accd, *accr);
   }
 
   ast::expr* parser::cond_expr() noexcept
