@@ -39,7 +39,8 @@ namespace tnac
 
       explicit operator bool() const noexcept;
 
-      semantics::scope* get() noexcept;
+      semantics::scope* current() noexcept;
+      semantics::scope* prev() noexcept;
 
     private:
       sema* m_sema;

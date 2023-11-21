@@ -47,7 +47,11 @@ namespace tnac
     return m_alive;
   }
 
-  semantics::scope* sema::scope_guard::get() noexcept
+  semantics::scope* sema::scope_guard::current() noexcept
+  {
+    return m_sema->m_curScope;
+  }
+  semantics::scope* sema::scope_guard::prev() noexcept
   {
     return m_scope;
   }
