@@ -1069,9 +1069,10 @@ namespace tnac
     auto args = arg_list(token::ParenClose);
 
     if (!detail::is_close_paren(peek_next()))
-      return error_expr(peek_next(), diag::expected(')'), err_pos::Last);
+      args.emplace_back(error_expr(peek_next(), diag::expected(')'), err_pos::Last));
+    else
+      next_tok();
 
-    next_tok();
     return m_builder.make_call(callee, std::move(args));
   }
 
