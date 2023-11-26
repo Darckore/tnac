@@ -88,6 +88,18 @@ namespace tnac
     return { *this, &scope };
   }
 
+  sema::sym_ptr sema::find(const token& tok, lookup_type type) noexcept
+  {
+    auto name = tok.value();
+    if(!m_curScope || !m_curScope->is_deferred())
+      return find(name, type);
+
+    if (auto existing = find(name, Scoped))
+      return existing;
+
+    return &m_symTab.add_deferred_sym(name, m_curScope, tok.at());
+  }
+
   sema::sym_ptr sema::find(string_t name, lookup_type type) noexcept
   {
     return (type == Scoped)
@@ -204,6 +216,12 @@ namespace tnac
         found = &utils::cast<Function>(*sym).own_scope();
       else if (auto sr = utils::try_cast<ScopeRef>(sym))
         found = &sr->referenced();
+      else
+        found = &m_symTab.add_scope(m_curScope, semantics::scope::Deferred);
+    }
+    else
+    {
+      found = &m_symTab.add_scope(m_curScope, semantics::scope::Deferred);
     }
     return { *this, found };
   }
@@ -226,9 +244,6 @@ namespace tnac
 
     if (auto dot = utils::try_cast<ast::dot_expr>(&expr))
       return extract_sym(dot->accessor());
-
-    if (auto call = utils::try_cast<ast::call_expr>(&expr))
-      return extract_sym(call->callable());
 
     if (auto id = utils::try_cast<ast::id_expr>(&expr))
       return &id->symbol();

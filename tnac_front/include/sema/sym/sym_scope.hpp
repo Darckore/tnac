@@ -27,7 +27,8 @@ namespace tnac::semantics
     Global,
     Module,
     Function,
-    Block
+    Block,
+    Deferred
   };
 
   //
@@ -119,6 +120,11 @@ namespace tnac::semantics
     // Checks if the scope is internal (i.e., condition body)
     //
     bool is_internal() const noexcept;
+
+    //
+    // Checks if the scope holds deferred symbols
+    //
+    bool is_deferred() const noexcept;
 
     //
     // Checks whether a symbol is attached

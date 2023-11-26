@@ -95,6 +95,13 @@ namespace tnac
 
     //
     // Checks whether the specified symbol has previously been defined
+    // If the current scope is a deferred one, creates a new symbol from the
+    // passed token
+    //
+    sym_ptr find(const token& tok, lookup_type type) noexcept;
+
+    //
+    // Checks whether the specified symbol has previously been defined
     // and returns it if it was
     //
     sym_ptr find(string_t name, lookup_type type) noexcept;

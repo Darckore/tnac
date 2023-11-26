@@ -78,6 +78,10 @@ namespace tnac::semantics
   {
     return is(Block);
   }
+  bool scope::is_deferred() const noexcept
+  {
+    return is(Deferred);
+  }
 
   bool scope::has_sym() const noexcept
   {

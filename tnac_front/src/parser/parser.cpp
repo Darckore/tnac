@@ -981,8 +981,7 @@ namespace tnac
 
   ast::expr* parser::id_expr() noexcept
   {
-    auto sym = m_sema.find(peek_next().value(), sema::Unscoped);
-
+    auto sym = m_sema.find(peek_next(), sema::Unscoped);
     if (!sym)
       return error_expr(next_tok(), diag::undef_id(), err_pos::Current);
 
