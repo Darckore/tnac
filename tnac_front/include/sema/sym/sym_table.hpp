@@ -258,7 +258,7 @@ namespace tnac::semantics
       auto&& sym = make_symbol(make_name(name), parent);
       if (sym)
       {
-        UTILS_ASSERT(false);
+        UTILS_ASSERT(sym->is(utils::type_to_id_v<S>));
         return utils::try_cast<S>(sym);
       }
 
