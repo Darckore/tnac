@@ -88,9 +88,9 @@ namespace tnac
     return { *this, &scope };
   }
 
-  sema::sym_ptr sema::find(string_t name, bool currentOnly /*= false*/) noexcept
+  sema::sym_ptr sema::find(string_t name, lookup_type type) noexcept
   {
-    return currentOnly
+    return (type == Scoped)
       ? m_symTab.scoped_lookup(name, m_curScope)
       : m_symTab.lookup(name, m_curScope);
   }
@@ -226,6 +226,9 @@ namespace tnac
 
     if (auto dot = utils::try_cast<ast::dot_expr>(&expr))
       return extract_sym(dot->accessor());
+
+    if (auto call = utils::try_cast<ast::call_expr>(&expr))
+      return extract_sym(call->callable());
 
     if (auto id = utils::try_cast<ast::id_expr>(&expr))
       return &id->symbol();

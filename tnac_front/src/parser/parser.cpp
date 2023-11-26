@@ -560,7 +560,7 @@ namespace tnac
       }
       else
       {
-        if (auto existing = m_sema.find(idName))
+        if (auto existing = m_sema.find(idName, sema::Unscoped))
         {
           auto cur = m_curModule->name();
           m_curModule->adopt({ error_expr(id, diag::circular_ref(idName, cur), err_pos::Current) });
@@ -573,7 +573,7 @@ namespace tnac
           return {};
         }
 
-        auto moduleSym = utils::try_cast<semantics::module_sym>(m_sema.find(idName, true));
+        auto moduleSym = utils::try_cast<semantics::module_sym>(m_sema.find(idName, sema::Scoped));
         if (!moduleSym)
         {
           m_curModule->adopt({ error_expr(id, diag::import_failed(idName), err_pos::Current) });
@@ -608,7 +608,7 @@ namespace tnac
 
     auto id = next_tok();
     auto name = id.value();
-    if (auto existingSym = m_sema.find(name))
+    if (auto existingSym = m_sema.find(name, sema::Unscoped))
     {
       m_curModule->adopt({ error_expr(id, diag::name_redef(), err_pos::Current) });
       return {};
@@ -693,7 +693,7 @@ namespace tnac
     if (!next.is_identifier())
       return {};
 
-    if (m_sema.find(next.value()))
+    if (m_sema.find(next.value(), sema::Unscoped))
       return {};
 
     return var_decl(next_tok());
@@ -783,7 +783,7 @@ namespace tnac
       expr();
       opt = error_expr(name, diag::expected_id(), err_pos::Current);
     }
-    else if (auto sym = m_sema.find(name.value(), true))
+    else if (auto sym = m_sema.find(name.value(), sema::Scoped))
     {
       next_tok();
       opt = error_expr(name, diag::param_redef(), err_pos::Current);
@@ -981,7 +981,7 @@ namespace tnac
 
   ast::expr* parser::id_expr() noexcept
   {
-    auto sym = m_sema.find(peek_next().value());
+    auto sym = m_sema.find(peek_next().value(), sema::Unscoped);
 
     if (!sym)
       return error_expr(next_tok(), diag::undef_id(), err_pos::Current);

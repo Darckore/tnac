@@ -58,6 +58,13 @@ namespace tnac
     using symbol_params = std::vector<semantics::parameter*>;
     using loc_t         = src::loc_wrapper;
 
+    enum class lookup_type : std::uint8_t
+    {
+      Scoped,
+      Unscoped
+    };
+    using enum lookup_type;
+
   public:
     CLASS_SPECIALS_NONE_CUSTOM(sema);
 
@@ -90,7 +97,7 @@ namespace tnac
     // Checks whether the specified symbol has previously been defined
     // and returns it if it was
     //
-    sym_ptr find(string_t name, bool currentOnly = false) noexcept;
+    sym_ptr find(string_t name, lookup_type type) noexcept;
 
     //
     // Visits a newly created declarator and registers it in the symbol table
