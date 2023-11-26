@@ -48,3 +48,16 @@ namespace tnac::semantics // Scope ref
     return FROM_CONST(referenced);
   }
 }
+
+
+namespace tnac::semantics // Deferred
+{
+  // Special members
+
+  deferred::~deferred() noexcept = default;
+
+  deferred::deferred(scope& owner, name_t name, loc_t loc) noexcept :
+    symbol{ kind::Deferred, name, owner, loc }
+  {}
+
+}

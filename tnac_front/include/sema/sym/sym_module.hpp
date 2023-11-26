@@ -79,4 +79,32 @@ namespace tnac::semantics
   private:
     scope* m_referenced{};
   };
+
+
+  //
+  // Symbol which referes to an unresolved, but potentially valid entity
+  // Since typing is dynamic, the scope in which we need to loop a name up,
+  // may be unknown during parsing, e.g:
+  // func(x)
+  //  internal()
+  //    moreInternal() ;
+  //  ;
+  //  { x > 0 } -> { 42, internal } 
+  // ;
+  // func(-1).moreInternal()
+  //         ^ needs evaluation to figure out
+  //
+  class deferred final : public symbol
+  {
+  private:
+    friend class sym_table;
+
+  public:
+    CLASS_SPECIALS_NONE(deferred);
+
+    virtual ~deferred() noexcept;
+
+  protected:
+    deferred(scope& owner, name_t name, loc_t loc) noexcept;
+  };
 }

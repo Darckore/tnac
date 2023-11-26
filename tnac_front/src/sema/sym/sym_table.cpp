@@ -49,6 +49,11 @@ namespace tnac::semantics
     return *make_symbol<scope_ref>(name, parent, referenced, loc);
   }
 
+  deferred& sym_table::add_deferred_sym(name_t name, scope_ptr parent, loc_t loc) noexcept
+  {
+    return *make_symbol<deferred>(name, parent, loc);
+  }
+
   sym_table::sym_ptr sym_table::lookup(name_t name, scope_ptr parent) noexcept
   {
     auto scopes = lookup(name);

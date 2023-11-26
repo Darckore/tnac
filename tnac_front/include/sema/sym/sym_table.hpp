@@ -178,6 +178,11 @@ namespace tnac::semantics
     scope_ref& add_scope_ref(name_t name, scope_ptr parent, loc_t loc, scope& referenced) noexcept;
 
     //
+    // Inserts a deferred symbol to the specified scope
+    //
+    deferred& add_deferred_sym(name_t name, scope_ptr parent, loc_t loc) noexcept;
+
+    //
     // Looks for a symbol starting from the specified scope
     //
     sym_ptr lookup(name_t name, scope_ptr parent) noexcept;
@@ -252,7 +257,10 @@ namespace tnac::semantics
     {
       auto&& sym = make_symbol(make_name(name), parent);
       if (sym)
+      {
+        UTILS_ASSERT(false);
         return utils::try_cast<S>(sym);
+      }
 
       auto res = alloc_sym<S>(*parent, name, std::forward<Args>(args)...);
       sym = res;

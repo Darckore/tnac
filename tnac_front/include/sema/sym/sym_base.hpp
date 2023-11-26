@@ -17,7 +17,8 @@ namespace tnac::semantics
     Parameter,
     Function,
     Module,
-    ScopeRef
+    ScopeRef,
+    Deferred
   };
 
 
