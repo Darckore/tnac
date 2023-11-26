@@ -272,16 +272,24 @@ namespace tnac::rt
     if (cmd.arg_count())
     {
       auto dir = cmd[size_type{}].value();
+      if (std::error_code err; !fsys::create_directory(dir, err))
+      {
+        if (err)
+        {
+          m_feedback->error(diag::format("#env command failed with error '{}'"sv, err.message()));
+          return;
+        }
+      }
       hasOut = true;
-      fAst.append(dir).append("out.ast");
+      fAst.append(dir).append("/out.ast");
       aAst.emplace_back(sTok(fAst));
-      fList.append(dir).append("out.tnac");
+      fList.append(dir).append("/out.tnac");
       aList.emplace_back(sTok(fList));
-      fVars.append(dir).append("tnvars");
+      fVars.append(dir).append("/tnvars");
       aVars.emplace_back(sTok(fVars));
-      fFuncs.append(dir).append("tnfuncs");
+      fFuncs.append(dir).append("/tnfuncs");
       aFuncs.emplace_back(sTok(fFuncs));
-      fMods.append(dir).append("tnmodules");
+      fMods.append(dir).append("/tnmodules");
       aMods.emplace_back(sTok(fMods));
     }
 
