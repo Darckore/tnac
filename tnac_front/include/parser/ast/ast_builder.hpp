@@ -178,6 +178,7 @@ namespace tnac::ast
 
   private:
     owner_store m_store;
+    module_def m_fakeModule;
   };
 
 }

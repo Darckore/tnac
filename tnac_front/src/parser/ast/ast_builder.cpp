@@ -4,8 +4,11 @@ namespace tnac::ast
 {
   // Special members
 
-  builder::builder() noexcept = default;
   builder::~builder() noexcept = default;
+
+  builder::builder() noexcept :
+    m_fakeModule{ "`fake"s, src::loc_wrapper{ src::location::dummy() } }
+  {}
 
 
   // Public members(General)
@@ -22,9 +25,8 @@ namespace tnac::ast
 
   module_def* builder::get_default_module(src::loc_wrapper loc) noexcept
   {
-    static module_def fake{ {}, loc };
-    fake.override_loc(loc);
-    return &fake;
+    m_fakeModule.override_loc(loc);
+    return &m_fakeModule;
   }
 
   import_dir* builder::make_import(const token& pos, import_dir::elem_list name, import_dir::pointer alias) noexcept
