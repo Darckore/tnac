@@ -14,4 +14,21 @@ namespace tnac
     m_sema{ &sema },
     m_feedback{ fb }
   {}
+
+
+  // Public members
+
+  void compiler::operator()(tree_ref node) noexcept
+  {
+    utils::unused(node);
+  }
+
+  const ir::cfg& compiler::cfg() const noexcept
+  {
+    return m_cfg;
+  }
+  ir::cfg& compiler::cfg() noexcept
+  {
+    return FROM_CONST(cfg);
+  }
 }

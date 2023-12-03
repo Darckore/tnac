@@ -26,6 +26,7 @@ namespace tnac::rt
   void repl::run() noexcept
   {
     m_state->start();
+    auto&& core = m_state->tnac_core();
 
     while (m_state->is_running())
     {
@@ -33,11 +34,12 @@ namespace tnac::rt
       if (input.empty())
         continue;
 
-      auto parseRes = m_state->tnac_core().parse(input, m_loc);
-      if (parseRes && parseRes != m_state->tnac_core().get_ast())
-        m_last = parseRes;
+      auto parseRes = core.parse(input, m_loc);
+      if (parseRes == core.get_ast())
+        continue;
 
-      utils::unused(parseRes);
+      m_last = parseRes;
+      core.compile(*m_last);
     }
   }
 

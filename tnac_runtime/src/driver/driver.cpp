@@ -36,7 +36,7 @@ namespace tnac::rt
       return;
     }
 
-    // todo: compile
+    m_tnac.compile();
   }
 
   void driver::run_interactive() noexcept

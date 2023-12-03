@@ -74,9 +74,39 @@ namespace tnac
     return get_ast();
   }
 
-  ast::node* core::get_ast() noexcept
+  void core::compile(ast::node& node) noexcept
+  {
+    m_compiler(node);
+  }
+
+  void core::compile() noexcept
+  {
+    auto node = get_ast();
+    if (!node)
+    {
+      m_feedback->error("Nothing to compile"sv);
+      return;
+    }
+
+    compile(*node);
+  }
+
+  const ast::node* core::get_ast() const noexcept
   {
     return m_parser.root();
+  }
+  ast::node* core::get_ast() noexcept
+  {
+    return FROM_CONST(get_ast);
+  }
+
+  const ir::cfg& core::get_cfg() const noexcept
+  {
+    return m_compiler.cfg();
+  }
+  ir::cfg& core::get_cfg() noexcept
+  {
+    return FROM_CONST(get_cfg);
   }
 
   void core::process_cmd(ast::command cmd) noexcept

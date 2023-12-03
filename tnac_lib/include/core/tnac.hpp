@@ -56,10 +56,40 @@ namespace tnac
     ast::node* parse(src::file& file) noexcept;
 
     //
+    // Compiles code from an AST node
+    //
+    void compile(ast::node& node) noexcept;
+
+    //
+    // Compiles code from the current AST
+    //
+    void compile() noexcept;
+
+    //
+    // Returns the parsed ast
+    // 
+    // const version
+    //
+    const ast::node* get_ast() const noexcept;
+
+    //
     // Returns the parsed ast
     //
     ast::node* get_ast() noexcept;
 
+    //
+    // Returns the current CFG
+    // 
+    // const version
+    //
+    const ir::cfg& get_cfg() const noexcept;
+
+    //
+    // Returns the current CFG
+    //
+    ir::cfg& get_cfg() noexcept;
+
+  public:
     //
     // Declares a command
     //
