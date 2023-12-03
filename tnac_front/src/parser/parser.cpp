@@ -284,7 +284,11 @@ namespace tnac
 
   parser::~parser() noexcept = default;
 
-  parser::parser(ast::builder& builder, sema& sema, feedback* fb /*= nullptr*/) noexcept :
+  parser::parser(ast::builder& builder, sema& sema) noexcept :
+    parser{ builder, sema, {} }
+  {}
+
+  parser::parser(ast::builder& builder, sema& sema, feedback* fb) noexcept :
     parser{ builder, sema, fb, {} }
   {}
 

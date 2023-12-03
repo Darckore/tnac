@@ -91,7 +91,9 @@ namespace tnac
 
     ~parser() noexcept;
 
-    parser(ast::builder& builder, sema& sema, feedback* fb = nullptr) noexcept;
+    parser(ast::builder& builder, sema& sema) noexcept;
+
+    parser(ast::builder& builder, sema& sema, feedback* fb) noexcept;
 
   private:
     parser(ast::builder& builder, sema& sema, feedback* fb, root_ptr root) noexcept;
