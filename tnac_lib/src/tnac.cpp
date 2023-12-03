@@ -10,7 +10,8 @@ namespace tnac
   core::core(feedback& fb) noexcept :
     m_feedback{ &fb },
     m_parser{ m_astBuilder, m_sema, &fb },
-    m_cmdInterpreter{ m_cmdStore, fb }
+    m_cmdInterpreter{ m_cmdStore, fb },
+    m_compiler{ m_sema, &fb }
   {
     m_feedback->on_load_request([this](fname_t path) noexcept { return process_file(std::move(path)); });
   }

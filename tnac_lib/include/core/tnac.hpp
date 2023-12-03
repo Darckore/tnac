@@ -8,6 +8,7 @@
 #include "src_mgr/source_manager.hpp"
 #include "sema/sema.hpp"
 #include "parser/commands/cmd_interpreter.hpp"
+#include "compiler/compiler.hpp"
 
 namespace tnac
 {
@@ -111,5 +112,7 @@ namespace tnac
 
     commands::store m_cmdStore;
     cmd m_cmdInterpreter;
+
+    compiler m_compiler;
   };
 }
