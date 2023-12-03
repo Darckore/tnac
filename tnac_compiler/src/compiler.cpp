@@ -2,6 +2,7 @@
 #include "common/feedback.hpp"
 #include "common/diag.hpp"
 #include "sema/sema.hpp"
+#include "cfg/builder.hpp"
 
 namespace tnac
 {

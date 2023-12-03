@@ -28,5 +28,6 @@ namespace tnac
   private:
     sema* m_sema{};
     feedback* m_feedback{};
+    ir::cfg m_cfg;
   };
 }

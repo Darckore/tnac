@@ -3,3 +3,5 @@
 //
 
 #pragma once
+
+#include "cfg/ir/ir_base.hpp"
