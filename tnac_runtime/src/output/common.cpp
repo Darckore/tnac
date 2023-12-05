@@ -1,94 +1,10 @@
 #include "output/common.hpp"
+#include "output/formatting.hpp"
+#include "eval/value/value.hpp"
 #include "sema/sym/symbols.hpp"
 
 namespace tnac::rt::out
 {
-  namespace
-  {
-    out_stream& operator<<(out_stream& out, eval::invalid_val_t) noexcept
-    {
-      out << "<undef>";
-      return out;
-    }
-
-    out_stream& operator<<(out_stream& out, const eval::complex_type& c) noexcept
-    {
-      const auto r = c.real();
-      const auto i = c.imag();
-
-      out << '(';
-      out << r;
-      auto sign = (i > 0) ? '+' : '-';
-      out << ' ' << sign << ' ' << utils::abs(i) << "i";
-      out << ')';
-      return out;
-    }
-
-    out_stream& operator<<(out_stream& out, const eval::fraction_type& f) noexcept
-    {
-      if (f.sign() < 0)
-        out << '-';
-
-      if (f.is_infinity())
-      {
-        out << std::numeric_limits<eval::float_type>::infinity();
-        return out;
-      }
-
-      const auto den = f.denom();
-      auto num = f.num();
-      if (den == eval::int_type{ 1 })
-      {
-        out << num;
-        return out;
-      }
-
-      auto wholePart = num / den;
-
-      if (wholePart)
-      {
-        out << wholePart;
-        num = num % den;
-        if (!num)
-          return out;
-
-        out << '(';
-      }
-
-      out << num << '/' << den;
-
-      if (wholePart)
-        out << ')';
-
-      return out;
-    }
-
-    out_stream& operator<<(out_stream& out, const eval::function_type& f) noexcept
-    {
-      out << "function(" << f->name() << ')';
-
-      return out;
-    }
-  }
-
-  out_stream& operator<<(out_stream& out, const token& tok) noexcept
-  {
-    out << tok.value();
-    return out;
-  }
-
-  out_stream& operator<<(out_stream& out, src::loc_wrapper loc) noexcept
-  {
-    out << '<';
-    if (loc)
-      out << loc->file().string();
-    else
-      out << "Unknown"sv;
-
-    out << ">:" << (loc->line() + 1) << ':' << (loc->col() + 1);
-    return out;
-  }
-
   // Special members
 
   value_printer::~value_printer() noexcept = default;

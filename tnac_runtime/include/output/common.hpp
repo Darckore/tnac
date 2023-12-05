@@ -4,8 +4,15 @@
 
 #pragma once
 #include "parser/ast/ast_visitor.hpp"
-#include "eval/value/value.hpp"
-#include "src_mgr/source_location.hpp"
+
+namespace tnac
+{
+  namespace eval
+  {
+    class value;
+    struct invalid_val_t;
+  }
+}
 
 namespace tnac::rt::out
 {
@@ -15,15 +22,6 @@ namespace tnac::rt::out
   template <typename D>
   using printer_base = ast::const_top_down_visitor<D>;
 
-  //
-  // Token output
-  //
-  out_stream& operator<<(out_stream& out, const token& tok) noexcept;
-
-  //
-  // Location output
-  //
-  out_stream& operator<<(out_stream& out, src::loc_wrapper loc) noexcept;
 
   //
   // Value printer

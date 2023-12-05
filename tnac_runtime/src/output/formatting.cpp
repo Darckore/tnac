@@ -1,4 +1,7 @@
 #include "output/formatting.hpp"
+#include "sema/sym/symbols.hpp"
+#include "eval/value/value.hpp"
+#include "src_mgr/source_location.hpp"
 
 namespace tnac::rt::fmt
 {
@@ -63,4 +66,87 @@ namespace tnac::rt::fmt
     print(out, c, msg);
     out << '\n';
   }
+}
+
+tnac::rt::out_stream& operator<<(tnac::rt::out_stream & out, const tnac::token & tok) noexcept
+{
+  out << tok.value();
+  return out;
+}
+
+tnac::rt::out_stream& operator<<(tnac::rt::out_stream& out, tnac::src::loc_wrapper loc) noexcept
+{
+  out << '<';
+  if (loc)
+    out << loc->file().string();
+  else
+    out << "Unknown"sv;
+
+  out << ">:" << (loc->line() + 1) << ':' << (loc->col() + 1);
+  return out;
+}
+
+tnac::rt::out_stream& operator<<(tnac::rt::out_stream& out, tnac::eval::invalid_val_t) noexcept
+{
+  out << "<undef>";
+  return out;
+}
+
+tnac::rt::out_stream& operator<<(tnac::rt::out_stream& out, const tnac::eval::complex_type& c) noexcept
+{
+  const auto r = c.real();
+  const auto i = c.imag();
+
+  out << '(';
+  out << r;
+  auto sign = (i > 0) ? '+' : '-';
+  out << ' ' << sign << ' ' << utils::abs(i) << "i";
+  out << ')';
+  return out;
+}
+
+tnac::rt::out_stream& operator<<(tnac::rt::out_stream& out, const tnac::eval::fraction_type& f) noexcept
+{
+  if (f.sign() < 0)
+    out << '-';
+
+  if (f.is_infinity())
+  {
+    out << std::numeric_limits<tnac::eval::float_type>::infinity();
+    return out;
+  }
+
+  const auto den = f.denom();
+  auto num = f.num();
+  if (den == tnac::eval::int_type{ 1 })
+  {
+    out << num;
+    return out;
+  }
+
+  auto wholePart = num / den;
+
+  if (wholePart)
+  {
+    out << wholePart;
+    num = num % den;
+    if (!num)
+      return out;
+
+    out << '(';
+  }
+
+  out << num << '/' << den;
+
+  if (wholePart)
+    out << ')';
+
+  return out;
+}
+
+tnac::rt::out_stream& operator<<(tnac::rt::out_stream& out, const tnac::eval::function_type& f) noexcept
+{
+  out << "function(" << f->name() << ')';
+
+  return out;
 }

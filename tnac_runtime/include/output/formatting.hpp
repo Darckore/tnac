@@ -3,6 +3,8 @@
 //
 
 #pragma once
+#include "output/common.hpp"
+#include "eval/types/types.hpp"
 
 namespace tnac::rt::fmt
 {
@@ -46,3 +48,33 @@ namespace tnac::rt::fmt
   //
   void println(std::ostream& out, clr c, std::string_view msg) noexcept;
 }
+
+//
+// Token output
+//
+tnac::rt::out_stream& operator<<(tnac::rt::out_stream& out, const tnac::token& tok) noexcept;
+
+//
+// Location output
+//
+tnac::rt::out_stream& operator<<(tnac::rt::out_stream& out, tnac::src::loc_wrapper loc) noexcept;
+
+//
+// Invalid value output
+//
+tnac::rt::out_stream& operator<<(tnac::rt::out_stream& out, tnac::eval::invalid_val_t) noexcept;
+
+//
+// Compex output
+//
+tnac::rt::out_stream& operator<<(tnac::rt::out_stream& out, const tnac::eval::complex_type& c) noexcept;
+
+//
+// Fraction output
+//
+tnac::rt::out_stream& operator<<(tnac::rt::out_stream& out, const tnac::eval::fraction_type& f) noexcept;
+
+//
+// Function output
+//
+tnac::rt::out_stream& operator<<(tnac::rt::out_stream& out, const tnac::eval::function_type& f) noexcept;
