@@ -39,14 +39,8 @@ namespace tnac::rt::out
         {
           out() << ' ';
           print_sym(*sym);
-
           out() << " at ";
-
-          fmt::add_clr(out(), fmt::clr::White);
-          out() << sym->at();
-          fmt::clear_clr(out());
-
-          out() << '\n';
+          fmt::println(out(), fmt::clr::White, sym->at());
         }
 
         if (std::next(it) != collection.end())
