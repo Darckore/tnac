@@ -88,6 +88,7 @@ namespace tnac::rt
       if (DWORD mode = 0; GetConsoleMode(console, &mode))
       {
         SetConsoleMode(console, mode | ENABLE_VIRTUAL_TERMINAL_PROCESSING);
+        std::cout << "\x1b]0;tnac\x1b\x5c";
       }
     }
 
