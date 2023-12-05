@@ -1,4 +1,5 @@
 #include "driver/entry.hpp"
+#include "driver/driver.hpp"
 
 #if TNAC_WINDOWS
   #define WIN32_LEAN_AND_MEAN
