@@ -42,9 +42,9 @@ namespace tnac::rt::out
 
           out() << " at ";
 
-          if (m_styles) fmt::add_clr(out(), fmt::clr::White);
+          fmt::add_clr(out(), fmt::clr::White);
           out() << sym->at();
-          if (m_styles) fmt::clear_clr(out());
+          fmt::clear_clr(out());
 
           out() << '\n';
         }
@@ -59,8 +59,6 @@ namespace tnac::rt::out
     {
       operator()(collection, out());
     }
-
-    void enable_styles() noexcept;
 
   private:
     out_stream& out() noexcept;
@@ -85,6 +83,5 @@ namespace tnac::rt::out
 
   private:
     out_stream* m_out{ &std::cout };
-    bool m_styles{};
   };
 }

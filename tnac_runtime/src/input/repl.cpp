@@ -176,7 +176,6 @@ namespace tnac::rt
     print_cmd(cmd, [this]
       {
         out::lister ls;
-        if (m_state->in_stdout()) ls.enable_styles();
         ls(m_state->tnac_core().get_ast(), m_state->out());
       });
   }
@@ -206,7 +205,6 @@ namespace tnac::rt
     print_cmd(cmd, [this, ast]
       {
         out::ast_printer pr;
-        if (m_state->in_stdout()) pr.enable_styles();
         pr(ast, m_state->out());
       });
   }
@@ -215,7 +213,6 @@ namespace tnac::rt
   void repl::print_symbols(semantics::sym_container<S> collection) noexcept
   {
     out::sym_printer sp;
-    if (m_state->in_stdout()) sp.enable_styles();
     sp(collection, m_state->out());
   }
 

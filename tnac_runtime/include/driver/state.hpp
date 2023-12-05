@@ -38,7 +38,6 @@ namespace tnac::rt
     void reset_output() noexcept;
 
   public: // IO
-    bool in_stdout() const noexcept;
     in_stream&  in() noexcept;
     out_stream& out() noexcept;
     out_stream& err() noexcept;

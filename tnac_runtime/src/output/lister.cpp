@@ -17,7 +17,7 @@ namespace tnac::rt::out
     m_out = &os;
     default_style();
     print(node);
-    if (m_styles) fmt::clear_clr(out());
+    fmt::clear_clr(out());
   }
 
   void lister::operator()(const ast::node* node) noexcept
@@ -25,10 +25,6 @@ namespace tnac::rt::out
     operator()(node, out());
   }
 
-  void lister::enable_styles() noexcept
-  {
-    m_styles = true;
-  }
 
   // Private members
 
@@ -226,7 +222,7 @@ namespace tnac::rt::out
 
   void lister::print(const ast::error_expr& expr) noexcept
   {
-    if(m_styles) fmt::add_clr(out(), fmt::clr::BoldRed);
+    fmt::add_clr(out(), fmt::clr::BoldRed);
     out() << "\\" << expr.message();
     default_style();
   }
@@ -458,30 +454,25 @@ namespace tnac::rt::out
   }
   void lister::id_style() noexcept
   {
-    if (!m_styles) return;
     reset_style();
     fmt::add_clr(out(), fmt::clr::BoldGreen);
   }
   void lister::kw_style() noexcept
   {
-    if (!m_styles) return;
     reset_style();
     fmt::add_clr(out(), fmt::clr::Cyan);
   }
   void lister::lit_style() noexcept
   {
-    if (!m_styles) return;
     reset_style();
     fmt::add_clr(out(), fmt::clr::BoldYellow);
   }
   void lister::default_style() noexcept
   {
-    if (!m_styles) return;
     reset_style();
   }
   void lister::comment_style() noexcept
   {
-    if (!m_styles) return;
     reset_style();
     fmt::add_clr(out(), fmt::clr::Blue);
   }

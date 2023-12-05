@@ -25,8 +25,6 @@ namespace tnac::rt::out
 
     void operator()(const ast::node* node) noexcept;
 
-    void enable_styles() noexcept;
-
   public:
     void visit(const ast::root& root) noexcept;
 
@@ -124,8 +122,6 @@ namespace tnac::rt::out
 
     void print_token(const token& tok) noexcept;
 
-    void print_token_styled(const token& tok) noexcept;
-
     void print_value(eval::value v) noexcept;
 
     void print_module_name(const ast::module_def& moduleDef) noexcept;
@@ -133,6 +129,5 @@ namespace tnac::rt::out
   private:
     child_tracker m_indetations;
     out_stream* m_out{ &std::cout };
-    bool m_styles{};
   };
 }

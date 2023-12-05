@@ -29,11 +29,6 @@ namespace tnac::rt::out
     operator()(node, out());
   }
 
-  void ast_printer::enable_styles() noexcept
-  {
-    m_styles = true;
-  }
-
   void ast_printer::visit(const ast::root& root) noexcept
   {
     indent();
@@ -167,7 +162,7 @@ namespace tnac::rt::out
     indent();
     auto&& op = expr.op();
     node_designator("Binary expression"sv);
-    print_token_styled(op);
+    print_token(op);
     additional_info(expr);
     endl();
 
@@ -178,7 +173,7 @@ namespace tnac::rt::out
   {
     indent();
     node_designator("Unary expression"sv);
-    print_token_styled(expr.op());
+    print_token(expr.op());
     additional_info(expr);
     endl();
     push_parent(1u);
@@ -190,9 +185,9 @@ namespace tnac::rt::out
     indent();
     node_designator("Array expression "sv);
     out() << '[';
-    if(m_styles) fmt::add_clr(out(), fmt::clr::Cyan);
+    fmt::add_clr(out(), fmt::clr::Cyan);
     out() << size;
-    if (m_styles) fmt::clear_clr(out());
+    fmt::clear_clr(out());
     out() << "] ";
     additional_info(arr);
     endl();
@@ -328,7 +323,7 @@ namespace tnac::rt::out
   {
     indent();
     node_designator("Literal expression"sv);
-    print_token_styled(expr.pos());
+    print_token(expr.pos());
     additional_info(expr);
     endl();
   }
@@ -440,30 +435,22 @@ namespace tnac::rt::out
 
   void ast_printer::node_designator(string_t str) noexcept
   {
-    if (m_styles) fmt::add_clr(out(), fmt::clr::BoldWhite);
-    out() << str;
-    if (m_styles) fmt::clear_clr(out());
+    fmt::print(out(), fmt::clr::BoldWhite, str);
   }
 
   void ast_printer::failure_condition(string_t str) noexcept
   {
-    if (m_styles) fmt::add_clr(out(), fmt::clr::BoldRed);
-    out() << str;
-    if (m_styles) fmt::clear_clr(out());
+    fmt::print(out(), fmt::clr::BoldRed, str);
   }
 
   void ast_printer::node_value(string_t str) noexcept
   {
-    if (m_styles) fmt::add_clr(out(), fmt::clr::Cyan);
-    out() << str;
-    if (m_styles) fmt::clear_clr(out());
+    fmt::print(out(), fmt::clr::Cyan, str);
   }
 
   void ast_printer::module_name(string_t str) noexcept
   {
-    if (m_styles) fmt::add_clr(out(), fmt::clr::BoldCyan);
-    out() << str;
-    if (m_styles) fmt::clear_clr(out());
+    fmt::print(out(), fmt::clr::BoldCyan, str);
   }
 
   void ast_printer::invalid_mark(const ast::node& n) noexcept
@@ -474,9 +461,9 @@ namespace tnac::rt::out
 
   void ast_printer::location_info(src::loc_wrapper loc) noexcept
   {
-    if (m_styles) fmt::add_clr(out(), fmt::clr::Yellow);
+    fmt::add_clr(out(), fmt::clr::Yellow);
     out() << " (" << loc << ')';
-    if (m_styles) fmt::clear_clr(out());
+    fmt::clear_clr(out());
   }
 
   void ast_printer::additional_info(const ast::node& n) noexcept
@@ -514,17 +501,6 @@ namespace tnac::rt::out
 
   void ast_printer::print_token(const token& tok) noexcept
   {
-    out() << " '" << tok << "' ";
-  }
-
-  void ast_printer::print_token_styled(const token& tok) noexcept
-  {
-    if (!m_styles)
-    {
-      print_token(tok);
-      return;
-    }
-
     out() << " '"; 
     node_value(tok.value());
     out() << "' ";

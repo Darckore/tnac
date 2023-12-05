@@ -8,13 +8,6 @@ namespace tnac::rt::out
 
   sym_printer::sym_printer() noexcept = default;
 
-  // Public members
-
-  void sym_printer::enable_styles() noexcept
-  {
-    m_styles = true;
-  }
-
 
   // Private members
 
@@ -28,7 +21,7 @@ namespace tnac::rt::out
     using enum semantics::scope_kind;
     if (scope)
     {
-      if (m_styles) fmt::add_clr(out(), fmt::clr::White);
+      fmt::add_clr(out(), fmt::clr::White);
       const auto kind = scope->kind();
       switch (kind)
       {
@@ -37,7 +30,7 @@ namespace tnac::rt::out
       case Function: print_func(scope->func());    break;
       case Block:    print_internal_scope(*scope); break;
       }
-      if (m_styles) fmt::clear_clr(out());
+      fmt::clear_clr(out());
 
       if (kind != Global)
       {
@@ -47,43 +40,43 @@ namespace tnac::rt::out
     }
     else
     {
-      if (m_styles) fmt::add_clr(out(), fmt::clr::Red);
+      fmt::add_clr(out(), fmt::clr::Red);
       out() << "UNKNOWN";
-      if (m_styles) fmt::clear_clr(out());
+      fmt::clear_clr(out());
     }
   }
 
   void sym_printer::print_module(const semantics::module_sym& modRef) noexcept
   {
-    if (m_styles) fmt::clear_clr(out());
-    if (m_styles) fmt::add_clr(out(), fmt::clr::BoldCyan);
+    fmt::clear_clr(out());
+    fmt::add_clr(out(), fmt::clr::BoldCyan);
     out() << modRef.name();
-    if (m_styles) fmt::clear_clr(out());
+    fmt::clear_clr(out());
     print_params(modRef.params(), true);
   }
 
   void sym_printer::print_var(const semantics::variable& var) noexcept
   {
-    if (m_styles) fmt::clear_clr(out());
-    if (m_styles) fmt::add_clr(out(), fmt::clr::Cyan);
+    fmt::clear_clr(out());
+    fmt::add_clr(out(), fmt::clr::Cyan);
     out() << var.name();
-    if (m_styles) fmt::clear_clr(out());
+    fmt::clear_clr(out());
   }
 
   void sym_printer::print_param(const semantics::parameter& par) noexcept
   {
-    if (m_styles) fmt::clear_clr(out());
-    if (m_styles) fmt::add_clr(out(), fmt::clr::Yellow);
+    fmt::clear_clr(out());
+    fmt::add_clr(out(), fmt::clr::Yellow);
     out() << par.name();
-    if (m_styles) fmt::clear_clr(out());
+    fmt::clear_clr(out());
   }
 
   void sym_printer::print_func(const semantics::function& func) noexcept
   {
-    if (m_styles) fmt::clear_clr(out());
-    if (m_styles) fmt::add_clr(out(), fmt::clr::Cyan);
+    fmt::clear_clr(out());
+    fmt::add_clr(out(), fmt::clr::Cyan);
     out() << func.name();
-    if (m_styles) fmt::clear_clr(out());
+    fmt::clear_clr(out());
     print_params(func.params(), false);
   }
 
@@ -101,10 +94,10 @@ namespace tnac::rt::out
 
   void sym_printer::print_scope_ref(const semantics::scope_ref& sr) noexcept
   {
-    if (m_styles) fmt::clear_clr(out());
-    if (m_styles) fmt::add_clr(out(), fmt::clr::BoldWhite);
+    fmt::clear_clr(out());
+    fmt::add_clr(out(), fmt::clr::BoldWhite);
     out() << sr.name();
-    if (m_styles) fmt::clear_clr(out());
+    fmt::clear_clr(out());
   }
 
   void sym_printer::print_sym(const semantics::symbol& sym) noexcept

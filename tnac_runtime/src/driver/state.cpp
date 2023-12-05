@@ -64,10 +64,6 @@ namespace tnac::rt
 
   // Public members(IO)
 
-  bool state::in_stdout() const noexcept
-  {
-    return m_out == &std::cout;
-  }
   in_stream& state::in() noexcept
   {
     return *m_in;

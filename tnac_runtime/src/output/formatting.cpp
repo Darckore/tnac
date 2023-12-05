@@ -9,6 +9,9 @@ namespace tnac::rt::fmt
 
   void add_clr(std::ostream& out, clr c) noexcept
   {
+    if (utils::eq_none(&out, &std::cout, &std::cerr))
+      return;
+
     using enum clr;
     switch (c)
     {
@@ -30,6 +33,9 @@ namespace tnac::rt::fmt
 
   void clear_clr(std::ostream& out) noexcept
   {
+    if (utils::eq_none(&out, &std::cout, &std::cerr))
+      return;
+
     out << "\x1b[m";
   }
 
@@ -47,13 +53,6 @@ namespace tnac::rt::fmt
 
   void print(std::ostream& out, clr c, std::string_view msg) noexcept
   {
-    // Styling only makes sence for std::cout and std::cerr
-    if (utils::eq_none(&out, &std::cout, &std::cerr))
-    {
-      out << msg;
-      return;
-    }
-
     add_clr(out, c);
     out << msg;
     clear_clr(out);
