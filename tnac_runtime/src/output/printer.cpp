@@ -186,9 +186,7 @@ namespace tnac::rt::out
     indent();
     node_designator("Array expression "sv);
     out() << '[';
-    fmt::add_clr(out(), fmt::clr::Cyan);
-    out() << size;
-    fmt::clear_clr(out());
+    fmt::print(out(), fmt::clr::Cyan, size);
     out() << "] ";
     additional_info(arr);
     endl();
