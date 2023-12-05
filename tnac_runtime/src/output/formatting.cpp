@@ -55,7 +55,7 @@ namespace tnac::rt::fmt
 #endif
 }
 
-tnac::rt::out_stream& operator<<(tnac::rt::out_stream & out, const tnac::token & tok) noexcept
+tnac::rt::out_stream& operator<<(tnac::rt::out_stream & out, const tnac::token& tok) noexcept
 {
   out << tok.value();
   return out;
