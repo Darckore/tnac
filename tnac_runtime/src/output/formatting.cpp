@@ -53,19 +53,6 @@ namespace tnac::rt::fmt
     utils::unused(out);
   }
 #endif
-
-  void print(std::ostream& out, clr c, std::string_view msg) noexcept
-  {
-    add_clr(out, c);
-    out << msg;
-    clear_clr(out);
-  }
-
-  void println(std::ostream& out, clr c, std::string_view msg) noexcept
-  {
-    print(out, c, msg);
-    out << '\n';
-  }
 }
 
 tnac::rt::out_stream& operator<<(tnac::rt::out_stream & out, const tnac::token & tok) noexcept

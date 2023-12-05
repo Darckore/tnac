@@ -6,6 +6,18 @@
 #include "output/common.hpp"
 #include "eval/types/types.hpp"
 
+namespace tnac::rt::fmt::detail
+{
+  //
+  // Checks whether the given type is printable via an ostream
+  //
+  template <typename T>
+  concept printable = requires(out_stream& os, T&& val)
+  {
+    os << val;
+  };
+}
+
 namespace tnac::rt::fmt
 {
   enum class clr : std::uint8_t
@@ -38,15 +50,26 @@ namespace tnac::rt::fmt
   void clear_clr(std::ostream& out) noexcept;
 
   //
-  // Prints the given message and applies the specified colour to it
+  // Prints the given printable value and applies the specified colour to it
   //
-  void print(std::ostream& out, clr c, std::string_view msg) noexcept;
+  template <detail::printable P>
+  void print(std::ostream& out, clr c, P&& msg) noexcept
+  {
+    add_clr(out, c);
+    out << msg;
+    clear_clr(out);
+  }
 
   //
-  // Prints the given message and applies the specified colour to it
+  // Prints the given printable value and applies the specified colour to it
   // Adds a line feed at the end
   //
-  void println(std::ostream& out, clr c, std::string_view msg) noexcept;
+  template <detail::printable P>
+  void println(std::ostream& out, clr c, P&& msg) noexcept
+  {
+    print(out, c, std::forward<P>(msg));
+    out << '\n';
+  }
 }
 
 //
