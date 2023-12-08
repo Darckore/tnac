@@ -495,7 +495,7 @@ namespace tnac::eval
 
     template <typename T>
     concept multipliable = expr_result<T> &&
-      requires(T l, T r) { l* r; };
+      requires(T l, T r) { l * r; };
 
     template <typename T>
     concept divisible = expr_result<T> &&
@@ -503,7 +503,7 @@ namespace tnac::eval
 
     template <typename T>
     concept modulo_divisible = expr_result<T> &&
-      requires(T l, T r) { l% r; };
+      requires(T l, T r) { l % r; };
 
     template <typename T>
     concept fmod_divisible = expr_result<T> &&
