@@ -294,8 +294,7 @@ namespace tnac::eval
 
   // float
 
-  template <>
-  struct common_type<float_type, complex_type> : common_type<complex_type, float_type> {};
+  template <> struct common_type<float_type, complex_type> : common_type<complex_type, float_type> {};
   template <> struct common_type<float_type, fraction_type> { using type = float_type; };
   template <> struct common_type<float_type, int_type> : common_type<float_type, fraction_type> {};
   template <> struct common_type<float_type, bool_type> : common_type<float_type, fraction_type> {};
