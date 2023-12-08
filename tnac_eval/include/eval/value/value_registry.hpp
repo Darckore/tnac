@@ -133,7 +133,7 @@ namespace tnac::eval
     //
     // Updates the last result
     //
-    void update_result(detail::generic_type auto val) noexcept
+    void update_result(detail::expr_result auto val) noexcept
     {
       unref(*m_result);
       m_result = std::move(val);
@@ -211,7 +211,7 @@ namespace tnac::eval
     //
     // Pushes a temporary value to the stack and updates the result
     //
-    void push(detail::generic_type auto val) noexcept
+    void push(detail::expr_result auto val) noexcept
     {
       auto tmp = tmp_val{ val };
       ref(*tmp);
@@ -227,7 +227,7 @@ namespace tnac::eval
     //
     // Registers a value for a specific entity (e.g., a variable)
     //
-    void register_entity(entity_id id, detail::generic_type auto val) noexcept
+    void register_entity(entity_id id, detail::expr_result auto val) noexcept
     {
       auto&& stored = m_entityValues[id];
       unref(*stored);
@@ -258,7 +258,7 @@ namespace tnac::eval
   namespace detail
   {
     template <typename T>
-    concept lockable = generic_type<T> &&
+    concept lockable = expr_result<T> &&
       requires(T t, registry& reg)
     {
       { reg.lock(t) }   -> std::same_as<void>;

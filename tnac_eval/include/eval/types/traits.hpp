@@ -66,13 +66,7 @@ namespace tnac::eval
   // Value casters
   //
 
-  namespace detail
-  {
-    template <typename T>
-    concept generic_type = expr_result<T> || utils::same_noquals<T, invalid_val_t>;
-  }
-
-  template <detail::generic_type T> using typed_value = std::optional<T>;
+  template <detail::expr_result T> using typed_value = std::optional<T>;
 
   template <detail::expr_result T> struct type_wrapper
   {
@@ -260,19 +254,19 @@ namespace tnac::eval
   // Common type
   //
 
-  template <detail::generic_type T1, detail::generic_type T2> struct common_type;
-  template <detail::generic_type T1, detail::generic_type T2> using common_type_t = typename common_type<T1, T2>::type;
+  template <detail::expr_result T1, detail::expr_result T2> struct common_type;
+  template <detail::expr_result T1, detail::expr_result T2> using common_type_t = typename common_type<T1, T2>::type;
 
   // common type with self
 
-  template <detail::generic_type T1, detail::generic_type T2> requires (utils::same_noquals<T1, T2>)
+  template <detail::expr_result T1, detail::expr_result T2> requires (utils::same_noquals<T1, T2>)
   struct common_type<T1, T2> { using type = std::remove_cvref_t<T1>; };
 
   // invalid
 
-  template <detail::generic_type T> requires (!utils::same_noquals<T, invalid_val_t>)
+  template <detail::expr_result T> requires (!utils::same_noquals<T, invalid_val_t>)
   struct common_type<invalid_val_t, T> { using type = invalid_val_t; };
-  template <detail::generic_type T> requires (!utils::same_noquals<T, invalid_val_t>)
+  template <detail::expr_result T> requires (!utils::same_noquals<T, invalid_val_t>)
   struct common_type<T, invalid_val_t> : common_type<invalid_val_t, T> {};
 
   // array
@@ -485,59 +479,59 @@ namespace tnac::eval
     concept binary_function = std::is_nothrow_invocable_v<F, T1, T2>;
 
     template <typename T>
-    concept plusable = generic_type<T> &&
+    concept plusable = expr_result<T> &&
       requires(T v) { +v; };
 
     template <typename T>
-    concept negatable = generic_type<T> &&
+    concept negatable = expr_result<T> &&
       requires(T v) { -v; };
 
     template <typename T>
-    concept addable = generic_type<T> &&
+    concept addable = expr_result<T> &&
       requires(T l, T r) { l + r; };
 
     template <typename T>
-    concept subtractable = generic_type<T> &&
+    concept subtractable = expr_result<T> &&
       requires(T l, T r) { l - r; };
 
     template <typename T>
-    concept multipliable = generic_type<T> &&
+    concept multipliable = expr_result<T> &&
       requires(T l, T r) { l* r; };
 
     template <typename T>
-    concept divisible = generic_type<T> &&
+    concept divisible = expr_result<T> &&
       requires(T l, T r) { l / r; };
 
     template <typename T>
-    concept modulo_divisible = generic_type<T> &&
+    concept modulo_divisible = expr_result<T> &&
       requires(T l, T r) { l% r; };
 
     template <typename T>
-    concept fmod_divisible = generic_type<T> &&
+    concept fmod_divisible = expr_result<T> &&
       !std::integral<T> &&
       requires(T l, T r) { std::fmod(l, r); };
 
     template <typename T>
-    concept pow_raisable = generic_type<T> &&
+    concept pow_raisable = expr_result<T> &&
       requires(T l, T r) { std::pow(l, r); };
 
     template <typename T>
-    concept invertible = generic_type<T> &&
+    concept invertible = expr_result<T> &&
       requires(T op) { eval::inv(op); };
 
     template <typename T>
-    concept eq_comparable = generic_type<T> &&
+    concept eq_comparable = expr_result<T> &&
       requires(T l, T r) { eval::eq(l, r); };
 
     template <typename T>
-    concept rel_comparable = generic_type<T> &&
+    concept rel_comparable = expr_result<T> &&
       requires(T l, T r) { eval::less(l, r); };
 
     template <typename T>
     concept fully_comparable = eq_comparable<T> && rel_comparable<T>;
 
     template <typename T>
-    concept abs_compatible = generic_type<T> &&
+    concept abs_compatible = expr_result<T> &&
       requires(T op) { eval::abs(op); };
   }
 
