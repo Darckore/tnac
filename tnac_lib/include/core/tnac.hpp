@@ -8,6 +8,7 @@
 #include "src_mgr/source_manager.hpp"
 #include "sema/sema.hpp"
 #include "parser/commands/cmd_interpreter.hpp"
+#include "eval/value/value_registry.hpp"
 #include "compiler/compiler.hpp"
 #include "cfg/cfg.hpp"
 
@@ -15,6 +16,8 @@ namespace tnac
 {
   //
   // Core of the entire tnac library
+  // Incorporates all components and provides an interface to them
+  // Basically, a god object to avoid bothering with individual parts on their own
   //
   class core final
   {
@@ -134,16 +137,21 @@ namespace tnac
     }
 
   private:
+    // common
     feedback* m_feedback{};
+
+    // front
     sema m_sema;
     ast::builder m_astBuilder;
     parser m_parser;
-
     source_manager m_srcMgr;
-
     commands::store m_cmdStore;
     cmd m_cmdInterpreter;
 
+    // eval
+    eval::registry m_reg;
+
+    // compilation
     ir::builder m_irBuilder;
     ir::cfg m_cfg;
     compiler m_compiler;

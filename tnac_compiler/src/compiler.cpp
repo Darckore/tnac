@@ -3,6 +3,7 @@
 #include "common/diag.hpp"
 #include "sema/sema.hpp"
 #include "cfg/cfg.hpp"
+#include "eval/value/value_registry.hpp"
 
 namespace tnac
 {
@@ -10,10 +11,11 @@ namespace tnac
 
   compiler::~compiler() noexcept = default;
 
-  compiler::compiler(sema& sema, ir::cfg& gr, feedback* fb) noexcept :
+  compiler::compiler(sema& sema, ir::cfg& gr, eval::registry& reg, feedback* fb) noexcept :
     m_sema{ &sema },
     m_feedback{ fb },
-    m_cfg{ &gr }
+    m_cfg{ &gr },
+    m_valVisitor{ reg }
   {}
 
 

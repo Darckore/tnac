@@ -4,6 +4,7 @@
 
 #pragma once
 #include "parser/ast/ast_visitor.hpp"
+#include "eval/value/value_visitor.hpp"
 
 namespace tnac
 {
@@ -13,6 +14,11 @@ namespace tnac
   namespace ir
   {
     class cfg;
+  }
+
+  namespace eval
+  {
+    class registry;
   }
 }
 
@@ -35,7 +41,7 @@ namespace tnac
 
     ~compiler() noexcept;
 
-    compiler(sema& sema, ir::cfg& gr, feedback* fb) noexcept;
+    compiler(sema& sema, ir::cfg& gr, eval::registry& reg, feedback* fb) noexcept;
 
   public:
     //
@@ -92,5 +98,6 @@ namespace tnac
     sema* m_sema{};
     feedback* m_feedback{};
     ir::cfg* m_cfg;
+    eval::value_visitor m_valVisitor;
   };
 }
