@@ -4,12 +4,16 @@
 
 #pragma once
 #include "parser/ast/ast_visitor.hpp"
-#include "cfg/cfg.hpp"
 
 namespace tnac
 {
   class sema;
   class feedback;
+
+  namespace ir
+  {
+    class cfg;
+  }
 }
 
 namespace tnac
@@ -31,7 +35,7 @@ namespace tnac
 
     ~compiler() noexcept;
 
-    compiler(sema& sema, feedback* fb) noexcept;
+    compiler(sema& sema, ir::cfg& gr, feedback* fb) noexcept;
 
   public:
     //
@@ -87,6 +91,6 @@ namespace tnac
   private:
     sema* m_sema{};
     feedback* m_feedback{};
-    ir::cfg m_cfg;
+    ir::cfg* m_cfg;
   };
 }

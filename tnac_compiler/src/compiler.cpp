@@ -2,6 +2,7 @@
 #include "common/feedback.hpp"
 #include "common/diag.hpp"
 #include "sema/sema.hpp"
+#include "cfg/cfg.hpp"
 #include "cfg/builder.hpp"
 
 namespace tnac
@@ -10,9 +11,10 @@ namespace tnac
 
   compiler::~compiler() noexcept = default;
 
-  compiler::compiler(sema& sema, feedback* fb) noexcept :
+  compiler::compiler(sema& sema, ir::cfg& gr, feedback* fb) noexcept :
     m_sema{ &sema },
-    m_feedback{ fb }
+    m_feedback{ fb },
+    m_cfg{ &gr }
   {}
 
 
@@ -25,7 +27,7 @@ namespace tnac
 
   const ir::cfg& compiler::cfg() const noexcept
   {
-    return m_cfg;
+    return *m_cfg;
   }
   ir::cfg& compiler::cfg() noexcept
   {
