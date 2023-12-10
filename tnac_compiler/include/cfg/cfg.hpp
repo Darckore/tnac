@@ -3,17 +3,20 @@
 //
 
 #pragma once
-#include "cfg/ir/ir.hpp"
+#include "cfg/ir/ir_builder.hpp"
 
 namespace tnac::ir
 {
   class cfg final
   {
   public:
-    CLASS_SPECIALS_NONE_CUSTOM(cfg);
+    CLASS_SPECIALS_NONE(cfg);
 
     ~cfg() noexcept;
 
-    cfg() noexcept = default; // temporary
+    explicit cfg(builder& bld) noexcept;
+
+  private:
+    builder* m_builder;
   };
 }

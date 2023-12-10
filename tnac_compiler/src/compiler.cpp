@@ -3,7 +3,6 @@
 #include "common/diag.hpp"
 #include "sema/sema.hpp"
 #include "cfg/cfg.hpp"
-#include "cfg/builder.hpp"
 
 namespace tnac
 {

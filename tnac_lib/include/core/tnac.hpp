@@ -144,6 +144,7 @@ namespace tnac
     commands::store m_cmdStore;
     cmd m_cmdInterpreter;
 
+    ir::builder m_irBuilder;
     ir::cfg m_cfg;
     compiler m_compiler;
   };
