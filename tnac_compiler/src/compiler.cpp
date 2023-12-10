@@ -46,6 +46,7 @@ namespace tnac
   void compiler::visit(ast::module_def& mod) noexcept
   {
     utils::unused(mod);
+    m_cfg->exit_module();
   }
 
   void compiler::visit(ast::import_dir& imp) noexcept
@@ -170,6 +171,14 @@ namespace tnac
   void compiler::visit(ast::func_decl& func) noexcept
   {
     utils::unused(func);
+  }
+
+  // Previews
+
+  bool compiler::preview(ast::module_def& mod) noexcept
+  {
+    m_cfg->enter_module(mod.symbol());
+    return true;
   }
 
 }

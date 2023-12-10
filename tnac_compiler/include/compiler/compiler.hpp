@@ -94,6 +94,9 @@ namespace tnac
     void visit(ast::param_decl& param) noexcept;
     void visit(ast::func_decl& func) noexcept;
 
+  public: // Previews
+    bool preview(ast::module_def& mod) noexcept;
+
   private:
     sema* m_sema{};
     feedback* m_feedback{};
