@@ -66,6 +66,16 @@ namespace tnac
     //
     static string_t wrong_arg_num(size_type wanted, size_type got) noexcept;
 
+    //
+    // Returns a 'compilation stopped' error
+    //
+    static string_t compilation_stopped() noexcept;
+
+    //
+    // Returns a 'compilation stopped' error
+    //
+    static string_t compilation_stopped(string_t moduleName) noexcept;
+
   public: // Parsing
     //
     // Returns an 'expected expr' message

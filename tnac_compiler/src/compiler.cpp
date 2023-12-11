@@ -5,6 +5,31 @@
 #include "cfg/cfg.hpp"
 #include "eval/value/value_registry.hpp"
 
+namespace tnac::detail // parsed_modules
+{
+  // Special members
+
+  parsed_modules::~parsed_modules() noexcept = default;
+
+  parsed_modules::parsed_modules() noexcept = default;
+
+
+  // Public members
+
+  void parsed_modules::store(module_sym& sym, module_def& def) noexcept
+  {
+    auto newIt = m_data.try_emplace(&sym, &def);
+    if (newIt.second) return;
+    UTILS_ASSERT(newIt.first->second == &def);
+  }
+
+  parsed_modules::module_def* parsed_modules::locate(module_sym& sym) noexcept
+  {
+    auto found = m_data.find(&sym);
+    return found != m_data.end() ? found->second : nullptr;
+  }
+}
+
 namespace tnac
 {
   // Special members
@@ -23,6 +48,12 @@ namespace tnac
 
   void compiler::operator()(tree_ref node) noexcept
   {
+    if (!node.is_valid())
+    {
+      error(diag::compilation_stopped());
+      return;
+    }
+
     base_t::operator()(&node);
   }
 
@@ -175,10 +206,46 @@ namespace tnac
 
   // Previews
 
+  bool compiler::preview(ast::root& root) noexcept
+  {
+    for (auto mod : root.modules())
+    {
+      if (mod->is_valid())
+      {
+        auto&& modSym = mod->symbol();
+        m_parsedModules.store(modSym, *mod);
+        continue;
+      }
+
+      error(diag::compilation_stopped(mod->name()));
+      return false;
+    }
+
+    return true;
+  }
+
   bool compiler::preview(ast::module_def& mod) noexcept
   {
     m_cfg->enter_module(mod.symbol());
     return true;
   }
 
+
+  // Private members
+
+  void compiler::error(string_t msg) noexcept
+  {
+    if (!m_feedback)
+      return;
+
+    m_feedback->error(msg);
+  }
+
+  void compiler::error(const token& tok, string_t msg) noexcept
+  {
+    if (!m_feedback)
+      return;
+
+    m_feedback->compile_error(tok, msg);
+  }
 }

@@ -10,6 +10,7 @@ namespace tnac
 {
   class sema;
   class feedback;
+  class token;
 
   namespace ir
   {
@@ -20,6 +21,46 @@ namespace tnac
   {
     class registry;
   }
+
+  namespace semantics
+  {
+    class module_sym;
+  }
+}
+
+namespace tnac::detail
+{
+  //
+  // Holds associations between module symbols and their corresponding ASTs
+  //
+  class parsed_modules final
+  {
+  public:
+    using module_sym = semantics::module_sym;
+    using module_def = ast::module_def;
+    using data_store = std::unordered_map<module_sym*, module_def*>;
+
+  public:
+    CLASS_SPECIALS_NONE_CUSTOM(parsed_modules);
+
+    ~parsed_modules() noexcept;
+
+    parsed_modules() noexcept;
+
+  public:
+    //
+    // Appends a sym-tree association
+    //
+    void store(module_sym& sym, module_def& def) noexcept;
+
+    //
+    // Returns the AST node corresponding to a module
+    //
+    module_def* locate(module_sym& sym) noexcept;
+
+  private:
+    data_store m_data;
+  };
 }
 
 namespace tnac
@@ -63,10 +104,22 @@ namespace tnac
     ir::cfg& cfg() noexcept;
 
   public: // General
+    //
+    // Visits the AST root and finalises IR generation
+    //
     void visit(ast::root& root) noexcept;
+
+    //
+    // Visits module definition at the end, finalising the module
+    //
     void visit(ast::module_def& mod) noexcept;
+
     void visit(ast::import_dir& imp) noexcept;
     void visit(ast::scope& scope) noexcept;
+
+    //
+    // Visits an error expr. Probably, not needed
+    //
     void visit(ast::error_expr& err) noexcept;
 
   public: // Exprs
@@ -95,12 +148,32 @@ namespace tnac
     void visit(ast::func_decl& func) noexcept;
 
   public: // Previews
+    //
+    // Inits the root
+    //
+    bool preview(ast::root& root) noexcept;
+
+    //
+    // Inits a module
+    //
     bool preview(ast::module_def& mod) noexcept;
+
+  private:
+    //
+    // Reports a generic error
+    //
+    void error(string_t msg) noexcept;
+
+    //
+    // Reports an error tied to a src position
+    //
+    void error(const token& tok, string_t msg) noexcept;
 
   private:
     sema* m_sema{};
     feedback* m_feedback{};
     ir::cfg* m_cfg;
     eval::value_visitor m_valVisitor;
+    detail::parsed_modules m_parsedModules;
   };
 }

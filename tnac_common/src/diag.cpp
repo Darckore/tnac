@@ -19,6 +19,8 @@ namespace tnac::detail
 
   static constexpr auto unknownCliArg{ "Unknown cli arg '{}'"sv };
   static constexpr auto fileErr{ "Failed to {} file '{}'. Reason: '{}'"sv };
+
+  static constexpr auto moduleError{ "Compilation stopped due to errors in module '{}'"sv };
 }
 
 namespace tnac
@@ -61,6 +63,16 @@ namespace tnac
     static constexpr auto many{ "many"sv };
     auto quantity = wanted < got ? many : few;
     return format(detail::wrongArgN, quantity, wanted, got);
+  }
+
+  string_t diag::compilation_stopped() noexcept
+  {
+    return "Compilation stopped due to errors"sv;
+  }
+
+  string_t diag::compilation_stopped(string_t moduleName) noexcept
+  {
+    return format(detail::moduleError, moduleName);
   }
 
 
