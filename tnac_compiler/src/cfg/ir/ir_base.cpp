@@ -6,7 +6,8 @@ namespace tnac::ir // instruction
 
   instruction::~instruction() noexcept = default;
 
-  instruction::instruction(code c) noexcept :
+  instruction::instruction(basic_block& owner, code c) noexcept :
+    m_block{ &owner },
     m_code{ c }
   {}
 
@@ -16,6 +17,15 @@ namespace tnac::ir // instruction
   instruction::code instruction::what() const noexcept
   {
     return m_code;
+  }
+
+  const basic_block& instruction::owner_block() const noexcept
+  {
+    return *m_block;
+  }
+  basic_block& instruction::owner_block() noexcept
+  {
+    return FROM_CONST(owner_block);
   }
 
 }

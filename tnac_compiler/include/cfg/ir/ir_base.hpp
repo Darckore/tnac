@@ -6,6 +6,11 @@
 
 namespace tnac::ir
 {
+  class basic_block;
+}
+
+namespace tnac::ir
+{
   //
   // Instruction codes
   //
@@ -28,12 +33,16 @@ namespace tnac::ir
     using code = instruction_code;
     using enum instruction_code;
 
+  private:
+    friend class builder;
+
   public:
     CLASS_SPECIALS_NONE(instruction);
 
     virtual ~instruction() noexcept;
 
-    explicit instruction(code c) noexcept;
+  protected:
+    instruction(basic_block& owner, code c) noexcept;
 
   public:
     //
@@ -41,7 +50,20 @@ namespace tnac::ir
     //
     code what() const noexcept;
 
+    //
+    // Returns a reference to the parent basic block
+    // 
+    // const version
+    //
+    const basic_block& owner_block() const noexcept;
+
+    //
+    // Returns a reference to the parent basic block
+    //
+    basic_block& owner_block() noexcept;
+
   private:
+    basic_block* m_block{};
     code m_code{};
   };
 
