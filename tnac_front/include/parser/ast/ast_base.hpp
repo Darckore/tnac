@@ -168,7 +168,7 @@ namespace tnac::ast
   // Checks whether the target class inherits from ast::node
   //
   template <typename D>
-  concept ast_node = std::is_base_of_v<ast::node, D>;
+  concept ast_node = std::derived_from<D, ast::node>;
 
   //
   // Mixin base for easy type definitions
