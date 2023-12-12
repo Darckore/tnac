@@ -11,7 +11,12 @@ namespace tnac::ir
   //
   enum class instruction_code : std::uint8_t
   {
-    Binary
+    Arithmetic,
+    Store,
+    Load,
+    Call,
+    Jump,
+    Ret
   };
 
   //
