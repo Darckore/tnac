@@ -56,7 +56,7 @@ namespace tnac::rt
   void driver::set_callbacks() noexcept
   {
     m_feedback.on_error([this](string_t msg) noexcept
-      { on_error("Input"sv, msg); });
+      { on_error("Generic"sv, msg); });
     m_feedback.on_parse_error([this](const ast::error_expr& err) noexcept
       { on_error(err.at(), err.message()); });
     m_feedback.on_compile_error([this](const token& tok, string_t msg) noexcept
