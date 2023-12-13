@@ -1,5 +1,4 @@
 #include "cfg/ir/ir_function.hpp"
-#include "sema/sym/symbols.hpp"
 
 namespace tnac::ir
 {
@@ -14,6 +13,11 @@ namespace tnac::ir
 
 
   // Public members
+
+  function::name_t function::name() const noexcept
+  {
+    return m_symbol->name();
+  }
 
   const function* function::owner_func() const noexcept
   {

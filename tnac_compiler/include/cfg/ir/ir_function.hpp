@@ -4,15 +4,7 @@
 
 #pragma once
 #include "cfg/ir/ir_base.hpp"
-
-namespace tnac
-{
-  namespace semantics
-  {
-    class function;
-    class module_sym;
-  }
-}
+#include "sema/sym/symbols.hpp"
 
 namespace tnac::ir
 {
@@ -22,8 +14,9 @@ namespace tnac::ir
   class function final
   {
   public:
-    using sym_t = semantics::function;
-    using mod_t = semantics::module_sym;
+    using sym_t  = semantics::function;
+    using mod_t  = semantics::module_sym;
+    using name_t = sym_t::name_t;
 
   private:
     friend class builder;
@@ -37,6 +30,11 @@ namespace tnac::ir
     function(sym_t& sym, function* owner) noexcept;
 
   public:
+    //
+    // Returns the function or module name
+    //
+    name_t name() const noexcept;
+
     //
     // Returns a pointer to the owner function
     // 
