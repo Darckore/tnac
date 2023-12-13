@@ -241,11 +241,11 @@ namespace tnac
     m_feedback->error(msg);
   }
 
-  void compiler::error(const token& tok, string_t msg) noexcept
+  void compiler::error(src::loc_wrapper loc, string_t msg) noexcept
   {
     if (!m_feedback)
       return;
 
-    m_feedback->compile_error(tok, msg);
+    m_feedback->compile_error(std::move(loc), msg);
   }
 }

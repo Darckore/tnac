@@ -112,6 +112,6 @@ namespace tnac
       return;
     }
 
-    m_feedback->compile_error(*pos, msg);
+    m_feedback->compile_error(pos->at(), msg);
   }
 }

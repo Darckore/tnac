@@ -128,7 +128,7 @@ namespace tnac::rt
 
     if (!m_state->redirect_to_file(fileName))
     {
-      m_feedback->compile_error(path, diag::file_write_failure(fileName, "not accessible"sv));
+      m_feedback->compile_error(path.at(), diag::file_write_failure(fileName, "not accessible"sv));
 
       return false;
     }
@@ -197,7 +197,7 @@ namespace tnac::rt
         if (second.value() == "current"sv)
           return m_last;
 
-        m_feedback->compile_error(second, diag::wrong_cmd_arg(curIdx, second.value()));
+        m_feedback->compile_error(second.at(), diag::wrong_cmd_arg(curIdx, second.value()));
         return core.get_ast();
       };
 

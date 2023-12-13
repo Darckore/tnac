@@ -6,11 +6,10 @@
 
 namespace tnac
 {
-  class token;
-
   namespace src
   {
     class file;
+    class loc_wrapper;
   }
 
   namespace ast
@@ -28,7 +27,7 @@ namespace tnac
     concept parse_err_handler = std::is_nothrow_invocable_r_v<void, F, const ast::error_expr&>;
 
     template <typename F>
-    concept compile_err_handler = std::is_nothrow_invocable_r_v<void, F, const token&, string_t>;
+    concept compile_err_handler = std::is_nothrow_invocable_r_v<void, F, src::loc_wrapper&&, string_t>;
 
     template <typename F>
     concept cmd_handler = std::is_nothrow_invocable_r_v<void, F, ast::command&&>;
@@ -49,7 +48,7 @@ namespace tnac
   public:
     using gerr_handler_t = std::move_only_function<void(string_t) noexcept>;
     using perr_handler_t = std::move_only_function<void(const ast::error_expr&) noexcept>;
-    using cerr_handler_t = std::move_only_function<void(const token&, string_t) noexcept>;
+    using cerr_handler_t = std::move_only_function<void(src::loc_wrapper&&, string_t) noexcept>;
     using cmd_handler_t  = std::move_only_function<void(ast::command&&) noexcept>;
     using file_loader_t  = std::move_only_function<bool(fsys::path) noexcept>;
 
@@ -120,7 +119,7 @@ namespace tnac
     //
     // Invokes the compile error handler
     //
-    void compile_error(const token& tok, string_t msg) noexcept;
+    void compile_error(src::loc_wrapper&& loc, string_t msg) noexcept;
 
     //
     // Invokes the command handler

@@ -63,7 +63,7 @@ namespace tnac::rt
     //
     // Posts a compile or parse error
     //
-    void on_error(const token& tok, string_t msg) noexcept;
+    void on_error(src::loc_wrapper loc, string_t msg) noexcept;
 
   private:
     feedback m_feedback;

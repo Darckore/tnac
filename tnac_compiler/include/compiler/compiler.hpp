@@ -10,7 +10,6 @@ namespace tnac
 {
   class sema;
   class feedback;
-  class token;
 
   namespace ir
   {
@@ -167,7 +166,7 @@ namespace tnac
     //
     // Reports an error tied to a src position
     //
-    void error(const token& tok, string_t msg) noexcept;
+    void error(src::loc_wrapper loc, string_t msg) noexcept;
 
   private:
     sema* m_sema{};

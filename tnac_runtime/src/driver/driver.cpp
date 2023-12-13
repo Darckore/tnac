@@ -58,9 +58,9 @@ namespace tnac::rt
     m_feedback.on_error([this](string_t msg) noexcept
       { on_error("Generic"sv, msg); });
     m_feedback.on_parse_error([this](const ast::error_expr& err) noexcept
-      { on_error(err.at(), err.message()); });
-    m_feedback.on_compile_error([this](const token& tok, string_t msg) noexcept
-      { on_error(tok, msg); });
+      { on_error(err.at().at(), err.message()); });
+    m_feedback.on_compile_error([this](src::loc_wrapper&& lok, string_t msg) noexcept
+      { on_error(lok, msg); });
   }
 
   void driver::error_mark() noexcept
@@ -88,10 +88,9 @@ namespace tnac::rt
     post_error(msg);
   }
 
-  void driver::on_error(const token& tok, string_t msg) noexcept
+  void driver::on_error(src::loc_wrapper loc, string_t msg) noexcept
   {
     using namespace out;
-    auto loc = tok.at();
     m_state.err() << loc << ':';
     post_error(msg);
 

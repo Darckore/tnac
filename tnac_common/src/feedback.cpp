@@ -6,7 +6,7 @@ namespace tnac
   {
     void dummy_err(string_t) noexcept {}
     void dummy_parse_err(const ast::error_expr&) noexcept {}
-    void dummy_compile_err(const token&, string_t) noexcept {}
+    void dummy_compile_err(src::loc_wrapper&&, string_t) noexcept {}
     void dummy_cmd(ast::command&&) noexcept {}
     bool dummy_file(fsys::path) noexcept { return {}; }
   }
@@ -39,9 +39,9 @@ namespace tnac
     m_parseErrorHandler(err);
   }
 
-  void feedback::compile_error(const token& tok, string_t msg) noexcept
+  void feedback::compile_error(src::loc_wrapper&& lok, string_t msg) noexcept
   {
-    m_compileErrorHandler(tok, msg);
+    m_compileErrorHandler(std::move(lok), msg);
   }
 
   void feedback::command(ast::command&& cmd) noexcept
