@@ -74,11 +74,6 @@ namespace tnac
     //
     void visit(ast::root& root) noexcept;
 
-    //
-    // Visits module definition at the end, finalising the module
-    //
-    void visit(ast::module_def& mod) noexcept;
-
     void visit(ast::scope& scope) noexcept;
 
     //
@@ -117,12 +112,12 @@ namespace tnac
     //
     bool preview(ast::root& root) noexcept;
 
-    //
-    // Inits a module
-    //
-    bool preview(ast::module_def& mod) noexcept;
-
   private:
+    //
+    // Compiles the given module
+    //
+    void compile(semantics::module_sym& mod) noexcept;
+
     //
     // Loops until the module stack is empty and compiles modules one by one
     //

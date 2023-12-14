@@ -49,12 +49,6 @@ namespace tnac
     utils::unused(root);
   }
 
-  void compiler::visit(ast::module_def& mod) noexcept
-  {
-    utils::unused(mod);
-    m_cfg->exit_module();
-  }
-
   void compiler::visit(ast::scope& scope) noexcept
   {
     utils::unused(scope);
@@ -205,22 +199,22 @@ namespace tnac
     return false;
   }
 
-  bool compiler::preview(ast::module_def& mod) noexcept
-  {
-    m_cfg->enter_module(mod.symbol());
-    return true;
-  }
-
 
   // Private members
+
+  void compiler::compile(semantics::module_sym& mod) noexcept
+  {
+    auto def = m_modules.locate(mod);
+    auto modIr = m_cfg->declare_module(mod);
+    UTILS_ASSERT(def);
+    utils::unused(def, modIr);
+  }
 
   void compiler::compile_modules() noexcept
   {
     while (auto mod = m_modules.pop())
     {
-      auto def = m_modules.locate(*mod);
-      UTILS_ASSERT(def);
-      utils::unused(def);
+      compile(*mod);
     }
   }
 

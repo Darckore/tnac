@@ -13,14 +13,10 @@ namespace tnac::ir
 
   // Public members
 
-  void cfg::enter_module(semantics::module_sym& mod) noexcept
+  ir::function* cfg::declare_module(semantics::module_sym& sym) noexcept
   {
-    utils::unused(mod);
-  }
-
-  void cfg::exit_module() noexcept
-  {
-
+    utils::unused(sym);
+    return {};
   }
 
 }

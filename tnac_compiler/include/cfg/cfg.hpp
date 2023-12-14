@@ -23,15 +23,9 @@ namespace tnac::ir
 
   public:
     //
-    // Declares a module and enters it
-    // If the module already exists, just enters it
+    // Declares a new module
     //
-    void enter_module(semantics::module_sym& mod) noexcept;
-
-    //
-    // Exits the currently compiled module
-    //
-    void exit_module() noexcept;
+    ir::function* declare_module(semantics::module_sym& sym) noexcept;
 
   private:
     builder* m_builder;
