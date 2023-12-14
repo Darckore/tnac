@@ -5,31 +5,6 @@
 #include "cfg/cfg.hpp"
 #include "eval/value/value_registry.hpp"
 
-namespace tnac::detail // parsed_modules
-{
-  // Special members
-
-  parsed_modules::~parsed_modules() noexcept = default;
-
-  parsed_modules::parsed_modules() noexcept = default;
-
-
-  // Public members
-
-  void parsed_modules::store(module_sym& sym, module_def& def) noexcept
-  {
-    auto newIt = m_data.try_emplace(&sym, &def);
-    if (newIt.second) return;
-    UTILS_ASSERT(newIt.first->second == &def);
-  }
-
-  parsed_modules::module_def* parsed_modules::locate(module_sym& sym) noexcept
-  {
-    auto found = m_data.find(&sym);
-    return found != m_data.end() ? found->second : nullptr;
-  }
-}
-
 namespace tnac
 {
   // Special members
@@ -208,20 +183,20 @@ namespace tnac
 
   bool compiler::preview(ast::root& root) noexcept
   {
-    for (auto mod : root.modules())
+    auto&& modules = root.modules();
+    for (auto mod : modules)
     {
-      if (mod->is_valid())
+      if (!mod->is_valid())
       {
-        auto&& modSym = mod->symbol();
-        m_parsedModules.store(modSym, *mod);
-        continue;
+        error(diag::compilation_stopped(mod->name()));
+        return false;
       }
 
-      error(diag::compilation_stopped(mod->name()));
-      return false;
+      auto&& modSym = mod->symbol();
+      m_modules.store(modSym, *mod);
     }
 
-    return true;
+    return false;
   }
 
   bool compiler::preview(ast::module_def& mod) noexcept

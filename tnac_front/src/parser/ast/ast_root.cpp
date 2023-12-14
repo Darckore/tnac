@@ -34,6 +34,15 @@ namespace tnac::ast // Import directive
     return FROM_CONST(name);
   }
 
+  const semantics::symbol& import_dir::imported_sym() const noexcept
+  {
+    return name().back()->symbol();
+  }
+  semantics::symbol& import_dir::imported_sym() noexcept
+  {
+    return FROM_CONST(imported_sym);
+  }
+
   import_dir::const_pointer import_dir::alias_name() const noexcept
   {
     return m_aliasName;

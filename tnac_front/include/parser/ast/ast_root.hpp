@@ -53,6 +53,18 @@ namespace tnac::ast
     elem_list& name() noexcept;
 
     //
+    // Returns a reference to the imported symbol
+    // 
+    // const version
+    //
+    const semantics::symbol& imported_sym() const noexcept;
+
+    //
+    // Returns a reference to the imported symbol
+    //
+    semantics::symbol& imported_sym() noexcept;
+
+    //
     // Returns the alias for the imported module if
     // one is defined
     // 

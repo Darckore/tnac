@@ -5,6 +5,7 @@
 #pragma once
 #include "parser/ast/ast_visitor.hpp"
 #include "eval/value/value_visitor.hpp"
+#include "compiler/detail/module_info.hpp"
 
 namespace tnac
 {
@@ -25,41 +26,6 @@ namespace tnac
   {
     class module_sym;
   }
-}
-
-namespace tnac::detail
-{
-  //
-  // Holds associations between module symbols and their corresponding ASTs
-  //
-  class parsed_modules final
-  {
-  public:
-    using module_sym = semantics::module_sym;
-    using module_def = ast::module_def;
-    using data_store = std::unordered_map<module_sym*, module_def*>;
-
-  public:
-    CLASS_SPECIALS_NONE_CUSTOM(parsed_modules);
-
-    ~parsed_modules() noexcept;
-
-    parsed_modules() noexcept;
-
-  public:
-    //
-    // Appends a sym-tree association
-    //
-    void store(module_sym& sym, module_def& def) noexcept;
-
-    //
-    // Returns the AST node corresponding to a module
-    //
-    module_def* locate(module_sym& sym) noexcept;
-
-  private:
-    data_store m_data;
-  };
 }
 
 namespace tnac
@@ -113,6 +79,9 @@ namespace tnac
     //
     void visit(ast::module_def& mod) noexcept;
 
+    //
+    // Visits module imports
+    //
     void visit(ast::import_dir& imp) noexcept;
     void visit(ast::scope& scope) noexcept;
 
@@ -173,6 +142,6 @@ namespace tnac
     feedback* m_feedback{};
     ir::cfg* m_cfg;
     eval::value_visitor m_valVisitor;
-    detail::parsed_modules m_parsedModules;
+    detail::module_info m_modules;
   };
 }
