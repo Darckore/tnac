@@ -455,6 +455,7 @@
     <DisplayString>module info</DisplayString>
     <Expand>
       <Item Name="[data]">m_data</Item>
+      <Item Name="[stack]">m_stack</Item>
     </Expand>
   </Type>
   

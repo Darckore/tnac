@@ -79,10 +79,6 @@ namespace tnac
     //
     void visit(ast::module_def& mod) noexcept;
 
-    //
-    // Visits module imports
-    //
-    void visit(ast::import_dir& imp) noexcept;
     void visit(ast::scope& scope) noexcept;
 
     //
@@ -127,6 +123,22 @@ namespace tnac
     bool preview(ast::module_def& mod) noexcept;
 
   private:
+    //
+    // Loops until the module stack is empty and compiles modules one by one
+    //
+    void compile_modules() noexcept;
+
+    //
+    // Attempts to retrieve the module symbol from the given import directive
+    //
+    semantics::module_sym* get_module(ast::import_dir& imp) noexcept;
+
+    //
+    // Pushes module imports to the stack for further compilation
+    // Returns false on error
+    //
+    bool walk_imports(ast::module_def& mod) noexcept;
+
     //
     // Reports a generic error
     //

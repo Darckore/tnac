@@ -22,4 +22,25 @@ namespace tnac::detail
     auto found = m_data.find(&sym);
     return found != m_data.end() ? found->second : nullptr;
   }
+
+  void module_info::wipe() noexcept
+  {
+    m_data.clear();
+    m_stack.clear();
+  }
+
+  void module_info::push(module_sym& sym) noexcept
+  {
+    m_stack.push_back(&sym);
+  }
+
+  module_info::module_sym* module_info::pop() noexcept
+  {
+    if (m_stack.empty())
+      return {};
+
+    auto sym = m_stack.back();
+    m_stack.pop_back();
+    return sym;
+  }
 }

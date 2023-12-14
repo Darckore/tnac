@@ -55,11 +55,6 @@ namespace tnac
     m_cfg->exit_module();
   }
 
-  void compiler::visit(ast::import_dir& imp) noexcept
-  {
-    utils::unused(imp);
-  }
-
   void compiler::visit(ast::scope& scope) noexcept
   {
     utils::unused(scope);
@@ -67,7 +62,9 @@ namespace tnac
 
   void compiler::visit(ast::error_expr& err) noexcept
   {
-    utils::unused(err);
+    // Should never even be here since we break at the first module with errors
+    UTILS_ASSERT(false);
+    error(err.pos().at(), err.message());
   }
 
   // Exprs
@@ -184,18 +181,27 @@ namespace tnac
   bool compiler::preview(ast::root& root) noexcept
   {
     auto&& modules = root.modules();
+    auto ok = true;
     for (auto mod : modules)
     {
       if (!mod->is_valid())
       {
         error(diag::compilation_stopped(mod->name()));
-        return false;
+        ok = false;
+        break;
       }
 
       auto&& modSym = mod->symbol();
       m_modules.store(modSym, *mod);
+      m_modules.push(modSym);
+      if (ok = walk_imports(*mod); !ok)
+        break;
     }
 
+    if (ok)
+      compile_modules();
+
+    m_modules.wipe();
     return false;
   }
 
@@ -207,6 +213,46 @@ namespace tnac
 
 
   // Private members
+
+  void compiler::compile_modules() noexcept
+  {
+    while (auto mod = m_modules.pop())
+    {
+      auto def = m_modules.locate(*mod);
+      UTILS_ASSERT(def);
+      utils::unused(def);
+    }
+  }
+
+  semantics::module_sym* compiler::get_module(ast::import_dir& imp) noexcept
+  {
+    auto sym = &imp.imported_sym();
+    auto modSym = utils::try_cast<semantics::module_sym>(sym);
+    if (!modSym)
+    {
+      if (auto ref = utils::try_cast<semantics::scope_ref>(sym))
+        modSym = ref->referenced().to_module();
+    }
+
+    return modSym;
+  }
+
+  bool compiler::walk_imports(ast::module_def& mod) noexcept
+  {
+    for (auto imp : mod.imports())
+    {
+      auto modSym = get_module(*imp);
+      if (!modSym)
+      {
+        error(imp->name().back()->pos().at(), diag::undef_id());
+        return false;
+      }
+
+      m_modules.push(*modSym);
+    }
+
+    return true;
+  }
 
   void compiler::error(string_t msg) noexcept
   {
