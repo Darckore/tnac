@@ -39,7 +39,6 @@ namespace tnac::detail
   public:
     //
     // Appends a sym-tree association
-    // Returns true if the module was encountered for the first time
     //
     void store(module_sym& sym, module_def& def) noexcept;
 
