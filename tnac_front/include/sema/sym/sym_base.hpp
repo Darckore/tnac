@@ -77,6 +77,11 @@ namespace tnac::semantics
     scope& owner_scope() noexcept;
 
     //
+    // Checks whether the symbol is in the given scope
+    //
+    bool is_in_scope(const scope& other) const noexcept;
+
+    //
     // Returns the entity name
     //
     string_t name() const noexcept;

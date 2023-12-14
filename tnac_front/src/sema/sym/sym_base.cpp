@@ -35,6 +35,11 @@ namespace tnac::semantics
     return FROM_CONST(owner_scope);
   }
 
+  bool symbol::is_in_scope(const scope& other) const noexcept
+  {
+    return &owner_scope() == &other;
+  }
+
   string_t symbol::name() const noexcept
   {
     return m_name;
