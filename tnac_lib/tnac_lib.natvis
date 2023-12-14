@@ -165,6 +165,7 @@
   <Type Name="tnac::ast::decl">
     <DisplayString>{m_kind,en} ({m_id.m_value,sb})</DisplayString>
     <Expand>
+      <Item Name="[parent]" Condition="m_parent">*m_parent</Item>
       <Item Name="[name]">m_id.m_value,sb</Item>
       <Item Name="[symbol]">*m_symbol</Item>
       <Item Name="[definition]" Condition="m_def">*m_def</Item>
@@ -174,6 +175,7 @@
   <Type Name="tnac::ast::func_decl">
     <DisplayString>{m_kind,en} ({m_id.m_value,sb})</DisplayString>
     <Expand>
+      <Item Name="[parent]" Condition="m_parent">*m_parent</Item>
       <Item Name="[name]">m_id.m_value,sb</Item>
       <Item Name="[symbol]">*m_symbol</Item>
       <Item Name="[definition]">*m_def</Item>
@@ -183,15 +185,22 @@
 
   <Type Name="tnac::ast::node">
     <DisplayString>{m_kind,en}</DisplayString>
+    <Expand>
+      <Item Name="[parent]" Condition="m_parent">*m_parent</Item>
+    </Expand>
   </Type>
 
   <Type Name="tnac::ast::lit_expr">
     <DisplayString>{m_kind,en} ({m_pos.m_value,sb})</DisplayString>
+    <Expand>
+      <Item Name="[parent]" Condition="m_parent">*m_parent</Item>
+    </Expand>
   </Type>
 
   <Type Name="tnac::ast::ret_expr">
     <DisplayString>{m_kind,en}</DisplayString>
     <Expand>
+      <Item Name="[parent]" Condition="m_parent">*m_parent</Item>
       <Item Name="[expr]">m_retVal</Item>
     </Expand>
   </Type>
@@ -199,6 +208,7 @@
   <Type Name="tnac::ast::scope">
     <DisplayString>{m_kind,en}</DisplayString>
     <Expand>
+      <Item Name="[parent]" Condition="m_parent">*m_parent</Item>
       <Item Name="[children]">m_children</Item>
     </Expand>
   </Type>
@@ -213,6 +223,7 @@
   <Type Name="tnac::ast::module_def">
     <DisplayString>{m_kind,en}</DisplayString>
     <Expand>
+      <Item Name="[parent]" Condition="m_parent">*m_parent</Item>
       <Item Name="[name]">m_name,sb</Item>
       <Item Name="[children]">m_children</Item>
       <Item Name="[params]">m_params</Item>
@@ -224,6 +235,7 @@
   <Type Name="tnac::ast::import_dir">
     <DisplayString>{m_kind,en}</DisplayString>
     <Expand>
+      <Item Name="[parent]" Condition="m_parent">*m_parent</Item>
       <Item Name="[name]">m_name</Item>
       <Item Name="[pos]">m_pos</Item>
       <Item Name="[alias]" Condition="m_aliasName">*m_aliasName</Item>
@@ -233,6 +245,7 @@
   <Type Name="tnac::ast::binary_expr">
     <DisplayString>{m_kind,en} ({m_op})</DisplayString>
     <Expand>
+      <Item Name="[parent]" Condition="m_parent">*m_parent</Item>
       <Item Name="[left]">*m_left</Item>
       <Item Name="[right]">*m_right</Item>
     </Expand>
@@ -241,6 +254,7 @@
   <Type Name="tnac::ast::dot_expr">
     <DisplayString>{m_kind,en}</DisplayString>
     <Expand>
+      <Item Name="[parent]" Condition="m_parent">*m_parent</Item>
       <Item Name="[accessed]">*m_accessed</Item>
       <Item Name="[accessor]">*m_accessor</Item>
     </Expand>
@@ -249,6 +263,7 @@
   <Type Name="tnac::ast::unary_expr">
     <DisplayString>{m_kind,en} ({m_pos})</DisplayString>
     <Expand>
+      <Item Name="[parent]" Condition="m_parent">*m_parent</Item>
       <Item Name="[operand]">*m_expr</Item>
     </Expand>
   </Type>
@@ -256,6 +271,7 @@
   <Type Name="tnac::ast::id_expr">
     <DisplayString>{m_kind,en} ({m_pos.m_value,sb})</DisplayString>
     <Expand>
+      <Item Name="[parent]" Condition="m_parent">*m_parent</Item>
       <Item Name="[symbol]">*m_sym</Item>
     </Expand>
   </Type>
@@ -263,6 +279,7 @@
   <Type Name="tnac::ast::paren_expr">
     <DisplayString>{m_kind,en} ({*m_expr})</DisplayString>
     <Expand>
+      <Item Name="[parent]" Condition="m_parent">*m_parent</Item>
       <Item Name="[expr]">*m_expr</Item>
     </Expand>
   </Type>
@@ -270,6 +287,7 @@
   <Type Name="tnac::ast::abs_expr">
     <DisplayString>{m_kind,en} ({*m_expr})</DisplayString>
     <Expand>
+      <Item Name="[parent]" Condition="m_parent">*m_parent</Item>
       <Item Name="[expr]">*m_expr</Item>
     </Expand>
   </Type>
@@ -277,6 +295,7 @@
   <Type Name="tnac::ast::call_expr">
     <DisplayString>{m_kind,en} ({m_pos.m_value,sb})</DisplayString>
     <Expand>
+      <Item Name="[parent]" Condition="m_parent">*m_parent</Item>
       <Item Name="[callee]">*m_callee</Item>
       <Item Name="[args]">m_args</Item>
     </Expand>
@@ -285,6 +304,7 @@
   <Type Name="tnac::ast::array_expr">
     <DisplayString>{m_kind,en}</DisplayString>
     <Expand>
+      <Item Name="[parent]" Condition="m_parent">*m_parent</Item>
       <Item Name="[elements]">m_elements</Item>
     </Expand>
   </Type>
@@ -292,6 +312,7 @@
   <Type Name="tnac::ast::cond_short">
     <DisplayString>{m_kind,en}</DisplayString>
     <Expand>
+      <Item Name="[parent]" Condition="m_parent">*m_parent</Item>
       <Item Name="[cond]">*m_cond</Item>
       <Item Name="[true]" Condition="m_true">*m_true</Item>
       <Item Name="[true]" Condition="!m_true">"&lt;null&gt;",sb</Item>
@@ -303,6 +324,7 @@
   <Type Name="tnac::ast::cond_expr">
     <DisplayString>{m_kind,en}</DisplayString>
     <Expand>
+      <Item Name="[parent]" Condition="m_parent">*m_parent</Item>
       <Item Name="[cond]">*m_cond</Item>
       <Item Name="[body]">*m_body</Item>
     </Expand>
@@ -311,6 +333,7 @@
   <Type Name="tnac::ast::pattern">
     <DisplayString>{m_kind,en}</DisplayString>
     <Expand>
+      <Item Name="[parent]" Condition="m_parent">*m_parent</Item>
       <Item Name="[matcher]">*m_matcher</Item>
       <Item Name="[body]">*m_body</Item>
     </Expand>
@@ -319,6 +342,7 @@
   <Type Name="tnac::ast::matcher">
     <DisplayString>{m_kind,en}</DisplayString>
     <Expand>
+      <Item Name="[parent]" Condition="m_parent">*m_parent</Item>
       <Item Name="[op]" Condition="m_checked&amp;&amp;m_pos.m_kind!=tnac::tok_kind::CurlyOpen&amp;&amp;m_pos.m_kind!=m_checked->m_pos.m_kind">m_pos</Item>
       <Item Name="[op]" Condition="m_checked&amp;&amp;m_pos.m_kind!=tnac::tok_kind::CurlyOpen&amp;&amp;m_pos.m_kind==m_checked->m_pos.m_kind">"== implicit",sb</Item>
       <Item Name="[op]" Condition="!m_checked&amp;&amp;m_pos.m_kind==tnac::tok_kind::Exclamation">"!",sb</Item>
@@ -330,6 +354,7 @@
   <Type Name="tnac::ast::decl_expr">
     <DisplayString>{m_kind,en}({*m_decl})</DisplayString>
     <Expand>
+      <Item Name="[parent]" Condition="m_parent">*m_parent</Item>
       <Item Name="[declarator]">*m_decl</Item>
     </Expand>
   </Type>
