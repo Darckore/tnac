@@ -127,6 +127,11 @@ namespace tnac
     semantics::symbol& visit_import_component(const token& id) noexcept;
 
     //
+    // Visits an alias declaration of an imported module which has been previously imported
+    //
+    semantics::symbol& visit_import_alias(ast::module_def& def) noexcept;
+
+    //
     // Visits an alias declaration of an imported module
     //
     semantics::symbol& visit_import_alias(const token& id, semantics::module_sym& src) noexcept;
@@ -175,6 +180,12 @@ namespace tnac
     // Creates symbol params from AST-related params
     //
     symbol_params make_params(const ast_params& src) const noexcept;
+
+    //
+    // Visits an alias declaration of an imported module
+    // Service function for the corresponding public members
+    //
+    semantics::symbol& visit_import_alias(string_t name, loc_t at, semantics::module_sym& src) noexcept;
 
   private:
     semantics::sym_table m_symTab;

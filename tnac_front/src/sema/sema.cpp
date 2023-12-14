@@ -199,11 +199,14 @@ namespace tnac
     return *sym;
   }
 
+  semantics::symbol& sema::visit_import_alias(ast::module_def& def) noexcept
+  {
+    return visit_import_alias(def.name(), def.at(), def.symbol());
+  }
+
   semantics::symbol& sema::visit_import_alias(const token& id, semantics::module_sym& src) noexcept
   {
-    auto name = id.value();
-    auto loc = id.at();
-    return m_symTab.add_scope_ref(name, m_curScope, loc, src.own_scope());
+    return visit_import_alias(id.value(), id.at(), src);
   }
 
   sema::scope_guard sema::try_resolve_scope(ast::expr& expr) noexcept
@@ -263,6 +266,11 @@ namespace tnac
     }
 
     return params;
+  }
+
+  semantics::symbol& sema::visit_import_alias(string_t name, loc_t at, semantics::module_sym& src) noexcept
+  {
+    return m_symTab.add_scope_ref(name, m_curScope, at, src.own_scope());
   }
 
 }

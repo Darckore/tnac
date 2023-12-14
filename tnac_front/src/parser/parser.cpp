@@ -319,7 +319,10 @@ namespace tnac
   parser::pointer parser::operator()(src::file& input) noexcept
   {
     if (auto parsed = input.parsed_ast())
+    {
+      m_sema.visit_import_alias(*parsed);
       return parsed;
+    }
 
     auto loc = input.make_location();
     auto inStr = input.get_contents();
@@ -577,7 +580,13 @@ namespace tnac
           return {};
         }
 
-        auto moduleSym = utils::try_cast<semantics::module_sym>(m_sema.find(idName, sema::Scoped));
+        auto found = m_sema.find(idName, sema::Scoped);
+        auto moduleSym = utils::try_cast<semantics::module_sym>(found);
+        if (!moduleSym)
+        {
+          if (auto ref = utils::try_cast<semantics::scope_ref>(found))
+            moduleSym = ref->referenced().to_module();
+        }
         if (!moduleSym)
         {
           m_curModule->adopt({ error_expr(id, diag::import_failed(idName), err_pos::Current) });
