@@ -541,6 +541,28 @@ namespace tnac
     return m_builder.make_import(importKw, std::move(name), aliasName);
   }
 
+  bool parser::is_circular_with(string_t name) noexcept
+  {
+    auto existing = utils::try_cast<semantics::module_sym>(m_sema.find(name, sema::Unscoped));
+    if (!existing)
+      return false;
+
+    auto selfSym = &m_curModule->symbol();
+    if (existing == selfSym)
+      return true;
+
+    auto&& parentScope = existing->own_scope();
+    while (selfSym)
+    {
+      if(selfSym->is_in_scope(parentScope))
+        return true;
+
+      selfSym = selfSym->owner_scope().to_module();
+    }
+
+    return false;
+  }
+
   parser::import_name parser::imported_module_name() noexcept
   {
     import_name name;
@@ -567,11 +589,13 @@ namespace tnac
       }
       else
       {
-        if (auto existing = utils::try_cast<semantics::module_sym>(m_sema.find(idName, sema::Unscoped));
-                 existing && m_curModule->symbol().is_in_scope(existing->own_scope()))
+        if (is_circular_with(idName))
         {
           auto cur = m_curModule->name();
-          m_curModule->adopt({ error_expr(id, diag::circular_ref(idName, cur), err_pos::Current) });
+          auto err = idName != cur ?
+            diag::circular_ref(idName, cur) :
+            diag::self_import(cur);
+          m_curModule->adopt({ error_expr(id, err, err_pos::Current) });
           return {};
         }
 

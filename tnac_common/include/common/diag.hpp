@@ -183,6 +183,11 @@ namespace tnac
     static string_t circular_ref(string_t last, string_t cur) noexcept;
 
     //
+    // Returns a 'self import' message
+    //
+    static string_t self_import(string_t moduleName) noexcept;
+
+    //
     // Returns the 'literal after dot' message
     //
     static string_t lit_after_dot() noexcept;

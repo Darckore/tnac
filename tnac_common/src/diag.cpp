@@ -13,6 +13,7 @@ namespace tnac::detail
 
   static constexpr auto failedImport{ "Unable to import module '{}'"sv };
   static constexpr auto circularImport{ "Circular reference between modules '{}' and '{}'"sv };
+  static constexpr auto selfImport{ "Illegal self import in module '{}'"sv };
 
   static constexpr auto wrongCmdArgType{ "Command argument {} has an unexpected type"sv };
   static constexpr auto wrongCmdArg{ "Unrecognised argument '{}' at index {}"sv };
@@ -181,6 +182,11 @@ namespace tnac
   string_t diag::circular_ref(string_t last, string_t cur) noexcept
   {
     return format(detail::circularImport, last, cur);
+  }
+
+  string_t diag::self_import(string_t moduleName) noexcept
+  {
+    return format(detail::selfImport, moduleName);
   }
 
   string_t diag::lit_after_dot() noexcept

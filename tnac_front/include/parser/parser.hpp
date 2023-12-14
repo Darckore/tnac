@@ -216,6 +216,11 @@ namespace tnac
     ast::import_dir* import_dir() noexcept;
 
     //
+    // Detects a circular reference between modules
+    //
+    bool is_circular_with(string_t name) noexcept;
+
+    //
     // Parses a compound name of an imported module
     //
     import_name imported_module_name() noexcept;
