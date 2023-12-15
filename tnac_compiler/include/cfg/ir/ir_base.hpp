@@ -6,12 +6,18 @@
 
 namespace tnac::ir
 {
+  class basic_block;
+}
+
+namespace tnac::ir
+{
   //
   // IR kinds
   //
   enum class ir_kind : std::uint8_t
   {
     Function,
+    Variable,
     Arithmetic,
     Store,
     Load,

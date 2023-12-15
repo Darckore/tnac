@@ -13,9 +13,7 @@ namespace tnac::ir
   class builder final
   {
   public:
-    using func_store  = std::list<function>;
-    using instr_ptr   = std::unique_ptr<instruction>;
-    using instr_store = std::list<instr_ptr>;
+    using func_store  = std::unordered_map<entity_id, function>;
 
   public:
     CLASS_SPECIALS_NONE_CUSTOM(builder);

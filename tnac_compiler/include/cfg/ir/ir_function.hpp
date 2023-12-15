@@ -4,7 +4,6 @@
 
 #pragma once
 #include "cfg/ir/ir_base.hpp"
-#include "sema/sym/symbols.hpp"
 
 namespace tnac::ir
 {
@@ -14,9 +13,7 @@ namespace tnac::ir
   class function final : public node
   {
   public:
-    using sym_t  = semantics::function;
-    using mod_t  = semantics::module_sym;
-    using name_t = sym_t::name_t;
+    using name_t = string_t;
 
   private:
     friend class builder;
@@ -27,7 +24,11 @@ namespace tnac::ir
     virtual ~function() noexcept;
 
   protected:
-    function(sym_t& sym, function* owner) noexcept;
+    explicit function(name_t name) noexcept;
+
+    function(name_t name, function& owner) noexcept;
+
+    function(name_t name, function* owner) noexcept;
 
   public:
     //
@@ -47,34 +48,8 @@ namespace tnac::ir
     //
     function* owner_func() noexcept;
 
-    //
-    // Returns a reference to the underlying function symbol
-    // 
-    // const version
-    //
-    const sym_t& function_sym() const noexcept;
-
-    //
-    // Returns a reference to the underlying function symbol
-    //
-    sym_t& function_sym() noexcept;
-
-    //
-    // Attempts to cast the underlying symbol to a module and returns a pointer to it
-    // nullptr if the cast is unsuccessful
-    // 
-    // const version
-    //
-    const mod_t* to_module() const noexcept;
-
-    //
-    // Attempts to cast the underlying symbol to a module and returns a pointer to it
-    // nullptr if the cast is unsuccessful
-    //
-    mod_t* to_module() noexcept;
-
   private:
+    name_t m_name;
     function* m_owner{};
-    sym_t* m_symbol{};
   };
 }

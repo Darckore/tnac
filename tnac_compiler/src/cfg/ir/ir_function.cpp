@@ -6,10 +6,18 @@ namespace tnac::ir
 
   function::~function() noexcept = default;
 
-  function::function(sym_t& sym, function* owner) noexcept :
+  function::function(name_t name) noexcept :
+    function{ name, nullptr }
+  {}
+
+  function::function(name_t name, function& owner) noexcept :
+    function{ name, &owner }
+  {}
+
+  function::function(name_t name, function* owner) noexcept :
     node{ kind::Function },
-    m_owner{ owner },
-    m_symbol{ &sym }
+    m_name{ name },
+    m_owner{ owner }
   {}
 
 
@@ -17,7 +25,7 @@ namespace tnac::ir
 
   function::name_t function::name() const noexcept
   {
-    return m_symbol->name();
+    return m_name;
   }
 
   const function* function::owner_func() const noexcept
@@ -27,23 +35,5 @@ namespace tnac::ir
   function* function::owner_func() noexcept
   {
     return FROM_CONST(owner_func);
-  }
-
-  const function::sym_t& function::function_sym() const noexcept
-  {
-    return *m_symbol;
-  }
-  function::sym_t& function::function_sym() noexcept
-  {
-    return FROM_CONST(function_sym);
-  }
-
-  const function::mod_t* function::to_module() const noexcept
-  {
-    return utils::try_cast<mod_t>(m_symbol);
-  }
-  function::mod_t* function::to_module() noexcept
-  {
-    return FROM_CONST(to_module);
   }
 }

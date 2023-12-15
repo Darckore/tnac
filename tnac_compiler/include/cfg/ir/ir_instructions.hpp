@@ -7,11 +7,6 @@
 
 namespace tnac::ir
 {
-  class basic_block;
-}
-
-namespace tnac::ir
-{
   //
   // Base class for IR instructions
   //
