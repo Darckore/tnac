@@ -13,9 +13,9 @@ namespace tnac::eval
 
   // Public members
 
-  value value_visitor::make_function(id_param_t ent, function_type f) noexcept
+  value value_visitor::make_function(entity_id ent, function_type f) noexcept
   {
-    VALUE_GUARD(m_curEntity, *ent);
+    VALUE_GUARD(m_curEntity, ent);
     reg_value(f);
     return m_registry.value_for(m_curEntity);
   }
@@ -58,9 +58,9 @@ namespace tnac::eval
     push_value(last());
   }
 
-  value value_visitor::visit_assign(id_param_t ent, value rhs) noexcept
+  value value_visitor::visit_assign(entity_id ent, value rhs) noexcept
   {
-    VALUE_GUARD(m_curEntity, *ent);
+    VALUE_GUARD(m_curEntity, ent);
 
     visit_value(rhs, [this](auto v) noexcept
       {

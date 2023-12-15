@@ -6,62 +6,42 @@
 #include "eval/value/value_registry.hpp"
 #include "eval/types/traits.hpp"
 
-namespace tnac::eval
+namespace tnac::eval::detail
 {
-  namespace detail
+  constexpr auto is_unary(val_ops op) noexcept
   {
-    //
-    // Helper object to facilitate easy casts from pointers to entity ids
-    //
-    struct ent_id
-    {
-      CLASS_SPECIALS_ALL(ent_id);
-      using id_t = registry::entity_id;
-
-      static consteval auto invalid_id() noexcept { return ~id_t{}; }
-
-      ent_id(id_t id) noexcept         : value{ id } {}
-      ent_id(const void* ent) noexcept : ent_id{ reinterpret_cast<id_t>(ent) } {}
-      ent_id(std::nullptr_t) noexcept  : ent_id{} {}
-
-      auto operator*() const noexcept { return value; }
-
-      id_t value{};
-    };
-
-    constexpr auto is_unary(val_ops op) noexcept
-    {
-      using enum val_ops;
-      return utils::eq_any(op, UnaryPlus, UnaryNegation, UnaryBitwiseNot,
-                               LogicalNot, LogicalIs, AbsoluteValue);
-    }
-    constexpr auto is_binary(val_ops op) noexcept
-    {
-      using enum val_ops;
-      return utils::eq_any(op, Addition, Subtraction, 
-                               Multiplication, Division, Modulo,
-                               BitwiseAnd, BitwiseOr, BitwiseXor,
-                               BinaryPow, BinaryRoot,
-                               RelLess, RelLessEq, RelGr, RelGrEq,
-                               Equal, NEqual);
-    }
-    constexpr auto is_comparison(val_ops op) noexcept
-    {
-      using enum val_ops;
-      return utils::eq_any(op, RelLess, RelLessEq, RelGr, RelGrEq, Equal, NEqual);
-    }
-  
-    template <typename T>
-    concept value_container = requires (T& t)
-    {
-      typename T::value_type;
-      typename T::size_type;
-      requires std::same_as<typename T::value_type, stored_value>;
-      { t[typename T::size_type{}] } -> std::same_as<stored_value&>;
-    };
+    using enum val_ops;
+    return utils::eq_any(op, UnaryPlus, UnaryNegation, UnaryBitwiseNot,
+      LogicalNot, LogicalIs, AbsoluteValue);
+  }
+  constexpr auto is_binary(val_ops op) noexcept
+  {
+    using enum val_ops;
+    return utils::eq_any(op, Addition, Subtraction,
+      Multiplication, Division, Modulo,
+      BitwiseAnd, BitwiseOr, BitwiseXor,
+      BinaryPow, BinaryRoot,
+      RelLess, RelLessEq, RelGr, RelGrEq,
+      Equal, NEqual);
+  }
+  constexpr auto is_comparison(val_ops op) noexcept
+  {
+    using enum val_ops;
+    return utils::eq_any(op, RelLess, RelLessEq, RelGr, RelGrEq, Equal, NEqual);
   }
 
+  template <typename T>
+  concept value_container = requires (T & t)
+  {
+    typename T::value_type;
+    typename T::size_type;
+      requires std::same_as<typename T::value_type, stored_value>;
+    { t[typename T::size_type{}] } -> std::same_as<stored_value&>;
+  };
+}
 
+namespace tnac::eval
+{
   //
   // Value visitor used in expression evaluations
   //
@@ -69,8 +49,6 @@ namespace tnac::eval
   {
   public:
     using enum val_ops;
-    using id_param_t = detail::ent_id;
-    using entity_id  = id_param_t::id_t;
     using arr_t      = registry::val_array;
     using size_type  = registry::size_type;
 
@@ -656,7 +634,7 @@ namespace tnac::eval
     //
     void reg_value(detail::expr_result auto val) noexcept
     {
-      if (m_curEntity != invalidEnt)
+      if (m_curEntity != entity_id{})
       {
         m_registry.register_entity(m_curEntity, std::move(val));
         return;
@@ -731,7 +709,7 @@ namespace tnac::eval
     //
     // Stores a value for a function
     //
-    value make_function(id_param_t ent, function_type f) noexcept;
+    value make_function(entity_id ent, function_type f) noexcept;
 
     //
     // Evaluates a binary expr
@@ -756,7 +734,7 @@ namespace tnac::eval
     //
     // Makes a value for an assigned-to entity
     //
-    value visit_assign(id_param_t ent, value rhs) noexcept;
+    value visit_assign(entity_id ent, value rhs) noexcept;
 
     //
     // Parses an integer literal value from string
@@ -827,8 +805,7 @@ namespace tnac::eval
     arr_t collect_args_locally(size_type count) noexcept;
 
   private:
-    static constexpr auto invalidEnt = detail::ent_id::invalid_id();
-    entity_id m_curEntity{ invalidEnt };
+    entity_id m_curEntity{};
     registry& m_registry;
   };
 }

@@ -14,7 +14,6 @@ namespace tnac::eval
   class registry final
   {
   public:
-    using entity_id    = std::uintptr_t;
     using entity_vals  = std::unordered_map<entity_id, stored_value>;
 
     using val_array    = array_type::value_type;
