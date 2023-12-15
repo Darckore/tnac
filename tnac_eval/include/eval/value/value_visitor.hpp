@@ -31,11 +31,11 @@ namespace tnac::eval::detail
   }
 
   template <typename T>
-  concept value_container = requires (T & t)
+  concept value_container = requires (T& t)
   {
     typename T::value_type;
     typename T::size_type;
-      requires std::same_as<typename T::value_type, stored_value>;
+    requires std::same_as<typename T::value_type, stored_value>;
     { t[typename T::size_type{}] } -> std::same_as<stored_value&>;
   };
 }

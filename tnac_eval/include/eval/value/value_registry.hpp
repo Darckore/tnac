@@ -161,7 +161,7 @@ namespace tnac::eval
   {
     template <typename T>
     concept lockable = expr_result<T> &&
-      requires(T t, registry& reg)
+      requires(const T& t, registry& reg)
     {
       { reg.lock(t) }   -> std::same_as<void>;
       { reg.unlock(t) } -> std::same_as<void>;
