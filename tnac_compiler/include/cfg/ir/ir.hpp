@@ -4,5 +4,5 @@
 
 #pragma once
 
-#include "cfg/ir/ir_function.hpp"
 #include "cfg/ir/ir_base.hpp"
+#include "cfg/ir/ir_function.hpp"
