@@ -205,7 +205,7 @@ namespace tnac
   void compiler::compile(semantics::module_sym& mod) noexcept
   {
     auto def = m_modules.locate(mod);
-    auto modIr = m_cfg->declare_module(mod);
+    auto&& modIr = m_cfg->declare_module(&mod, mod.name(), mod.param_count());
     UTILS_ASSERT(def);
     utils::unused(def, modIr);
   }

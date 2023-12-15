@@ -4,7 +4,6 @@
 
 #pragma once
 #include "cfg/ir/ir_builder.hpp"
-#include "sema/sym/symbols.hpp"
 
 namespace tnac::ir
 {
@@ -14,6 +13,10 @@ namespace tnac::ir
   //
   class cfg final
   {
+  public:
+    using name_t    = function::name_t;
+    using size_type = std::size_t;
+
   public:
     CLASS_SPECIALS_NONE(cfg);
 
@@ -25,7 +28,12 @@ namespace tnac::ir
     //
     // Declares a new module
     //
-    ir::function* declare_module(semantics::module_sym& sym) noexcept;
+    function& declare_module(entity_id id, name_t name, size_type paramCount) noexcept;
+
+    //
+    // Returns the module corresponding to the given id
+    //
+    function* find_module(entity_id id) noexcept;
 
   private:
     builder* m_builder;

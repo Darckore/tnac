@@ -12,15 +12,11 @@ namespace tnac::ir
   //
   class instruction : public node
   {
-  private:
-    friend class builder;
-
   public:
     CLASS_SPECIALS_NONE(instruction);
 
     virtual ~instruction() noexcept;
 
-  protected:
     instruction(basic_block& owner, kind k) noexcept;
 
   public:

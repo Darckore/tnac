@@ -14,6 +14,10 @@
     </Expand>
   </Type>
 
+  <Type Name="tnac::entity_id">
+    <DisplayString>{m_value,Xb}</DisplayString>
+  </Type>
+
 
   <Type Name="tnac::eval::value">
     <DisplayString>{(tnac::eval::type_id)((m_val &amp; 0xFF00000000000000) &gt;&gt; 56),en}</DisplayString>
@@ -456,6 +460,32 @@
     <Expand>
       <Item Name="[data]">m_data</Item>
       <Item Name="[stack]">m_stack</Item>
+    </Expand>
+  </Type>
+
+  <Type Name="tnac::ir::function">
+    <DisplayString Condition="m_owner">function {m_name,sb}({m_paramCount})</DisplayString>
+    <DisplayString Condition="!m_owner">module {m_name,sb}({m_paramCount})</DisplayString>
+    <Expand>
+      <Item Name="[name]">m_name,sb</Item>
+      <Item Name="[param_count]">m_paramCount</Item>
+      <Item Name="[owner]" Condition="m_owner">*m_owner</Item>
+      <Item Name="[module]" Condition="m_owner">"no",sb</Item>
+      <Item Name="[module]" Condition="!m_owner">"yes",sb</Item>
+    </Expand>
+  </Type>
+
+  <Type Name="tnac::ir::builder">
+    <DisplayString>IR builder</DisplayString>
+    <Expand>
+      <Item Name="[functions]">m_functions</Item>
+    </Expand>
+  </Type>
+  
+  <Type Name="tnac::ir::cfg">
+    <DisplayString>CFG</DisplayString>
+    <Expand>
+      <Item Name="[IR builder]">*m_builder</Item>
     </Expand>
   </Type>
   

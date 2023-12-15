@@ -31,9 +31,6 @@ namespace tnac::ir
   //
   class node
   {
-  private:
-    friend class builder;
-
   public:
     using kind = ir_kind;
     using enum ir_kind;
@@ -43,7 +40,6 @@ namespace tnac::ir
 
     virtual ~node() noexcept;
 
-  protected:
     node(kind k) noexcept;
 
   public:
