@@ -11,7 +11,7 @@ namespace tnac::ir
   //
   // Represents IR functions and modules
   //
-  class function final
+  class function final : public node
   {
   public:
     using sym_t  = semantics::function;
@@ -24,7 +24,7 @@ namespace tnac::ir
   public:
     CLASS_SPECIALS_NONE(function);
 
-    ~function() noexcept;
+    virtual ~function() noexcept;
 
   protected:
     function(sym_t& sym, function* owner) noexcept;

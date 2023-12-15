@@ -7,6 +7,7 @@ namespace tnac::ir
   function::~function() noexcept = default;
 
   function::function(sym_t& sym, function* owner) noexcept :
+    node{ kind::Function },
     m_owner{ owner },
     m_symbol{ &sym }
   {}

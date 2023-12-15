@@ -1,31 +1,20 @@
 #include "cfg/ir/ir_base.hpp"
 
-namespace tnac::ir // instruction
+namespace tnac::ir
 {
   // Special members
 
-  instruction::~instruction() noexcept = default;
+  node::~node() noexcept = default;
 
-  instruction::instruction(basic_block& owner, code c) noexcept :
-    m_block{ &owner },
-    m_code{ c }
+  node::node(kind k) noexcept :
+    m_kind{ k }
   {}
 
 
   // Public members
 
-  instruction::code instruction::what() const noexcept
+  node::kind node::what() const noexcept
   {
-    return m_code;
+    return m_kind;
   }
-
-  const basic_block& instruction::owner_block() const noexcept
-  {
-    return *m_block;
-  }
-  basic_block& instruction::owner_block() noexcept
-  {
-    return FROM_CONST(owner_block);
-  }
-
 }

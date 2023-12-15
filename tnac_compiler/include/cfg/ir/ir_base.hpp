@@ -6,16 +6,12 @@
 
 namespace tnac::ir
 {
-  class basic_block;
-}
-
-namespace tnac::ir
-{
   //
-  // Instruction codes
+  // IR kinds
   //
-  enum class instruction_code : std::uint8_t
+  enum class ir_kind : std::uint8_t
   {
+    Function,
     Arithmetic,
     Store,
     Load,
@@ -25,50 +21,44 @@ namespace tnac::ir
   };
 
   //
-  // Base class for IR instructions
+  // Base class for every IR node
   //
-  class instruction
+  class node
   {
-  public:
-    using code = instruction_code;
-    using enum instruction_code;
-
   private:
     friend class builder;
 
   public:
-    CLASS_SPECIALS_NONE(instruction);
+    using kind = ir_kind;
+    using enum ir_kind;
 
-    virtual ~instruction() noexcept;
+  public:
+    CLASS_SPECIALS_NONE(node);
+
+    virtual ~node() noexcept;
 
   protected:
-    instruction(basic_block& owner, code c) noexcept;
+    node(kind k) noexcept;
 
   public:
     //
-    // Returns the instruction code
+    // Returns the node kind
     //
-    code what() const noexcept;
-
-    //
-    // Returns a reference to the parent basic block
-    // 
-    // const version
-    //
-    const basic_block& owner_block() const noexcept;
-
-    //
-    // Returns a reference to the parent basic block
-    //
-    basic_block& owner_block() noexcept;
+    kind what() const noexcept;
 
   private:
-    basic_block* m_block{};
-    code m_code{};
+    kind m_kind;
   };
 
-  inline auto get_id(const instruction& i) noexcept
+  inline auto get_id(const node& n) noexcept
   {
-    return i.what();
+    return n.what();
   }
+
+  //
+  // Checks whether the target class inherits from ir::node
+  //
+  template <typename IR>
+  concept ir_node = std::derived_from<IR, ir::node>;
+
 }

@@ -6,3 +6,6 @@
 
 #include "cfg/ir/ir_base.hpp"
 #include "cfg/ir/ir_function.hpp"
+#include "cfg/ir/ir_instructions.hpp"
+
+TYPE_TO_ID_ASSOCIATION(tnac::ir::function, tnac::ir::ir_kind::Function);
