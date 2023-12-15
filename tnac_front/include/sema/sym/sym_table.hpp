@@ -7,14 +7,14 @@
 
 namespace tnac::semantics
 {
-  template <detail::sym S>
+  template <sem_symbol S>
   using sym_collection = std::unordered_map<const scope*, std::vector<const S*>>;
 
   //
   // Iterator which allows going through scopes associated with a collection
   // of certain symbol types
   //
-  template <detail::sym S>
+  template <sem_symbol S>
   class scope_iter final
   {
   public:
@@ -72,7 +72,7 @@ namespace tnac::semantics
   //
   // Iterable container for a collection of symbols
   //
-  template <detail::sym S>
+  template <sem_symbol S>
   class sym_container final
   {
   public:
@@ -240,7 +240,7 @@ namespace tnac::semantics
     //
     // Allocates a new symbol of the specified type
     //
-    template <detail::sym S, typename ...Args>
+    template <sem_symbol S, typename ...Args>
     auto alloc_sym(Args&& ...args) noexcept
     {
       auto&& res = m_symbols.emplace_back(new S{ std::forward<Args>(args)... });
@@ -252,7 +252,7 @@ namespace tnac::semantics
     // If the scope already has a symbol of the same, returns a pointer to it
     // If the existing symbol has a different type, returns nullptr
     //
-    template <detail::sym S, typename ...Args>
+    template <sem_symbol S, typename ...Args>
     auto make_symbol(name_t name, scope_ptr parent, Args&& ...args) noexcept
     {
       auto&& sym = make_symbol(make_name(name), parent);
@@ -271,7 +271,7 @@ namespace tnac::semantics
     // Stores a symbol in the corresponding collection
     // This is mostly needed for enumeration of everything in the given scope
     //
-    template <detail::sym S, typename Collection>
+    template <sem_symbol S, typename Collection>
       requires (std::same_as<Collection, sym_collection<S>>)
     void store_sym(S& sym, Collection& store) noexcept
     {

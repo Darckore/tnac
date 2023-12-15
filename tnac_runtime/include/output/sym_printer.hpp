@@ -26,7 +26,7 @@ namespace tnac::rt::out
     sym_printer() noexcept;
 
   public:
-    template <semantics::detail::sym S>
+    template <semantics::sem_symbol S>
     void operator()(semantics::sym_container<S> collection, out_stream& os) noexcept
     {
       m_out = &os;
@@ -48,7 +48,7 @@ namespace tnac::rt::out
       }
     }
 
-    template <semantics::detail::sym S>
+    template <semantics::sem_symbol S>
     void operator()(semantics::sym_container<S> collection) noexcept
     {
       operator()(collection, out());

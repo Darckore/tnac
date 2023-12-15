@@ -104,13 +104,13 @@ namespace tnac::semantics
     kind m_kind{};
   };
 
-  namespace detail
-  {
-    template <typename T>
-    concept sym = std::derived_from<T, symbol>;
-  }
+  //
+  // Checks whether the given class is derived from symbol
+  //
+  template <typename T>
+  concept sem_symbol = std::derived_from<T, semantics::symbol>;
 
-  inline auto get_id(const symbol& sym) noexcept
+  inline auto get_id(const sem_symbol auto& sym) noexcept
   {
     return sym.what();
   }

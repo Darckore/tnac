@@ -72,9 +72,4 @@ namespace tnac::semantics
     param_list m_params;
     scope* m_ownedScope{};
   };
-
-  inline auto get_id(const function& sym) noexcept
-  {
-    return sym.what();
-  }
 }

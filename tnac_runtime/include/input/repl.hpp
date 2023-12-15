@@ -94,7 +94,7 @@ namespace tnac::rt
     //
     // Generalised print function for symbols
     //
-    template <semantics::detail::sym S>
+    template <semantics::sem_symbol S>
     void print_symbols(semantics::sym_container<S> collection) noexcept;
 
     //

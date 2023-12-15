@@ -80,12 +80,6 @@ namespace tnac::ast
     token m_pos;
   };
 
-  inline auto get_id(const decl& d) noexcept
-  {
-    return d.what();
-  }
-
-
   //
   // Decl expression. Holds the declarator corresponding to the declared entity
   //

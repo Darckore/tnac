@@ -50,15 +50,14 @@ namespace tnac::ir
     kind m_kind;
   };
 
-  inline auto get_id(const node& n) noexcept
-  {
-    return n.what();
-  }
-
   //
   // Checks whether the target class inherits from ir::node
   //
   template <typename IR>
   concept ir_node = std::derived_from<IR, ir::node>;
 
+  inline auto get_id(const ir_node auto& n) noexcept
+  {
+    return n.what();
+  }
 }

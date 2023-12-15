@@ -159,16 +159,17 @@ namespace tnac::ast
     bool m_valid{ true };
   };
 
-  inline auto get_id(const node& n) noexcept
-  {
-    return n.what();
-  }
-
   //
   // Checks whether the target class inherits from ast::node
   //
   template <typename D>
   concept ast_node = std::derived_from<D, ast::node>;
+
+  inline auto get_id(const ast_node auto& n) noexcept
+  {
+    return n.what();
+  }
+
 
   //
   // Mixin base for easy type definitions
@@ -238,9 +239,4 @@ namespace tnac::ast
   private:
     elem_list m_children;
   };
-
-  inline auto get_id(const scope& s) noexcept
-  {
-    return s.what();
-  }
 }

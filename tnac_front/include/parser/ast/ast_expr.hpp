@@ -38,10 +38,6 @@ namespace tnac::ast
     token m_pos;
   };
 
-  inline auto get_id(const expr& e) noexcept
-  {
-    return e.what();
-  }
 
   //
   // Result expression
@@ -468,11 +464,6 @@ namespace tnac::ast
   private:
     arg_list m_args;
   };
-
-  inline auto get_id(const invocation& e) noexcept
-  {
-    return e.what();
-  }
 
 
   //

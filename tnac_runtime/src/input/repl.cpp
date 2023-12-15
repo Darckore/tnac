@@ -209,7 +209,7 @@ namespace tnac::rt
       });
   }
 
-  template <semantics::detail::sym S>
+  template <semantics::sem_symbol S>
   void repl::print_symbols(semantics::sym_container<S> collection) noexcept
   {
     out::sym_printer sp;
