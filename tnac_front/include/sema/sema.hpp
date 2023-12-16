@@ -52,8 +52,6 @@ namespace tnac
     using symbol = semantics::symbol;
     using sym_ptr = symbol*;
 
-    using fake_name_set = std::unordered_set<buf_t>;
-
     using ast_params    = std::vector<ast::param_decl*>;
     using symbol_params = std::vector<semantics::parameter*>;
     using loc_t         = src::loc_wrapper;
@@ -147,6 +145,11 @@ namespace tnac
     string_t contrive_name() noexcept;
 
     //
+    // Generates a random function name
+    //
+    string_t contrive_func_name() noexcept;
+
+    //
     // Returns an iterable collection of all declared variables
     //
     auto vars() const noexcept
@@ -189,7 +192,7 @@ namespace tnac
 
   private:
     semantics::sym_table m_symTab;
-    fake_name_set m_generatedNames;
+    utils::prefixed_pool m_generatedNames;
     semantics::scope* m_curScope{};
   };
 }

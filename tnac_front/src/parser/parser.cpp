@@ -784,7 +784,7 @@ namespace tnac
     auto pos = name;
     if (name.is(token::KwFunction))
     {
-      name = token{ m_sema.contrive_name(), token::Identifier };
+      name = token{ m_sema.contrive_func_name(), token::Identifier };
     }
 
     auto funcDecl = m_builder.make_func_decl(name, pos, *def, std::move(params));

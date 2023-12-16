@@ -231,12 +231,13 @@ namespace tnac
 
   string_t sema::contrive_name() noexcept
   {
-    static constexpr auto namePrefix{ "`__anon_entity__"sv };
-    const auto nameIdx = m_generatedNames.size();
-    auto entry = m_generatedNames.emplace(buf_t{ namePrefix } + std::to_string(nameIdx));
-    return *entry.first;
+    return m_generatedNames.next_indexed("`__anon_entity__"sv);
   }
 
+  string_t sema::contrive_func_name() noexcept
+  {
+    return m_generatedNames.next_indexed("`__anon_function__"sv);
+  }
 
   // Private members
 
