@@ -13,7 +13,6 @@ namespace tnac
   class diag final
   {
   public:
-    using msg_store = std::unordered_map<utils::hashed_string, buf_t>;
     using size_type = std::size_t;
 
   public:
@@ -26,18 +25,7 @@ namespace tnac
     template <typename ...Args>
     static string_t format(string_t fmt, Args&& ...args) noexcept
     {
-      m_buffer.clear();
-      std::vformat_to(std::back_inserter(m_buffer), fmt,
-        std::make_format_args(std::forward<Args>(args)...));
-
-      auto hs = utils::hashed_string{ m_buffer };
-      auto interned = m_interned.try_emplace(hs, std::move(m_buffer));
-      if (interned.second)
-      {
-        m_buffer = {};
-      }
-
-      return interned.first->second;
+      return m_interned.format(fmt, std::forward<Args>(args)...);
     }
 
     //
@@ -225,7 +213,6 @@ namespace tnac
     static string_t file_write_failure(const fsys::path& path, string_t reason) noexcept;
 
   private:
-    static buf_t m_buffer;
-    static msg_store m_interned;
+    static utils::string_pool m_interned;
   };
 }

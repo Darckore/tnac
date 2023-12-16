@@ -28,9 +28,7 @@ namespace tnac
 {
   // Data members
 
-  buf_t diag::m_buffer{};
-
-  diag::msg_store diag::m_interned{};
+  utils::string_pool diag::m_interned{};
 
 
   // Public members

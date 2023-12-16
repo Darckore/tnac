@@ -1,12 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <AutoVisualizer xmlns="http://schemas.microsoft.com/vstudio/debugger/natvis/2010">
 
-  <Type Name="utils::ratio&lt;*&gt;">
-    <DisplayString Condition="m_sign &lt; 0">-({m_num}/{m_den})</DisplayString>
-    <DisplayString Condition="m_sign &gt; 0">({m_num}/{m_den})</DisplayString>
-    <DisplayString Condition="m_sign == 0">0</DisplayString>
-  </Type>
-
   <Type Name="tnac::token">
     <DisplayString>{m_kind,en} ({m_value,sb})</DisplayString>
     <Expand>
