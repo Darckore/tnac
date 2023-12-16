@@ -240,8 +240,8 @@ namespace tnac
   bool has_implicit_separator(const ast::node& expr) noexcept
   {
     using kind = ast::node_kind;
-    if (auto binary = utils::try_cast<kind::Binary>(&expr))
-      return has_implicit_separator(binary->right());
+    if (expr.is_any(kind::Assign, kind::Binary))
+      return has_implicit_separator(utils::cast<kind::Binary>(expr).right());
 
     if (auto unary = utils::try_cast<kind::Unary>(&expr))
       return has_implicit_separator(unary->operand());
