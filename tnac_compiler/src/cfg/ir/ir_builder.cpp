@@ -11,15 +11,31 @@ namespace tnac::ir
 
   // Public members
 
-  function& builder::make_module(entity_id id, function::name_t name, function::size_type paramCount) noexcept
+  function& builder::make_module(entity_id id, fname_t name, par_size_t paramCount) noexcept
   {
-    auto newIt = m_functions.try_emplace(id, name, paramCount);
-    return newIt.first->second;
+    return make_function(id, {}, name, paramCount);
+  }
+
+  function& builder::make_function(entity_id id, function& owner, fname_t name, par_size_t paramCount) noexcept
+  {
+    return make_function(id, &owner, name, paramCount);
   }
 
   function* builder::find_function(entity_id id) noexcept
   {
     auto fIt = m_functions.find(id);
     return fIt != m_functions.end() ? &fIt->second : nullptr;
+  }
+
+
+  // Private members
+
+  function& builder::make_function(entity_id id, function* owner, fname_t name, par_size_t paramCount) noexcept
+  {
+    auto newIt = owner ?
+      m_functions.try_emplace(id, name, paramCount, *owner) :
+      m_functions.try_emplace(id, name, paramCount);
+
+    return newIt.first->second;
   }
 }

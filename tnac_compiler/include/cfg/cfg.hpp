@@ -31,9 +31,20 @@ namespace tnac::ir
     function& declare_module(entity_id id, name_t name, size_type paramCount) noexcept;
 
     //
+    // Declares a new function
+    //
+    function& declare_function(entity_id id, function& owner, name_t name, size_type paramCount) noexcept;
+
+    //
     // Returns the module corresponding to the given id
     //
     function* find_module(entity_id id) noexcept;
+
+  private:
+    //
+    // Casts and returns a function's parameter count from size_type
+    //
+    static function::size_type conv_param_count(size_type paramCount) noexcept;
 
   private:
     builder* m_builder;

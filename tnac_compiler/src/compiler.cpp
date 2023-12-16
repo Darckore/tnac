@@ -201,7 +201,9 @@ namespace tnac
 
   bool compiler::preview(ast::func_decl& fd) noexcept
   {
-    utils::unused(fd);
+    auto&& owner = m_modules.current_function();
+    auto&& sym = fd.symbol();
+    m_modules.enter_function(m_cfg->declare_function(&sym, owner, fd.name(), fd.param_count()));
     return true;
   }
 

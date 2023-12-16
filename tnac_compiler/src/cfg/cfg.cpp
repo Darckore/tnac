@@ -15,8 +15,12 @@ namespace tnac::ir
 
   function& cfg::declare_module(entity_id id, name_t name, size_type paramCount) noexcept
   {
-    UTILS_ASSERT(paramCount <= std::numeric_limits<function::size_type>::max());
-    return m_builder->make_module(id, name, static_cast<function::size_type>(paramCount));
+    return m_builder->make_module(id, name, conv_param_count(paramCount));
+  }
+
+  function& cfg::declare_function(entity_id id, function& owner, name_t name, size_type paramCount) noexcept
+  {
+    return m_builder->make_function(id, owner, name, conv_param_count(paramCount));
   }
 
   function* cfg::find_module(entity_id id) noexcept
@@ -24,4 +28,12 @@ namespace tnac::ir
     return m_builder->find_function(id);
   }
 
+
+  // Private members
+
+  function::size_type cfg::conv_param_count(size_type paramCount) noexcept
+  {
+    UTILS_ASSERT(paramCount <= std::numeric_limits<function::size_type>::max());
+    return static_cast<function::size_type>(paramCount);
+  }
 }
