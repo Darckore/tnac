@@ -223,7 +223,10 @@ namespace tnac
     UTILS_ASSERT(def);
 
     m_modules.enter_module(m_cfg->declare_module(&mod, mod.name(), mod.param_count()));
-
+    for (auto param : def->params())
+    {
+      compile(*param);
+    }
     for (auto child : def->children())
     {
       compile(*child);
