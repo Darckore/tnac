@@ -72,6 +72,11 @@ namespace tnac
     void visit(ast::scope& scope) noexcept;
 
     //
+    // Finalises a module
+    //
+    void visit(ast::module_def& mod) noexcept;
+
+    //
     // Visits an error expr. Probably, not needed
     //
     void visit(ast::error_expr& err) noexcept;
@@ -99,6 +104,10 @@ namespace tnac
   public: // Decls
     void visit(ast::var_decl& var) noexcept;
     void visit(ast::param_decl& param) noexcept;
+
+    //
+    // Finalises function compilation
+    //
     void visit(ast::func_decl& func) noexcept;
 
   public: // Previews
@@ -106,6 +115,11 @@ namespace tnac
     // Inits the root
     //
     bool preview(ast::root& root) noexcept;
+
+    //
+    // Inits a function
+    //
+    bool preview(ast::func_decl& fd) noexcept;
 
   private:
     //

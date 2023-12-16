@@ -1,4 +1,5 @@
 #include "compiler/detail/module_info.hpp"
+#include "cfg/ir/ir.hpp"
 
 namespace tnac::detail
 {
@@ -46,27 +47,52 @@ namespace tnac::detail
 
   void module_info::enter_module(ir::function& mod) noexcept
   {
+    exit_module();
     m_curModule = &mod;
+    enter_function(mod);
   }
-
   void module_info::exit_module() noexcept
   {
+    exit_function();
     m_curModule = {};
   }
-
   ir::function* module_info::try_current_module() noexcept
   {
     return m_curModule;
   }
-
   bool module_info::has_current_module() const noexcept
   {
     return static_cast<bool>(m_curModule);
   }
-
   ir::function& module_info::current_module() noexcept
   {
     UTILS_ASSERT(has_current_module());
     return *try_current_module();
+  }
+
+  void module_info::enter_function(ir::function& fn) noexcept
+  {
+    exit_function();
+    m_curFunction = &fn;
+  }
+  void module_info::exit_function() noexcept
+  {
+    if (!m_curFunction)
+      return;
+
+    m_curFunction = m_curFunction->owner_func();
+  }
+  ir::function* module_info::try_current_function() noexcept
+  {
+    return m_curFunction;
+  }
+  bool module_info::has_current_function() const noexcept
+  {
+    return static_cast<bool>(m_curFunction);
+  }
+  ir::function& module_info::current_function() noexcept
+  {
+    UTILS_ASSERT(has_current_function());
+    return *try_current_function();
   }
 }

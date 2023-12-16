@@ -95,9 +95,36 @@ namespace tnac::detail
     //
     ir::function& current_module() noexcept;
 
+    //
+    // Sets the given function as the current one
+    //
+    void enter_function(ir::function& fn) noexcept;
+
+    //
+    // Resets the current function to nothing
+    //
+    void exit_function() noexcept;
+
+    //
+    // Returns a pointer to the current function
+    //
+    ir::function* try_current_function() noexcept;
+
+    //
+    // Checks whether a current function is set
+    //
+    bool has_current_function() const noexcept;
+
+    //
+    // Returns a reference to the current function
+    // Use with caution and check whether one exists beforehand
+    //
+    ir::function& current_function() noexcept;
+
   private:
     data_store m_data;
     module_stack m_stack;
     ir::function* m_curModule{};
+    ir::function* m_curFunction{};
   };
 }
