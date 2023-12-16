@@ -72,11 +72,6 @@ namespace tnac
     void visit(ast::scope& scope) noexcept;
 
     //
-    // Finalises a module
-    //
-    void visit(ast::module_def& mod) noexcept;
-
-    //
     // Visits an error expr. Probably, not needed
     //
     void visit(ast::error_expr& err) noexcept;

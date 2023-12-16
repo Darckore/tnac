@@ -12,7 +12,9 @@ namespace tnac::ir
 
   function::function(name_t name, size_type paramCount, function& owner) noexcept :
     function{ name, paramCount, &owner }
-  {}
+  {
+    owner.add_child(*this);
+  }
 
   function::function(name_t name, size_type paramCount, function* owner) noexcept :
     node{ kind::Function },
@@ -41,5 +43,22 @@ namespace tnac::ir
   function* function::owner_func() noexcept
   {
     return FROM_CONST(owner_func);
+  }
+
+  const function::child_list& function::children() const noexcept
+  {
+    return m_children;
+  }
+  function::child_list& function::children() noexcept
+  {
+    return FROM_CONST(children);
+  }
+
+
+  // Private members
+
+  void function::add_child(function& child) noexcept
+  {
+    m_children.push_back(&child);
   }
 }

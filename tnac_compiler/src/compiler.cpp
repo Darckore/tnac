@@ -49,11 +49,6 @@ namespace tnac
     utils::unused(scope);
   }
 
-  void compiler::visit(ast::module_def& ) noexcept
-  {
-    m_modules.exit_module();
-  }
-
   void compiler::visit(ast::error_expr& err) noexcept
   {
     // Should never even be here since we break at the first module with errors
@@ -233,6 +228,7 @@ namespace tnac
     {
       compile(*child);
     }
+    m_modules.exit_module();
   }
 
   void compiler::compile_modules() noexcept

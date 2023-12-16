@@ -470,6 +470,7 @@
       <Item Name="[owner]" Condition="m_owner">*m_owner</Item>
       <Item Name="[module]" Condition="m_owner">"no",sb</Item>
       <Item Name="[module]" Condition="!m_owner">"yes",sb</Item>
+      <Item Name="[nested]">m_children</Item>
     </Expand>
   </Type>
 
