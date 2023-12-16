@@ -454,6 +454,8 @@
     <Expand>
       <Item Name="[data]">m_data</Item>
       <Item Name="[stack]">m_stack</Item>
+      <Item Name="[current module]" Condition="m_curModule">*m_curModule</Item>
+      <Item Name="[current module]" Condition="!m_curModule">"&lt;none&gt;",sb</Item>
     </Expand>
   </Type>
 

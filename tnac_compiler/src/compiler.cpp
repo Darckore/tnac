@@ -29,7 +29,7 @@ namespace tnac
       return;
     }
 
-    base_t::operator()(&node);
+    compile(node);
   }
 
   const ir::cfg& compiler::cfg() const noexcept
@@ -197,12 +197,22 @@ namespace tnac
 
   // Private members
 
+  void compiler::compile(tree_ref node) noexcept
+  {
+    base_t::operator()(&node);
+  }
+
   void compiler::compile(semantics::module_sym& mod) noexcept
   {
+    // This module has already been compiled
+    if (m_cfg->find_module(&mod))
+      return;
+
     auto def = m_modules.locate(mod);
-    auto&& modIr = m_cfg->declare_module(&mod, mod.name(), mod.param_count());
     UTILS_ASSERT(def);
-    utils::unused(def, modIr);
+
+    m_modules.enter_module(m_cfg->declare_module(&mod, mod.name(), mod.param_count()));
+    compile(*def);
   }
 
   void compiler::compile_modules() noexcept

@@ -15,6 +15,11 @@ namespace tnac
   {
     class module_sym;
   }
+
+  namespace ir
+  {
+    class function;
+  }
 }
 
 namespace tnac::detail
@@ -64,8 +69,35 @@ namespace tnac::detail
     //
     module_sym* pop() noexcept;
 
+    //
+    // Sets the given module as the current one
+    //
+    void enter_module(ir::function& mod) noexcept;
+
+    //
+    // Resets the current module to nothing
+    //
+    void exit_module() noexcept;
+
+    //
+    // Returns a pointer to the current module
+    //
+    ir::function* try_current_module() noexcept;
+
+    //
+    // Checks whether a current module is set
+    //
+    bool has_current_module() const noexcept;
+
+    //
+    // Returns a reference to the current module
+    // Use with caution and check whether one exists beforehand
+    //
+    ir::function& current_module() noexcept;
+
   private:
     data_store m_data;
     module_stack m_stack;
+    ir::function* m_curModule{};
   };
 }

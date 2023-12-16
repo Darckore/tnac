@@ -109,6 +109,11 @@ namespace tnac
 
   private:
     //
+    // Walks the given ast node and compiles it
+    //
+    void compile(tree_ref node) noexcept;
+
+    //
     // Compiles the given module
     //
     void compile(semantics::module_sym& mod) noexcept;

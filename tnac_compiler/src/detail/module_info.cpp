@@ -43,4 +43,30 @@ namespace tnac::detail
     m_stack.pop_back();
     return sym;
   }
+
+  void module_info::enter_module(ir::function& mod) noexcept
+  {
+    m_curModule = &mod;
+  }
+
+  void module_info::exit_module() noexcept
+  {
+    m_curModule = {};
+  }
+
+  ir::function* module_info::try_current_module() noexcept
+  {
+    return m_curModule;
+  }
+
+  bool module_info::has_current_module() const noexcept
+  {
+    return static_cast<bool>(m_curModule);
+  }
+
+  ir::function& module_info::current_module() noexcept
+  {
+    UTILS_ASSERT(has_current_module());
+    return *try_current_module();
+  }
 }
