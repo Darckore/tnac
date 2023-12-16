@@ -69,11 +69,6 @@ namespace tnac
     ir::cfg& cfg() noexcept;
 
   public: // General
-    //
-    // Visits the AST root and finalises IR generation
-    //
-    void visit(ast::root& root) noexcept;
-
     void visit(ast::scope& scope) noexcept;
 
     //

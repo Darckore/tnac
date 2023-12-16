@@ -44,11 +44,6 @@ namespace tnac
 
   // General
 
-  void compiler::visit(ast::root& root) noexcept
-  {
-    utils::unused(root);
-  }
-
   void compiler::visit(ast::scope& scope) noexcept
   {
     utils::unused(scope);
