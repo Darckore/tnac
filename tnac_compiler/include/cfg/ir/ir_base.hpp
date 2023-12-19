@@ -17,7 +17,7 @@ namespace tnac::ir
   enum class ir_kind : std::uint8_t
   {
     Function,
-    Variable,
+    Block,
     Arithmetic,
     Store,
     Load,
