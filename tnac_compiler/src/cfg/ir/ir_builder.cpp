@@ -32,9 +32,14 @@ namespace tnac::ir
 
   function& builder::make_function(entity_id id, function* owner, fname_t name, par_size_t paramCount) noexcept
   {
+    auto blockIt = m_blocks.try_emplace(id, block_map{});
+    UTILS_ASSERT(blockIt.second);
+    auto blocks = detail::block_container{ blockIt.first->second };
+
     auto newIt = owner ?
-      m_functions.try_emplace(id, name, paramCount, *owner) :
-      m_functions.try_emplace(id, name, paramCount);
+      m_functions.try_emplace(id, name, paramCount, *owner, blocks) :
+      m_functions.try_emplace(id, name, paramCount, blocks);
+    UTILS_ASSERT(newIt.second);
 
     return newIt.first->second;
   }

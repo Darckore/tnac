@@ -4,6 +4,7 @@
 
 #pragma once
 #include "cfg/ir/ir_base.hpp"
+#include "cfg/ir/ir_basic_block.hpp"
 
 namespace tnac::ir
 {
@@ -16,18 +17,19 @@ namespace tnac::ir
     using name_t     = string_t;
     using size_type  = std::uint16_t;
     using child_list = std::vector<function*>;
+    using block_list = detail::block_container;
 
   public:
     CLASS_SPECIALS_NONE(function);
 
     virtual ~function() noexcept;
 
-    function(name_t name, size_type paramCount) noexcept;
+    function(name_t name, size_type paramCount, block_list blocks) noexcept;
 
-    function(name_t name, size_type paramCount, function& owner) noexcept;
+    function(name_t name, size_type paramCount, function& owner, block_list blocks) noexcept;
 
   protected:
-    function(name_t name, size_type paramCount, function* owner) noexcept;
+    function(name_t name, size_type paramCount, function* owner, block_list blocks) noexcept;
 
   public:
     //
@@ -74,6 +76,7 @@ namespace tnac::ir
     name_t m_name;
     function* m_owner{};
     child_list m_children;
+    block_list m_blocks;
     size_type m_paramCount{};
   };
 }

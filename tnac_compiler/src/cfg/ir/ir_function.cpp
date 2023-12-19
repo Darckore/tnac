@@ -6,20 +6,21 @@ namespace tnac::ir
 
   function::~function() noexcept = default;
 
-  function::function(name_t name, size_type paramCount) noexcept :
-    function{ name, paramCount, nullptr }
+  function::function(name_t name, size_type paramCount, block_list blocks) noexcept :
+    function{ name, paramCount, {}, blocks }
   {}
 
-  function::function(name_t name, size_type paramCount, function& owner) noexcept :
-    function{ name, paramCount, &owner }
+  function::function(name_t name, size_type paramCount, function& owner, block_list blocks) noexcept :
+    function{ name, paramCount, &owner, blocks }
   {
     owner.add_child(*this);
   }
 
-  function::function(name_t name, size_type paramCount, function* owner) noexcept :
+  function::function(name_t name, size_type paramCount, function* owner, block_list blocks) noexcept :
     node{ kind::Function },
     m_name{ name },
     m_owner{ owner },
+    m_blocks{ blocks },
     m_paramCount{ paramCount }
   {}
 
