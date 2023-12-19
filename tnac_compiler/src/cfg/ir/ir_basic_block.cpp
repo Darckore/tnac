@@ -59,6 +59,11 @@ namespace tnac::ir::detail // block container
     m_value->erase(name);
   }
 
+  void block_container::remove(block_iterator it) noexcept
+  {
+    m_value->erase(it.get());
+  }
+
   basic_block& block_container::add(string_t name, function& owner) noexcept
   {
     auto newItem = m_value->try_emplace(name, name, owner);

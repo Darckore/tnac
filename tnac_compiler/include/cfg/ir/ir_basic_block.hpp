@@ -51,15 +51,74 @@ namespace tnac::ir
 namespace tnac::ir::detail
 {
   //
+  // An iterator for a collection of basic blocks
+  //
+  class block_iterator final
+  {
+  public:
+    using underlying_t = std::unordered_map<string_t, basic_block>;
+    using iter         = underlying_t::iterator;
+    using size_type    = underlying_t::size_type;
+    friend class block_container;
+
+  public:
+    CLASS_SPECIALS_NODEFAULT(block_iterator);
+
+    ~block_iterator() noexcept = default;
+
+    explicit block_iterator(iter it) noexcept :
+      m_iter{ it }
+    {}
+
+    bool operator==(const block_iterator&) const noexcept = default;
+
+    auto operator++() noexcept
+    {
+      ++m_iter;
+      return *this;
+    }
+    auto operator++(int) noexcept
+    {
+      auto self = *this;
+      ++(*this);
+      return self;
+    }
+
+    basic_block& operator*() noexcept
+    {
+      return m_iter->second;
+    }
+
+    auto operator->() noexcept
+    {
+      return &(operator*());
+    }
+
+    auto key() const noexcept
+    {
+      return m_iter->first;
+    }
+
+  protected:
+    iter get() noexcept
+    {
+      return m_iter;
+    }
+
+  private:
+    iter m_iter;
+  };
+
+  //
   // A proxy container for basic blocks to be used in functions
   //
   class block_container final
   {
   public:
-    using underlying_t = std::unordered_map<string_t, basic_block>;
-    using pointer = underlying_t*;
-    using reference = underlying_t&;
-    using const_pointer = const underlying_t*;
+    using underlying_t    = block_iterator::underlying_t;
+    using pointer         = underlying_t*;
+    using reference       = underlying_t&;
+    using const_pointer   = const underlying_t*;
     using const_reference = const underlying_t&;
 
   public:
@@ -87,9 +146,32 @@ namespace tnac::ir::detail
     void remove(string_t name) noexcept;
 
     //
+    // Removes the block pointed to by an iterator
+    //
+    void remove(block_iterator it) noexcept;
+
+    //
     // Adds a basic block
     //
     basic_block& add(string_t name, function& owner) noexcept;
+
+  public:
+    auto begin() const noexcept
+    {
+      return block_iterator{ m_value->begin() };
+    }
+    auto begin() noexcept
+    {
+      return block_iterator{ m_value->begin() };
+    }
+    auto end() const noexcept
+    {
+      return block_iterator{ m_value->end() };
+    }
+    auto end() noexcept
+    {
+      return block_iterator{ m_value->end() };
+    }
 
   private:
     pointer m_value{};
