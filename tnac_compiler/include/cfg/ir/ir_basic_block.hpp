@@ -12,6 +12,9 @@ namespace tnac::ir
 
 namespace tnac::ir
 {
+  //
+  // Represents a basic block of the CFG
+  //
   class basic_block final : public node
   {
   public:
