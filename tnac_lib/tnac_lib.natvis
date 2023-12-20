@@ -471,6 +471,7 @@
       <Item Name="[module]" Condition="m_owner">"no",sb</Item>
       <Item Name="[module]" Condition="!m_owner">"yes",sb</Item>
       <Item Name="[nested]">m_children</Item>
+      <Item Name="[basic blocks]">m_blocks</Item>
     </Expand>
   </Type>
 
@@ -478,6 +479,7 @@
     <DisplayString>IR builder</DisplayString>
     <Expand>
       <Item Name="[functions]">m_functions</Item>
+      <Item Name="[basic blocks]">m_blocks</Item>
     </Expand>
   </Type>
   

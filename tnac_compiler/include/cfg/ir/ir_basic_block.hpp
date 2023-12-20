@@ -122,7 +122,7 @@ namespace tnac::ir::detail
     using const_reference = const underlying_t&;
 
   public:
-    CLASS_SPECIALS_NODEFAULT(block_container);
+    CLASS_SPECIALS_NODEFAULT_NOCOPY(block_container);
 
     ~block_container() noexcept;
     explicit block_container(reference value) noexcept;

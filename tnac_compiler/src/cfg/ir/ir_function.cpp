@@ -7,11 +7,11 @@ namespace tnac::ir
   function::~function() noexcept = default;
 
   function::function(name_t name, size_type paramCount, block_list blocks) noexcept :
-    function{ name, paramCount, {}, blocks }
+    function{ name, paramCount, {}, std::move(blocks) }
   {}
 
   function::function(name_t name, size_type paramCount, function& owner, block_list blocks) noexcept :
-    function{ name, paramCount, &owner, blocks }
+    function{ name, paramCount, &owner, std::move(blocks) }
   {
     owner.add_child(*this);
   }
@@ -20,7 +20,7 @@ namespace tnac::ir
     node{ kind::Function },
     m_name{ name },
     m_owner{ owner },
-    m_blocks{ blocks },
+    m_blocks{ std::move(blocks) },
     m_paramCount{ paramCount }
   {}
 
@@ -53,6 +53,20 @@ namespace tnac::ir
   function::child_list& function::children() noexcept
   {
     return FROM_CONST(children);
+  }
+
+  const function::block_list& function::blocks() const noexcept
+  {
+    return m_blocks;
+  }
+  function::block_list& function::blocks() noexcept
+  {
+    return FROM_CONST(blocks);
+  }
+
+  basic_block& function::create_block(string_t name) noexcept
+  {
+    return m_blocks.add(name, *this);
   }
 
 

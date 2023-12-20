@@ -66,6 +66,23 @@ namespace tnac::ir
     //
     child_list& children() noexcept;
 
+    //
+    // Returns a reference to the basic block container
+    // 
+    // const version
+    //
+    const block_list& blocks() const noexcept;
+
+    //
+    // Returns a reference to the basic block container
+    //
+    block_list& blocks() noexcept;
+
+    //
+    // Creates a basic block with the given name
+    //
+    basic_block& create_block(string_t name) noexcept;
+
   private:
     //
     // Adds a nested function
