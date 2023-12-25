@@ -6,6 +6,7 @@
 #include "parser/ast/ast_visitor.hpp"
 #include "eval/value/value_visitor.hpp"
 #include "compiler/detail/module_info.hpp"
+#include "compiler/detail/name_repo.hpp"
 
 namespace tnac
 {
@@ -118,6 +119,11 @@ namespace tnac
 
   private:
     //
+    // Creates an entry block of a function or module
+    //
+    void init_body(ir::function& ent) noexcept;
+
+    //
     // Walks the given ast node and compiles it
     //
     void compile(tree_ref node) noexcept;
@@ -159,5 +165,6 @@ namespace tnac
     ir::cfg* m_cfg;
     eval::value_visitor m_valVisitor;
     detail::module_info m_modules;
+    detail::name_repo m_names;
   };
 }

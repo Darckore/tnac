@@ -37,6 +37,16 @@ namespace tnac::ir
     return m_paramCount;
   }
 
+  const basic_block& function::entry() const noexcept
+  {
+    UTILS_ASSERT(m_entry);
+    return *m_entry;
+  }
+  basic_block& function::entry() noexcept
+  {
+    return FROM_CONST(entry);
+  }
+
   const function* function::owner_func() const noexcept
   {
     return m_owner;
@@ -66,7 +76,11 @@ namespace tnac::ir
 
   basic_block& function::create_block(string_t name) noexcept
   {
-    return m_blocks.add(name, *this);
+    auto&& block = m_blocks.add(name, *this);
+    if (!m_entry)
+      m_entry = &block;
+
+    return block;
   }
 
 

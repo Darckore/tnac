@@ -198,12 +198,19 @@ namespace tnac
   {
     auto&& owner = m_modules.current_function();
     auto&& sym = fd.symbol();
-    m_modules.enter_function(m_cfg->declare_function(&sym, owner, fd.name(), fd.param_count()));
+    auto&& func = m_cfg->declare_function(&sym, owner, fd.name(), fd.param_count());
+    init_body(func);
+    m_modules.enter_function(func);
     return true;
   }
 
 
   // Private members
+
+  void compiler::init_body(ir::function& ent) noexcept
+  {
+    ent.create_block(m_names.entry_block_name());
+  }
 
   void compiler::compile(tree_ref node) noexcept
   {
@@ -219,7 +226,9 @@ namespace tnac
     auto def = m_modules.locate(mod);
     UTILS_ASSERT(def);
 
-    m_modules.enter_module(m_cfg->declare_module(&mod, mod.name(), mod.param_count()));
+    auto&& irMod = m_cfg->declare_module(&mod, mod.name(), mod.param_count());
+    init_body(irMod);
+    m_modules.enter_module(irMod);
     for (auto param : def->params())
     {
       compile(*param);

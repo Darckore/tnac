@@ -43,6 +43,22 @@ namespace tnac::ir
     size_type param_count() const noexcept;
 
     //
+    // Returns a reference to the entry block
+    // Doesn't check whether an entry has been assigned, whoever creates functions
+    // is responsible for properly initialising the entry block and must guarantee its existence
+    // 
+    // const version
+    //
+    const basic_block& entry() const noexcept;
+
+    //
+    // Returns a reference to the entry block
+    // Doesn't check whether an entry has been assigned, whoever creates functions
+    // is responsible for properly initialising the entry block and must guarantee its existence
+    //
+    basic_block& entry() noexcept;
+
+    //
     // Returns a pointer to the owner function
     // 
     // const version
@@ -94,6 +110,7 @@ namespace tnac::ir
     function* m_owner{};
     child_list m_children;
     block_list m_blocks;
+    basic_block* m_entry{};
     size_type m_paramCount{};
   };
 }
