@@ -213,7 +213,7 @@ namespace tnac
   void compiler::compile(semantics::module_sym& mod) noexcept
   {
     // This module has already been compiled
-    if (m_cfg->find_module(&mod))
+    if (m_cfg->find_entity(&mod))
       return;
 
     auto def = m_modules.locate(mod);

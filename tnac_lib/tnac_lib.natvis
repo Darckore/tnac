@@ -487,6 +487,7 @@
     <DisplayString>CFG</DisplayString>
     <Expand>
       <Item Name="[IR builder]">*m_builder</Item>
+      <Item Name="[modules]">m_modules</Item>
     </Expand>
   </Type>
   

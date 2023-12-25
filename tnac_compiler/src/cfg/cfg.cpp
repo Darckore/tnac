@@ -15,7 +15,9 @@ namespace tnac::ir
 
   function& cfg::declare_module(entity_id id, name_t name, size_type paramCount) noexcept
   {
-    return m_builder->make_module(id, name, conv_param_count(paramCount));
+    auto&& mod = m_builder->make_module(id, name, conv_param_count(paramCount));
+    m_modules.push_back(&mod);
+    return mod;
   }
 
   function& cfg::declare_function(entity_id id, function& owner, name_t name, size_type paramCount) noexcept
@@ -23,7 +25,7 @@ namespace tnac::ir
     return m_builder->make_function(id, owner, name, conv_param_count(paramCount));
   }
 
-  function* cfg::find_module(entity_id id) noexcept
+  function* cfg::find_entity(entity_id id) noexcept
   {
     return m_builder->find_function(id);
   }

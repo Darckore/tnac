@@ -14,8 +14,9 @@ namespace tnac::ir
   class cfg final
   {
   public:
-    using name_t    = function::name_t;
-    using size_type = std::size_t;
+    using name_t      = function::name_t;
+    using module_list = std::vector<function*>;
+    using size_type   = module_list::size_type;
 
   public:
     CLASS_SPECIALS_NONE(cfg);
@@ -36,9 +37,42 @@ namespace tnac::ir
     function& declare_function(entity_id id, function& owner, name_t name, size_type paramCount) noexcept;
 
     //
-    // Returns the module corresponding to the given id
+    // Returns a pointer to the module or function corresponding to the given id
     //
-    function* find_module(entity_id id) noexcept;
+    function* find_entity(entity_id id) noexcept;
+
+  public:
+    //
+    // Returns a const begin iterator to the module collection
+    //
+    auto begin() const noexcept
+    {
+      return m_modules.cbegin();
+    }
+
+    //
+    // Returns a begin iterator to the module collection
+    //
+    auto begin() noexcept
+    {
+      return m_modules.begin();
+    }
+
+    //
+    // Returns a const end iterator to the module collection
+    //
+    auto end() const noexcept
+    {
+      return m_modules.cend();
+    }
+
+    //
+    // Returns an end iterator to the module collection
+    //
+    auto end() noexcept
+    {
+      return m_modules.end();
+    }
 
   private:
     //
@@ -48,5 +82,6 @@ namespace tnac::ir
 
   private:
     builder* m_builder;
+    module_list m_modules;
   };
 }
