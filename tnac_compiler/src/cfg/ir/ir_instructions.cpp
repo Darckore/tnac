@@ -6,9 +6,10 @@ namespace tnac::ir // instruction
 
   instruction::~instruction() noexcept = default;
 
-  instruction::instruction(basic_block& owner, kind k) noexcept :
-    node{ k },
-    m_block{ &owner }
+  instruction::instruction(basic_block& owner, op_code code) noexcept :
+    node{ kind::Instruction },
+    m_block{ &owner },
+    m_opCode{ code }
   {}
 
 

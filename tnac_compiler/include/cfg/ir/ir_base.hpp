@@ -18,12 +18,7 @@ namespace tnac::ir
   {
     Function,
     Block,
-    Arithmetic,
-    Store,
-    Load,
-    Call,
-    Jump,
-    Ret
+    Instruction
   };
 
   //

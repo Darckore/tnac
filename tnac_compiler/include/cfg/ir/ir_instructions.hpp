@@ -8,16 +8,32 @@
 namespace tnac::ir
 {
   //
+  // Operation code for instructions
+  //
+  enum class op_code : std::uint8_t
+  {
+    Arithmetic,
+    Store,
+    Load,
+    Call,
+    Jump,
+    Ret
+  };
+
+  //
   // Base class for IR instructions
   //
   class instruction : public node
   {
   public:
+    using enum op_code;
+
+  public:
     CLASS_SPECIALS_NONE(instruction);
 
     virtual ~instruction() noexcept;
 
-    instruction(basic_block& owner, kind k) noexcept;
+    instruction(basic_block& owner, op_code code) noexcept;
 
   public:
     //
@@ -34,5 +50,6 @@ namespace tnac::ir
 
   private:
     basic_block* m_block{};
+    op_code m_opCode;
   };
 }
