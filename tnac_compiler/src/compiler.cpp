@@ -42,12 +42,7 @@ namespace tnac
   }
 
 
-  // General
-
-  void compiler::visit(ast::scope& scope) noexcept
-  {
-    utils::unused(scope);
-  }
+  // Exprs
 
   void compiler::visit(ast::error_expr& err) noexcept
   {
@@ -55,8 +50,6 @@ namespace tnac
     UTILS_ASSERT(false);
     error(err.pos().at(), err.message());
   }
-
-  // Exprs
 
   void compiler::visit(ast::result_expr& res) noexcept
   {
@@ -160,11 +153,6 @@ namespace tnac
     utils::unused(param);
   }
 
-  void compiler::visit(ast::func_decl& ) noexcept
-  {
-    m_modules.exit_function();
-  }
-
   // Previews
 
   bool compiler::preview(ast::root& root) noexcept
@@ -197,24 +185,28 @@ namespace tnac
   bool compiler::preview(ast::func_decl& fd) noexcept
   {
     auto&& owner = m_modules.current_function();
-    auto&& sym = fd.symbol();
-    auto&& func = m_cfg->declare_function(&sym, owner, fd.name(), fd.param_count());
-    init_body(func);
+    auto&& func = m_cfg->declare_function(&fd.symbol(), owner, fd.name(), fd.param_count());
     m_modules.enter_function(func);
-    return true;
+    compile(fd.params(), fd.body().children());
+    m_modules.exit_function();
+    return false;
   }
 
 
   // Private members
 
-  void compiler::init_body(ir::function& ent) noexcept
+  void compiler::compile(params_t& params, body_t& body) noexcept
   {
-    ent.create_block(m_names.entry_block_name());
-  }
-
-  void compiler::compile(tree_ref node) noexcept
-  {
-    base_t::operator()(&node);
+    auto _ = m_names.init_indicies();
+    m_modules.current_function().create_block(m_names.entry_block_name());
+    for (auto param : params)
+    {
+      compile(*param);
+    }
+    for (auto child : body)
+    {
+      compile(*child);
+    }
   }
 
   void compiler::compile(semantics::module_sym& mod) noexcept
@@ -227,17 +219,14 @@ namespace tnac
     UTILS_ASSERT(def);
 
     auto&& irMod = m_cfg->declare_module(&mod, mod.name(), mod.param_count());
-    init_body(irMod);
     m_modules.enter_module(irMod);
-    for (auto param : def->params())
-    {
-      compile(*param);
-    }
-    for (auto child : def->children())
-    {
-      compile(*child);
-    }
+    compile(def->params(), def->children());
     m_modules.exit_module();
+  }
+
+  void compiler::compile(tree_ref node) noexcept
+  {
+    base_t::operator()(&node);
   }
 
   void compiler::compile_modules() noexcept

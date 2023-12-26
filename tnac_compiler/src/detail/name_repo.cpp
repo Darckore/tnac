@@ -11,6 +11,11 @@ namespace tnac::detail
 
   // Public members
 
+  name_repo::idx_cache name_repo::init_indicies() noexcept
+  {
+    return m_prefNames;
+  }
+
   string_t name_repo::entry_block_name() noexcept
   {
     return "entry"sv;

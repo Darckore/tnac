@@ -43,6 +43,9 @@ namespace tnac
 
     using base_t = ast::bottom_up_visitor<compiler>;
 
+    using params_t = std::vector<ast::param_decl*>;
+    using body_t   = ast::scope::elem_list;
+
   public:
     CLASS_SPECIALS_NONE(compiler);
 
@@ -69,15 +72,8 @@ namespace tnac
     //
     ir::cfg& cfg() noexcept;
 
-  public: // General
-    void visit(ast::scope& scope) noexcept;
-
-    //
-    // Visits an error expr. Probably, not needed
-    //
-    void visit(ast::error_expr& err) noexcept;
-
   public: // Exprs
+    void visit(ast::error_expr& err) noexcept;
     void visit(ast::result_expr& res) noexcept;
     void visit(ast::ret_expr& ret) noexcept;
     void visit(ast::lit_expr& lit) noexcept;
@@ -101,11 +97,6 @@ namespace tnac
     void visit(ast::var_decl& var) noexcept;
     void visit(ast::param_decl& param) noexcept;
 
-    //
-    // Finalises function compilation
-    //
-    void visit(ast::func_decl& func) noexcept;
-
   public: // Previews
     //
     // Inits the root
@@ -119,19 +110,19 @@ namespace tnac
 
   private:
     //
-    // Creates an entry block of a function or module
+    // Compiles the implementation of a function or module
     //
-    void init_body(ir::function& ent) noexcept;
-
-    //
-    // Walks the given ast node and compiles it
-    //
-    void compile(tree_ref node) noexcept;
+    void compile(params_t& params, body_t& body) noexcept;
 
     //
     // Compiles the given module
     //
     void compile(semantics::module_sym& mod) noexcept;
+
+    //
+    // Walks the given ast node and compiles it
+    //
+    void compile(tree_ref node) noexcept;
 
     //
     // Loops until the module stack is empty and compiles modules one by one
@@ -162,7 +153,7 @@ namespace tnac
   private:
     sema* m_sema{};
     feedback* m_feedback{};
-    ir::cfg* m_cfg;
+    ir::cfg* m_cfg{};
     eval::value_visitor m_valVisitor;
     detail::module_info m_modules;
     detail::name_repo m_names;
