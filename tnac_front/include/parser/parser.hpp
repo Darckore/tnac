@@ -6,11 +6,10 @@
 #include "parser/lex.hpp"
 #include "ast/ast_builder.hpp"
 #include "ast/ast.hpp"
-#include "sema/sym/symbols.hpp"
+#include "sema/sema.hpp"
 
 namespace tnac
 {
-  class sema;
   class feedback;
   
   namespace src
@@ -396,5 +395,6 @@ namespace tnac
     feedback* m_feedback{};
 
     tok_kind m_terminateAt{ tok_kind::Eol };
+    sema::lookup_type m_defaultLookupType{ sema::Unscoped };
   };
 }

@@ -1019,7 +1019,7 @@ namespace tnac
 
   ast::expr* parser::id_expr() noexcept
   {
-    auto sym = m_sema.find(peek_next(), sema::Unscoped);
+    auto sym = m_sema.find(peek_next(), m_defaultLookupType);
     if (!sym)
       return error_expr(next_tok(), diag::undef_id(), err_pos::Current);
 
@@ -1090,6 +1090,7 @@ namespace tnac
 
       if (detail::is_dot(next))
       {
+        VALUE_GUARD(m_defaultLookupType, sema::Scoped);
         res = dot_expr(*res);
         continue;
       }
