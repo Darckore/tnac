@@ -185,7 +185,9 @@ namespace tnac
   bool compiler::preview(ast::func_decl& fd) noexcept
   {
     auto&& owner = m_modules.current_function();
-    auto&& func = m_cfg->declare_function(&fd.symbol(), owner, fd.name(), fd.param_count());
+    const auto parCnt = fd.param_count();
+    auto funcName = m_names.mangle_func_name(fd.name(), owner, parCnt);
+    auto&& func = m_cfg->declare_function(&fd.symbol(), owner, funcName, parCnt);
     m_modules.enter_function(func);
     compile(fd.params(), fd.body().children());
     m_modules.exit_function();
@@ -218,7 +220,9 @@ namespace tnac
     auto def = m_modules.locate(mod);
     UTILS_ASSERT(def);
 
-    auto&& irMod = m_cfg->declare_module(&mod, mod.name(), mod.param_count());
+    const auto parCnt = mod.param_count();
+    auto modName = m_names.mangle_module_name(mod.name(), parCnt);
+    auto&& irMod = m_cfg->declare_module(&mod, modName, parCnt);
     m_modules.enter_module(irMod);
     compile(def->params(), def->children());
     m_modules.exit_module();

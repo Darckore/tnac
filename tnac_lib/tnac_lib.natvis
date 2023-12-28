@@ -471,8 +471,8 @@
   </Type>
 
   <Type Name="tnac::ir::function">
-    <DisplayString Condition="m_owner">function {m_name,sb}({m_paramCount})</DisplayString>
-    <DisplayString Condition="!m_owner">module {m_name,sb}({m_paramCount})</DisplayString>
+    <DisplayString Condition="m_owner">function {m_name,sb}</DisplayString>
+    <DisplayString Condition="!m_owner">module {m_name,sb}</DisplayString>
     <Expand>
       <Item Name="[name]">m_name,sb</Item>
       <Item Name="[param_count]">m_paramCount</Item>

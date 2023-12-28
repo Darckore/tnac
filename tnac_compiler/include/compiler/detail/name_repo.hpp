@@ -3,6 +3,7 @@
 //
 
 #pragma once
+#include "cfg/ir/ir_function.hpp"
 
 namespace tnac::detail
 {
@@ -39,6 +40,8 @@ namespace tnac::detail
       cached_data m_cache;
     };
 
+    using param_count = ir::function::size_type;
+
   public:
     CLASS_SPECIALS_NONE_CUSTOM(name_repo);
 
@@ -63,6 +66,16 @@ namespace tnac::detail
     // Returns a name for the ret block of a function
     //
     string_t ret_block_name() noexcept;
+
+    //
+    // Creates a mangled name of a module
+    //
+    string_t mangle_module_name(string_t original, std::size_t parCnt) noexcept;
+
+    //
+    // Creates a mangled name of a function
+    //
+    string_t mangle_func_name(string_t original, const ir::function& owner, std::size_t parCnt) noexcept;
 
   private:
     utils::string_pool m_plainNames;
