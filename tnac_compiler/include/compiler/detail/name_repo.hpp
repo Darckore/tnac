@@ -78,6 +78,12 @@ namespace tnac::detail
     string_t mangle_func_name(string_t original, const ir::function& owner, std::size_t parCnt) noexcept;
 
   private:
+    //
+    // Mangles a function or module name
+    //
+    string_t mangle(string_t original, const ir::function* owner, std::size_t parCnt) noexcept;
+
+  private:
     utils::string_pool m_plainNames;
     utils::prefixed_pool m_prefNames;
   };
