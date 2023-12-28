@@ -24,18 +24,23 @@ namespace tnac::ir
 
     virtual ~function() noexcept;
 
-    function(name_t name, size_type paramCount, block_list blocks) noexcept;
+    function(name_t name, entity_id id, size_type paramCount, block_list blocks) noexcept;
 
-    function(name_t name, size_type paramCount, function& owner, block_list blocks) noexcept;
+    function(name_t name, entity_id id, size_type paramCount, function& owner, block_list blocks) noexcept;
 
   protected:
-    function(name_t name, size_type paramCount, function* owner, block_list blocks) noexcept;
+    function(name_t name, entity_id id, size_type paramCount, function* owner, block_list blocks) noexcept;
 
   public:
     //
     // Returns the function or module name
     //
     name_t name() const noexcept;
+
+    //
+    // Returns the function's id
+    //
+    entity_id id() const noexcept;
 
     //
     // Returns the number of function's parameters
@@ -111,6 +116,7 @@ namespace tnac::ir
     child_list m_children;
     block_list m_blocks;
     basic_block* m_entry{};
+    entity_id m_id;
     size_type m_paramCount{};
   };
 }

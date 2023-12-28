@@ -98,6 +98,11 @@ tnac::rt::out_stream& operator<<(tnac::rt::out_stream& out, const tnac::eval::co
 tnac::rt::out_stream& operator<<(tnac::rt::out_stream& out, const tnac::eval::fraction_type& f) noexcept;
 
 //
-// Function output
+// Function type output
 //
 tnac::rt::out_stream& operator<<(tnac::rt::out_stream& out, const tnac::eval::function_type& f) noexcept;
+
+//
+// Entity id output
+//
+tnac::rt::out_stream& operator<<(tnac::rt::out_stream& out, tnac::entity_id id) noexcept;

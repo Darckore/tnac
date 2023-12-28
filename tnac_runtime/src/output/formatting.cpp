@@ -137,3 +137,9 @@ tnac::rt::out_stream& operator<<(tnac::rt::out_stream& out, const tnac::eval::fu
 
   return out;
 }
+
+tnac::rt::out_stream& operator<<(tnac::rt::out_stream& out, tnac::entity_id id) noexcept
+{
+  std::print(out, "{:X}"sv, *id);
+  return out;
+}

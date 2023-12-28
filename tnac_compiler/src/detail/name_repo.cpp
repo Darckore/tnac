@@ -43,7 +43,7 @@ namespace tnac::detail
   {
     const auto pc = static_cast<param_count>(parCnt);
     return owner ?
-      m_plainNames.format("{}:{}@{:X}"sv, original, pc, *entity_id{ owner }) :
-      m_plainNames.format("{}:{}"sv, original, pc) ;
+      m_plainNames.format("{}:{}@{:X}"sv, original, pc, *owner->id()) :
+      m_plainNames.format("{}:{}"sv, original, pc);
   }
 }

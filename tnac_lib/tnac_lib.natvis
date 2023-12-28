@@ -475,6 +475,7 @@
     <DisplayString Condition="!m_owner">module {m_name,sb}</DisplayString>
     <Expand>
       <Item Name="[name]">m_name,sb</Item>
+      <Item Name="[id]">m_id</Item>
       <Item Name="[param_count]">m_paramCount</Item>
       <Item Name="[entry]" Condition="!m_entry">"&lt;not inited&gt;",sb</Item>
       <Item Name="[entry]" Condition="m_entry">*m_entry</Item>

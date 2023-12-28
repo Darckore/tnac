@@ -15,6 +15,7 @@ namespace tnac::rt::out
   {
   public:
     using base = ir::const_walker<ir_printer>;
+    using param_idx = std::uint16_t;
 
   public:
     CLASS_SPECIALS_NONE_CUSTOM(ir_printer);
@@ -37,6 +38,16 @@ namespace tnac::rt::out
 
   private:
     out_stream& out() noexcept;
+
+    void endl() noexcept;
+
+    void keyword(string_t kw) noexcept;
+
+    void name(string_t n) noexcept;
+
+    void id(entity_id i) noexcept;
+
+    void param(param_idx pi) noexcept;
 
   private:
     out_stream* m_out{ &std::cout };

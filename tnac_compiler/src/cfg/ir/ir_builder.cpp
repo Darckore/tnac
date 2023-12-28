@@ -37,8 +37,8 @@ namespace tnac::ir
     auto blocks = detail::block_container{ blockIt.first->second };
 
     auto newIt = owner ?
-      m_functions.try_emplace(id, name, paramCount, *owner, std::move(blocks)) :
-      m_functions.try_emplace(id, name, paramCount, std::move(blocks));
+      m_functions.try_emplace(id, name, id, paramCount, *owner, std::move(blocks)) :
+      m_functions.try_emplace(id, name, id, paramCount, std::move(blocks));
     UTILS_ASSERT(newIt.second);
 
     return newIt.first->second;
