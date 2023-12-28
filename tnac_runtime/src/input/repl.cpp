@@ -1,7 +1,8 @@
 #include "input/repl.hpp"
-#include "output/printer.hpp"
+#include "output/ast_printer.hpp"
 #include "output/sym_printer.hpp"
 #include "output/lister.hpp"
+#include "output/ir_printer.hpp"
 #include "common/feedback.hpp"
 #include "common/diag.hpp"
 #include "sema/sym/symbols.hpp"
@@ -62,6 +63,9 @@ namespace tnac::rt
 
     core.declare_cmd("ast"sv, params{ String, Identifier }, size_type{},
          [this](auto c) noexcept { print_ast(std::move(c)); });
+
+    core.declare_cmd("ir"sv, params{ String }, size_type{},
+         [this](auto c) noexcept { print_ir(std::move(c)); });
 
     core.declare_cmd("vars"sv, params{ String }, size_type{},
          [this](auto c) noexcept { print_vars(std::move(c)); });
@@ -206,6 +210,15 @@ namespace tnac::rt
       {
         out::ast_printer pr;
         pr(ast, m_state->out());
+      });
+  }
+
+  void repl::print_ir(ast::command cmd) noexcept
+  {
+    print_cmd(cmd, [this]
+      {
+        out::ir_printer ip;
+        ip(m_state->tnac_core().get_cfg(), m_state->out());
       });
   }
 

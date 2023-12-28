@@ -113,6 +113,11 @@ namespace tnac::rt
     void print_ast(ast::command cmd) noexcept;
 
     //
+    // #ir <'path'>
+    //
+    void print_ir(ast::command cmd) noexcept;
+
+    //
     // #vars <'path'>
     //
     void print_vars(ast::command cmd) noexcept;

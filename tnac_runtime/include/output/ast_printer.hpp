@@ -11,8 +11,11 @@ namespace tnac::rt::out
   // Printer for AST
   // Visits each node top to bottom and prints it into the specified stream
   //
-  class ast_printer final : public printer_base<ast_printer>
+  class ast_printer final : public ast::const_top_down_visitor<ast_printer>
   {
+  public:
+    using base = ast::const_top_down_visitor<ast_printer>;
+
   public:
     CLASS_SPECIALS_NONE_CUSTOM(ast_printer);
 
@@ -79,7 +82,6 @@ namespace tnac::rt::out
     void visit(const ast::error_expr& expr) noexcept;
 
   private:
-    using base = printer_base<ast_printer>;
     using child_count = std::size_t;
     using child_tracker = std::vector<child_count>;
 

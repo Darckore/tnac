@@ -4,6 +4,7 @@
 
 #pragma once
 #include "parser/ast/ast_visitor.hpp"
+#include "cfg/cfg_walker.hpp"
 
 namespace tnac
 {
@@ -16,13 +17,6 @@ namespace tnac
 
 namespace tnac::rt::out
 {
-  //
-  // Printer base class
-  //
-  template <typename D>
-  using printer_base = ast::const_top_down_visitor<D>;
-
-
   //
   // Value printer
   //
