@@ -23,7 +23,7 @@ namespace tnac::rt::out
     operator()(gr, out());
   }
 
-  void ir_printer::visit(const ir::function& fn) noexcept
+  bool ir_printer::preview(const ir::function& fn) noexcept
   {
     if (fn.owner_func())
       keyword("function "sv);
@@ -47,6 +47,14 @@ namespace tnac::rt::out
 
     out() << ')' << '\n';
 
+    endl();
+    return true;
+  }
+
+  void ir_printer::visit(const ir::function& ) noexcept
+  {
+    keyword("end"sv);
+    endl();
     endl();
   }
 

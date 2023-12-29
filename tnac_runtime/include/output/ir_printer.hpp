@@ -30,6 +30,8 @@ namespace tnac::rt::out
     void operator()(const ir::cfg& gr) noexcept;
 
   public:
+    bool preview(const ir::function& fn) noexcept;
+
     void visit(const ir::function& fn) noexcept;
 
     void visit(const ir::basic_block& bb) noexcept;

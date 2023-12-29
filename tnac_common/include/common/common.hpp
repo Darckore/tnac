@@ -66,6 +66,24 @@ namespace tnac
   private:
     id_t m_value{};
   };
+
+  //
+  // Defines an object visitable by the specified visitor
+  //
+  template <typename Obj, typename Visitor>
+  concept visitable = requires(Visitor v, Obj* n)
+  {
+    v.visit(*n);
+  };
+
+  //
+  // Defines an object previewable by the specified visitor
+  //
+  template <typename Obj, typename Visitor>
+  concept previewable = requires(Visitor v, Obj* n)
+  {
+    { v.preview(*n) }->std::same_as<bool>;
+  };
 }
 
 template <>

@@ -10,24 +10,6 @@ namespace tnac::ast
   namespace detail
   {
     //
-    // Defines an ast visitable by the specified visitor
-    //
-    template <typename Node, typename Visitor>
-    concept visitable_node = requires(Visitor v, Node* n)
-    {
-      v.visit(*n);
-    };
-
-    //
-    // Defines an ast previewable by the specified visitor
-    //
-    template <typename Node, typename Visitor>
-    concept previewable_node = requires(Visitor v, Node * n)
-    {
-      { v.preview(*n) }->std::same_as<bool>;
-    };
-
-    //
     // Defines a derived visitor ability to react on exit from a scope child
     //
     template <typename Visitor>
@@ -135,7 +117,7 @@ namespace tnac::ast
     // Calls the appropriate visit method of the derived visitor class
     // if it is defined
     //
-    void visit(detail::visitable_node<derived_t> auto* cur) noexcept
+    void visit(visitable<derived_t> auto* cur) noexcept
     {
       to_derived().visit(*cur);
     }
@@ -154,7 +136,7 @@ namespace tnac::ast
     // visit its children or not
     // Mostly needed for bottom-up visitors
     //
-    bool preview(detail::previewable_node<derived_t> auto* cur) noexcept
+    bool preview(previewable<derived_t> auto* cur) noexcept
     {
       return to_derived().preview(*cur);
     }

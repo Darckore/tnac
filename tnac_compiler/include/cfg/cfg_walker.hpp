@@ -19,15 +19,6 @@ namespace tnac::ir
 
     template <ir_graph G>
     using cfg_node = typename cfg_node_descr<G>::type;
-
-    //
-    // Defines an IR node visitable by the specified visitor
-    //
-    template <typename Node, typename Visitor>
-    concept visitable_ir = requires(Visitor v, Node* n)
-    {
-      v.visit(*n);
-    };
   }
 
   //
@@ -78,7 +69,7 @@ namespace tnac::ir
     // Calls the appropriate visit method of the derived visitor class
     // if it is defined
     //
-    void visit(detail::visitable_ir<derived_t> auto* cur) noexcept
+    void visit(visitable<derived_t> auto* cur) noexcept
     {
       to_derived().visit(*cur);
     }
@@ -93,12 +84,36 @@ namespace tnac::ir
     }
 
     //
+    // Previews the parent node to let the derived class decide whether to
+    // visit its children or not
+    //
+    bool preview(previewable<derived_t> auto* cur) noexcept
+    {
+      return to_derived().preview(*cur);
+    }
+
+    //
+    // If no custom preview logic is defined for this node type in the derived class,
+    // instruct the base to visit its children unconditionally
+    //
+    template <typename Node>
+    bool preview(Node*) noexcept
+    {
+      return true;
+    }
+
+    //
     // Visits a function
     //
     void visit_impl(dest<function> fn) noexcept
     {
       for (auto nested : fn->children())
         visit_root(nested);
+
+      if (preview(fn))
+      {
+        // walk the basic blocks of this function
+      }
 
       visit(fn);
     }
