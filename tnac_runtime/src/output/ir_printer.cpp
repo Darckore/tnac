@@ -45,8 +45,7 @@ namespace tnac::rt::out
       }
     }
 
-    out() << ')' << '\n';
-
+    out() << ')';
     endl();
     return true;
   }
