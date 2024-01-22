@@ -8,6 +8,53 @@
 namespace tnac::ir
 {
   class function;
+  class basic_block;
+}
+
+namespace tnac::ir
+{
+  //
+  // Represents a graph edge connecting two basic blocks
+  //
+  class edge final
+  {
+  public:
+    CLASS_SPECIALS_NODEFAULT_NOCOPY(edge);
+    ~edge() noexcept;
+
+  protected:
+    friend class basic_block;
+    edge(basic_block& in, basic_block& out) noexcept;
+
+  public:
+    //
+    // Returns a reference to the incoming basic block
+    // 
+    // const vesrion
+    //
+    const basic_block& incoming() const noexcept;
+
+    //
+    // Returns a reference to the incoming basic block
+    //
+    basic_block& incoming() noexcept;
+
+    //
+    // Returns a reference to the outgoing basic block
+    // 
+    // const vesrion
+    //
+    const basic_block& outgoing() const noexcept;
+
+    //
+    // Returns a reference to the outgoing basic block
+    //
+    basic_block& outgoing() noexcept;
+
+  private:
+    basic_block* m_in{};
+    basic_block* m_out{};
+  };
 }
 
 namespace tnac::ir

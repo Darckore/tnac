@@ -487,6 +487,22 @@
     </Expand>
   </Type>
 
+  <Type Name="tnac::ir::basic_block">
+    <DisplayString>basic block ({m_name,sb})</DisplayString>
+    <Expand>
+      <Item Name="[func]">*m_owner</Item>
+      <Item Name="[name]">m_name,sb</Item>
+    </Expand>
+  </Type>
+
+  <Type Name="tnac::ir::edge">
+    <DisplayString>CFG edge</DisplayString>
+    <Expand>
+      <Item Name="[in]">*m_in</Item>
+      <Item Name="[out]">*m_out</Item>
+    </Expand>
+  </Type>
+
   <Type Name="tnac::ir::builder">
     <DisplayString>IR builder</DisplayString>
     <Expand>

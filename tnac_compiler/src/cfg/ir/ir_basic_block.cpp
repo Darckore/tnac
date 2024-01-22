@@ -1,6 +1,40 @@
 #include "cfg/ir/ir_basic_block.hpp"
 
-namespace tnac::ir
+namespace tnac::ir // edge
+{
+  // Special members
+
+  edge::~edge() noexcept = default;
+
+  edge::edge(basic_block& in, basic_block& out) noexcept :
+    m_in{ &in },
+    m_out{ &out }
+  {}
+
+
+  // Public members
+
+  const basic_block& edge::incoming() const noexcept
+  {
+    return *m_in;
+  }
+  basic_block& edge::incoming() noexcept
+  {
+    return FROM_CONST(incoming);
+  }
+
+  const basic_block& edge::outgoing() const noexcept
+  {
+    return *m_out;
+  }
+  basic_block& edge::outgoing() noexcept
+  {
+    return FROM_CONST(outgoing);
+  }
+}
+
+
+namespace tnac::ir // basic block
 {
   // Special members
 
