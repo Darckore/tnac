@@ -5,6 +5,15 @@
 #pragma once
 #include "eval/types/types.hpp"
 
+#define TNAC_TYPES invalid_val_t,\
+bool_type,\
+int_type,\
+float_type,\
+complex_type,\
+fraction_type,\
+function_type,\
+array_type
+
 namespace tnac::semantics
 {
   class function;
@@ -23,8 +32,7 @@ namespace tnac::eval
     // Defines a valid result of expression evaluation
     //
     template <typename T>
-    concept expr_result = utils::any_same_as<T, invalid_val_t, bool_type, int_type, float_type,
-                                             complex_type, fraction_type, function_type, array_type>;
+    concept expr_result = utils::any_same_as<T, TNAC_TYPES>;
   }
 
   //
@@ -42,8 +50,7 @@ namespace tnac::eval
     Array
   };
 
-  using underlying_val = std::variant<invalid_val_t, bool_type, int_type, float_type,
-                                      complex_type, fraction_type, function_type, array_type>;
+  using underlying_val = std::variant<TNAC_TYPES>;
 }
 
 TYPE_TO_ID_ASSOCIATION(tnac::eval::invalid_val_t,  tnac::eval::type_id::Invalid);
