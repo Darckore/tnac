@@ -1,4 +1,4 @@
-#include "cfg/ir//ir_instructions.hpp"
+#include "cfg/ir/ir_instructions.hpp"
 
 namespace tnac::ir // instruction
 {

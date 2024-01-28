@@ -7,6 +7,7 @@ namespace tnac::ir // edge
   edge::~edge() noexcept = default;
 
   edge::edge(basic_block& in, basic_block& out) noexcept :
+    node{ kind::Edge },
     m_in{ &in },
     m_out{ &out }
   {}
@@ -61,47 +62,5 @@ namespace tnac::ir // basic block
   function& basic_block::func() noexcept
   {
     return FROM_CONST(func);
-  }
-}
-
-
-namespace tnac::ir::detail // block container
-{
-  // Special members
-
-  block_container::~block_container() noexcept = default;
-
-  block_container::block_container(reference value) noexcept :
-    m_value{ &value }
-  {}
-
-
-  // Public members
-
-  const basic_block* block_container::find(string_t name) const noexcept
-  {
-    auto found = m_value->find(name);
-    return found != m_value->end() ? &found->second : nullptr;
-  }
-  basic_block* block_container::find(string_t name) noexcept
-  {
-    return FROM_CONST(find, name);
-  }
-
-  void block_container::remove(string_t name) noexcept
-  {
-    m_value->erase(name);
-  }
-
-  void block_container::remove(block_iterator it) noexcept
-  {
-    m_value->erase(it.get());
-  }
-
-  basic_block& block_container::add(string_t name, function& owner) noexcept
-  {
-    auto newItem = m_value->try_emplace(name, name, owner);
-    UTILS_ASSERT(newItem.second);
-    return newItem.first->second;
   }
 }

@@ -82,7 +82,7 @@ namespace tnac::ir
 
   basic_block& function::create_block(string_t name) noexcept
   {
-    auto&& block = m_blocks.add(name, *this);
+    auto&& block = m_blocks.add(name, name, *this);
     if (!m_entry)
       m_entry = &block;
 
