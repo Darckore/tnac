@@ -56,6 +56,8 @@ namespace tnac::ir
     basic_block* m_out{};
   };
 
+  using edge_list = detail::ir_container<basic_block*, edge>;
+
 
   //
   // Represents a basic block of the CFG
@@ -91,9 +93,6 @@ namespace tnac::ir
     function* m_owner{};
     string_t m_name;
   };
-}
 
-namespace tnac::ir::detail
-{
-  using block_container = ir_container<string_t, basic_block>;
+  using block_container = detail::ir_container<string_t, basic_block>;
 }

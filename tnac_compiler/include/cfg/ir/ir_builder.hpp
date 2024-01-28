@@ -16,7 +16,7 @@ namespace tnac::ir
     using fname_t     = function::name_t;
     using par_size_t  = function::size_type;
     using func_store  = std::unordered_map<entity_id, function>;
-    using block_map   = detail::block_container::underlying_t;
+    using block_map   = block_container::underlying_t;
     using block_store = std::unordered_map<entity_id, block_map>;
 
   public:

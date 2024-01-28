@@ -17,7 +17,7 @@ namespace tnac::ir
     using name_t     = string_t;
     using size_type  = std::uint16_t;
     using child_list = std::vector<function*>;
-    using block_list = detail::block_container;
+    using block_list = block_container;
 
   public:
     CLASS_SPECIALS_NONE(function);
