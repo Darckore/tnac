@@ -59,7 +59,9 @@ namespace tnac::rt::out
 
   void ir_printer::visit(const ir::basic_block& bb) noexcept
   {
-    utils::unused(bb);
+    keyword(bb.name());
+    keyword(":"sv);
+    endl();
   }
 
   void ir_printer::visit(const ir::instruction& instr) noexcept

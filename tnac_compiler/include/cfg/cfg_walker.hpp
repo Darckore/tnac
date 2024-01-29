@@ -103,19 +103,36 @@ namespace tnac::ir
     }
 
     //
+    // Walks basic blocks
+    //
+    void walk_blocks(dest<basic_block> start) noexcept
+    {
+      if (preview(start))
+      {
+        // Visit instructions
+      }
+
+      visit_root(start);
+    }
+
+    //
     // Visits a function
     //
     void visit_impl(dest<function> fn) noexcept
     {
-      for (auto nested : fn->children())
-        visit_root(nested);
-
-      if (preview(fn))
+      const auto walk = preview(fn);
+      if (walk)
       {
-        // walk the basic blocks of this function
+        walk_blocks(&fn->entry());
       }
 
       visit(fn);
+
+      if (!walk)
+        return;
+
+      for (auto nested : fn->children())
+        visit_root(nested);
     }
 
     //
