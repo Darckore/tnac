@@ -73,7 +73,6 @@ namespace tnac::ir::detail
     using value_type   = Node;
     using underlying_t = std::unordered_map<key_type, value_type>;
     using iter         = underlying_t::iterator;
-    using size_type    = underlying_t::size_type;
 
   public:
     CLASS_SPECIALS_NODEFAULT(ir_iterator);
@@ -200,15 +199,7 @@ namespace tnac::ir::detail
     {
       return iterator{ m_value->begin() };
     }
-    auto begin() noexcept
-    {
-      return iterator{ m_value->begin() };
-    }
     auto end() const noexcept
-    {
-      return iterator{ m_value->end() };
-    }
-    auto end() noexcept
     {
       return iterator{ m_value->end() };
     }
