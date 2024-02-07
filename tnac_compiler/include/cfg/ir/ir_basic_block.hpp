@@ -56,8 +56,6 @@ namespace tnac::ir
     basic_block* m_out{};
   };
 
-  using edge_list = detail::ir_container<basic_block*, edge>;
-
 
   //
   // Represents a basic block of the CFG
