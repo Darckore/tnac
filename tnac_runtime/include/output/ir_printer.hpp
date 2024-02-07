@@ -51,6 +51,12 @@ namespace tnac::rt::out
 
     void param(param_idx pi) noexcept;
 
+    void declare_funcs(const ir::cfg& gr) noexcept;
+
+    void declare(const ir::function& fn) noexcept;
+
+    void func_intro(const ir::function& fn) noexcept;
+
   private:
     out_stream* m_out{ &std::cout };
   };

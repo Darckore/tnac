@@ -15,6 +15,7 @@ namespace tnac::rt::out
   void ir_printer::operator()(const ir::cfg& gr, out_stream& os) noexcept
   {
     m_out = &os;
+    declare_funcs(gr);
     base::operator()(gr);
   }
 
@@ -25,16 +26,9 @@ namespace tnac::rt::out
 
   bool ir_printer::preview(const ir::function& fn) noexcept
   {
-    if (fn.owner_func())
-      keyword("function "sv);
-    else
-      keyword("module "sv);
+    func_intro(fn);
 
-    id(fn.id());
-    out() << ' ';
-    name(fn.name());
     out() << " (";
-
     {
       const auto paramCnt = fn.param_count();
       for (auto pi = param_idx{}; pi < paramCnt; ++pi)
@@ -44,13 +38,12 @@ namespace tnac::rt::out
           out() << ", ";
       }
     }
-
     out() << ')';
     endl();
     return true;
   }
 
-  void ir_printer::visit(const ir::function& ) noexcept
+  void ir_printer::visit(const ir::function&) noexcept
   {
     keyword("end"sv);
     endl();
@@ -102,6 +95,48 @@ namespace tnac::rt::out
     fmt::add_clr(out(), fmt::clr::BoldWhite);
     out() << "%`" << pi;
     fmt::clear_clr(out());
+  }
+
+  void ir_printer::declare_funcs(const ir::cfg& gr) noexcept
+  {
+    std::queue<ir::function*> fnq;
+    for (auto mod : gr)
+    {
+      fnq.push(mod);
+    }
+
+    while (!fnq.empty())
+    {
+      auto fn = fnq.front();
+      fnq.pop();
+      declare(*fn);
+
+      for (auto child : fn->children())
+      {
+        fnq.push(child);
+      }
+    }
+
+    endl();
+  }
+
+  void ir_printer::declare(const ir::function& fn) noexcept
+  {
+    keyword("declare "sv);
+    func_intro(fn);
+    endl();
+  }
+
+  void ir_printer::func_intro(const ir::function& fn) noexcept
+  {
+    if (fn.owner_func())
+      keyword("function "sv);
+    else
+      keyword("module "sv);
+
+    id(fn.id());
+    name(" @"sv);
+    name(fn.name());
   }
 
 }
