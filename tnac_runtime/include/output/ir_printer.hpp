@@ -49,7 +49,7 @@ namespace tnac::rt::out
 
     void id(entity_id i) noexcept;
 
-    void param(param_idx pi) noexcept;
+    void plain(string_t str) noexcept;
 
     void declare_funcs(const ir::cfg& gr) noexcept;
 

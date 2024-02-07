@@ -27,18 +27,6 @@ namespace tnac::rt::out
   bool ir_printer::preview(const ir::function& fn) noexcept
   {
     func_intro(fn);
-
-    out() << " (";
-    {
-      const auto paramCnt = fn.param_count();
-      for (auto pi = param_idx{}; pi < paramCnt; ++pi)
-      {
-        param(pi);
-        if (pi + 1 != paramCnt)
-          out() << ", ";
-      }
-    }
-    out() << ')';
     endl();
     return true;
   }
@@ -53,7 +41,7 @@ namespace tnac::rt::out
   void ir_printer::visit(const ir::basic_block& bb) noexcept
   {
     keyword(bb.name());
-    keyword(":"sv);
+    plain(":"sv);
     endl();
   }
 
@@ -90,11 +78,9 @@ namespace tnac::rt::out
     fmt::print(out(), fmt::clr::Yellow, i);
   }
 
-  void ir_printer::param(param_idx pi) noexcept
+  void ir_printer::plain(string_t str) noexcept
   {
-    fmt::add_clr(out(), fmt::clr::BoldWhite);
-    out() << "%`" << pi;
-    fmt::clear_clr(out());
+    out() << str;
   }
 
   void ir_printer::declare_funcs(const ir::cfg& gr) noexcept
