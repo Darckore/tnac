@@ -186,7 +186,7 @@ namespace tnac::ir::detail
     //
     // Adds a node
     //
-    template <typename ...Args>
+    template <typename ...Args> requires (std::constructible_from<value_type, Args...>)
     value_type& add(const key_type& key, Args&& ...args) noexcept
     {
       auto newItem = m_value->try_emplace(key, std::forward<Args>(args)...);
