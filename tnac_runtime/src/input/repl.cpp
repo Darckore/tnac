@@ -272,12 +272,14 @@ namespace tnac::rt
     buf_t fVars;
     buf_t fFuncs;
     buf_t fMods;
+    buf_t fIr;
 
     cmd_args aAst;
     cmd_args aList;
     cmd_args aVars;
     cmd_args aFuncs;
     cmd_args aMods;
+    cmd_args aIr;
 
     using size_type = ast::command::size_type;
     bool hasOut{};
@@ -303,10 +305,10 @@ namespace tnac::rt
       aFuncs.emplace_back(sTok(fFuncs));
       fMods.append(dir).append("/tnmodules");
       aMods.emplace_back(sTok(fMods));
+      fIr.append(dir).append("/out.tni");
+      aIr.emplace_back(sTok(fIr));
     }
 
-    if(!hasOut) m_state->out() << "==========  AST    ==========\n";
-    on_command({ cTok("ast"sv), std::move(aAst) });
     if (!hasOut) m_state->out() << "==========  CODE   ==========\n";
     on_command({ cTok("list"sv), std::move(aList) });
     if (!hasOut) m_state->out() << "========== MODULES ==========\n";
@@ -315,5 +317,9 @@ namespace tnac::rt
     on_command({ cTok("funcs"sv), std::move(aFuncs) });
     if (!hasOut) m_state->out() << "==========  VARS   ==========\n";
     on_command({ cTok("vars"sv), std::move(aVars) });
+    if (!hasOut) m_state->out() << "==========  AST    ==========\n";
+    on_command({ cTok("ast"sv), std::move(aAst) });
+    if (!hasOut) m_state->out() << "==========  IR   ==========\n";
+    on_command({ cTok("ir"sv), std::move(aIr) });
   }
 }
