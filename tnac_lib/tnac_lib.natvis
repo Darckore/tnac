@@ -492,6 +492,7 @@
     <Expand>
       <Item Name="[func]">*m_owner</Item>
       <Item Name="[name]">m_name,sb</Item>
+      <Item Name="[instructions]">m_instructions</Item>
     </Expand>
   </Type>
 
@@ -508,6 +509,7 @@
     <Expand>
       <Item Name="[functions]">m_functions</Item>
       <Item Name="[basic blocks]">m_blocks</Item>
+      <Item Name="[instructions]">m_instructions</Item>
     </Expand>
   </Type>
   

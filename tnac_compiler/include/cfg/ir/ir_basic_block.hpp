@@ -4,6 +4,7 @@
 
 #pragma once
 #include "cfg/ir/ir_base.hpp"
+#include "cfg/ir/ir_instructions.hpp"
 
 namespace tnac::ir
 {
@@ -63,6 +64,9 @@ namespace tnac::ir
   class basic_block final : public node
   {
   public:
+    using instruction_list = utils::ilist_view<false, instruction>;
+
+  public:
     CLASS_SPECIALS_NONE(basic_block);
 
     virtual ~basic_block() noexcept;
@@ -87,9 +91,15 @@ namespace tnac::ir
     //
     function& func() noexcept;
 
+    //
+    // Appends an instruction
+    //
+    basic_block& add_instruction(instruction& in) noexcept;
+
   private:
     function* m_owner{};
     string_t m_name;
+    instruction_list m_instructions;
   };
 
   using block_container = detail::ir_container<string_t, basic_block>;

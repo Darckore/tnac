@@ -23,7 +23,9 @@ namespace tnac::ir
   //
   // Base class for IR instructions
   //
-  class instruction : public node
+  class instruction :
+    public utils::ilist_node<instruction>,
+    public node
   {
   public:
     using enum op_code;

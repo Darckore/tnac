@@ -27,6 +27,13 @@ namespace tnac::ir
     return fIt != m_functions.end() ? &fIt->second : nullptr;
   }
 
+  instruction& builder::add_instruction(basic_block& owner, op_code op) noexcept
+  {
+    auto&& newInstr = m_instructions.emplace_back(owner, op);
+    owner.add_instruction(newInstr);
+    return newInstr;
+  }
+
 
   // Private members
 

@@ -63,4 +63,19 @@ namespace tnac::ir // basic block
   {
     return FROM_CONST(func);
   }
+
+  basic_block& basic_block::add_instruction(instruction& in) noexcept
+  {
+    auto newTail = in.to_iterator();
+    if (m_instructions.empty())
+    {
+      m_instructions = { newTail, newTail, 1 };
+      return *this;
+    }
+
+    auto first = m_instructions.begin();
+    const auto size = m_instructions.size();
+    m_instructions = { first, newTail, size + 1 };
+    return *this;
+  }
 }
