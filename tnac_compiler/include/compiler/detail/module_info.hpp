@@ -26,6 +26,7 @@ namespace tnac::detail
 {
   //
   // Holds associations between module symbols and their corresponding ASTs
+  // Also, provides context to the compiler
   //
   class module_info final
   {
@@ -80,16 +81,6 @@ namespace tnac::detail
     void exit_module() noexcept;
 
     //
-    // Returns a pointer to the current module
-    //
-    ir::function* try_current_module() noexcept;
-
-    //
-    // Checks whether a current module is set
-    //
-    bool has_current_module() const noexcept;
-
-    //
     // Returns a reference to the current module
     // Use with caution and check whether one exists beforehand
     //
@@ -101,19 +92,10 @@ namespace tnac::detail
     void enter_function(ir::function& fn) noexcept;
 
     //
-    // Resets the current function to nothing
+    // Resets the current function to its owner
+    // If the current function is a module, acts as exit_module
     //
     void exit_function() noexcept;
-
-    //
-    // Returns a pointer to the current function
-    //
-    ir::function* try_current_function() noexcept;
-
-    //
-    // Checks whether a current function is set
-    //
-    bool has_current_function() const noexcept;
 
     //
     // Returns a reference to the current function

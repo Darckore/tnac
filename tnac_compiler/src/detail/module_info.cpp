@@ -56,18 +56,10 @@ namespace tnac::detail
     exit_function();
     m_curModule = {};
   }
-  ir::function* module_info::try_current_module() noexcept
-  {
-    return m_curModule;
-  }
-  bool module_info::has_current_module() const noexcept
-  {
-    return static_cast<bool>(m_curModule);
-  }
   ir::function& module_info::current_module() noexcept
   {
-    UTILS_ASSERT(has_current_module());
-    return *try_current_module();
+    UTILS_ASSERT(m_curModule);
+    return *m_curModule;
   }
 
   void module_info::enter_function(ir::function& fn) noexcept
@@ -82,17 +74,9 @@ namespace tnac::detail
 
     m_curFunction = m_curFunction->owner_func();
   }
-  ir::function* module_info::try_current_function() noexcept
-  {
-    return m_curFunction;
-  }
-  bool module_info::has_current_function() const noexcept
-  {
-    return static_cast<bool>(m_curFunction);
-  }
   ir::function& module_info::current_function() noexcept
   {
-    UTILS_ASSERT(has_current_function());
-    return *try_current_function();
+    UTILS_ASSERT(m_curFunction);
+    return *m_curFunction;
   }
 }
