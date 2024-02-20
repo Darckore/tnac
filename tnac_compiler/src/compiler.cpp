@@ -200,7 +200,7 @@ namespace tnac
   void compiler::compile(params_t& params, body_t& body) noexcept
   {
     auto _ = m_names.init_indicies();
-    m_modules.current_function().create_block(m_names.entry_block_name());
+    m_modules.create_block(m_names.entry_block_name());
     for (auto param : params)
     {
       compile(*param);
