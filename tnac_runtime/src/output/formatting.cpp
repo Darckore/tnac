@@ -5,11 +5,6 @@
 
 namespace tnac::rt::fmt
 {
-#if TNAC_WINDOWS
-  //
-  // https://learn.microsoft.com/en-us/windows/console/console-virtual-terminal-sequences
-  //
-
   void add_clr(std::ostream& out, clr c) noexcept
   {
     if (utils::eq_none(&out, &std::cout, &std::cerr))
@@ -41,18 +36,6 @@ namespace tnac::rt::fmt
 
     out << "\x1b[m";
   }
-
-#else
-  void add_clr(std::ostream& out, clr c) noexcept
-  {
-    utils::unused(out, c);
-  }
-
-  void clear_clr(std::ostream& out) noexcept
-  {
-    utils::unused(out);
-  }
-#endif
 }
 
 tnac::rt::out_stream& operator<<(tnac::rt::out_stream & out, const tnac::token& tok) noexcept
