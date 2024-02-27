@@ -4,6 +4,51 @@
 
 #pragma once
 #include "cfg/ir/ir_base.hpp"
+#include "eval/value/value.hpp"
+#include "eval/types/traits.hpp"
+
+#define TNAC_OPERANDS eval::value,\
+function*,\
+basic_block*
+
+namespace tnac::ir
+{
+  class function;
+  class basic_block;
+
+  namespace detail
+  {
+    //
+    // Defines a valid operand
+    //
+    template <typename T>
+    concept operand_data = utils::any_same_as<T, TNAC_OPERANDS>;
+  }
+}
+
+namespace tnac::ir
+{
+  //
+  // Operand of an instruction
+  //
+  class operand final
+  {
+  public:
+    using data_type = std::variant<TNAC_OPERANDS>;
+
+  public:
+    CLASS_SPECIALS_NODEFAULT(operand);
+
+    ~operand() noexcept = default;
+
+    explicit operand(detail::operand_data auto val) noexcept :
+      m_value{ val }
+    {}
+
+  private:
+    data_type m_value;
+  };
+}
 
 namespace tnac::ir
 {
@@ -12,9 +57,25 @@ namespace tnac::ir
   //
   enum class op_code : std::uint8_t
   {
-    Arithmetic,
+    Add,
+    Sub,
+    Mul,
+    Div,
+    Mod,
+    Pow,
+    Root,
+    And,
+    Or,
+    Xor,
+    CmpE,
+    CmpL,
+    CmpLE,
+    
+    Abs,
+
     Store,
     Load,
+
     Call,
     Jump,
     Ret
@@ -29,6 +90,7 @@ namespace tnac::ir
   {
   public:
     using enum op_code;
+    using op_list = std::vector<operand>;
 
   public:
     CLASS_SPECIALS_NONE(instruction);
@@ -52,6 +114,7 @@ namespace tnac::ir
 
   private:
     basic_block* m_block{};
+    op_list m_operands;
     op_code m_opCode;
   };
 }
