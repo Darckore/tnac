@@ -66,8 +66,6 @@ namespace tnac::semantics
 
     //
     // Returns the owner scope
-    // 
-    // const version
     //
     const scope& owner_scope() const noexcept;
 

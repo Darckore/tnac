@@ -40,8 +40,6 @@ namespace tnac::semantics
 
     //
     // Returns the list of function parameters
-    // 
-    // const version
     //
     const param_list& params() const noexcept;
 
@@ -52,8 +50,6 @@ namespace tnac::semantics
 
     //
     // Returns the underlying scope
-    // 
-    // const version
     //
     const scope& own_scope() const noexcept;
 

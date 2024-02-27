@@ -42,8 +42,6 @@ namespace tnac::ast
 
     //
     // Returns a reference to the name container
-    // 
-    // const version
     //
     const elem_list& name() const noexcept;
 
@@ -54,8 +52,6 @@ namespace tnac::ast
 
     //
     // Returns a reference to the imported symbol
-    // 
-    // const version
     //
     const semantics::symbol& imported_sym() const noexcept;
 
@@ -67,8 +63,6 @@ namespace tnac::ast
     //
     // Returns the alias for the imported module if
     // one is defined
-    // 
-    // const version
     //
     const_pointer alias_name() const noexcept;
 
@@ -134,8 +128,6 @@ namespace tnac::ast
 
     //
     // Returns the attached symbol
-    // 
-    // const version
     //
     const sym_t& symbol() const noexcept;
 
@@ -146,8 +138,6 @@ namespace tnac::ast
 
     //
     // Returns module parameter list
-    //
-    // const version
     //
     const param_list& params() const noexcept;
 
@@ -168,8 +158,6 @@ namespace tnac::ast
 
     //
     // Returns the import list
-    // 
-    // const version
     //
     const import_list& imports() const noexcept;
 
@@ -227,8 +215,6 @@ namespace tnac::ast
   public:
     //
     // Returns the current list of modules
-    // 
-    // const version
     //
     const elem_list& modules() const noexcept;
 

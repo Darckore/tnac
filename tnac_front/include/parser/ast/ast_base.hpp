@@ -67,8 +67,6 @@ namespace tnac::ast
   public:
     //
     // Returns the parent node if one exists
-    // 
-    // const version
     //
     const node* parent() const noexcept;
 
@@ -104,8 +102,6 @@ namespace tnac::ast
     //
     // Climbs the tree until the specified kind of node is encountered
     // Returns nullptr is reached the root
-    // 
-    // const version
     //
     template <kind K>
     auto climb() const noexcept
@@ -221,8 +217,6 @@ namespace tnac::ast
 
     //
     // Returns the current list of children
-    // 
-    // const version
     //
     const elem_list& children() const noexcept;
 

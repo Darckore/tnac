@@ -81,8 +81,6 @@ namespace tnac::ir
 
     //
     // Returns a reference to the owner function
-    // 
-    // const version
     //
     const function& func() const noexcept;
 

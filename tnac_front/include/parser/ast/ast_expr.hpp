@@ -79,8 +79,6 @@ namespace tnac::ast
   public:
     //
     // Returns the value to propagate to the caller
-    // 
-    // const version
     //
     const expr& returned_value() const noexcept;
 
@@ -133,8 +131,6 @@ namespace tnac::ast
   public:
     //
     // Returns the attached symbol
-    // 
-    // const version
     //
     const semantics::symbol& symbol() const noexcept;
 
@@ -178,8 +174,6 @@ namespace tnac::ast
 
     //
     // Returns the operand
-    // 
-    // const version
     //
     const expr& operand() const noexcept;
 
@@ -219,8 +213,6 @@ namespace tnac::ast
 
     //
     // Returns the left operand
-    // 
-    // const version
     //
     const expr& left() const noexcept;
 
@@ -231,8 +223,6 @@ namespace tnac::ast
 
     //
     // Returns the right operand
-    // 
-    // const version
     //
     const expr& right() const noexcept;
 
@@ -291,8 +281,6 @@ namespace tnac::ast
   public:
     //
     // Returns a reference to the accessed expression
-    // 
-    // const version
     //
     const expr& accessed() const noexcept;
 
@@ -303,8 +291,6 @@ namespace tnac::ast
 
     //
     // Returns a reference to the accessor
-    // 
-    // const version
     //
     const expr& accessor() const noexcept;
 
@@ -339,8 +325,6 @@ namespace tnac::ast
   public:
     //
     // Returns the element list
-    // 
-    // const version
     //
     const elem_list& elements() const noexcept;
 
@@ -374,8 +358,6 @@ namespace tnac::ast
   public:
     //
     // Returns the expression in parentheses
-    // 
-    // const version
     //
     const expr& internal_expr() const noexcept;
 
@@ -409,8 +391,6 @@ namespace tnac::ast
   public:
     //
     // Returns the underlying expression
-    // 
-    // const version
     //
     const expr& expression() const noexcept;
 
@@ -451,8 +431,6 @@ namespace tnac::ast
 
     //
     // Returns the argument list
-    // 
-    // const version
     //
     const arg_list& args() const noexcept;
 
@@ -514,8 +492,6 @@ namespace tnac::ast
   public:
     //
     // Returns the callee expr
-    // 
-    // const version
     //
     const expr& callable() const noexcept;
 
@@ -526,8 +502,6 @@ namespace tnac::ast
 
     //
     // Returns the argument list
-    // 
-    // const version
     //
     const arg_list& args() const noexcept;
 
@@ -577,8 +551,6 @@ namespace tnac::ast
 
     //
     // Returns the checked expression
-    //
-    // const version
     // 
     const expr& checked() const noexcept;
 
@@ -613,8 +585,6 @@ namespace tnac::ast
     //
     // Returns the matcher
     //
-    // const version
-    //
     const expr& matcher() const noexcept;
 
     //
@@ -624,8 +594,6 @@ namespace tnac::ast
 
     //
     // Returns the body
-    //
-    // const version
     // 
     const scope& body() const noexcept;
 
@@ -660,8 +628,6 @@ namespace tnac::ast
   public:
     //
     // Returns the condition
-    // 
-    // const version
     //
     const expr& cond() const noexcept;
 
@@ -672,8 +638,6 @@ namespace tnac::ast
 
     //
     // Returns the pattern collection
-    // 
-    // const version
     //
     const scope& patterns() const noexcept;
 
@@ -709,8 +673,6 @@ namespace tnac::ast
   public:
     //
     // Returns the condition
-    // 
-    // const version
     //
     const expr& cond() const noexcept;
 
@@ -731,8 +693,6 @@ namespace tnac::ast
 
     //
     // Returns the true branch
-    // 
-    // const version
     //
     const expr& on_true() const noexcept;
 
@@ -743,8 +703,6 @@ namespace tnac::ast
 
     //
     // Returns the false branch
-    // 
-    // const version
     //
     const expr& on_false() const noexcept;
 

@@ -40,8 +40,6 @@ namespace tnac::ast
 
     //
     // Returns the definition
-    // 
-    // const version
     //
     const node* definition() const noexcept;
 
@@ -57,8 +55,6 @@ namespace tnac::ast
 
     //
     // Returns the attached symbol
-    // 
-    // const version
     //
     const semantics::symbol& symbol() const noexcept;
 
@@ -99,8 +95,6 @@ namespace tnac::ast
   public:
     //
     // Returns the declarator
-    // 
-    // const version
     //
     const decl& declarator() const noexcept;
 
@@ -133,8 +127,6 @@ namespace tnac::ast
   public:
     //
     // Returns the initialiser which is present at the right side of the the assignment operator
-    // 
-    // const version
     //
     const expr& initialiser() const noexcept;
 
@@ -187,8 +179,6 @@ namespace tnac::ast
     //
     // Returns function parameter list
     //
-    // const version
-    //
     const param_list& params() const noexcept;
 
     //
@@ -203,8 +193,6 @@ namespace tnac::ast
 
     //
     // Returns function body
-    // 
-    // const version
     //
     const scope& body() const noexcept;
 

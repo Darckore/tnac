@@ -71,8 +71,6 @@ namespace tnac
 
     //
     // Returns the parsed ast
-    // 
-    // const version
     //
     const ast::node* get_ast() const noexcept;
 
@@ -83,8 +81,6 @@ namespace tnac
 
     //
     // Returns the current CFG
-    // 
-    // const version
     //
     const ir::cfg& get_cfg() const noexcept;
 

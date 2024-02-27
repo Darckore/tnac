@@ -66,8 +66,6 @@ namespace tnac::semantics
   public:
     //
     // Returns the scope it references
-    // 
-    // const version
     //
     const scope& referenced() const noexcept;
 

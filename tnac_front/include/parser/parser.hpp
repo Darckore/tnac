@@ -122,8 +122,6 @@ namespace tnac
     //
     // Returns the root node of the entire AST, which is,
     // potentially, built over multiple parse calls
-    // 
-    // const version
     //
     const_root_ptr root() const noexcept;
 

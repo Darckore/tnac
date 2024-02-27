@@ -150,8 +150,6 @@ namespace tnac::ir::detail
   public:
     //
     // Locates a node by the associated key
-    // 
-    // const version
     //
     const value_type* find(const key_type& key) const noexcept
     {

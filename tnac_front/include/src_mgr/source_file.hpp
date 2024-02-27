@@ -125,8 +125,6 @@ namespace tnac::src
 
     //
     // Returns the previously cached AST
-    // 
-    // const version
     //
     const ast::module_def* parsed_ast() const noexcept;
 

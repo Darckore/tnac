@@ -51,8 +51,6 @@ namespace tnac::ir
     // Returns a reference to the entry block
     // Doesn't check whether an entry has been assigned, whoever creates functions
     // is responsible for properly initialising the entry block and must guarantee its existence
-    // 
-    // const version
     //
     const basic_block& entry() const noexcept;
 
@@ -65,8 +63,6 @@ namespace tnac::ir
 
     //
     // Returns a pointer to the owner function
-    // 
-    // const version
     //
     const function* owner_func() const noexcept;
 
@@ -77,8 +73,6 @@ namespace tnac::ir
 
     //
     // Returns a list of this function's nested functions
-    // 
-    // const version
     //
     const child_list& children() const noexcept;
 
@@ -89,8 +83,6 @@ namespace tnac::ir
 
     //
     // Returns a reference to the basic block container
-    // 
-    // const version
     //
     const block_list& blocks() const noexcept;
 

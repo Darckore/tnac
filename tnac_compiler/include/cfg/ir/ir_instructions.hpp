@@ -102,8 +102,6 @@ namespace tnac::ir
   public:
     //
     // Returns a reference to the parent basic block
-    // 
-    // const version
     //
     const basic_block& owner_block() const noexcept;
 

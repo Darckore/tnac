@@ -55,8 +55,6 @@ namespace tnac::semantics
   public:
     //
     // Returns a pointer to the enclosing scope
-    // 
-    // const version
     //
     const scope* enclosing() const noexcept;
 
@@ -67,8 +65,6 @@ namespace tnac::semantics
 
     //
     // Climbs to the nearest function or module parent
-    // 
-    // const version
     //
     const scope* encl_skip_internal() const noexcept;
 
@@ -133,8 +129,6 @@ namespace tnac::semantics
 
     //
     // Returns a pointer to the attached symbol
-    // 
-    // const version
     //
     const symbol* sym() const noexcept;
 
@@ -145,8 +139,6 @@ namespace tnac::semantics
 
     //
     // Attempts to cast the attached symbol to function
-    // 
-    // const version
     //
     const function* to_func() const noexcept;
 
@@ -157,8 +149,6 @@ namespace tnac::semantics
 
     //
     // Casts the attached symbol to function without checking if one is attached
-    // 
-    // const version
     //
     const function& func() const noexcept;
 
@@ -169,8 +159,6 @@ namespace tnac::semantics
 
     //
     // Attempts to cast the attached symbol to module
-    // 
-    // const version
     //
     const module_sym* to_module() const noexcept;
 
@@ -181,8 +169,6 @@ namespace tnac::semantics
 
     //
     // Casts the attached symbol to module without checking if one is attached
-    // 
-    // const version
     //
     const module_sym& mod() const noexcept;
 
@@ -193,8 +179,6 @@ namespace tnac::semantics
 
     //
     // Attempts to cast the attached symbol to scope reference
-    // 
-    // const version
     //
     const scope_ref* to_scope_ref() const noexcept;
 
@@ -205,8 +189,6 @@ namespace tnac::semantics
 
     //
     // Casts the attached symbol to scope reference without checking if one is attached
-    // 
-    // const version
     //
     const scope_ref& sc_ref() const noexcept;
 

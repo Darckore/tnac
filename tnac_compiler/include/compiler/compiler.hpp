@@ -62,8 +62,6 @@ namespace tnac
   public:
     //
     // Returns a reference to the CFG
-    // 
-    // const version
     //
     const ir::cfg& cfg() const noexcept;
 
