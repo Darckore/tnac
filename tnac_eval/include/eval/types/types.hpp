@@ -4,7 +4,7 @@
 
 #pragma once
 
-namespace tnac::semantics
+namespace tnac::ir
 {
   class function;
 }
@@ -123,10 +123,10 @@ namespace tnac::eval
   class function_type final
   {
   public:
-    using value_type = semantics::function;
-    using pointer = value_type*;
-    using const_pointer = const value_type*;
-    using reference = value_type&;
+    using value_type      = ir::function;
+    using pointer         = value_type*;
+    using const_pointer   = const value_type*;
+    using reference       = value_type&;
     using const_reference = const value_type&;
 
   public:

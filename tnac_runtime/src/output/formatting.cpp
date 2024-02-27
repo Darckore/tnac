@@ -1,5 +1,6 @@
 #include "output/formatting.hpp"
 #include "sema/sym/symbols.hpp"
+#include "cfg/ir/ir.hpp"
 #include "eval/value/value.hpp"
 #include "src_mgr/source_location.hpp"
 
@@ -116,7 +117,7 @@ tnac::rt::out_stream& operator<<(tnac::rt::out_stream& out, const tnac::eval::fr
 
 tnac::rt::out_stream& operator<<(tnac::rt::out_stream& out, const tnac::eval::function_type& f) noexcept
 {
-  out << "function(" << f->name() << ')';
+  out << "function: " << f->name() << "( " << f->param_count() << " )";
 
   return out;
 }
