@@ -36,7 +36,7 @@ namespace tnac::detail
     using module_def   = ast::module_def;
     using data_store   = std::unordered_map<module_sym*, module_def*>;
     using module_stack = std::vector<module_sym*>;
-    using block_queue  = std::queue<ir::basic_block*>;
+    using block_stack  = std::vector<ir::basic_block*>;
 
   public:
     CLASS_SPECIALS_NONE_CUSTOM(module_info);
@@ -123,7 +123,7 @@ namespace tnac::detail
   private:
     data_store m_data;
     module_stack m_stack;
-    block_queue m_blocks;
+    block_stack m_blocks;
     ir::function* m_curModule{};
     ir::function* m_curFunction{};
   };
