@@ -121,6 +121,11 @@ namespace tnac::detail
     ir::basic_block& current_block() noexcept;
 
     //
+    // Returns a pointer to the terminal (last) block of the function
+    //
+    ir::basic_block* terminal_block() noexcept;
+
+    //
     // Pops the current basic block
     //
     void exit_block() noexcept;
@@ -131,5 +136,6 @@ namespace tnac::detail
     block_queue m_blocks;
     ir::function* m_curModule{};
     ir::function* m_curFunction{};
+    ir::basic_block* m_terminal{};
   };
 }

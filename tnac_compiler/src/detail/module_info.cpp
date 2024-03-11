@@ -29,6 +29,9 @@ namespace tnac::detail
     m_data.clear();
     m_stack.clear();
     m_blocks = {};
+    m_terminal = {};
+    m_curFunction = {};
+    m_curModule = {};
   }
 
   void module_info::push(module_sym& sym) noexcept
@@ -95,6 +98,11 @@ namespace tnac::detail
   {
     UTILS_ASSERT(!m_blocks.empty());
     return *m_blocks.front();
+  }
+
+  ir::basic_block* module_info::terminal_block() noexcept
+  {
+    return m_terminal;
   }
 
   void module_info::exit_block() noexcept
