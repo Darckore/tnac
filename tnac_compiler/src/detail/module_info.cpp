@@ -84,7 +84,7 @@ namespace tnac::detail
   ir::basic_block& module_info::create_block(string_t name) noexcept
   {
     auto&& newBlock = current_function().create_block(name);
-    m_blocks.push_back(&newBlock);
+    m_blocks.push(&newBlock);
     return newBlock;
   }
 
@@ -97,6 +97,6 @@ namespace tnac::detail
   void module_info::exit_block() noexcept
   {
     UTILS_ASSERT(!m_blocks.empty());
-    m_blocks.pop_back();
+    m_blocks.pop();
   }
 }
