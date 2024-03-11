@@ -83,9 +83,12 @@ namespace tnac::detail
 
   ir::basic_block& module_info::create_block(string_t name) noexcept
   {
-    auto&& newBlock = current_function().create_block(name);
-    m_blocks.push(&newBlock);
-    return newBlock;
+    return current_function().create_block(name);
+  }
+
+  void module_info::enqueue_block(ir::basic_block& block) noexcept
+  {
+    m_blocks.push(&block);
   }
 
   ir::basic_block& module_info::current_block() noexcept

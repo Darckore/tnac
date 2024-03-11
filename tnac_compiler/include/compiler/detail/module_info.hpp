@@ -111,12 +111,17 @@ namespace tnac::detail
     ir::basic_block& create_block(string_t name) noexcept;
 
     //
+    // Adds the given basic block to the queue
+    //
+    void enqueue_block(ir::basic_block& block) noexcept;
+
+    //
     // Returns the basic block from the top of the queue
     //
     ir::basic_block& current_block() noexcept;
 
     //
-    // Pops the most recent basic block
+    // Pops the current basic block
     //
     void exit_block() noexcept;
 
