@@ -66,9 +66,9 @@ namespace tnac::eval
   // Value casters
   //
 
-  template <detail::expr_result T> using typed_value = std::optional<T>;
+  template <expr_result T> using typed_value = std::optional<T>;
 
-  template <detail::expr_result T> struct type_wrapper
+  template <expr_result T> struct type_wrapper
   {
     using value_type  = T;
     using result_type = typed_value<value_type>;
@@ -240,7 +240,7 @@ namespace tnac::eval
     };
   }
 
-  template <detail::expr_result T>
+  template <expr_result T>
   auto cast_value(value val) noexcept { return on_value(val, get_caster<T>()); };
 
   inline auto to_bool(value val) noexcept
@@ -254,33 +254,33 @@ namespace tnac::eval
   // Common type
   //
 
-  template <detail::expr_result T1, detail::expr_result T2> struct common_type;
-  template <detail::expr_result T1, detail::expr_result T2> using common_type_t = typename common_type<T1, T2>::type;
+  template <expr_result T1, expr_result T2> struct common_type;
+  template <expr_result T1, expr_result T2> using common_type_t = typename common_type<T1, T2>::type;
 
   // common type with self
 
-  template <detail::expr_result T1, detail::expr_result T2> requires (utils::same_noquals<T1, T2>)
+  template <expr_result T1, expr_result T2> requires (utils::same_noquals<T1, T2>)
   struct common_type<T1, T2> { using type = std::remove_cvref_t<T1>; };
 
   // invalid
 
-  template <detail::expr_result T> requires (!utils::same_noquals<T, invalid_val_t>)
+  template <expr_result T> requires (!utils::same_noquals<T, invalid_val_t>)
   struct common_type<invalid_val_t, T> { using type = invalid_val_t; };
-  template <detail::expr_result T> requires (!utils::same_noquals<T, invalid_val_t>)
+  template <expr_result T> requires (!utils::same_noquals<T, invalid_val_t>)
   struct common_type<T, invalid_val_t> : common_type<invalid_val_t, T> {};
 
   // array
 
-  template <detail::expr_result T> requires (!utils::any_same_as<T, array_type, invalid_val_t>)
+  template <expr_result T> requires (!utils::any_same_as<T, array_type, invalid_val_t>)
   struct common_type<array_type, T> { using type = array_type; };
-  template <detail::expr_result T> requires (!utils::any_same_as<T, array_type, invalid_val_t>)
+  template <expr_result T> requires (!utils::any_same_as<T, array_type, invalid_val_t>)
   struct common_type<T, array_type> : common_type<array_type, T> {};
 
   // function
 
-  template <detail::expr_result T> requires (!utils::any_same_as<T, function_type, invalid_val_t>)
+  template <expr_result T> requires (!utils::any_same_as<T, function_type, invalid_val_t>)
   struct common_type<function_type, T> { using type = function_type; };
-  template <detail::expr_result T> requires (!utils::any_same_as<T, function_type, invalid_val_t>)
+  template <expr_result T> requires (!utils::any_same_as<T, function_type, invalid_val_t>)
   struct common_type<T, function_type> : common_type<function_type, T> {};
   template <> struct common_type<function_type, array_type> { using type = array_type; };
   template <> struct common_type<array_type, function_type> : common_type<function_type, array_type> {};
@@ -389,16 +389,14 @@ namespace tnac::eval
   // Utility functions
   //
 
-  namespace detail
-  {
-    template <typename T> concept has_invert = requires(T t) { utils::inv(t); };
-    template <typename T> concept has_eq = requires(T t) { utils::eq(t, t); };
-    template <typename T> concept has_less = requires(T t) { t < t; };
-    template <typename T> concept has_abs = requires(T t) { utils::abs(t); };
-  }
+
+  template <typename T> concept has_invert = requires(T t) { utils::inv(t); };
+  template <typename T> concept has_eq = requires(T t) { utils::eq(t, t); };
+  template <typename T> concept has_less = requires(T t) { t < t; };
+  template <typename T> concept has_abs = requires(T t) { utils::abs(t); };
 
   template <typename T> auto abs(const T&) noexcept;
-  inline auto abs(const detail::has_abs auto& op) noexcept
+  inline auto abs(const has_abs auto& op) noexcept
   {
     return utils::abs(op);
   }
@@ -418,7 +416,7 @@ namespace tnac::eval
   }
 
   template <typename T> auto inv(const T&) noexcept;
-  inline auto inv(const detail::has_invert auto& val) noexcept
+  inline auto inv(const has_invert auto& val) noexcept
   {
     return utils::inv(val);
   }
@@ -432,7 +430,7 @@ namespace tnac::eval
   }
 
   template <typename T> auto eq(const T&, const T&) noexcept;
-  template <detail::has_eq T> inline auto eq(const T& lhs, const T& rhs) noexcept
+  template <has_eq T> inline auto eq(const T& lhs, const T& rhs) noexcept
   {
     if constexpr (utils::same_noquals<T, float_type>)
     {
@@ -460,7 +458,7 @@ namespace tnac::eval
   }
 
   template <typename T> auto less(const T&, const T&) noexcept;
-  template <detail::has_less T> inline auto less(const T& lhs, const T& rhs) noexcept
+  template <has_less T> inline auto less(const T& lhs, const T& rhs) noexcept
   {
     return lhs < rhs;
   }
@@ -469,77 +467,81 @@ namespace tnac::eval
     return abs(lhs) < abs(rhs);
   }
 
-  namespace detail
+  template <typename F, typename T>
+  concept unary_function = std::is_nothrow_invocable_v<F, T>;
+  
+  template <typename F, typename T1, typename T2>
+  concept binary_function = std::is_nothrow_invocable_v<F, T1, T2>;
+  
+  template <typename T>
+  concept plusable = expr_result<T> &&
+    requires(T v) { +v; };
+  
+  template <typename T>
+  concept negatable = expr_result<T> &&
+    requires(T v) { -v; };
+  
+  template <typename T>
+  concept addable = expr_result<T> &&
+    requires(T l, T r) { l + r; };
+  
+  template <typename T>
+  concept subtractable = expr_result<T> &&
+    requires(T l, T r) { l - r; };
+  
+  template <typename T>
+  concept multipliable = expr_result<T> &&
+    requires(T l, T r) { l * r; };
+  
+  template <typename T>
+  concept divisible = expr_result<T> &&
+    requires(T l, T r) { l / r; };
+  
+  template <typename T>
+  concept modulo_divisible = expr_result<T> &&
+    requires(T l, T r) { l % r; };
+  
+  template <typename T>
+  concept fmod_divisible = expr_result<T> &&
+    !std::integral<T> &&
+    requires(T l, T r) { std::fmod(l, r); };
+  
+  template <typename T>
+  concept pow_raisable = expr_result<T> &&
+    requires(T l, T r) { std::pow(l, r); };
+  
+  template <typename T>
+  concept invertible = expr_result<T> &&
+    requires(T op) { eval::inv(op); };
+  
+  template <typename T>
+  concept eq_comparable = expr_result<T> &&
+    requires(T l, T r) { eval::eq(l, r); };
+  
+  template <typename T>
+  concept rel_comparable = expr_result<T> &&
+    requires(T l, T r) { eval::less(l, r); };
+  
+  template <typename T>
+  concept fully_comparable = eq_comparable<T> && rel_comparable<T>;
+  
+  template <typename T>
+  concept abs_compatible = expr_result<T> &&
+    requires(T op) { eval::abs(op); };
+
+
+  template <typename T>
+  concept value_container = requires (T & t)
   {
-    template <typename F, typename T>
-    concept unary_function = std::is_nothrow_invocable_v<F, T>;
-
-    template <typename F, typename T1, typename T2>
-    concept binary_function = std::is_nothrow_invocable_v<F, T1, T2>;
-
-    template <typename T>
-    concept plusable = expr_result<T> &&
-      requires(T v) { +v; };
-
-    template <typename T>
-    concept negatable = expr_result<T> &&
-      requires(T v) { -v; };
-
-    template <typename T>
-    concept addable = expr_result<T> &&
-      requires(T l, T r) { l + r; };
-
-    template <typename T>
-    concept subtractable = expr_result<T> &&
-      requires(T l, T r) { l - r; };
-
-    template <typename T>
-    concept multipliable = expr_result<T> &&
-      requires(T l, T r) { l * r; };
-
-    template <typename T>
-    concept divisible = expr_result<T> &&
-      requires(T l, T r) { l / r; };
-
-    template <typename T>
-    concept modulo_divisible = expr_result<T> &&
-      requires(T l, T r) { l % r; };
-
-    template <typename T>
-    concept fmod_divisible = expr_result<T> &&
-      !std::integral<T> &&
-      requires(T l, T r) { std::fmod(l, r); };
-
-    template <typename T>
-    concept pow_raisable = expr_result<T> &&
-      requires(T l, T r) { std::pow(l, r); };
-
-    template <typename T>
-    concept invertible = expr_result<T> &&
-      requires(T op) { eval::inv(op); };
-
-    template <typename T>
-    concept eq_comparable = expr_result<T> &&
-      requires(T l, T r) { eval::eq(l, r); };
-
-    template <typename T>
-    concept rel_comparable = expr_result<T> &&
-      requires(T l, T r) { eval::less(l, r); };
-
-    template <typename T>
-    concept fully_comparable = eq_comparable<T> && rel_comparable<T>;
-
-    template <typename T>
-    concept abs_compatible = expr_result<T> &&
-      requires(T op) { eval::abs(op); };
-  }
+    { t.operator[](0) } -> std::same_as<stored_value&>;
+  };
 
 
   //
   // Size of a type in bytes
   //
 
-  template <detail::expr_result Type>
+  template <expr_result Type>
   constexpr auto size_of() noexcept
   {
     return sizeof(Type);

@@ -26,14 +26,11 @@ namespace tnac::eval
   //
   struct invalid_val_t {};
 
-  namespace detail
-  {
-    //
-    // Defines a valid result of expression evaluation
-    //
-    template <typename T>
-    concept expr_result = utils::any_same_as<T, TNAC_TYPES>;
-  }
+  //
+  // Defines a valid result of expression evaluation
+  //
+  template <typename T>
+  concept expr_result = utils::any_same_as<T, TNAC_TYPES>;
 
   //
   // Type ids for every supported type
@@ -87,7 +84,7 @@ namespace tnac::eval
     using size_type = decltype(sizeof(0));
 
   private:
-    template <detail::expr_result T>
+    template <expr_result T>
     using valptr = const T*;
 
   private:
@@ -114,7 +111,7 @@ namespace tnac::eval
   public:
     CLASS_SPECIALS_ALL(value);
 
-    template <detail::expr_result T>
+    template <expr_result T>
     value(valptr<T> val) noexcept :
       m_val{ make(val, utils::type_to_id_v<T>) }
     {}
@@ -154,7 +151,7 @@ namespace tnac::eval
     //    auto v = val.get<cast_to_type>();
     //  }
     //
-    template <detail::expr_result T>
+    template <expr_result T>
     decltype(auto) get() const noexcept
     {
       return *reinterpret_cast<T*>(raw());
@@ -175,7 +172,7 @@ namespace tnac::eval
     // Attempts to cast data at the value address to the specified type
     // Returns an empty std::optional<T> on failure
     //
-    template <detail::expr_result T>
+    template <expr_result T>
     auto try_get() const noexcept -> decltype(&get<T>())
     {
       auto tv = split(m_val);
@@ -236,7 +233,7 @@ namespace tnac::eval
   public:
     CLASS_SPECIALS_NOCOPY_CUSTOM(stored_value);
 
-    explicit stored_value(detail::expr_result auto raw) noexcept :
+    explicit stored_value(expr_result auto raw) noexcept :
       m_raw{ std::move(raw) }
     {}
 
@@ -244,7 +241,7 @@ namespace tnac::eval
       stored_value{ invalid_val_t{} }
     {}
 
-    stored_value& operator=(detail::expr_result auto raw) noexcept
+    stored_value& operator=(expr_result auto raw) noexcept
     {
       m_raw = std::move(raw);
       return *this;

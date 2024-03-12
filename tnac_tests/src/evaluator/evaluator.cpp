@@ -309,7 +309,7 @@ namespace tnac
       //
       // Helper object for instantiations
       //
-      template <eval::detail::expr_result T>
+      template <eval::expr_result T>
       class instance
       {
       public:

@@ -5,15 +5,6 @@
 #pragma once
 #include "eval/value/value_registry.hpp"
 
-namespace tnac::eval::detail
-{
-  template <typename T>
-  concept value_container = requires (T& t)
-  {
-    { t.operator[](0) } -> std::same_as<stored_value&>;
-  };
-}
-
 namespace tnac::eval
 {
   //
@@ -33,99 +24,99 @@ namespace tnac::eval
     explicit evaluator(registry& reg) noexcept;
 
   private: // Unary operations
-    void unary_plus(detail::plusable auto operand) noexcept;
-    void unary_plus(detail::expr_result auto) noexcept;
+    void unary_plus(plusable auto operand) noexcept;
+    void unary_plus(expr_result auto) noexcept;
 
-    void unary_neg(detail::negatable auto operand) noexcept;
-    void unary_neg(detail::expr_result auto) noexcept;
+    void unary_neg(negatable auto operand) noexcept;
+    void unary_neg(expr_result auto) noexcept;
 
-    void bitwise_not(detail::expr_result auto operand) noexcept;
+    void bitwise_not(expr_result auto operand) noexcept;
 
-    void logical_not(detail::expr_result auto operand) noexcept;
+    void logical_not(expr_result auto operand) noexcept;
 
-    void logical_is(detail::expr_result auto operand) noexcept;
+    void logical_is(expr_result auto operand) noexcept;
 
-    void abs(detail::abs_compatible auto operand) noexcept;
-    void abs(detail::expr_result auto) noexcept;
+    void abs(abs_compatible auto operand) noexcept;
+    void abs(expr_result auto) noexcept;
 
   private: // Binary operations
     // Bitwise
 
-    void bitwise_and(detail::expr_result auto lhs, detail::expr_result auto rhs) noexcept;
+    void bitwise_and(expr_result auto lhs, expr_result auto rhs) noexcept;
 
-    void bitwise_xor(detail::expr_result auto lhs, detail::expr_result auto rhs) noexcept;
+    void bitwise_xor(expr_result auto lhs, expr_result auto rhs) noexcept;
 
-    void bitwise_or(detail::expr_result auto lhs, detail::expr_result auto rhs) noexcept;
+    void bitwise_or(expr_result auto lhs, expr_result auto rhs) noexcept;
 
     // Simple arithmetic
 
-    void add(detail::addable auto lhs, detail::addable auto rhs) noexcept;
-    void add(detail::expr_result auto, detail::expr_result auto) noexcept;
+    void add(addable auto lhs, addable auto rhs) noexcept;
+    void add(expr_result auto, expr_result auto) noexcept;
 
-    void sub(detail::subtractable auto lhs, detail::subtractable auto rhs) noexcept;
-    void sub(detail::expr_result auto, detail::expr_result auto) noexcept;
+    void sub(subtractable auto lhs, subtractable auto rhs) noexcept;
+    void sub(expr_result auto, expr_result auto) noexcept;
 
-    void mul(detail::multipliable auto lhs, detail::multipliable auto rhs) noexcept;
-    void mul(detail::expr_result auto, detail::expr_result auto) noexcept;
+    void mul(multipliable auto lhs, multipliable auto rhs) noexcept;
+    void mul(expr_result auto, expr_result auto) noexcept;
 
-    void div(detail::divisible auto lhs, detail::divisible auto rhs) noexcept;
-    void div(detail::expr_result auto, detail::expr_result auto) noexcept;
+    void div(divisible auto lhs, divisible auto rhs) noexcept;
+    void div(expr_result auto, expr_result auto) noexcept;
 
     // Modulo
 
-    void mod(detail::fmod_divisible auto lhs, detail::fmod_divisible auto rhs) noexcept;
-    void mod(detail::modulo_divisible auto lhs, detail::modulo_divisible auto rhs) noexcept;
-    void mod(detail::expr_result auto, detail::expr_result auto) noexcept;
+    void mod(fmod_divisible auto lhs, fmod_divisible auto rhs) noexcept;
+    void mod(modulo_divisible auto lhs, modulo_divisible auto rhs) noexcept;
+    void mod(expr_result auto, expr_result auto) noexcept;
 
     // Pow and root
 
-    template <detail::expr_result T> requires (std::is_arithmetic_v<T>)
+    template <expr_result T> requires (std::is_arithmetic_v<T>)
     auto enforce_complex(const T& l, const T& r) noexcept -> typed_value<complex_type>;
-    auto enforce_complex(const detail::expr_result auto&, const detail::expr_result auto&) noexcept;
+    auto enforce_complex(const expr_result auto&, const expr_result auto&) noexcept;
 
-    template <detail::expr_result T> requires (std::is_arithmetic_v<T>)
+    template <expr_result T> requires (std::is_arithmetic_v<T>)
     auto neg_root(const T& l, const T& r) noexcept -> typed_value<float_type>;
-    auto neg_root(const detail::expr_result auto&, const detail::expr_result auto&) noexcept;
+    auto neg_root(const expr_result auto&, const expr_result auto&) noexcept;
 
-    void power(detail::pow_raisable auto base, detail::pow_raisable auto exp) noexcept;
-    void power(detail::expr_result auto base, detail::expr_result auto exp) noexcept;
+    void power(pow_raisable auto base, pow_raisable auto exp) noexcept;
+    void power(expr_result auto base, expr_result auto exp) noexcept;
 
-    void root(detail::invertible auto base, detail::invertible auto exp) noexcept;
-    void root(detail::expr_result auto, detail::expr_result auto) noexcept;
+    void root(invertible auto base, invertible auto exp) noexcept;
+    void root(expr_result auto, expr_result auto) noexcept;
 
     // Relation and equality
 
-    void equal(detail::eq_comparable auto lhs, detail::eq_comparable auto rhs, bool compareForEquality) noexcept;
+    void equal(eq_comparable auto lhs, eq_comparable auto rhs, bool compareForEquality) noexcept;
     void equal(array_type lhs, array_type rhs, bool compareForEquality) noexcept;
-    void equal(detail::expr_result auto, detail::expr_result auto, bool) noexcept;
+    void equal(expr_result auto, expr_result auto, bool) noexcept;
 
-    void less(detail::rel_comparable auto lhs, detail::rel_comparable auto rhs) noexcept;
+    void less(rel_comparable auto lhs, rel_comparable auto rhs) noexcept;
     void less(array_type lhs, array_type rhs) noexcept;
-    void less(detail::expr_result auto, detail::expr_result auto) noexcept;
+    void less(expr_result auto, expr_result auto) noexcept;
 
-    void less_eq(detail::fully_comparable auto lhs, detail::fully_comparable auto rhs) noexcept;
+    void less_eq(fully_comparable auto lhs, fully_comparable auto rhs) noexcept;
     void less_eq(array_type lhs, array_type rhs) noexcept;
-    void less_eq(detail::expr_result auto, detail::expr_result auto) noexcept;
+    void less_eq(expr_result auto, expr_result auto) noexcept;
 
-    void greater(detail::fully_comparable auto lhs, detail::fully_comparable auto rhs) noexcept;
+    void greater(fully_comparable auto lhs, fully_comparable auto rhs) noexcept;
     void greater(array_type lhs, array_type rhs) noexcept;
-    void greater(detail::expr_result auto, detail::expr_result auto) noexcept;
+    void greater(expr_result auto, expr_result auto) noexcept;
 
-    void greater_eq(detail::fully_comparable auto lhs, detail::fully_comparable auto rhs) noexcept;
+    void greater_eq(fully_comparable auto lhs, fully_comparable auto rhs) noexcept;
     void greater_eq(array_type lhs, array_type rhs) noexcept;
-    void greater_eq(detail::expr_result auto, detail::expr_result auto) noexcept;
+    void greater_eq(expr_result auto, expr_result auto) noexcept;
 
   private: // Operations
     //
     // Registers result of unary operations
     //
-    template <detail::expr_result T, detail::unary_function<T> F>
+    template <expr_result T, unary_function<T> F>
     void visit_unary(T val, F&& op) noexcept;
 
     //
     // Dispatches unary operations according to operator type
     //
-    template <detail::expr_result T>
+    template <expr_result T>
     void visit_unary(T operand, val_ops op) noexcept;
 
     template <>
@@ -134,22 +125,22 @@ namespace tnac::eval
     //
     // Registers result of binary operations
     //
-    template <detail::expr_result L, detail::expr_result R, detail::binary_function<L, R> F>
+    template <expr_result L, expr_result R, binary_function<L, R> F>
     void visit_binary(L lhs, R rhs, F&& op) noexcept;
 
     //
     // Dispatches binary operations according to operator type
     //
-    template <detail::expr_result L, detail::expr_result R>
+    template <expr_result L, expr_result R>
     void visit_binary(L l, R r, val_ops op) noexcept;
 
     template <>
     void visit_binary(array_type l, array_type r, val_ops op) noexcept;
 
-    template <detail::expr_result T> requires (!utils::same_noquals<T, array_type>)
+    template <expr_result T> requires (!utils::same_noquals<T, array_type>)
     void visit_binary(array_type l, T r, val_ops op) noexcept;
 
-    template <detail::expr_result T> requires (!utils::same_noquals<T, array_type>)
+    template <expr_result T> requires (!utils::same_noquals<T, array_type>)
     void visit_binary(T l, array_type r, val_ops op) noexcept;
 
   private:
@@ -159,36 +150,36 @@ namespace tnac::eval
     template <typename F>
     void visit_value(value val, F&& func) noexcept;
 
-    template <detail::expr_result T>
+    template <expr_result T>
     auto to_unit_array(const T& val) noexcept;
 
     //
     // Registers the value in the registry
     //
-    void reg_value(detail::expr_result auto val) noexcept;
+    void reg_value(expr_result auto val) noexcept;
 
     //
     // Registers result of assignment operations
     //
-    void visit_assign(detail::expr_result auto rhs) noexcept;
+    void visit_assign(expr_result auto rhs) noexcept;
 
     //
     // Intermediate binary visitor
     // Dispatches the right operand according to its type
     //
-    void visit_binary(detail::expr_result auto lhs, value rhs, val_ops op) noexcept;
+    void visit_binary(expr_result auto lhs, value rhs, val_ops op) noexcept;
 
     //
     // Dispatches the instantiation call
     //
-    template <detail::expr_result Obj, typename T, T... Seq>
+    template <expr_result Obj, typename T, T... Seq>
     void instantiate(const std::array<stored_value, sizeof...(Seq)>& args, std::integer_sequence<T, Seq...>) noexcept;
 
   public:
     //
     // Locks the given ref counted value
     //
-    auto lock(const detail::lockable auto& val) noexcept
+    auto lock(const lockable auto& val) noexcept
     {
       return value_lock{ val, m_registry };
     }
@@ -196,7 +187,7 @@ namespace tnac::eval
     //
     // Instantiates an object
     //
-    template <detail::expr_result Obj, typename... Args> requires utils::all_same<stored_value, Args...>
+    template <expr_result Obj, typename... Args> requires utils::all_same<stored_value, Args...>
     void instantiate(Args ...args) noexcept
     {
       using type_info = eval::type_info<Obj>;
@@ -285,7 +276,7 @@ namespace tnac::eval
     //
     // Fills the specified number of arg values in the given container
     //
-    void fill_args(detail::value_container auto& args, size_type count) noexcept
+    void fill_args(value_container auto& args, size_type count) noexcept
     {
       for (auto idx = count; idx > size_type{}; --idx)
       {

@@ -35,7 +35,7 @@ namespace tnac::eval
     //
     // Updates the last result
     //
-    void update_result(detail::expr_result auto val) noexcept
+    void update_result(expr_result auto val) noexcept
     {
       unref(*m_result);
       m_result = std::move(val);
@@ -113,7 +113,7 @@ namespace tnac::eval
     //
     // Pushes a temporary value to the stack and updates the result
     //
-    void push(detail::expr_result auto val) noexcept
+    void push(expr_result auto val) noexcept
     {
       auto tmp = tmp_val{ val };
       ref(*tmp);
@@ -129,7 +129,7 @@ namespace tnac::eval
     //
     // Registers a value for a specific entity (e.g., a variable)
     //
-    void register_entity(entity_id id, detail::expr_result auto val) noexcept
+    void register_entity(entity_id id, expr_result auto val) noexcept
     {
       auto&& stored = m_entityValues[id];
       unref(*stored);
@@ -156,22 +156,17 @@ namespace tnac::eval
     size_type m_arrayId{};
   };
 
-
-  namespace detail
+  template <typename T>
+  concept lockable = requires(const T& t, registry& reg)
   {
-    template <typename T>
-    concept lockable = expr_result<T> &&
-      requires(const T& t, registry& reg)
-    {
-      { reg.lock(t) }   -> std::same_as<void>;
-      { reg.unlock(t) } -> std::same_as<void>;
-    };
-  }
+    { reg.lock(t) };
+    { reg.unlock(t) };
+  };
 
   //
   // A RAII wrapper which allows locking and unlocking ref counted types
   //
-  template <detail::lockable T>
+  template <lockable T>
   class value_lock final
   {
   public:
