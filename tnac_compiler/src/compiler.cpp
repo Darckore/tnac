@@ -250,8 +250,8 @@ namespace tnac
       }
 
       auto&& modSym = mod->symbol();
-      m_modules.store(modSym, *mod);
-      m_modules.push(modSym);
+      m_context.store(modSym, *mod);
+      m_context.push(modSym);
       if (ok = walk_imports(*mod); !ok)
         break;
     }
@@ -259,19 +259,19 @@ namespace tnac
     if (ok)
       compile_modules();
 
-    m_modules.wipe();
+    m_context.wipe();
     return false;
   }
 
   bool compiler::preview(ast::func_decl& fd) noexcept
   {
-    auto&& owner = m_modules.current_function();
+    auto&& owner = m_context.current_function();
     const auto parCnt = fd.param_count();
     auto funcName = m_names.mangle_func_name(fd.name(), owner, parCnt);
     auto&& func = m_cfg->declare_function(&fd.symbol(), owner, funcName, parCnt);
-    m_modules.enter_function(func);
+    m_context.enter_function(func);
     compile(fd.params(), fd.body().children());
-    m_modules.exit_function();
+    m_context.exit_function();
     return false;
   }
 
@@ -288,8 +288,8 @@ namespace tnac
   void compiler::compile(params_t& params, body_t& body) noexcept
   {
     auto _ = m_names.init_indicies();
-    auto&& entry = m_modules.create_block(m_names.entry_block_name());
-    m_modules.enqueue_block(entry);
+    auto&& entry = m_context.create_block(m_names.entry_block_name());
+    m_context.enqueue_block(entry);
     for (auto param : params)
     {
       compile(*param);
@@ -298,7 +298,7 @@ namespace tnac
     {
       compile(*child);
     }
-    m_modules.exit_block();
+    m_context.exit_block();
   }
 
   void compiler::compile(semantics::module_sym& mod) noexcept
@@ -307,15 +307,15 @@ namespace tnac
     if (m_cfg->find_entity(&mod))
       return;
 
-    auto def = m_modules.locate(mod);
+    auto def = m_context.locate(mod);
     UTILS_ASSERT(def);
 
     const auto parCnt = mod.param_count();
     auto modName = m_names.mangle_module_name(mod.name(), parCnt);
     auto&& irMod = m_cfg->declare_module(&mod, modName, parCnt);
-    m_modules.enter_module(irMod);
+    m_context.enter_module(irMod);
     compile(def->params(), def->children());
-    m_modules.exit_module();
+    m_context.exit_module();
   }
 
   void compiler::compile(tree_ref node) noexcept
@@ -325,7 +325,7 @@ namespace tnac
 
   void compiler::compile_modules() noexcept
   {
-    while (auto mod = m_modules.pop())
+    while (auto mod = m_context.pop())
     {
       compile(*mod);
     }
@@ -355,7 +355,7 @@ namespace tnac
         return false;
       }
 
-      m_modules.push(*modSym);
+      m_context.push(*modSym);
     }
 
     return true;

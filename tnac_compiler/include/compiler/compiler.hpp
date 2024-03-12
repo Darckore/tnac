@@ -5,7 +5,7 @@
 #pragma once
 #include "parser/ast/ast_visitor.hpp"
 #include "eval/value/value_visitor.hpp"
-#include "compiler/detail/module_info.hpp"
+#include "compiler/detail/context.hpp"
 #include "compiler/detail/name_repo.hpp"
 #include "compiler/detail/compiler_stack.hpp"
 
@@ -159,7 +159,7 @@ namespace tnac
     feedback* m_feedback{};
     ir::cfg* m_cfg{};
     eval::value_visitor m_valVisitor;
-    detail::module_info m_modules;
+    detail::context m_context;
     detail::name_repo m_names;
     detail::compiler_stack m_stack;
   };

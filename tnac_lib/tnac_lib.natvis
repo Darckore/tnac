@@ -445,13 +445,13 @@
       <Item Name="[sema]">m_sema</Item>
       <Item Name="[cfg]">m_cfg</Item>
       <Item Name="[val_visitor]">m_valVisitor</Item>
-      <Item Name="[modules]">m_modules</Item>
+      <Item Name="[context]">m_context</Item>
       <Item Name="[name repo]">m_names</Item>
       <Item Name="[stack]">m_stack</Item>
     </Expand>
   </Type>
 
-  <Type Name="tnac::detail::module_info">
+  <Type Name="tnac::detail::context">
     <DisplayString>module info</DisplayString>
     <Expand>
       <Item Name="[data]">m_data</Item>

@@ -1,5 +1,5 @@
 //
-// Module info
+// Compilation context
 //
 
 #pragma once
@@ -29,7 +29,7 @@ namespace tnac::detail
   // Holds associations between module symbols and their corresponding ASTs
   // Also, provides context to the compiler
   //
-  class module_info final
+  class context final
   {
   public:
     using module_sym   = semantics::module_sym;
@@ -39,11 +39,11 @@ namespace tnac::detail
     using block_queue  = std::queue<ir::basic_block*>;
 
   public:
-    CLASS_SPECIALS_NONE_CUSTOM(module_info);
+    CLASS_SPECIALS_NONE_CUSTOM(context);
 
-    ~module_info() noexcept;
+    ~context() noexcept;
 
-    module_info() noexcept;
+    context() noexcept;
 
   public:
     //

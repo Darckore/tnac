@@ -1,30 +1,30 @@
-#include "compiler/detail/module_info.hpp"
+#include "compiler/detail/context.hpp"
 #include "cfg/ir/ir.hpp"
 
 namespace tnac::detail
 {
   // Special members
 
-  module_info::~module_info() noexcept = default;
+  context::~context() noexcept = default;
 
-  module_info::module_info() noexcept = default;
+  context::context() noexcept = default;
 
 
   // Public members
 
-  void module_info::store(module_sym& sym, module_def& def) noexcept
+  void context::store(module_sym& sym, module_def& def) noexcept
   {
     auto newIt = m_data.try_emplace(&sym, &def);
     UTILS_ASSERT(newIt.second || newIt.first->second == &def);
   }
 
-  module_info::module_def* module_info::locate(module_sym& sym) noexcept
+  context::module_def* context::locate(module_sym& sym) noexcept
   {
     auto found = m_data.find(&sym);
     return found != m_data.end() ? found->second : nullptr;
   }
 
-  void module_info::wipe() noexcept
+  void context::wipe() noexcept
   {
     m_data.clear();
     m_stack.clear();
@@ -34,12 +34,12 @@ namespace tnac::detail
     m_curModule = {};
   }
 
-  void module_info::push(module_sym& sym) noexcept
+  void context::push(module_sym& sym) noexcept
   {
     m_stack.push_back(&sym);
   }
 
-  module_info::module_sym* module_info::pop() noexcept
+  context::module_sym* context::pop() noexcept
   {
     if (m_stack.empty())
       return {};
@@ -49,63 +49,63 @@ namespace tnac::detail
     return sym;
   }
 
-  void module_info::enter_module(ir::function& mod) noexcept
+  void context::enter_module(ir::function& mod) noexcept
   {
     exit_module();
     m_curModule = &mod;
     enter_function(mod);
   }
-  void module_info::exit_module() noexcept
+  void context::exit_module() noexcept
   {
     exit_function();
     m_curModule = {};
   }
-  ir::function& module_info::current_module() noexcept
+  ir::function& context::current_module() noexcept
   {
     UTILS_ASSERT(m_curModule);
     return *m_curModule;
   }
 
-  void module_info::enter_function(ir::function& fn) noexcept
+  void context::enter_function(ir::function& fn) noexcept
   {
     exit_function();
     m_curFunction = &fn;
   }
-  void module_info::exit_function() noexcept
+  void context::exit_function() noexcept
   {
     if (!m_curFunction)
       return;
 
     m_curFunction = m_curFunction->owner_func();
   }
-  ir::function& module_info::current_function() noexcept
+  ir::function& context::current_function() noexcept
   {
     UTILS_ASSERT(m_curFunction);
     return *m_curFunction;
   }
 
-  ir::basic_block& module_info::create_block(string_t name) noexcept
+  ir::basic_block& context::create_block(string_t name) noexcept
   {
     return current_function().create_block(name);
   }
 
-  void module_info::enqueue_block(ir::basic_block& block) noexcept
+  void context::enqueue_block(ir::basic_block& block) noexcept
   {
     m_blocks.push(&block);
   }
 
-  ir::basic_block& module_info::current_block() noexcept
+  ir::basic_block& context::current_block() noexcept
   {
     UTILS_ASSERT(!m_blocks.empty());
     return *m_blocks.front();
   }
 
-  ir::basic_block* module_info::terminal_block() noexcept
+  ir::basic_block* context::terminal_block() noexcept
   {
     return m_terminal;
   }
 
-  void module_info::exit_block() noexcept
+  void context::exit_block() noexcept
   {
     UTILS_ASSERT(!m_blocks.empty());
     m_blocks.pop();
