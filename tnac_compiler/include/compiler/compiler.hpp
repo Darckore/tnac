@@ -4,7 +4,7 @@
 
 #pragma once
 #include "parser/ast/ast_visitor.hpp"
-#include "eval/value/value_visitor.hpp"
+#include "eval/value/evaluator.hpp"
 #include "compiler/detail/context.hpp"
 #include "compiler/detail/name_repo.hpp"
 #include "compiler/detail/compiler_stack.hpp"
@@ -158,7 +158,7 @@ namespace tnac
     sema* m_sema{};
     feedback* m_feedback{};
     ir::cfg* m_cfg{};
-    eval::value_visitor m_valVisitor;
+    eval::evaluator m_eval;
     detail::context m_context;
     detail::name_repo m_names;
     detail::compiler_stack m_stack;

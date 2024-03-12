@@ -29,8 +29,8 @@
     </Expand>
   </Type>
 
-  <Type Name="tnac::eval::value_visitor">
-    <DisplayString>Value visitor</DisplayString>
+  <Type Name="tnac::eval::evaluator">
+    <DisplayString>Evaluator</DisplayString>
     <Expand>
       <Item Name="[registy]">m_registry</Item>
       <Item Name="[entity]">m_curEntity,Xb</Item>
@@ -444,7 +444,7 @@
     <Expand>
       <Item Name="[sema]">m_sema</Item>
       <Item Name="[cfg]">m_cfg</Item>
-      <Item Name="[val_visitor]">m_valVisitor</Item>
+      <Item Name="[evaluator]">m_eval</Item>
       <Item Name="[context]">m_context</Item>
       <Item Name="[name repo]">m_names</Item>
       <Item Name="[stack]">m_stack</Item>
@@ -470,6 +470,13 @@
     <Expand>
       <Item Name="[plain names]">m_plainNames</Item>
       <Item Name="[pref names]">m_prefNames</Item>
+    </Expand>
+  </Type>
+
+  <Type Name="tnac::detail::compiler_stack">
+    <DisplayString>compiler stack</DisplayString>
+    <Expand>
+      <Item Name="[data]">m_data</Item>
     </Expand>
   </Type>
 
@@ -504,6 +511,16 @@
     <Expand>
       <Item Name="[in]">*m_in</Item>
       <Item Name="[out]">*m_out</Item>
+    </Expand>
+  </Type>
+
+  <Type Name="tnac::ir::operand">
+    <DisplayString Condition="m_value._Which == 0">Operand (value)</DisplayString>
+    <DisplayString Condition="m_value._Which == 1">Operand (func)</DisplayString>
+    <DisplayString Condition="m_value._Which == 2">Operand (block)</DisplayString>
+    <DisplayString>Operand (uninit)</DisplayString>
+    <Expand>
+      <Item Name="[value]">m_value</Item>
     </Expand>
   </Type>
 

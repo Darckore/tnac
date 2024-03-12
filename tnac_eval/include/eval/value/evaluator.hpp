@@ -1,5 +1,5 @@
 //
-// Value visitor
+// Evaluator
 //
 
 #pragma once
@@ -43,9 +43,9 @@ namespace tnac::eval::detail
 namespace tnac::eval
 {
   //
-  // Value visitor used in expression evaluations
+  // Evaluator for expressions with known values
   //
-  class value_visitor final
+  class evaluator final
   {
   public:
     using enum val_ops;
@@ -53,10 +53,10 @@ namespace tnac::eval
     using size_type  = registry::size_type;
 
   public:
-    CLASS_SPECIALS_NONE(value_visitor);
+    CLASS_SPECIALS_NONE(evaluator);
 
-    ~value_visitor() noexcept;
-    explicit value_visitor(registry& reg) noexcept;
+    ~evaluator() noexcept;
+    explicit evaluator(registry& reg) noexcept;
 
   private: // Unary operations
     //

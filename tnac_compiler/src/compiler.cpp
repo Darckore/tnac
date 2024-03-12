@@ -5,55 +5,52 @@
 #include "cfg/cfg.hpp"
 #include "eval/value/value_registry.hpp"
 
-namespace tnac
+namespace tnac::detail
 {
-  namespace detail
+  namespace
   {
-    namespace
+    constexpr auto conv_unary(tok_kind tk) noexcept
     {
-      constexpr auto conv_unary(tok_kind tk) noexcept
+      using enum tok_kind;
+      using enum eval::val_ops;
+      switch (tk)
       {
-        using enum tok_kind;
-        using enum eval::val_ops;
-        switch (tk)
-        {
-        case Exclamation: return LogicalNot;
-        case Question:    return LogicalIs;
-        case Plus:        return UnaryPlus;
-        case Minus:       return UnaryNegation;
-        case Tilde:       return UnaryBitwiseNot;
+      case Exclamation: return LogicalNot;
+      case Question:    return LogicalIs;
+      case Plus:        return UnaryPlus;
+      case Minus:       return UnaryNegation;
+      case Tilde:       return UnaryBitwiseNot;
 
-        default: return InvalidOp;
-        }
+      default: return InvalidOp;
       }
-      constexpr auto conv_binary(tok_kind tk) noexcept
+    }
+    constexpr auto conv_binary(tok_kind tk) noexcept
+    {
+      using enum tok_kind;
+      using enum eval::val_ops;
+      switch (tk)
       {
-        using enum tok_kind;
-        using enum eval::val_ops;
-        switch (tk)
-        {
-        case Plus:     return Addition;
-        case Minus:    return Subtraction;
-        case Asterisk: return Multiplication;
-        case Slash:    return Division;
-        case Percent:  return Modulo;
+      case Plus:     return Addition;
+      case Minus:    return Subtraction;
+      case Asterisk: return Multiplication;
+      case Slash:    return Division;
+      case Percent:  return Modulo;
 
-        case Less:      return RelLess;
-        case LessEq:    return RelLessEq;
-        case Greater:   return RelGr;
-        case GreaterEq: return RelGrEq;
-        case Eq:        return Equal;
-        case NotEq:     return NEqual;
+      case Less:      return RelLess;
+      case LessEq:    return RelLessEq;
+      case Greater:   return RelGr;
+      case GreaterEq: return RelGrEq;
+      case Eq:        return Equal;
+      case NotEq:     return NEqual;
 
-        case Amp:  return BitwiseAnd;
-        case Hat:  return BitwiseXor;
-        case Pipe: return BitwiseOr;
+      case Amp:  return BitwiseAnd;
+      case Hat:  return BitwiseXor;
+      case Pipe: return BitwiseOr;
 
-        case Pow:  return BinaryPow;
-        case Root: return BinaryRoot;
+      case Pow:  return BinaryPow;
+      case Root: return BinaryRoot;
 
-        default: return InvalidOp;
-        }
+      default: return InvalidOp;
       }
     }
   }
@@ -69,7 +66,7 @@ namespace tnac
     m_sema{ &sema },
     m_feedback{ fb },
     m_cfg{ &gr },
-    m_valVisitor{ reg }
+    m_eval{ reg }
   {}
 
 
@@ -120,16 +117,16 @@ namespace tnac
     auto&& litValue = lit.pos();
     switch (litValue.what())
     {
-    case token::KwTrue:  m_valVisitor.visit_bool_literal(true);                break;
-    case token::KwFalse: m_valVisitor.visit_bool_literal(false);               break;
-    case token::KwI:     m_valVisitor.visit_i();                               break;
-    case token::KwPi:    m_valVisitor.visit_pi();                              break;
-    case token::KwE:     m_valVisitor.visit_e();                               break;
-    case token::IntDec:  m_valVisitor.visit_int_literal(litValue.value(), 10); break;
-    case token::IntBin:  m_valVisitor.visit_int_literal(litValue.value(), 2);  break;
-    case token::IntOct:  m_valVisitor.visit_int_literal(litValue.value(), 8);  break;
-    case token::IntHex:  m_valVisitor.visit_int_literal(litValue.value(), 16); break;
-    case token::Float:   m_valVisitor.visit_float_literal(litValue.value());   break;
+    case token::KwTrue:  m_eval.visit_bool_literal(true);                break;
+    case token::KwFalse: m_eval.visit_bool_literal(false);               break;
+    case token::KwI:     m_eval.visit_i();                               break;
+    case token::KwPi:    m_eval.visit_pi();                              break;
+    case token::KwE:     m_eval.visit_e();                               break;
+    case token::IntDec:  m_eval.visit_int_literal(litValue.value(), 10); break;
+    case token::IntBin:  m_eval.visit_int_literal(litValue.value(), 2);  break;
+    case token::IntOct:  m_eval.visit_int_literal(litValue.value(), 8);  break;
+    case token::IntHex:  m_eval.visit_int_literal(litValue.value(), 16); break;
+    case token::Float:   m_eval.visit_float_literal(litValue.value());   break;
 
     default: return;
     }
@@ -154,7 +151,7 @@ namespace tnac
     if (lhs.is_value() && rhs.is_value())
     {
       const auto op = detail::conv_binary(binary.op().what());
-      m_valVisitor.visit_binary(lhs.get_value(), rhs.get_value(), op);
+      m_eval.visit_binary(lhs.get_value(), rhs.get_value(), op);
       carry_val(&binary);
       return;
     }
@@ -280,8 +277,8 @@ namespace tnac
 
   void compiler::carry_val(entity_id id) noexcept
   {
-    auto stored = m_valVisitor.fetch_next();
-    auto val = m_valVisitor.visit_assign(id, *stored);
+    auto stored = m_eval.fetch_next();
+    auto val = m_eval.visit_assign(id, *stored);
     m_stack.push(val);
   }
 
