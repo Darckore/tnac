@@ -298,6 +298,7 @@ namespace tnac
     {
       compile(*child);
     }
+    m_modules.exit_block();
   }
 
   void compiler::compile(semantics::module_sym& mod) noexcept
