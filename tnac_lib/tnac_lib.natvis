@@ -447,6 +447,7 @@
       <Item Name="[val_visitor]">m_valVisitor</Item>
       <Item Name="[modules]">m_modules</Item>
       <Item Name="[name repo]">m_names</Item>
+      <Item Name="[stack]">m_stack</Item>
     </Expand>
   </Type>
 

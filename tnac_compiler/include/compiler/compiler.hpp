@@ -7,6 +7,7 @@
 #include "eval/value/value_visitor.hpp"
 #include "compiler/detail/module_info.hpp"
 #include "compiler/detail/name_repo.hpp"
+#include "compiler/detail/compiler_stack.hpp"
 
 namespace tnac
 {
@@ -108,6 +109,11 @@ namespace tnac
 
   private:
     //
+    // Transfers a calculated value to the internal stack
+    //
+    void carry_val(entity_id id) noexcept;
+
+    //
     // Compiles the implementation of a function or module
     //
     void compile(params_t& params, body_t& body) noexcept;
@@ -155,5 +161,6 @@ namespace tnac
     eval::value_visitor m_valVisitor;
     detail::module_info m_modules;
     detail::name_repo m_names;
+    detail::compiler_stack m_stack;
   };
 }

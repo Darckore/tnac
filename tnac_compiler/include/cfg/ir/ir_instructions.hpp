@@ -39,11 +39,23 @@ namespace tnac::ir
   public:
     CLASS_SPECIALS_NODEFAULT(operand);
 
-    ~operand() noexcept = default;
+    ~operand() noexcept;
 
     explicit operand(detail::operand_data auto val) noexcept :
       m_value{ val }
     {}
+
+  public:
+    //
+    // Checks whether the operand holds a known value
+    //
+    bool is_value() const noexcept;
+
+    //
+    // Returns the stored value
+    // Callers must check is_value before using this
+    //
+    eval::value get_value() const noexcept;
 
   private:
     data_type m_value;
