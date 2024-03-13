@@ -126,7 +126,28 @@ namespace tnac::rt::out
 
   void ir_printer::value(eval::value val) noexcept
   {
-    fmt::print(out(), fmt::clr::BoldYellow, val);
+    auto visitor = utils::visitor
+    {
+      [&](eval::invalid_val_t) noexcept
+      {
+        keyword("undef"sv);
+      },
+      [&](eval::bool_type v) noexcept
+      {
+        if (v) keyword("true"sv);
+        else keyword("false"sv);
+      },
+      [&](eval::array_type) noexcept
+      {
+        // todo: arrays
+      },
+      [&](auto v) noexcept
+      {
+        fmt::print(out(), fmt::clr::BoldYellow, v);
+      }
+    };
+
+    eval::on_value(val, visitor);
   }
 
   void ir_printer::plain(string_t str) noexcept
