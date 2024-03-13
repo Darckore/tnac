@@ -114,6 +114,11 @@ namespace tnac::ir
 
   public:
     //
+    // Returns the opcode
+    //
+    op_code opcode() const noexcept;
+
+    //
     // Returns a reference to the parent basic block
     //
     const basic_block& owner_block() const noexcept;

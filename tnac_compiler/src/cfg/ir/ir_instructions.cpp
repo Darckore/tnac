@@ -38,6 +38,11 @@ namespace tnac::ir // instruction
 
   // Public members
 
+  op_code instruction::opcode() const noexcept
+  {
+    return m_opCode;
+  }
+
   const basic_block& instruction::owner_block() const noexcept
   {
     return *m_block;

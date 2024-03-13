@@ -31,6 +31,8 @@ namespace tnac::rt::out
 
   public:
     bool preview(const ir::function& fn) noexcept;
+    
+    bool preview(const ir::basic_block& bb) noexcept;
 
     void visit(const ir::function& fn) noexcept;
 

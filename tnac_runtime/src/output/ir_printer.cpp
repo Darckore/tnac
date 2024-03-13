@@ -31,6 +31,14 @@ namespace tnac::rt::out
     return true;
   }
 
+  bool ir_printer::preview(const ir::basic_block& bb) noexcept
+  {
+    keyword(bb.name());
+    plain(":"sv);
+    endl();
+    return true;
+  }
+
   void ir_printer::visit(const ir::function&) noexcept
   {
     keyword("end"sv);
@@ -38,16 +46,40 @@ namespace tnac::rt::out
     endl();
   }
 
-  void ir_printer::visit(const ir::basic_block& bb) noexcept
+  void ir_printer::visit(const ir::basic_block&) noexcept
   {
-    keyword(bb.name());
-    plain(":"sv);
     endl();
   }
 
   void ir_printer::visit(const ir::instruction& instr) noexcept
   {
-    utils::unused(instr);
+    out() << "  ";
+    using enum ir::op_code;
+    switch (instr.opcode())
+    {
+    case Add:   break;
+    case Sub:   break;
+    case Mul:   break;
+    case Div:   break;
+    case Mod:   break;
+    case Pow:   break;
+    case Root:  break;
+    case And:   break;
+    case Or:    break;
+    case Xor:   break;
+    case CmpE:  break;
+    case CmpL:  break;
+    case CmpLE: break;
+
+    case Abs:   break;
+
+    case Store: break;
+    case Load:  break;
+    case Call:  break;
+    case Jump:  break;
+    case Ret:   keyword("ret"sv);  break;
+    }
+    endl();
   }
 
 

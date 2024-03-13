@@ -109,7 +109,8 @@ namespace tnac::ir
     {
       if (preview(start))
       {
-        // Visit instructions
+        for (auto&& instr : *start)
+          visit_root(&instr);
       }
 
       visit_root(start);
