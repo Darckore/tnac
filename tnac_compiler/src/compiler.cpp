@@ -273,6 +273,16 @@ namespace tnac
   }
 
 
+  // Private members (Emitions)
+
+  void compiler::emit_ret(ir::basic_block& block) noexcept
+  {
+    auto op = m_stack.extract();
+    auto&& instr = m_cfg->get_builder().add_instruction(block, ir::op_code::Ret);
+    instr.add(std::move(op));
+  }
+
+
   // Private members
 
   void compiler::carry_val(entity_id id) noexcept
@@ -295,6 +305,15 @@ namespace tnac
     {
       compile(*child);
     }
+
+    UTILS_ASSERT(!m_stack.empty());
+    if (!m_stack.empty())
+    {
+      auto&& block = m_context.terminal_or_entry();
+      emit_ret(block);
+    }
+
+    UTILS_ASSERT(m_stack.empty());
     m_context.exit_block();
   }
 

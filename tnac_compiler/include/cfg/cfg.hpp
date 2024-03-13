@@ -27,6 +27,11 @@ namespace tnac::ir
 
   public:
     //
+    // Returns a reference to the IR builder
+    //
+    builder& get_builder() noexcept;
+
+    //
     // Declares a new module
     //
     function& declare_module(entity_id id, name_t name, size_type paramCount) noexcept;

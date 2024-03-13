@@ -102,7 +102,8 @@ namespace tnac::ir
   {
   public:
     using enum op_code;
-    using op_list = std::vector<operand>;
+    using op_list   = std::vector<operand>;
+    using size_type = op_list::size_type;
 
   public:
     CLASS_SPECIALS_NONE(instruction);
@@ -121,6 +122,17 @@ namespace tnac::ir
     // Returns a reference to the parent basic block
     //
     basic_block& owner_block() noexcept;
+
+    //
+    // Adds an operand to the instruction
+    //
+    instruction& add(operand op) noexcept;
+
+  private:
+    //
+    // Reserves memory for operands according to the op code
+    //
+    void prealloc() noexcept;
 
   private:
     basic_block* m_block{};

@@ -13,6 +13,11 @@ namespace tnac::ir
 
   // Public members
 
+  builder& cfg::get_builder() noexcept
+  {
+    return *m_builder;
+  }
+
   function& cfg::declare_module(entity_id id, name_t name, size_type paramCount) noexcept
   {
     auto&& mod = m_builder->make_module(id, name, conv_param_count(paramCount));

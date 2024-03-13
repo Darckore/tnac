@@ -107,6 +107,12 @@ namespace tnac
     //
     bool preview(ast::func_decl& fd) noexcept;
 
+  private: // Emitions
+    //
+    // Creates a ret instruction in the specified block
+    //
+    void emit_ret(ir::basic_block& block) noexcept;
+
   private:
     //
     // Transfers a calculated value to the internal stack

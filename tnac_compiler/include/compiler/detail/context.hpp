@@ -126,6 +126,12 @@ namespace tnac::detail
     ir::basic_block* terminal_block() noexcept;
 
     //
+    // Returns a reference to the terminal block if available
+    // Otherwise, returns a reference to the entry
+    //
+    ir::basic_block& terminal_or_entry() noexcept;
+
+    //
     // Pops the current basic block
     //
     void exit_block() noexcept;

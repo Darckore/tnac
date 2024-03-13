@@ -44,6 +44,11 @@ namespace tnac::detail
     //
     value_type extract() noexcept;
 
+    //
+    // Checks whether the stack has any data
+    //
+    bool empty() const noexcept;
+
   private:
     data_type m_data;
   };

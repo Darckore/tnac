@@ -525,6 +525,15 @@
     </Expand>
   </Type>
 
+  <Type Name="tnac::ir::instruction">
+    <DisplayString>instruction ({m_opCode,en})</DisplayString>
+    <Expand>
+      <Item Name="[owner]">*m_block</Item>
+      <Item Name="[operands]">m_operands</Item>
+      <Item Name="[opcode]">m_opCode,en</Item>
+    </Expand>
+  </Type>
+
   <Type Name="tnac::ir::builder">
     <DisplayString>IR builder</DisplayString>
     <Expand>

@@ -34,6 +34,11 @@ namespace tnac::detail
     return top();
   }
 
+  bool compiler_stack::empty() const noexcept
+  {
+    return m_data.empty();
+  }
+
   // Private members
 
 

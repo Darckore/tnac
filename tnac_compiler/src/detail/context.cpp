@@ -105,6 +105,11 @@ namespace tnac::detail
     return m_terminal;
   }
 
+  ir::basic_block& context::terminal_or_entry() noexcept
+  {
+    return m_terminal ? *m_terminal : current_function().entry();
+  }
+
   void context::exit_block() noexcept
   {
     UTILS_ASSERT(!m_blocks.empty());
