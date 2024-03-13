@@ -42,6 +42,11 @@ namespace tnac::rt::out
     void visit(const ir::instruction& instr) noexcept;
 
   private:
+    void print_operand(const ir::operand& op) noexcept;
+
+    void print_ret(const ir::instruction& ret) noexcept;
+
+  private:
     out_stream& out() noexcept;
 
     void endl() noexcept;
@@ -51,6 +56,8 @@ namespace tnac::rt::out
     void name(string_t n) noexcept;
 
     void id(entity_id i) noexcept;
+
+    void value(eval::value val) noexcept;
 
     void plain(string_t str) noexcept;
 

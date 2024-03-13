@@ -83,6 +83,11 @@ tnac::rt::out_stream& operator<<(tnac::rt::out_stream& out, const tnac::token& t
 tnac::rt::out_stream& operator<<(tnac::rt::out_stream& out, tnac::src::loc_wrapper loc) noexcept;
 
 //
+// Value output for IR
+//
+tnac::rt::out_stream& operator<<(tnac::rt::out_stream& out, tnac::eval::value val) noexcept;
+
+//
 // Invalid value output
 //
 tnac::rt::out_stream& operator<<(tnac::rt::out_stream& out, tnac::eval::invalid_val_t) noexcept;

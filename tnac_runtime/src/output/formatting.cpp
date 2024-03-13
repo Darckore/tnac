@@ -57,6 +57,32 @@ tnac::rt::out_stream& operator<<(tnac::rt::out_stream& out, tnac::src::loc_wrapp
   return out;
 }
 
+tnac::rt::out_stream& operator<<(tnac::rt::out_stream& out, tnac::eval::value val) noexcept
+{
+  tnac::eval::on_value(val, [&out](auto val)
+    {
+      using vt = decltype(val);
+      if constexpr (utils::same_noquals<vt, tnac::eval::array_type>)
+      {
+        out << "[ ";
+        for (auto arrSz = val->size(); auto&& elem : *val)
+        {
+          --arrSz;
+          out << *elem;
+          if (arrSz)
+            out << ", ";
+        }
+        out << " ]";
+      }
+      else
+      {
+        out << val;
+      }
+    });
+
+  return out;
+}
+
 tnac::rt::out_stream& operator<<(tnac::rt::out_stream& out, tnac::eval::invalid_val_t) noexcept
 {
   out << "<undef>";

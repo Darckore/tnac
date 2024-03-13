@@ -36,6 +36,12 @@ namespace tnac::ir // instruction
   }
 
 
+  const operand& instruction::operator[](size_type idx) const noexcept
+  {
+    UTILS_ASSERT(idx < operand_count());
+    return m_operands[idx];
+  }
+
   // Public members
 
   op_code instruction::opcode() const noexcept
@@ -90,6 +96,11 @@ namespace tnac::ir // instruction
     }
 
     m_operands.reserve(count);
+  }
+
+  instruction::size_type instruction::operand_count() const noexcept
+  {
+    return m_operands.size();
   }
 
 }

@@ -77,13 +77,27 @@ namespace tnac::rt::out
     case Load:  keyword("load "sv);  break;
     case Call:  keyword("call "sv);  break;
     case Jump:  keyword("jmp "sv);   break;
-    case Ret:   keyword("ret "sv);   break;
+    case Ret:   print_ret(instr);    break;
     }
     endl();
   }
 
 
   // Private members
+
+  void ir_printer::print_operand(const ir::operand& op) noexcept
+  {
+    if (op.is_value())
+      value(op.get_value());
+  }
+
+  void ir_printer::print_ret(const ir::instruction& ret) noexcept
+  {
+    keyword("ret "sv);
+    auto&& op = ret[0];
+    print_operand(op);
+  }
+
 
   out_stream& ir_printer::out() noexcept
   {
@@ -108,6 +122,11 @@ namespace tnac::rt::out
   void ir_printer::id(entity_id i) noexcept
   {
     fmt::print(out(), fmt::clr::Yellow, i);
+  }
+
+  void ir_printer::value(eval::value val) noexcept
+  {
+    fmt::print(out(), fmt::clr::BoldYellow, val);
   }
 
   void ir_printer::plain(string_t str) noexcept

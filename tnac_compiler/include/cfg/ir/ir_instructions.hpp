@@ -112,6 +112,12 @@ namespace tnac::ir
 
     instruction(basic_block& owner, op_code code) noexcept;
 
+    //
+    // Returns the operand at the specified index
+    // DOES NOT check the boundaries
+    //
+    const operand& operator[](size_type idx) const noexcept;
+
   public:
     //
     // Returns the opcode
@@ -132,6 +138,11 @@ namespace tnac::ir
     // Adds an operand to the instruction
     //
     instruction& add(operand op) noexcept;
+
+    //
+    // Returns the number of operands
+    //
+    size_type operand_count() const noexcept;
 
   private:
     //
