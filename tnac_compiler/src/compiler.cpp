@@ -306,13 +306,13 @@ namespace tnac
       compile(*child);
     }
 
-    UTILS_ASSERT(!m_stack.empty());
-    if (!m_stack.empty())
+    if (m_stack.empty())
     {
-      auto&& block = m_context.terminal_or_entry();
-      emit_ret(block);
+      m_stack.push(eval::value{}); // Undefined, probably, an empty body
     }
 
+    auto&& block = m_context.terminal_or_entry();
+    emit_ret(block);
     UTILS_ASSERT(m_stack.empty());
     m_context.exit_block();
   }
