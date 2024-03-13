@@ -9,7 +9,8 @@ namespace tnac::rt::out
 {
   //
   // Printer for IR
-  // Visits each function in declaration order its instructions to the specified stream
+  // Visits each function in declaration order
+  // and prints its instructions to the specified stream
   //
   class ir_printer : public ir::const_walker<ir_printer>
   {
