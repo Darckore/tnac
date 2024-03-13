@@ -54,30 +54,32 @@ namespace tnac::rt::out
   void ir_printer::visit(const ir::instruction& instr) noexcept
   {
     out() << "  ";
+    keyword(instr.opcode_str());
+    out() << ' ';
     using enum ir::op_code;
     switch (instr.opcode())
     {
-    case Add:   keyword("add "sv);   break;
-    case Sub:   keyword("sub "sv);   break;
-    case Mul:   keyword("mul "sv);   break;
-    case Div:   keyword("div "sv);   break;
-    case Mod:   keyword("mod "sv);   break;
-    case Pow:   keyword("pow "sv);   break;
-    case Root:  keyword("root "sv);  break;
-    case And:   keyword("and "sv);   break;
-    case Or:    keyword("or "sv);    break;
-    case Xor:   keyword("xor "sv);   break;
-    case CmpE:  keyword("cmpe "sv);  break;
-    case CmpL:  keyword("cmpl "sv);  break;
-    case CmpLE: keyword("cmple "sv); break;
+    case Add:   break;
+    case Sub:   break;
+    case Mul:   break;
+    case Div:   break;
+    case Mod:   break;
+    case Pow:   break;
+    case Root:  break;
+    case And:   break;
+    case Or:    break;
+    case Xor:   break;
+    case CmpE:  break;
+    case CmpL:  break;
+    case CmpLE: break;
 
-    case Abs:   keyword("abs "sv);   break;
+    case Abs:   break;
 
-    case Store: keyword("store "sv); break;
-    case Load:  keyword("load "sv);  break;
-    case Call:  keyword("call "sv);  break;
-    case Jump:  keyword("jmp "sv);   break;
-    case Ret:   print_ret(instr);    break;
+    case Store: break;
+    case Load:  break;
+    case Call:  break;
+    case Jump:  break;
+    case Ret:   print_ret(instr); break;
     }
     endl();
   }
@@ -93,7 +95,6 @@ namespace tnac::rt::out
 
   void ir_printer::print_ret(const ir::instruction& ret) noexcept
   {
-    keyword("ret "sv);
     auto&& op = ret[0];
     print_operand(op);
   }

@@ -64,6 +64,37 @@ namespace tnac::ir // instruction
     return *this;
   }
 
+  string_t instruction::opcode_str() const noexcept
+  {
+    switch (m_opCode)
+    {
+    case Add:   return "add"sv;
+    case Sub:   return "sub"sv;
+    case Mul:   return "mul"sv;
+    case Div:   return "div"sv;
+    case Mod:   return "mod"sv;
+    case Pow:   return "pow"sv;
+    case Root:  return "root"sv;
+    case And:   return "and"sv;
+    case Or:    return "or"sv;
+    case Xor:   return "xor"sv;
+    case CmpE:  return "cmpe"sv;
+    case CmpL:  return "cmpl"sv;
+    case CmpLE: return "cmple"sv;
+
+    case Abs:   return "abs"sv;
+
+    case Store: return "store"sv;
+    case Load:  return "load"sv;
+    case Call:  return "call"sv;
+    case Jump:  return "jmp"sv;
+    case Ret:   return "ret"sv;
+    }
+
+    UTILS_ASSERT(false);
+    return {};
+  }
+
 
   // Private members
 

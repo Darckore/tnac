@@ -144,6 +144,11 @@ namespace tnac::ir
     //
     size_type operand_count() const noexcept;
 
+    //
+    // Instruction opcode as a string
+    //
+    string_t opcode_str() const noexcept;
+
   private:
     //
     // Reserves memory for operands according to the op code
