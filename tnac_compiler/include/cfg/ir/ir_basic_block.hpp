@@ -64,7 +64,8 @@ namespace tnac::ir
   class basic_block final : public node
   {
   public:
-    using instruction_list = utils::ilist_view<false, instruction>;
+    using instruction_iter = utils::ilist<instruction>::iterator;
+    using const_instruction_iter = utils::ilist<instruction>::const_iterator;
 
   public:
     CLASS_SPECIALS_NONE(basic_block);
@@ -94,10 +95,36 @@ namespace tnac::ir
     //
     basic_block& add_instruction(instruction& in) noexcept;
 
+    //
+    // Prepends an instruction
+    //
+    basic_block& add_instruction_front(instruction& in) noexcept;
+
+    //
+    // Returns an iterator to the first instruction
+    //
+    instruction_iter begin() noexcept;
+
+    //
+    // Returns an iterator to the first instruction
+    //
+    const_instruction_iter begin() const noexcept;
+
+    //
+    // Returns an iterator past the last instruction
+    //
+    instruction_iter end() noexcept;
+
+    //
+    // Returns an iterator past the last instruction
+    //
+    const_instruction_iter end() const noexcept;
+
   private:
     function* m_owner{};
     string_t m_name;
-    instruction_list m_instructions;
+    instruction_iter m_first;
+    instruction_iter m_last;
   };
 
   using block_container = detail::ir_container<string_t, basic_block>;

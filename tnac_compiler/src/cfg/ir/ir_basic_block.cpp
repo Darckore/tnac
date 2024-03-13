@@ -66,13 +66,36 @@ namespace tnac::ir // basic block
 
   basic_block& basic_block::add_instruction(instruction& in) noexcept
   {
-    auto newTail = in.to_iterator();
-    auto first = m_instructions.begin();
-    if (!first)
-      first = newTail;
+    m_last = in.to_iterator();
+    if (!m_first)
+      m_first = m_last;
 
-    const auto size = m_instructions.size();
-    m_instructions = { first, newTail, size + 1 };
     return *this;
+  }
+
+  basic_block& basic_block::add_instruction_front(instruction& in) noexcept
+  {
+    m_first = in.to_iterator();
+    if (!m_last)
+      m_last = m_first;
+
+    return *this;
+  }
+
+  basic_block::instruction_iter basic_block::begin() noexcept
+  {
+    return m_first;
+  }
+  basic_block::const_instruction_iter basic_block::begin() const noexcept
+  {
+    return m_first;
+  }
+  basic_block::instruction_iter basic_block::end() noexcept
+  {
+    return m_last ? std::next(m_last) : m_last;
+  }
+  basic_block::const_instruction_iter basic_block::end() const noexcept
+  {
+    return m_last ? std::next(m_last) : m_last;
   }
 }

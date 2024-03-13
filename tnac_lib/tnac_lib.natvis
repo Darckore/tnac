@@ -502,7 +502,8 @@
     <Expand>
       <Item Name="[func]">*m_owner</Item>
       <Item Name="[name]">m_name,sb</Item>
-      <Item Name="[instructions]">m_instructions</Item>
+      <Item Name="[first instruction]">m_first</Item>
+      <Item Name="[last instruction]">m_last</Item>
     </Expand>
   </Type>
 
