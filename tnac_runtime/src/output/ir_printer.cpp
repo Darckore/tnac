@@ -54,8 +54,6 @@ namespace tnac::rt::out
   void ir_printer::visit(const ir::instruction& instr) noexcept
   {
     out() << "  ";
-    keyword(instr.opcode_str());
-    out() << ' ';
     using enum ir::op_code;
     switch (instr.opcode())
     {
@@ -95,6 +93,8 @@ namespace tnac::rt::out
 
   void ir_printer::print_ret(const ir::instruction& ret) noexcept
   {
+    keyword(ret.opcode_str());
+    out() << ' ';
     auto&& op = ret[0];
     print_operand(op);
   }
@@ -127,17 +127,12 @@ namespace tnac::rt::out
 
   void ir_printer::value(eval::value val) noexcept
   {
+    keyword(val.id_str());
+    out() << ' ';
     auto visitor = utils::visitor
     {
       [&](eval::invalid_val_t) noexcept
-      {
-        keyword("undef"sv);
-      },
-      [&](eval::bool_type v) noexcept
-      {
-        if (v) keyword("true"sv);
-        else keyword("false"sv);
-      },
+      {},
       [&](eval::array_type) noexcept
       {
         // todo: arrays

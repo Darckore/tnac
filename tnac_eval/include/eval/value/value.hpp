@@ -79,6 +79,7 @@ namespace tnac::eval
   class value final
   {
   public:
+    using enum type_id;
     using value_type = std::uintptr_t;
     using input_ptr = const void*;
     using size_type = decltype(sizeof(0));
@@ -140,6 +141,11 @@ namespace tnac::eval
     // Returns the underlying value's size in bytes
     //
     size_type size() const noexcept;
+
+    //
+    // Returns the value id as string
+    //
+    string_t id_str() const noexcept;
 
     //
     // Unconditionally casts data at the value address to the specified type

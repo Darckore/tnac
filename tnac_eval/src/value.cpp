@@ -88,6 +88,24 @@ namespace tnac::eval
     return size_of(id());
   }
 
+  string_t value::id_str() const noexcept
+  {
+    switch (id())
+    {
+    case Bool:     return "bool"sv;
+    case Int:      return "int"sv;
+    case Float:    return "float"sv;
+    case Complex:  return "cplx"sv;
+    case Fraction: return "frac"sv;
+    case Function: return "fn"sv;
+    case Array:    return "arr"sv;
+    
+    default: break;
+    }
+
+    return "undef"sv;
+  }
+
   // Private members
 
 
