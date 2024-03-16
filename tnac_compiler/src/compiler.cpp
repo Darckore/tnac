@@ -141,7 +141,14 @@ namespace tnac
 
   void compiler::visit(ast::unary_expr& unary) noexcept
   {
-    utils::unused(unary);
+    auto val = m_stack.extract();
+    if (val.is_value())
+    {
+      const auto op = detail::conv_unary(unary.op().what());
+      m_eval.visit_unary(val.get_value(), op);
+      carry_val(&unary);
+      return;
+    }
   }
 
   void compiler::visit(ast::binary_expr& binary) noexcept
@@ -155,8 +162,6 @@ namespace tnac
       carry_val(&binary);
       return;
     }
-
-    utils::unused(binary);
   }
 
   void compiler::visit(ast::assign_expr& assign) noexcept
