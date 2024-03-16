@@ -179,11 +179,6 @@ namespace tnac
     utils::unused(arr);
   }
 
-  void compiler::visit(ast::paren_expr& paren) noexcept
-  {
-    utils::unused(paren);
-  }
-
   void compiler::visit(ast::abs_expr& abs) noexcept
   {
     utils::unused(abs);
