@@ -73,6 +73,7 @@ namespace tnac::rt::out
 
     case Abs:   break;
 
+    case Alloc: print_alloc(instr);  break;
     case Store: break;
     case Load:  break;
     case Call:  break;
@@ -89,14 +90,27 @@ namespace tnac::rt::out
   {
     if (op.is_value())
       value(op.get_value());
+    else if (op.is_register())
+      vreg(op.get_reg());
+  }
+
+  void ir_printer::print_assign(const ir::operand& op) noexcept
+  {
+    print_operand(op);
+    out() << " = ";
+  }
+
+  void ir_printer::print_alloc(const ir::instruction& alloc) noexcept
+  {
+    print_assign(alloc[0]);
+    keyword(alloc.opcode_str());
   }
 
   void ir_printer::print_ret(const ir::instruction& ret) noexcept
   {
     keyword(ret.opcode_str());
     out() << ' ';
-    auto&& op = ret[0];
-    print_operand(op);
+    print_operand(ret[0]);
   }
 
 
@@ -144,6 +158,15 @@ namespace tnac::rt::out
     };
 
     eval::on_value(val, visitor);
+  }
+
+  void ir_printer::vreg(ir::vreg& reg) noexcept
+  {
+    out() << '%';
+    if (reg.is_named())
+      out() << reg.name();
+    else
+      out() << reg.index();
   }
 
   void ir_printer::plain(string_t str) noexcept

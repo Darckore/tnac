@@ -514,6 +514,7 @@
     <DisplayString Condition="m_value._Which == 0">Operand (value)</DisplayString>
     <DisplayString Condition="m_value._Which == 1">Operand (func)</DisplayString>
     <DisplayString Condition="m_value._Which == 2">Operand (block)</DisplayString>
+    <DisplayString Condition="m_value._Which == 3">Operand (vreg)</DisplayString>
     <DisplayString>Operand (uninit)</DisplayString>
     <Expand>
       <Item Name="[value]">m_value</Item>

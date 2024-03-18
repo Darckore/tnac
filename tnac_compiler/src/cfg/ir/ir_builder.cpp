@@ -34,6 +34,15 @@ namespace tnac::ir
     return newInstr;
   }
 
+  instruction& builder::add_var(basic_block& owner, instruction_list::iterator pos) noexcept
+  {
+    auto&& var = m_instructions.emplace_before(pos, owner, op_code::Alloc);
+    if (pos == owner.begin())
+      owner.add_instruction_front(var);
+
+    return var;
+  }
+
   vreg& builder::make_register(string_t name) noexcept
   {
     return m_regs.emplace_front(name);

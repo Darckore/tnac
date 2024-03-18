@@ -50,6 +50,11 @@ namespace tnac::ir
     instruction& add_instruction(basic_block& owner, op_code op) noexcept;
 
     //
+    // Adds a variable declaration to the specified block before the given iterator
+    //
+    instruction& add_var(basic_block& owner, instruction_list::iterator pos) noexcept;
+
+    //
     // Creates a new named virtual register
     //
     vreg& make_register(string_t name) noexcept;

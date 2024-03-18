@@ -80,7 +80,6 @@ namespace tnac
     void visit(ast::unary_expr& unary) noexcept;
     void visit(ast::binary_expr& binary) noexcept;
     void visit(ast::assign_expr& assign) noexcept;
-    void visit(ast::decl_expr& decl) noexcept;
     void visit(ast::array_expr& arr) noexcept;
     void visit(ast::abs_expr& abs) noexcept;
     void visit(ast::typed_expr& typed) noexcept;
@@ -111,6 +110,11 @@ namespace tnac
     // Updates the first instruction in the context if needed
     //
     void update_context(ir::instruction& instr) noexcept;
+
+    //
+    // Creates an alloc instruction for the specified variable
+    //
+    void emit_alloc(string_t varName) noexcept;
 
     //
     // Creates a ret instruction in the specified block

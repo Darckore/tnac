@@ -60,6 +60,16 @@ namespace tnac::ir // operand
     UTILS_ASSERT(is_value());
     return std::get<eval::value>(m_value);
   }
+
+  bool operand::is_register() const noexcept
+  {
+    return std::holds_alternative<vreg*>(m_value);
+  }
+  vreg& operand::get_reg() const noexcept
+  {
+    UTILS_ASSERT(is_register());
+    return *std::get<vreg*>(m_value);
+  }
 }
 
 
@@ -126,6 +136,7 @@ namespace tnac::ir // instruction
 
     case Abs:   return "abs"sv;
 
+    case Alloc: return "alloc"sv;
     case Store: return "store"sv;
     case Load:  return "load"sv;
     case Call:  return "call"sv;
@@ -163,7 +174,7 @@ namespace tnac::ir // instruction
 
     case Store: count = 2; break;
     case Load:  count = 2; break;
-    case Alloc: count = 2; break;
+    case Alloc: count = 1; break;
 
     case Call:  count = 2; break;
     case Jump:  count = 1; break;

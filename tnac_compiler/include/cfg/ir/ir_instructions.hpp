@@ -100,10 +100,21 @@ namespace tnac::ir
     bool is_value() const noexcept;
 
     //
+    // Checks whether the operand holds a register reference
+    //
+    bool is_register() const noexcept;
+
+    //
     // Returns the stored value
     // Callers must check is_value before using this
     //
     eval::value get_value() const noexcept;
+
+    //
+    // Returns the stored register
+    // Callers must check is_register before using this
+    //
+    vreg& get_reg() const noexcept;
 
   private:
     data_type m_value;

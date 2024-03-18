@@ -44,6 +44,10 @@ namespace tnac::rt::out
   private:
     void print_operand(const ir::operand& op) noexcept;
 
+    void print_assign(const ir::operand& op) noexcept;
+
+    void print_alloc(const ir::instruction& alloc) noexcept;
+
     void print_ret(const ir::instruction& ret) noexcept;
 
   private:
@@ -58,6 +62,8 @@ namespace tnac::rt::out
     void id(entity_id i) noexcept;
 
     void value(eval::value val) noexcept;
+
+    void vreg(ir::vreg& reg) noexcept;
 
     void plain(string_t str) noexcept;
 

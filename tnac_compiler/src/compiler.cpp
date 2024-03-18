@@ -169,11 +169,6 @@ namespace tnac
     utils::unused(assign);
   }
 
-  void compiler::visit(ast::decl_expr& decl) noexcept
-  {
-    utils::unused(decl);
-  }
-
   void compiler::visit(ast::array_expr& arr) noexcept
   {
     utils::unused(arr);
@@ -223,7 +218,7 @@ namespace tnac
 
   void compiler::visit(ast::var_decl& var) noexcept
   {
-    utils::unused(var);
+    emit_alloc(var.name());
   }
 
   void compiler::visit(ast::param_decl& param) noexcept
@@ -278,6 +273,16 @@ namespace tnac
   void compiler::update_context(ir::instruction& instr) noexcept
   {
     m_context.func_start_at(instr);
+  }
+
+  void compiler::emit_alloc(string_t varName) noexcept
+  {
+    auto&& curFn = m_context.current_function();
+    auto&& entry = curFn.entry();
+    auto&& builder = m_cfg->get_builder();
+    auto&& var = builder.add_var(entry, m_context.funct_start());
+    auto&& reg = builder.make_register(varName);
+    var.add(ir::operand{ &reg });
   }
 
   void compiler::emit_ret(ir::basic_block& block) noexcept
