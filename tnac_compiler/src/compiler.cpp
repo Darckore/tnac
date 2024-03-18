@@ -286,7 +286,7 @@ namespace tnac
 
   void compiler::visit(ast::param_decl& param) noexcept
   {
-    utils::unused(param);
+    emit_alloc(param.symbol());
   }
 
   // Previews
@@ -333,8 +333,7 @@ namespace tnac
   bool compiler::preview(ast::var_decl& var) noexcept
   {
     auto&& sym = var.symbol();
-    auto&& reg = emit_alloc(var.name());
-    m_context.store(sym, reg);
+    emit_alloc(sym);
     compile(var.initialiser());
     emit_store(sym);
     return false;
@@ -381,15 +380,16 @@ namespace tnac
     return instr;
   }
 
-  ir::vreg& compiler::emit_alloc(string_t varName) noexcept
+  void compiler::emit_alloc(semantics::symbol& sym) noexcept
   {
+    auto varName = sym.name();
     auto&& curFn = m_context.current_function();
     auto&& entry = curFn.entry();
     auto&& builder = m_cfg->get_builder();
     auto&& var = builder.add_var(entry, m_context.funct_start());
     auto&& reg = builder.make_register(varName);
     var.add(&reg);
-    return reg;
+    m_context.store(sym, reg);
   }
 
   void compiler::emit_ret(ir::basic_block& block) noexcept

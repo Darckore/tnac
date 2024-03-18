@@ -128,7 +128,7 @@ namespace tnac
     //
     // Creates an alloc instruction for the specified variable
     //
-    ir::vreg& emit_alloc(string_t varName) noexcept;
+    void emit_alloc(semantics::symbol& sym) noexcept;
 
     //
     // Creates a ret instruction
