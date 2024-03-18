@@ -75,6 +75,8 @@ namespace tnac::rt::out
 
     void vreg(ir::vreg& reg) noexcept;
 
+    void param(ir::func_param par) noexcept;
+
     void plain(string_t str) noexcept;
 
     void declare_funcs(const ir::cfg& gr) noexcept;

@@ -10,14 +10,15 @@
 #define TNAC_OPERANDS eval::value,\
 function*,\
 basic_block*,\
-vreg*
+vreg*,\
+func_param
 
 namespace tnac::ir
 {
   //
   // Virtual register to be used in operands
   //
-  class vreg : public node
+  class vreg final : public node
   {
   public:
     using idx_type = std::uint64_t;
@@ -58,6 +59,32 @@ namespace tnac::ir
     id_type m_id;
   };
 }
+
+
+namespace tnac::ir
+{
+  //
+  // Indexed parameter of a function
+  //
+  class func_param final
+  {
+  public:
+    using value_type = std::uint16_t;
+
+  public:
+    CLASS_SPECIALS_NODEFAULT(func_param);
+
+    ~func_param() noexcept;
+
+    explicit func_param(value_type val) noexcept;
+
+    value_type operator*() const noexcept;
+
+  private:
+    value_type m_value;
+  };
+}
+
 
 namespace tnac::ir
 {
@@ -105,6 +132,11 @@ namespace tnac::ir
     bool is_register() const noexcept;
 
     //
+    // Checks whether the operand holds a parameter
+    //
+    bool is_param() const noexcept;
+
+    //
     // Returns the stored value
     // Callers must check is_value before using this
     //
@@ -115,6 +147,12 @@ namespace tnac::ir
     // Callers must check is_register before using this
     //
     vreg& get_reg() const noexcept;
+
+    //
+    // Returns the stored parameter
+    // Callers must check is_param before using this
+    //
+    func_param get_param() const noexcept;
 
   private:
     data_type m_value;

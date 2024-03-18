@@ -104,6 +104,8 @@ namespace tnac::rt::out
       value(op.get_value());
     else if (op.is_register())
       vreg(op.get_reg());
+    else if (op.is_param())
+      param(op.get_param());
   }
 
   void ir_printer::print_assign(const ir::operand& op) noexcept
@@ -214,6 +216,12 @@ namespace tnac::rt::out
       out() << reg.name();
     else
       out() << reg.index();
+  }
+
+  void ir_printer::param(ir::func_param par) noexcept
+  {
+    keyword("param"sv);
+    fmt::print(out(), fmt::clr::BoldYellow, *par);
   }
 
   void ir_printer::plain(string_t str) noexcept

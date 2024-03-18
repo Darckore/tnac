@@ -286,7 +286,9 @@ namespace tnac
 
   void compiler::visit(ast::param_decl& param) noexcept
   {
-    emit_alloc(param.symbol());
+    auto&& sym = param.symbol();
+    emit_alloc(sym);
+    emit_store(sym);
   }
 
   // Previews
@@ -469,8 +471,9 @@ namespace tnac
     auto _ = m_names.init_indicies();
     auto&& entry = m_context.create_block(m_names.entry_block_name());
     m_context.enqueue_block(entry);
-    for (auto param : params)
+    for (ir::function::size_type idx{}; auto param : params)
     {
+      m_stack.push(ir::func_param{ idx++ });
       compile(*param);
     }
     for (auto child : body)

@@ -42,6 +42,21 @@ namespace tnac::ir // virtual register
 }
 
 
+namespace tnac::ir // param
+{
+  func_param::~func_param() noexcept = default;
+
+  func_param::func_param(value_type val) noexcept :
+    m_value{ val }
+  {}
+
+  func_param::value_type func_param::operator*() const noexcept
+  {
+    return m_value;
+  }
+}
+
+
 namespace tnac::ir // operand
 {
   // Special members
@@ -69,6 +84,16 @@ namespace tnac::ir // operand
   {
     UTILS_ASSERT(is_register());
     return *std::get<vreg*>(m_value);
+  }
+
+  bool operand::is_param() const noexcept
+  {
+    return std::holds_alternative<func_param>(m_value);
+  }
+  func_param operand::get_param() const noexcept
+  {
+    UTILS_ASSERT(is_param());
+    return std::get<func_param>(m_value);
   }
 }
 
