@@ -113,6 +113,9 @@ namespace tnac::ir // instruction
     case CmpE:  return "cmpe"sv;
     case CmpL:  return "cmpl"sv;
     case CmpLE: return "cmple"sv;
+    case CmpNE: return "cmpne"sv;
+    case CmpG:  return "cmpg"sv;
+    case CmpGE: return "cmpge"sv;
 
     case Abs:   return "abs"sv;
 

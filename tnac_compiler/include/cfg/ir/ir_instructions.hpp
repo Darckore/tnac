@@ -141,7 +141,10 @@ namespace tnac::ir
     CmpE,
     CmpL,
     CmpLE,
-    
+    CmpNE,
+    CmpG,
+    CmpGE,
+
     Abs,
 
     Store,

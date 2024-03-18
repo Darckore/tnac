@@ -180,12 +180,12 @@ namespace tnac
     case Pow:       emit_binary(ir::op_code::Pow, lhs, rhs);  break;
     case Root:      emit_binary(ir::op_code::Root, lhs, rhs); break;
 
-    case Less:      break;
-    case LessEq:    break;
-    case Greater:   break;
-    case GreaterEq: break;
-    case Eq:        break;
-    case NotEq:     break;
+    case Less:      emit_binary(ir::op_code::CmpL, lhs, rhs);  break;
+    case LessEq:    emit_binary(ir::op_code::CmpLE, lhs, rhs); break;
+    case Greater:   emit_binary(ir::op_code::CmpG, lhs, rhs);  break;
+    case GreaterEq: emit_binary(ir::op_code::CmpGE, lhs, rhs); break;
+    case Eq:        emit_binary(ir::op_code::CmpE, lhs, rhs);  break;
+    case NotEq:     emit_binary(ir::op_code::CmpNE, lhs, rhs); break;
 
     default: UTILS_ASSERT(false); break;
     }

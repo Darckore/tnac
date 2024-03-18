@@ -70,6 +70,9 @@ namespace tnac::rt::out
     case CmpE:
     case CmpL:
     case CmpLE:
+    case CmpNE:
+    case CmpG:
+    case CmpGE:
       print_binary(instr);
       break;
 
