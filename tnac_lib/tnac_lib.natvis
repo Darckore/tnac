@@ -456,13 +456,7 @@
     <Expand>
       <Item Name="[data]">m_data</Item>
       <Item Name="[stack]">m_stack</Item>
-      <Item Name="[blocks]">m_blocks</Item>
-      <Item Name="[current module]" Condition="m_curModule">*m_curModule</Item>
-      <Item Name="[current module]" Condition="!m_curModule">"&lt;none&gt;",sb</Item>
-      <Item Name="[current function]" Condition="m_curFunction">*m_curFunction</Item>
-      <Item Name="[current function]" Condition="!m_curFunction">"&lt;none&gt;",sb</Item>
-      <Item Name="[first instruction]">m_funcFirst</Item>
-      <Item Name="[terminal block]">m_terminal</Item>
+      <Item Name="[funcs]">m_funcs</Item>
     </Expand>
   </Type>
 

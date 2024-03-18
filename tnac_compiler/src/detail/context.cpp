@@ -1,6 +1,22 @@
 #include "compiler/detail/context.hpp"
 #include "cfg/ir/ir.hpp"
 
+namespace tnac::detail // func data
+{
+  struct context::func_data
+  {
+    CLASS_SPECIALS_ALL(func_data);
+
+    ~func_data() noexcept = default;
+
+    block_queue m_blocks;
+    ir::function* m_curFunction{};
+    instr_iter m_funcFirst{};
+    ir::basic_block* m_terminal{};
+  };
+}
+
+
 namespace tnac::detail
 {
   // Special members
@@ -26,8 +42,7 @@ namespace tnac::detail
 
   void context::wipe() noexcept
   {
-    drop_func();
-    m_curFunction = {};
+    m_funcs.clear();
     m_data.clear();
   }
 
@@ -48,21 +63,18 @@ namespace tnac::detail
 
   void context::enter_function(ir::function& fn) noexcept
   {
-    exit_function();
-    m_curFunction = &fn;
+    auto&& fd = m_funcs.emplace_back();
+    fd.m_curFunction = &fn;
   }
   void context::exit_function() noexcept
   {
-    if (!m_curFunction)
-      return;
-
-    drop_func();
-    m_curFunction = m_curFunction->owner_func();
+    m_funcs.pop_back();
   }
   ir::function& context::current_function() noexcept
   {
-    UTILS_ASSERT(m_curFunction);
-    return *m_curFunction;
+    auto&& fd = cur_data();
+    UTILS_ASSERT(fd.m_curFunction);
+    return *fd.m_curFunction;
   }
 
   ir::basic_block& context::create_block(string_t name) noexcept
@@ -72,60 +84,57 @@ namespace tnac::detail
 
   void context::enqueue_block(ir::basic_block& block) noexcept
   {
-    m_blocks.push(&block);
+    cur_data().m_blocks.push(&block);
   }
 
   ir::basic_block& context::current_block() noexcept
   {
-    UTILS_ASSERT(!m_blocks.empty());
-    return *m_blocks.front();
+    auto&& fd = cur_data();
+    UTILS_ASSERT(!fd.m_blocks.empty());
+    return *fd.m_blocks.front();
   }
 
   ir::basic_block* context::terminal_block() noexcept
   {
-    return m_terminal;
+    return cur_data().m_terminal;
   }
 
   ir::basic_block& context::terminal_or_entry() noexcept
   {
-    return m_terminal ? *m_terminal : current_function().entry();
+    auto&& fd = cur_data();
+    return fd.m_terminal ? *fd.m_terminal : current_function().entry();
   }
 
   void context::terminate_at(ir::basic_block& term) noexcept
   {
-    m_terminal = &term;
+    cur_data().m_terminal = &term;
   }
 
   void context::exit_block() noexcept
   {
-    UTILS_ASSERT(!m_blocks.empty());
-    m_blocks.pop();
+    auto&& fd = cur_data();
+    UTILS_ASSERT(!fd.m_blocks.empty());
+    fd.m_blocks.pop();
   }
 
   void context::func_start_at(ir::instruction& instr) noexcept
   {
-    if (!m_funcFirst)
-      m_funcFirst = instr.to_iterator();
+    auto&& fd = cur_data();
+    if (!fd.m_funcFirst)
+      fd.m_funcFirst = instr.to_iterator();
   }
 
   context::instr_iter context::funct_start() noexcept
   {
-    return m_funcFirst;
+    return cur_data().m_funcFirst;
   }
 
 
   // Private members
 
-  void context::drop_func() noexcept
+  context::func_data& context::cur_data() noexcept
   {
-    UTILS_ASSERT(m_stack.empty());
-    m_stack.clear();
-
-    UTILS_ASSERT(m_blocks.empty());
-    while (!m_blocks.empty())
-      m_blocks.pop();
-
-    m_terminal = {};
-    m_funcFirst = {};
+    UTILS_ASSERT(!m_funcs.empty());
+    return m_funcs.back();
   }
 }

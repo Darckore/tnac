@@ -40,6 +40,10 @@ namespace tnac::detail
     using block_queue  = std::queue<ir::basic_block*>;
     using instr_iter   = utils::ilist<ir::instruction>::iterator;
 
+  private:
+    struct func_data;
+    using data_stack = std::vector<func_data>;
+
   public:
     CLASS_SPECIALS_NONE_CUSTOM(context);
 
@@ -140,16 +144,13 @@ namespace tnac::detail
 
   private:
     //
-    // Clears data associated with the current function
+    // Returns function data from the top of the data stack
     //
-    void drop_func() noexcept;
+    func_data& cur_data() noexcept;
 
   private:
     data_store m_data;
     module_stack m_stack;
-    block_queue m_blocks;
-    ir::function* m_curFunction{};
-    instr_iter m_funcFirst{};
-    ir::basic_block* m_terminal{};
+    data_stack m_funcs;
   };
 }
