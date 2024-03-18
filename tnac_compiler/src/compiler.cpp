@@ -102,9 +102,11 @@ namespace tnac
     error(err.pos().at(), err.message());
   }
 
-  void compiler::visit(ast::result_expr& res) noexcept
+  void compiler::visit(ast::result_expr&) noexcept
   {
-    utils::unused(res);
+    if (auto last = m_context.last_store())
+      emit_load(*last);
+    m_stack.push(m_stack.top());
   }
 
   void compiler::visit(ast::ret_expr& ret) noexcept
@@ -321,7 +323,6 @@ namespace tnac
 
   ir::vreg& compiler::emit_alloc(string_t varName) noexcept
   {
-    clear_store();
     auto&& curFn = m_context.current_function();
     auto&& entry = curFn.entry();
     auto&& builder = m_cfg->get_builder();
