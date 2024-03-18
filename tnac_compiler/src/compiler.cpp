@@ -275,11 +275,17 @@ namespace tnac
 
   // Private members (Emitions)
 
+  void compiler::update_context(ir::instruction& instr) noexcept
+  {
+    m_context.func_start_at(instr);
+  }
+
   void compiler::emit_ret(ir::basic_block& block) noexcept
   {
     auto op = m_stack.extract();
     auto&& instr = m_cfg->get_builder().add_instruction(block, ir::op_code::Ret);
     instr.add(std::move(op));
+    update_context(instr);
   }
 
 

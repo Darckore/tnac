@@ -26,12 +26,12 @@ namespace tnac::detail
 
   void context::wipe() noexcept
   {
-    m_data.clear();
-    m_stack.clear();
-    m_blocks = {};
-    m_terminal = {};
+    drop_func();
+
     m_curFunction = {};
     m_curModule = {};
+
+    m_data.clear();
   }
 
   void context::push(module_sym& sym) noexcept
@@ -76,6 +76,7 @@ namespace tnac::detail
     if (!m_curFunction)
       return;
 
+    drop_func();
     m_curFunction = m_curFunction->owner_func();
   }
   ir::function& context::current_function() noexcept
@@ -110,9 +111,41 @@ namespace tnac::detail
     return m_terminal ? *m_terminal : current_function().entry();
   }
 
+  void context::terminate_at(ir::basic_block& term) noexcept
+  {
+    m_terminal = &term;
+  }
+
   void context::exit_block() noexcept
   {
     UTILS_ASSERT(!m_blocks.empty());
     m_blocks.pop();
+  }
+
+  void context::func_start_at(ir::instruction& instr) noexcept
+  {
+    if (!m_funcFirst)
+      m_funcFirst = instr.to_iterator();
+  }
+
+  context::instr_iter context::funct_start() noexcept
+  {
+    return m_funcFirst;
+  }
+
+
+  // Private members
+
+  void context::drop_func() noexcept
+  {
+    UTILS_ASSERT(m_stack.empty());
+    m_stack.clear();
+
+    UTILS_ASSERT(m_blocks.empty());
+    while (!m_blocks.empty())
+      m_blocks.pop();
+
+    m_terminal = {};
+    m_funcFirst = {};
   }
 }

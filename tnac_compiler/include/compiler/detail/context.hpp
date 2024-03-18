@@ -20,6 +20,7 @@ namespace tnac
   {
     class function;
     class basic_block;
+    class instruction;
   }
 }
 
@@ -37,6 +38,7 @@ namespace tnac::detail
     using data_store   = std::unordered_map<module_sym*, module_def*>;
     using module_stack = std::vector<module_sym*>;
     using block_queue  = std::queue<ir::basic_block*>;
+    using instr_iter   = utils::ilist<ir::instruction>::iterator;
 
   public:
     CLASS_SPECIALS_NONE_CUSTOM(context);
@@ -132,9 +134,31 @@ namespace tnac::detail
     ir::basic_block& terminal_or_entry() noexcept;
 
     //
+    // Sets the terminal block of the current function
+    //
+    void terminate_at(ir::basic_block& term) noexcept;
+
+    //
     // Pops the current basic block
     //
     void exit_block() noexcept;
+
+    //
+    // Updates the first instruction of the function
+    // If the stored iterator is already valid, does nothing
+    //
+    void func_start_at(ir::instruction& instr) noexcept;
+
+    //
+    // Gets the first instruction of the current function
+    //
+    instr_iter funct_start() noexcept;
+
+  private:
+    //
+    // Clears data associated with the current function
+    //
+    void drop_func() noexcept;
 
   private:
     data_store m_data;
@@ -142,6 +166,7 @@ namespace tnac::detail
     block_queue m_blocks;
     ir::function* m_curModule{};
     ir::function* m_curFunction{};
+    instr_iter m_funcFirst{};
     ir::basic_block* m_terminal{};
   };
 }

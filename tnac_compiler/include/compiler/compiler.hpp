@@ -108,6 +108,11 @@ namespace tnac
 
   private: // Emitions
     //
+    // Updates the first instruction in the context if needed
+    //
+    void update_context(ir::instruction& instr) noexcept;
+
+    //
     // Creates a ret instruction in the specified block
     //
     void emit_ret(ir::basic_block& block) noexcept;
