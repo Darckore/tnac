@@ -29,6 +29,7 @@ namespace tnac::detail // func data
     instr_iter m_funcFirst{};
     ir::basic_block* m_terminal{};
     reg_idx m_regIdx{};
+    symbol* m_lastStore{};
   };
 }
 
@@ -163,6 +164,21 @@ namespace tnac::detail
   {
     auto&& fd = cur_data();
     return fd.m_regIdx++;
+  }
+
+  void context::save_store(symbol& var) noexcept
+  {
+    cur_data().m_lastStore = &var;
+  }
+
+  void context::clear_store() noexcept
+  {
+    cur_data().m_lastStore = {};
+  }
+
+  context::symbol* context::last_store() noexcept
+  {
+    return cur_data().m_lastStore;
   }
 
   void context::read_into(symbol& var, ir::vreg& reg) noexcept

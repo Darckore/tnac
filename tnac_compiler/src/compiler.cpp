@@ -314,8 +314,14 @@ namespace tnac
     m_context.func_start_at(instr);
   }
 
+  void compiler::clear_store() noexcept
+  {
+    m_context.clear_store();
+  }
+
   ir::vreg& compiler::emit_alloc(string_t varName) noexcept
   {
+    clear_store();
     auto&& curFn = m_context.current_function();
     auto&& entry = curFn.entry();
     auto&& builder = m_cfg->get_builder();
@@ -327,6 +333,9 @@ namespace tnac
 
   void compiler::emit_ret(ir::basic_block& block) noexcept
   {
+    if (auto last = m_context.last_store())
+      emit_load(*last);
+
     auto op = m_stack.extract();
     auto&& instr = m_cfg->get_builder().add_instruction(block, ir::op_code::Ret);
     instr.add(std::move(op));
@@ -338,6 +347,7 @@ namespace tnac
   {
     auto target = m_context.locate(var);
     UTILS_ASSERT(target);
+    m_context.save_store(var);
 
     auto val = m_stack.extract();
     auto&& block = m_context.current_block();
@@ -349,6 +359,7 @@ namespace tnac
 
   void compiler::emit_load(semantics::symbol& var) noexcept
   {
+    clear_store();
     auto res = m_context.last_read(var);
     if (res)
     {
@@ -373,6 +384,7 @@ namespace tnac
 
   void compiler::emit_binary(ir::op_code oc, ir::operand lhs, ir::operand rhs) noexcept
   {
+    clear_store();
     auto&& builder = m_cfg->get_builder();
     auto&& block = m_context.current_block();
     auto&& instr = builder.add_instruction(block, oc);

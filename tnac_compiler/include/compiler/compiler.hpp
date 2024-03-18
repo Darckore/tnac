@@ -116,6 +116,11 @@ namespace tnac
     void update_func_start(ir::instruction& instr) noexcept;
 
     //
+    // Clears the saved store in context
+    //
+    void clear_store() noexcept;
+
+    //
     // Creates an alloc instruction for the specified variable
     //
     ir::vreg& emit_alloc(string_t varName) noexcept;

@@ -164,6 +164,21 @@ namespace tnac::detail
     reg_idx register_index() noexcept;
 
     //
+    // Saves the last stored variable
+    //
+    void save_store(symbol& var) noexcept;
+
+    //
+    // Clears the last stored variable
+    //
+    void clear_store() noexcept;
+
+    //
+    // Returns the last store if available
+    //
+    symbol* last_store() noexcept;
+
+    //
     // Marks a variable as read
     //
     void read_into(symbol& var, ir::vreg& reg) noexcept;
