@@ -457,6 +457,7 @@
       <Item Name="[data]">m_data</Item>
       <Item Name="[stack]">m_stack</Item>
       <Item Name="[funcs]">m_funcs</Item>
+      <Item Name="[vars]">m_vars</Item>
     </Expand>
   </Type>
 

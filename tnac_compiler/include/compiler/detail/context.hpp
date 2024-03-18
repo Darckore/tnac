@@ -13,6 +13,7 @@ namespace tnac
 
   namespace semantics
   {
+    class symbol;
     class module_sym;
   }
 
@@ -21,6 +22,7 @@ namespace tnac
     class function;
     class basic_block;
     class instruction;
+    class vreg;
   }
 }
 
@@ -39,6 +41,8 @@ namespace tnac::detail
     using module_stack = std::vector<module_sym*>;
     using block_queue  = std::queue<ir::basic_block*>;
     using instr_iter   = utils::ilist<ir::instruction>::iterator;
+    using symbol       = semantics::symbol;
+    using var_store    = std::unordered_map<symbol*, ir::vreg*>;
 
   private:
     struct func_data;
@@ -61,6 +65,16 @@ namespace tnac::detail
     // Returns the AST node corresponding to a module
     //
     module_def* locate(module_sym& sym) noexcept;
+
+    //
+    // Appends a symbol-register association
+    //
+    void store(symbol& sym, ir::vreg& reg) noexcept;
+
+    //
+    // Returns the register referring to a variable storage
+    //
+    ir::vreg* locate(symbol& sym) noexcept;
 
     //
     // Discards the collected data
@@ -152,5 +166,6 @@ namespace tnac::detail
     data_store m_data;
     module_stack m_stack;
     data_stack m_funcs;
+    var_store m_vars;
   };
 }

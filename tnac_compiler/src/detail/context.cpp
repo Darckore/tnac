@@ -30,7 +30,7 @@ namespace tnac::detail
 
   void context::store(module_sym& sym, module_def& def) noexcept
   {
-    auto newIt = m_data.try_emplace(&sym, &def);
+    [[maybe_unused]] auto newIt = m_data.try_emplace(&sym, &def);
     UTILS_ASSERT(newIt.second || newIt.first->second == &def);
   }
 
@@ -40,10 +40,23 @@ namespace tnac::detail
     return found != m_data.end() ? found->second : nullptr;
   }
 
+  void context::store(symbol& sym, ir::vreg& reg) noexcept
+  {
+    [[maybe_unused]] auto newIt = m_vars.try_emplace(&sym, &reg);
+    UTILS_ASSERT(newIt.second || newIt.first->second == &reg);
+  }
+
+  ir::vreg* context::locate(symbol& sym) noexcept
+  {
+    auto found = m_vars.find(&sym);
+    return found != m_vars.end() ? found->second : nullptr;
+  }
+
   void context::wipe() noexcept
   {
     m_funcs.clear();
     m_data.clear();
+    m_vars.clear();
   }
 
   void context::push(module_sym& sym) noexcept
