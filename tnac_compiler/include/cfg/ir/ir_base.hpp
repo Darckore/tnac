@@ -19,7 +19,8 @@ namespace tnac::ir
     Function,
     Block,
     Edge,
-    Instruction
+    Instruction,
+    Register
   };
 
   //

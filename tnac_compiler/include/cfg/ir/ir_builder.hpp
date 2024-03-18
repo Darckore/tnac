@@ -19,6 +19,7 @@ namespace tnac::ir
     using block_map        = block_container::underlying_t;
     using block_store      = std::unordered_map<entity_id, block_map>;
     using instruction_list = instruction::list_type;
+    using register_store   = std::forward_list<vreg>;
 
   public:
     CLASS_SPECIALS_NONE_CUSTOM(builder);
@@ -48,6 +49,16 @@ namespace tnac::ir
     //
     instruction& add_instruction(basic_block& owner, op_code op) noexcept;
 
+    //
+    // Creates a new named virtual register
+    //
+    vreg& make_register(string_t name) noexcept;
+
+    //
+    // Creates a new nameless virtual register
+    //
+    vreg& make_register(vreg::idx_type idx) noexcept;
+
   private:
     //
     // Creates a generic function
@@ -58,5 +69,6 @@ namespace tnac::ir
     func_store m_functions;
     block_store m_blocks;
     instruction_list m_instructions;
+    register_store m_regs;
   };
 }

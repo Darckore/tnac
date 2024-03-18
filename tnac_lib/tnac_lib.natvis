@@ -529,12 +529,21 @@
     </Expand>
   </Type>
 
+  <Type Name="tnac::ir::vreg">
+    <DisplayString Condition="m_id._Which == 0">register (named)</DisplayString>
+    <DisplayString Condition="m_id._Which == 1">register</DisplayString>
+    <Expand>
+      <Item Name="[id]">m_id</Item>
+    </Expand>
+  </Type>
+
   <Type Name="tnac::ir::builder">
     <DisplayString>IR builder</DisplayString>
     <Expand>
       <Item Name="[functions]">m_functions</Item>
       <Item Name="[basic blocks]">m_blocks</Item>
       <Item Name="[instructions]">m_instructions</Item>
+      <Item Name="[registers]">m_regs</Item>
     </Expand>
   </Type>
   

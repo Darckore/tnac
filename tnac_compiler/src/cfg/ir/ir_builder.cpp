@@ -34,6 +34,15 @@ namespace tnac::ir
     return newInstr;
   }
 
+  vreg& builder::make_register(string_t name) noexcept
+  {
+    return m_regs.emplace_front(name);
+  }
+  vreg& builder::make_register(vreg::idx_type idx) noexcept
+  {
+    return m_regs.emplace_front(idx);
+  }
+
 
   // Private members
 

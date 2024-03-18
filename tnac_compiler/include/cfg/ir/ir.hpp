@@ -13,3 +13,4 @@ TYPE_TO_ID_ASSOCIATION(tnac::ir::function,    tnac::ir::ir_kind::Function);
 TYPE_TO_ID_ASSOCIATION(tnac::ir::basic_block, tnac::ir::ir_kind::Block);
 TYPE_TO_ID_ASSOCIATION(tnac::ir::edge,        tnac::ir::ir_kind::Edge);
 TYPE_TO_ID_ASSOCIATION(tnac::ir::instruction, tnac::ir::ir_kind::Instruction);
+TYPE_TO_ID_ASSOCIATION(tnac::ir::vreg,        tnac::ir::ir_kind::Register);

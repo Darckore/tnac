@@ -9,7 +9,55 @@
 
 #define TNAC_OPERANDS eval::value,\
 function*,\
-basic_block*
+basic_block*,\
+vreg*
+
+namespace tnac::ir
+{
+  //
+  // Virtual register to be used in operands
+  //
+  class vreg : public node
+  {
+  public:
+    using idx_type = std::uint64_t;
+    using id_type  = std::variant<string_t, idx_type>;
+
+  public:
+    CLASS_SPECIALS_NONE(vreg);
+
+    ~vreg() noexcept;
+
+    explicit vreg(string_t name) noexcept;
+    
+    explicit vreg(idx_type idx) noexcept;
+
+  private:
+    struct from_id {};
+    vreg(from_id, id_type id) noexcept;
+
+  public:
+    //
+    // Checks whether the register has a name
+    //
+    bool is_named() const noexcept;
+
+    //
+    // Obtains the register's name
+    // Callers must ensure that is_named returns true
+    //
+    string_t name() const noexcept;
+
+    //
+    // Obtains the register's index
+    // Callers must ensure that is_named returns false
+    //
+    idx_type index() const noexcept;
+
+  private:
+    id_type m_id;
+  };
+}
 
 namespace tnac::ir
 {

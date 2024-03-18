@@ -1,5 +1,47 @@
 #include "cfg/ir/ir_instructions.hpp"
 
+namespace tnac::ir // virtual register
+{
+  // Special members
+
+  vreg::~vreg() noexcept = default;
+
+  vreg::vreg(from_id, id_type id) noexcept :
+    node{ kind::Register },
+    m_id{ id }
+  {}
+
+  vreg::vreg(string_t name) noexcept :
+    vreg{ from_id{}, name }
+  {}
+
+  vreg::vreg(idx_type idx) noexcept :
+    vreg{ from_id{}, idx }
+  {}
+
+
+  // Public members
+
+  bool vreg::is_named() const noexcept
+  {
+    return std::holds_alternative<string_t>(m_id);
+  }
+
+  string_t vreg::name() const noexcept
+  {
+    UTILS_ASSERT(is_named());
+    return std::get<string_t>(m_id);
+  }
+
+  vreg::idx_type vreg::index() const noexcept
+  {
+    UTILS_ASSERT(!is_named());
+    return std::get<idx_type>(m_id);
+  }
+
+}
+
+
 namespace tnac::ir // operand
 {
   // Special members
