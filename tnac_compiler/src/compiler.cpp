@@ -5,54 +5,80 @@
 #include "cfg/cfg.hpp"
 #include "eval/value/value_registry.hpp"
 
+namespace tnac::eval::detail
+{
+  constexpr auto conv_unary(tok_kind tk) noexcept
+  {
+    using enum tok_kind;
+    using enum eval::val_ops;
+    switch (tk)
+    {
+    case Exclamation: return LogicalNot;
+    case Question:    return LogicalIs;
+    case Plus:        return UnaryPlus;
+    case Minus:       return UnaryNegation;
+    case Tilde:       return UnaryBitwiseNot;
+
+    default: return InvalidOp;
+    }
+  }
+  constexpr auto conv_binary(tok_kind tk) noexcept
+  {
+    using enum tok_kind;
+    using enum eval::val_ops;
+    switch (tk)
+    {
+    case Plus:     return Addition;
+    case Minus:    return Subtraction;
+    case Asterisk: return Multiplication;
+    case Slash:    return Division;
+    case Percent:  return Modulo;
+
+    case Less:      return RelLess;
+    case LessEq:    return RelLessEq;
+    case Greater:   return RelGr;
+    case GreaterEq: return RelGrEq;
+    case Eq:        return Equal;
+    case NotEq:     return NEqual;
+
+    case Amp:  return BitwiseAnd;
+    case Hat:  return BitwiseXor;
+    case Pipe: return BitwiseOr;
+
+    case Pow:  return BinaryPow;
+    case Root: return BinaryRoot;
+
+    default: return InvalidOp;
+    }
+  }
+}
+
 namespace tnac::detail
 {
-  namespace
+  constexpr auto to_binary_opcode(tok_kind tk) noexcept
   {
-    constexpr auto conv_unary(tok_kind tk) noexcept
+    using enum tok_kind;
+    switch (tk)
     {
-      using enum tok_kind;
-      using enum eval::val_ops;
-      switch (tk)
-      {
-      case Exclamation: return LogicalNot;
-      case Question:    return LogicalIs;
-      case Plus:        return UnaryPlus;
-      case Minus:       return UnaryNegation;
-      case Tilde:       return UnaryBitwiseNot;
-
-      default: return InvalidOp;
-      }
+    case Plus:      return ir::op_code::Add;
+    case Minus:     return ir::op_code::Sub;
+    case Asterisk:  return ir::op_code::Mul;
+    case Slash:     return ir::op_code::Div;
+    case Percent:   return ir::op_code::Mod;
+    case Amp:       return ir::op_code::And;
+    case Pipe:      return ir::op_code::Or;
+    case Hat:       return ir::op_code::Xor;
+    case Pow:       return ir::op_code::Pow;
+    case Root:      return ir::op_code::Root;
+    case Less:      return ir::op_code::CmpL;
+    case LessEq:    return ir::op_code::CmpLE;
+    case Greater:   return ir::op_code::CmpG;
+    case GreaterEq: return ir::op_code::CmpGE;
+    case Eq:        return ir::op_code::CmpE;
+    case NotEq:     return ir::op_code::CmpNE;
     }
-    constexpr auto conv_binary(tok_kind tk) noexcept
-    {
-      using enum tok_kind;
-      using enum eval::val_ops;
-      switch (tk)
-      {
-      case Plus:     return Addition;
-      case Minus:    return Subtraction;
-      case Asterisk: return Multiplication;
-      case Slash:    return Division;
-      case Percent:  return Modulo;
 
-      case Less:      return RelLess;
-      case LessEq:    return RelLessEq;
-      case Greater:   return RelGr;
-      case GreaterEq: return RelGrEq;
-      case Eq:        return Equal;
-      case NotEq:     return NEqual;
-
-      case Amp:  return BitwiseAnd;
-      case Hat:  return BitwiseXor;
-      case Pipe: return BitwiseOr;
-
-      case Pow:  return BinaryPow;
-      case Root: return BinaryRoot;
-
-      default: return InvalidOp;
-      }
-    }
+    return ir::op_code::None;
   }
 }
 
@@ -149,7 +175,7 @@ namespace tnac
     auto val = m_stack.extract();
     if (val.is_value())
     {
-      const auto op = detail::conv_unary(unary.op().what());
+      const auto op = eval::detail::conv_unary(unary.op().what());
       m_eval.visit_unary(val.get_value(), op);
       carry_val(&unary);
       return;
@@ -163,35 +189,15 @@ namespace tnac
     const auto opType = binary.op().what();
     if (lhs.is_value() && rhs.is_value())
     {
-      const auto op = detail::conv_binary(opType);
+      const auto op = eval::detail::conv_binary(opType);
       m_eval.visit_binary(lhs.get_value(), rhs.get_value(), op);
       carry_val(&binary);
       return;
     }
 
-    using enum tok_kind;
-    switch (opType)
-    {
-    case Plus:      emit_binary(ir::op_code::Add, lhs, rhs);  break;
-    case Minus:     emit_binary(ir::op_code::Sub, lhs, rhs);  break;
-    case Asterisk:  emit_binary(ir::op_code::Mul, lhs, rhs);  break;
-    case Slash:     emit_binary(ir::op_code::Div, lhs, rhs);  break;
-    case Percent:   emit_binary(ir::op_code::Mod, lhs, rhs);  break;
-    case Amp:       emit_binary(ir::op_code::And, lhs, rhs);  break;
-    case Pipe:      emit_binary(ir::op_code::Or, lhs, rhs);   break;
-    case Hat:       emit_binary(ir::op_code::Xor, lhs, rhs);  break;
-    case Pow:       emit_binary(ir::op_code::Pow, lhs, rhs);  break;
-    case Root:      emit_binary(ir::op_code::Root, lhs, rhs); break;
-
-    case Less:      emit_binary(ir::op_code::CmpL, lhs, rhs);  break;
-    case LessEq:    emit_binary(ir::op_code::CmpLE, lhs, rhs); break;
-    case Greater:   emit_binary(ir::op_code::CmpG, lhs, rhs);  break;
-    case GreaterEq: emit_binary(ir::op_code::CmpGE, lhs, rhs); break;
-    case Eq:        emit_binary(ir::op_code::CmpE, lhs, rhs);  break;
-    case NotEq:     emit_binary(ir::op_code::CmpNE, lhs, rhs); break;
-
-    default: UTILS_ASSERT(false); break;
-    }
+    const auto opcode = detail::to_binary_opcode(opType);
+    UTILS_ASSERT(opcode != ir::op_code::None);
+    emit_binary(opcode, lhs, rhs);
   }
 
   void compiler::visit(ast::assign_expr& assign) noexcept

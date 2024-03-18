@@ -128,6 +128,8 @@ namespace tnac::ir
   //
   enum class op_code : std::uint8_t
   {
+    None,
+
     Add,
     Sub,
     Mul,
