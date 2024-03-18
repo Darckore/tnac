@@ -236,7 +236,15 @@ namespace tnac
 
   void compiler::visit(ast::abs_expr& abs) noexcept
   {
-    utils::unused(abs);
+    auto val = m_stack.extract();
+    if (val.is_value())
+    {
+      m_eval.visit_unary(val.get_value(), eval::val_ops::AbsoluteValue);
+      carry_val(&abs);
+      return;
+    }
+
+    emit_unary(ir::op_code::Abs, val);
   }
 
   void compiler::visit(ast::typed_expr& typed) noexcept
