@@ -61,6 +61,8 @@ namespace tnac::rt::out
 
     void endl() noexcept;
 
+    void kw_string(string_t kw) noexcept;
+
     void keyword(string_t kw) noexcept;
 
     void name(string_t n) noexcept;

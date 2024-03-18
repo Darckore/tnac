@@ -33,7 +33,7 @@ namespace tnac::rt::out
 
   bool ir_printer::preview(const ir::basic_block& bb) noexcept
   {
-    keyword(bb.name());
+    kw_string(bb.name());
     plain(":"sv);
     endl();
     return true;
@@ -152,9 +152,14 @@ namespace tnac::rt::out
     out() << '\n';
   }
 
-  void ir_printer::keyword(string_t kw) noexcept
+  void ir_printer::kw_string(string_t kw) noexcept
   {
     fmt::print(out(), fmt::clr::BoldBlue, kw);
+  }
+
+  void ir_printer::keyword(string_t kw) noexcept
+  {
+    kw_string(kw);
     out() << ' ';
   }
 
@@ -227,7 +232,7 @@ namespace tnac::rt::out
 
   void ir_printer::declare(const ir::function& fn) noexcept
   {
-    keyword("declare "sv);
+    keyword("declare"sv);
     func_intro(fn);
     endl();
   }
@@ -235,9 +240,9 @@ namespace tnac::rt::out
   void ir_printer::func_intro(const ir::function& fn) noexcept
   {
     if (fn.owner_func())
-      keyword("function "sv);
+      keyword("function"sv);
     else
-      keyword("module "sv);
+      keyword("module"sv);
 
     id(fn.id());
     name(" @"sv);
