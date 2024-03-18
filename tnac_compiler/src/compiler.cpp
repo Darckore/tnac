@@ -106,7 +106,10 @@ namespace tnac
   {
     if (auto last = m_context.last_store())
       emit_load(*last);
-    m_stack.push(m_stack.top());
+    if (m_stack.empty())
+      m_stack.push(eval::value{});
+    else
+      m_stack.push(m_stack.top());
   }
 
   void compiler::visit(ast::ret_expr& ret) noexcept
