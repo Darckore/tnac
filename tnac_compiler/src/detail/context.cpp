@@ -27,10 +27,7 @@ namespace tnac::detail
   void context::wipe() noexcept
   {
     drop_func();
-
     m_curFunction = {};
-    m_curModule = {};
-
     m_data.clear();
   }
 
@@ -47,23 +44,6 @@ namespace tnac::detail
     auto sym = m_stack.back();
     m_stack.pop_back();
     return sym;
-  }
-
-  void context::enter_module(ir::function& mod) noexcept
-  {
-    exit_module();
-    m_curModule = &mod;
-    enter_function(mod);
-  }
-  void context::exit_module() noexcept
-  {
-    exit_function();
-    m_curModule = {};
-  }
-  ir::function& context::current_module() noexcept
-  {
-    UTILS_ASSERT(m_curModule);
-    return *m_curModule;
   }
 
   void context::enter_function(ir::function& fn) noexcept

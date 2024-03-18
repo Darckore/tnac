@@ -75,22 +75,6 @@ namespace tnac::detail
     module_sym* pop() noexcept;
 
     //
-    // Sets the given module as the current one
-    //
-    void enter_module(ir::function& mod) noexcept;
-
-    //
-    // Resets the current module to nothing
-    //
-    void exit_module() noexcept;
-
-    //
-    // Returns a reference to the current module
-    // Use with caution and check whether one exists beforehand
-    //
-    ir::function& current_module() noexcept;
-
-    //
     // Sets the given function as the current one
     //
     void enter_function(ir::function& fn) noexcept;
@@ -164,7 +148,6 @@ namespace tnac::detail
     data_store m_data;
     module_stack m_stack;
     block_queue m_blocks;
-    ir::function* m_curModule{};
     ir::function* m_curFunction{};
     instr_iter m_funcFirst{};
     ir::basic_block* m_terminal{};
