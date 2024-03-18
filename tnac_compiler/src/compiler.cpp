@@ -309,7 +309,7 @@ namespace tnac
 
   // Private members (Emitions)
 
-  void compiler::update_context(ir::instruction& instr) noexcept
+  void compiler::update_func_start(ir::instruction& instr) noexcept
   {
     m_context.func_start_at(instr);
   }
@@ -330,7 +330,8 @@ namespace tnac
     auto op = m_stack.extract();
     auto&& instr = m_cfg->get_builder().add_instruction(block, ir::op_code::Ret);
     instr.add(std::move(op));
-    update_context(instr);
+    update_func_start(instr);
+    empty_stack();
   }
 
   void compiler::emit_store(semantics::symbol& var) noexcept
@@ -343,7 +344,7 @@ namespace tnac
     auto&& instr = m_cfg->get_builder().add_instruction(block, ir::op_code::Store);
     instr.add(val).add(target);
     m_context.modify(var);
-    update_context(instr);
+    update_func_start(instr);
   }
 
   void compiler::emit_load(semantics::symbol& var) noexcept
@@ -366,6 +367,7 @@ namespace tnac
     m_context.read_into(var, *res);
     instr.add(res).add(target);
 
+    update_func_start(instr);
     m_stack.push(res);
   }
 
@@ -376,8 +378,10 @@ namespace tnac
     auto&& instr = builder.add_instruction(block, oc);
     auto&& res = builder.make_register(m_names.op_name(oc));
     instr.add(&res).add(lhs).add(rhs);
+    update_func_start(instr);
     m_stack.push(&res);
   }
+
 
   // Private members
 
@@ -386,6 +390,15 @@ namespace tnac
     auto stored = m_eval.fetch_next();
     auto val = m_eval.visit_assign(id, *stored);
     m_stack.push(val);
+  }
+
+  void compiler::empty_stack() noexcept
+  {
+    while (!m_stack.empty())
+    {
+      // todo: dead code warning
+      m_stack.pop();
+    }
   }
 
   void compiler::compile(params_t& params, body_t& body) noexcept

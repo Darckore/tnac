@@ -113,7 +113,7 @@ namespace tnac
     //
     // Updates the first instruction in the context if needed
     //
-    void update_context(ir::instruction& instr) noexcept;
+    void update_func_start(ir::instruction& instr) noexcept;
 
     //
     // Creates an alloc instruction for the specified variable
@@ -145,6 +145,11 @@ namespace tnac
     // Transfers a calculated value to the internal stack
     //
     void carry_val(entity_id id) noexcept;
+
+    //
+    // Empties the stack on the next instruction
+    //
+    void empty_stack() noexcept;
 
     //
     // Compiles the implementation of a function or module
