@@ -26,6 +26,7 @@ namespace tnac
 
   namespace semantics
   {
+    class symbol;
     class module_sym;
   }
 }
@@ -127,12 +128,12 @@ namespace tnac
     //
     // Creates a store instruction for the specified variable
     //
-    void emit_store(ir::vreg& target) noexcept;
+    void emit_store(semantics::symbol& var) noexcept;
 
     //
     // Creates a load instruction for the specified variable
     //
-    void emit_load(ir::vreg& target) noexcept;
+    void emit_load(semantics::symbol& var) noexcept;
 
     //
     // Creates a binary arithmetic instruction

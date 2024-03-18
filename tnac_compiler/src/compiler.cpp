@@ -136,9 +136,7 @@ namespace tnac
 
   void compiler::visit(ast::id_expr& id) noexcept
   {
-    auto reg = m_context.locate(id.symbol());
-    UTILS_ASSERT(reg);
-    emit_load(*reg);
+    emit_load(id.symbol());
   }
 
   void compiler::visit(ast::unary_expr& unary) noexcept
@@ -291,10 +289,11 @@ namespace tnac
 
   bool compiler::preview(ast::var_decl& var) noexcept
   {
+    auto&& sym = var.symbol();
     auto&& reg = emit_alloc(var.name());
-    m_context.store(var.symbol(), reg);
+    m_context.store(sym, reg);
     compile(var.initialiser());
-    emit_store(reg);
+    emit_store(sym);
     return false;
   }
 
@@ -303,11 +302,8 @@ namespace tnac
     auto target = utils::try_cast<ast::id_expr>(&assign.left());
     UTILS_ASSERT(target);
 
-    auto reg = m_context.locate(target->symbol());
-    UTILS_ASSERT(reg);
-
     compile(assign.right());
-    emit_store(*reg);
+    emit_store(target->symbol());
     return false;
   }
 
@@ -337,23 +333,40 @@ namespace tnac
     update_context(instr);
   }
 
-  void compiler::emit_store(ir::vreg& target) noexcept
+  void compiler::emit_store(semantics::symbol& var) noexcept
   {
+    auto target = m_context.locate(var);
+    UTILS_ASSERT(target);
+
     auto val = m_stack.extract();
     auto&& block = m_context.current_block();
     auto&& instr = m_cfg->get_builder().add_instruction(block, ir::op_code::Store);
-    instr.add(val).add(&target);
+    instr.add(val).add(target);
+    m_context.modify(var);
     update_context(instr);
   }
 
-  void compiler::emit_load(ir::vreg& target) noexcept
+  void compiler::emit_load(semantics::symbol& var) noexcept
   {
+    auto res = m_context.last_read(var);
+    if (res)
+    {
+      m_stack.push(res);
+      return;
+    }
+
+    auto target = m_context.locate(var);
+    UTILS_ASSERT(target);
+
     auto&& builder = m_cfg->get_builder();
     auto&& block = m_context.current_block();
     auto&& instr = builder.add_instruction(block, ir::op_code::Load);
-    auto&& res = builder.make_register(m_context.register_index());
-    instr.add(&res).add(&target);
-    m_stack.push(&res);
+
+    res = &builder.make_register(m_context.register_index());
+    m_context.read_into(var, *res);
+    instr.add(res).add(target);
+
+    m_stack.push(res);
   }
 
   void compiler::emit_binary(ir::op_code oc, ir::operand lhs, ir::operand rhs) noexcept

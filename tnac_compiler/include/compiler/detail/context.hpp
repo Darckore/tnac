@@ -42,10 +42,11 @@ namespace tnac::detail
     using block_queue  = std::queue<ir::basic_block*>;
     using instr_iter   = utils::ilist<ir::instruction>::iterator;
     using symbol       = semantics::symbol;
-    using var_store    = std::unordered_map<symbol*, ir::vreg*>;
     using reg_idx      = std::uint64_t;
 
   private:
+    struct var_data;
+    using var_store = std::unordered_map<symbol*, var_data>;
     struct func_data;
     using data_stack = std::vector<func_data>;
 
@@ -162,11 +163,31 @@ namespace tnac::detail
     //
     reg_idx register_index() noexcept;
 
+    //
+    // Marks a variable as read
+    //
+    void read_into(symbol& var, ir::vreg& reg) noexcept;
+
+    //
+    // Marks a variable as modified
+    //
+    void modify(symbol& var) noexcept;
+
+    //
+    // Returns the last register a variable was read to
+    //
+    ir::vreg* last_read(symbol& var) noexcept;
+
   private:
     //
     // Returns function data from the top of the data stack
     //
     func_data& cur_data() noexcept;
+
+    //
+    // Locates a variable and returns its descriptor
+    //
+    var_data* locate_var(symbol& sym) noexcept;
 
   private:
     data_store m_data;

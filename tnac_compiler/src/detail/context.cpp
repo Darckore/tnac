@@ -1,6 +1,21 @@
 #include "compiler/detail/context.hpp"
 #include "cfg/ir/ir.hpp"
 
+namespace tnac::detail // var data
+{
+  struct context::var_data
+  {
+    CLASS_SPECIALS_ALL(var_data);
+
+    ~var_data() noexcept = default;
+
+    ir::vreg* m_reg{};
+    ir::vreg* m_lastRead{};
+    bool m_modified{};
+  };
+}
+
+
 namespace tnac::detail // func data
 {
   struct context::func_data
@@ -43,14 +58,15 @@ namespace tnac::detail
 
   void context::store(symbol& sym, ir::vreg& reg) noexcept
   {
-    [[maybe_unused]] auto newIt = m_vars.try_emplace(&sym, &reg);
-    UTILS_ASSERT(newIt.second || newIt.first->second == &reg);
+    auto newIt = m_vars.try_emplace(&sym, var_data{});
+    auto&& item = newIt.first->second;
+    item.m_reg = &reg;
   }
 
   ir::vreg* context::locate(symbol& sym) noexcept
   {
-    auto found = m_vars.find(&sym);
-    return found != m_vars.end() ? found->second : nullptr;
+    auto vd = locate_var(sym);
+    return vd ? vd->m_reg : nullptr;
   }
 
   void context::wipe() noexcept
@@ -149,6 +165,31 @@ namespace tnac::detail
     return fd.m_regIdx++;
   }
 
+  void context::read_into(symbol& var, ir::vreg& reg) noexcept
+  {
+    auto vd = locate_var(var);
+    UTILS_ASSERT(vd);
+
+    vd->m_lastRead = &reg;
+    vd->m_modified = false;
+  }
+
+  void context::modify(symbol& var) noexcept
+  {
+    auto vd = locate_var(var);
+    UTILS_ASSERT(vd);
+
+    vd->m_lastRead = {};
+    vd->m_modified = true;
+  }
+
+  ir::vreg* context::last_read(symbol& var) noexcept
+  {
+    auto vd = locate_var(var);
+    UTILS_ASSERT(vd);
+    return vd->m_lastRead;
+  }
+
 
   // Private members
 
@@ -156,5 +197,11 @@ namespace tnac::detail
   {
     UTILS_ASSERT(!m_funcs.empty());
     return m_funcs.back();
+  }
+
+  context::var_data* context::locate_var(symbol& sym) noexcept
+  {
+    auto found = m_vars.find(&sym);
+    return found != m_vars.end() ? &found->second : nullptr;
   }
 }
