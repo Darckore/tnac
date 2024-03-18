@@ -103,26 +103,29 @@ namespace tnac::ir // instruction
     auto count = size_type{};
     switch (m_opCode)
     {
-    case Add:   break;
-    case Sub:   break;
-    case Mul:   break;
-    case Div:   break;
-    case Mod:   break;
-    case Pow:   break;
-    case Root:  break;
-    case And:   break;
-    case Or:    break;
-    case Xor:   break;
-    case CmpE:  break;
-    case CmpL:  break;
-    case CmpLE: break;
+    case Add:   count = 3; break;
+    case Sub:   count = 3; break;
+    case Mul:   count = 3; break;
+    case Div:   count = 3; break;
+    case Mod:   count = 3; break;
+    case Pow:   count = 3; break;
+    case Root:  count = 3; break;
+    case And:   count = 3; break;
+    case Or:    count = 3; break;
+    case Xor:   count = 3; break;
+    case CmpE:  count = 3; break;
+    case CmpL:  count = 3; break;
+    case CmpLE: count = 3; break;
 
-    case Abs:   break;
+    case Abs:   count = 2; break;
 
-    case Store: break;
-    case Load:  break;
-    case Call:  break;
-    case Jump:  break;
+    case Store: count = 2; break;
+    case Load:  count = 2; break;
+    case Alloc: count = 2; break;
+
+    case Call:  count = 2; break;
+    case Jump:  count = 1; break;
+
     case Ret:   count = 1; break;
     }
 

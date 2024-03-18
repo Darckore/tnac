@@ -87,6 +87,7 @@ namespace tnac::ir
 
     Store,
     Load,
+    Alloc,
 
     Call,
     Jump,
