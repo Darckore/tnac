@@ -96,29 +96,9 @@ namespace tnac::ir // instruction
 
   // Public members
 
-  op_code instruction::opcode() const noexcept
+  string_t instruction::opcode_str(op_code oc) noexcept
   {
-    return m_opCode;
-  }
-
-  const basic_block& instruction::owner_block() const noexcept
-  {
-    return *m_block;
-  }
-  basic_block& instruction::owner_block() noexcept
-  {
-    return FROM_CONST(owner_block);
-  }
-
-  instruction& instruction::add(operand op) noexcept
-  {
-    m_operands.push_back(std::move(op));
-    return *this;
-  }
-
-  string_t instruction::opcode_str() const noexcept
-  {
-    switch (m_opCode)
+    switch (oc)
     {
     case Add:   return "add"sv;
     case Sub:   return "sub"sv;
@@ -146,6 +126,31 @@ namespace tnac::ir // instruction
 
     UTILS_ASSERT(false);
     return {};
+  }
+
+  op_code instruction::opcode() const noexcept
+  {
+    return m_opCode;
+  }
+
+  const basic_block& instruction::owner_block() const noexcept
+  {
+    return *m_block;
+  }
+  basic_block& instruction::owner_block() noexcept
+  {
+    return FROM_CONST(owner_block);
+  }
+
+  instruction& instruction::add(operand op) noexcept
+  {
+    m_operands.push_back(std::move(op));
+    return *this;
+  }
+
+  string_t instruction::opcode_str() const noexcept
+  {
+    return opcode_str(m_opCode);
   }
 
 

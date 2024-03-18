@@ -43,6 +43,7 @@ namespace tnac::detail
     using instr_iter   = utils::ilist<ir::instruction>::iterator;
     using symbol       = semantics::symbol;
     using var_store    = std::unordered_map<symbol*, ir::vreg*>;
+    using reg_idx      = std::uint64_t;
 
   private:
     struct func_data;
@@ -155,6 +156,11 @@ namespace tnac::detail
     // Gets the first instruction of the current function
     //
     instr_iter funct_start() noexcept;
+
+    //
+    // Returns the current register index and increments it
+    //
+    reg_idx register_index() noexcept;
 
   private:
     //

@@ -25,9 +25,9 @@ namespace tnac::detail
 
   public:
     //
-    // Pushes a value to the stack
+    // Pushes an operand to the stack
     //
-    void push(eval::value val) noexcept;
+    void push(ir::operand op) noexcept;
 
     //
     // Returns the current top item

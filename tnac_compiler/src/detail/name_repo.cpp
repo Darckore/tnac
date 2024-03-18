@@ -36,6 +36,12 @@ namespace tnac::detail
     return mangle(original, &owner, parCnt);
   }
 
+  string_t name_repo::op_name(ir::op_code oc) noexcept
+  {
+    auto name = ir::instruction::opcode_str(oc);
+    return m_prefNames.next_indexed(name);
+  }
+
 
   // Private members
 

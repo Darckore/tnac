@@ -3,7 +3,7 @@
 //
 
 #pragma once
-#include "cfg/ir/ir_function.hpp"
+#include "cfg/ir/ir.hpp"
 
 namespace tnac::detail
 {
@@ -76,6 +76,11 @@ namespace tnac::detail
     // Creates a mangled name of a function
     //
     string_t mangle_func_name(string_t original, const ir::function& owner, std::size_t parCnt) noexcept;
+
+    //
+    // Creates a name for an operation from op code
+    //
+    string_t op_name(ir::op_code oc) noexcept;
 
   private:
     //

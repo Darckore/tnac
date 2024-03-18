@@ -136,7 +136,9 @@ namespace tnac
 
   void compiler::visit(ast::id_expr& id) noexcept
   {
-    utils::unused(id);
+    auto reg = m_context.locate(id.symbol());
+    UTILS_ASSERT(reg);
+    emit_load(*reg);
   }
 
   void compiler::visit(ast::unary_expr& unary) noexcept
@@ -155,12 +157,37 @@ namespace tnac
   {
     auto rhs = m_stack.extract();
     auto lhs = m_stack.extract();
+    const auto opType = binary.op().what();
     if (lhs.is_value() && rhs.is_value())
     {
-      const auto op = detail::conv_binary(binary.op().what());
+      const auto op = detail::conv_binary(opType);
       m_eval.visit_binary(lhs.get_value(), rhs.get_value(), op);
       carry_val(&binary);
       return;
+    }
+
+    using enum tok_kind;
+    switch (opType)
+    {
+    case Plus:      emit_binary(ir::op_code::Add, lhs, rhs);  break;
+    case Minus:     emit_binary(ir::op_code::Sub, lhs, rhs);  break;
+    case Asterisk:  emit_binary(ir::op_code::Mul, lhs, rhs);  break;
+    case Slash:     emit_binary(ir::op_code::Div, lhs, rhs);  break;
+    case Percent:   emit_binary(ir::op_code::Mod, lhs, rhs);  break;
+    case Amp:       emit_binary(ir::op_code::And, lhs, rhs);  break;
+    case Pipe:      emit_binary(ir::op_code::Or, lhs, rhs);   break;
+    case Hat:       emit_binary(ir::op_code::Xor, lhs, rhs);  break;
+    case Pow:       emit_binary(ir::op_code::Pow, lhs, rhs);  break;
+    case Root:      emit_binary(ir::op_code::Root, lhs, rhs); break;
+
+    case Less:      break;
+    case LessEq:    break;
+    case Greater:   break;
+    case GreaterEq: break;
+    case Eq:        break;
+    case NotEq:     break;
+
+    default: UTILS_ASSERT(false); break;
     }
   }
 
@@ -216,11 +243,6 @@ namespace tnac
 
   // Decls
 
-  void compiler::visit(ast::var_decl& var) noexcept
-  {
-    emit_alloc(var.name());
-  }
-
   void compiler::visit(ast::param_decl& param) noexcept
   {
     utils::unused(param);
@@ -267,6 +289,27 @@ namespace tnac
     return false;
   }
 
+  bool compiler::preview(ast::var_decl& var) noexcept
+  {
+    auto&& reg = emit_alloc(var.name());
+    m_context.store(var.symbol(), reg);
+    compile(var.initialiser());
+    emit_store(reg);
+    return false;
+  }
+
+  bool compiler::preview(ast::assign_expr& assign) noexcept
+  {
+    auto target = utils::try_cast<ast::id_expr>(&assign.left());
+    UTILS_ASSERT(target);
+
+    auto reg = m_context.locate(target->symbol());
+    UTILS_ASSERT(reg);
+
+    compile(assign.right());
+    emit_store(*reg);
+    return false;
+  }
 
   // Private members (Emitions)
 
@@ -275,14 +318,15 @@ namespace tnac
     m_context.func_start_at(instr);
   }
 
-  void compiler::emit_alloc(string_t varName) noexcept
+  ir::vreg& compiler::emit_alloc(string_t varName) noexcept
   {
     auto&& curFn = m_context.current_function();
     auto&& entry = curFn.entry();
     auto&& builder = m_cfg->get_builder();
     auto&& var = builder.add_var(entry, m_context.funct_start());
     auto&& reg = builder.make_register(varName);
-    var.add(ir::operand{ &reg });
+    var.add(&reg);
+    return reg;
   }
 
   void compiler::emit_ret(ir::basic_block& block) noexcept
@@ -293,6 +337,34 @@ namespace tnac
     update_context(instr);
   }
 
+  void compiler::emit_store(ir::vreg& target) noexcept
+  {
+    auto val = m_stack.extract();
+    auto&& block = m_context.current_block();
+    auto&& instr = m_cfg->get_builder().add_instruction(block, ir::op_code::Store);
+    instr.add(val).add(&target);
+    update_context(instr);
+  }
+
+  void compiler::emit_load(ir::vreg& target) noexcept
+  {
+    auto&& builder = m_cfg->get_builder();
+    auto&& block = m_context.current_block();
+    auto&& instr = builder.add_instruction(block, ir::op_code::Load);
+    auto&& res = builder.make_register(m_context.register_index());
+    instr.add(&res).add(&target);
+    m_stack.push(&res);
+  }
+
+  void compiler::emit_binary(ir::op_code oc, ir::operand lhs, ir::operand rhs) noexcept
+  {
+    auto&& builder = m_cfg->get_builder();
+    auto&& block = m_context.current_block();
+    auto&& instr = builder.add_instruction(block, oc);
+    auto&& res = builder.make_register(m_names.op_name(oc));
+    instr.add(&res).add(lhs).add(rhs);
+    m_stack.push(&res);
+  }
 
   // Private members
 

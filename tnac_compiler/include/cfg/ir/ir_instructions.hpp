@@ -89,7 +89,7 @@ namespace tnac::ir
 
     ~operand() noexcept;
 
-    explicit operand(detail::operand_data auto val) noexcept :
+    operand(detail::operand_data auto val) noexcept :
       m_value{ val }
     {}
 
@@ -177,6 +177,12 @@ namespace tnac::ir
     // DOES NOT check the boundaries
     //
     const operand& operator[](size_type idx) const noexcept;
+
+  public:
+    //
+    // Conversion function for op codes
+    //
+    static string_t opcode_str(op_code oc) noexcept;
 
   public:
     //

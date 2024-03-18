@@ -91,7 +91,6 @@ namespace tnac
     void visit(ast::dot_expr& dot) noexcept;
 
   public: // Decls
-    void visit(ast::var_decl& var) noexcept;
     void visit(ast::param_decl& param) noexcept;
 
   public: // Previews
@@ -105,6 +104,10 @@ namespace tnac
     //
     bool preview(ast::func_decl& fd) noexcept;
 
+    bool preview(ast::var_decl& var) noexcept;
+
+    bool preview(ast::assign_expr& assign) noexcept;
+
   private: // Emitions
     //
     // Updates the first instruction in the context if needed
@@ -114,12 +117,27 @@ namespace tnac
     //
     // Creates an alloc instruction for the specified variable
     //
-    void emit_alloc(string_t varName) noexcept;
+    ir::vreg& emit_alloc(string_t varName) noexcept;
 
     //
-    // Creates a ret instruction in the specified block
+    // Creates a ret instruction
     //
     void emit_ret(ir::basic_block& block) noexcept;
+
+    //
+    // Creates a store instruction for the specified variable
+    //
+    void emit_store(ir::vreg& target) noexcept;
+
+    //
+    // Creates a load instruction for the specified variable
+    //
+    void emit_load(ir::vreg& target) noexcept;
+
+    //
+    // Creates a binary arithmetic instruction
+    //
+    void emit_binary(ir::op_code oc, ir::operand lhs, ir::operand rhs) noexcept;
 
   private:
     //

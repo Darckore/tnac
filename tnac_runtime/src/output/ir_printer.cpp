@@ -57,28 +57,30 @@ namespace tnac::rt::out
     using enum ir::op_code;
     switch (instr.opcode())
     {
-    case Add:   break;
-    case Sub:   break;
-    case Mul:   break;
-    case Div:   break;
-    case Mod:   break;
-    case Pow:   break;
-    case Root:  break;
-    case And:   break;
-    case Or:    break;
-    case Xor:   break;
-    case CmpE:  break;
-    case CmpL:  break;
-    case CmpLE: break;
+    case Add:
+    case Sub:
+    case Mul:
+    case Div:
+    case Mod:
+    case Pow:
+    case Root:
+    case And:
+    case Or:
+    case Xor:
+    case CmpE:
+    case CmpL:
+    case CmpLE:
+      print_binary(instr);
+      break;
 
     case Abs:   break;
 
-    case Alloc: print_alloc(instr);  break;
-    case Store: break;
-    case Load:  break;
+    case Alloc: print_alloc(instr); break;
+    case Store: print_store(instr); break;
+    case Load:  print_load(instr);  break;
     case Call:  break;
     case Jump:  break;
-    case Ret:   print_ret(instr); break;
+    case Ret:   print_ret(instr);   break;
     }
     endl();
   }
@@ -106,10 +108,33 @@ namespace tnac::rt::out
     keyword(alloc.opcode_str());
   }
 
+  void ir_printer::print_store(const ir::instruction& store) noexcept
+  {
+    keyword(store.opcode_str());
+    print_operand(store[0]);
+    out() << ", ";
+    print_operand(store[1]);
+  }
+
+  void ir_printer::print_load(const ir::instruction& load) noexcept
+  {
+    print_assign(load[0]);
+    keyword(load.opcode_str());
+    print_operand(load[1]);
+  }
+
+  void ir_printer::print_binary(const ir::instruction& bin) noexcept
+  {
+    print_assign(bin[0]);
+    keyword(bin.opcode_str());
+    print_operand(bin[1]);
+    out() << ", ";
+    print_operand(bin[2]);
+  }
+
   void ir_printer::print_ret(const ir::instruction& ret) noexcept
   {
     keyword(ret.opcode_str());
-    out() << ' ';
     print_operand(ret[0]);
   }
 
@@ -127,6 +152,7 @@ namespace tnac::rt::out
   void ir_printer::keyword(string_t kw) noexcept
   {
     fmt::print(out(), fmt::clr::BoldBlue, kw);
+    out() << ' ';
   }
 
   void ir_printer::name(string_t n) noexcept
@@ -142,7 +168,6 @@ namespace tnac::rt::out
   void ir_printer::value(eval::value val) noexcept
   {
     keyword(val.id_str());
-    out() << ' ';
     auto visitor = utils::visitor
     {
       [&](eval::invalid_val_t) noexcept

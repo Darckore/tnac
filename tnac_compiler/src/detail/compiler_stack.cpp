@@ -11,9 +11,9 @@ namespace tnac::detail
 
   // Public members
 
-  void compiler_stack::push(eval::value val) noexcept
+  void compiler_stack::push(ir::operand op) noexcept
   {
-    m_data.emplace_back(val);
+    m_data.emplace_back(op);
   }
 
   compiler_stack::value_type compiler_stack::top() noexcept

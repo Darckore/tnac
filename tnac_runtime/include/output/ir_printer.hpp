@@ -48,6 +48,12 @@ namespace tnac::rt::out
 
     void print_alloc(const ir::instruction& alloc) noexcept;
 
+    void print_store(const ir::instruction& store) noexcept;
+
+    void print_load(const ir::instruction& load) noexcept;
+
+    void print_binary(const ir::instruction& bin) noexcept;
+
     void print_ret(const ir::instruction& ret) noexcept;
 
   private:

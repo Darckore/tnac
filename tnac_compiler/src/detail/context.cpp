@@ -13,6 +13,7 @@ namespace tnac::detail // func data
     ir::function* m_curFunction{};
     instr_iter m_funcFirst{};
     ir::basic_block* m_terminal{};
+    reg_idx m_regIdx{};
   };
 }
 
@@ -140,6 +141,12 @@ namespace tnac::detail
   context::instr_iter context::funct_start() noexcept
   {
     return cur_data().m_funcFirst;
+  }
+
+  context::reg_idx context::register_index() noexcept
+  {
+    auto&& fd = cur_data();
+    return fd.m_regIdx++;
   }
 
 
