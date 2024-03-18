@@ -148,6 +148,11 @@ namespace tnac::ir
     CmpGE,
 
     Abs,
+    Plus,
+    Neg,
+    BNeg,
+    CmpNot,
+    CmpIs,
 
     Store,
     Load,

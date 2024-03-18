@@ -76,7 +76,14 @@ namespace tnac::rt::out
       print_binary(instr);
       break;
 
-    case Abs:   break;
+    case Abs:
+    case CmpNot:
+    case CmpIs:
+    case Plus:
+    case Neg:
+    case BNeg:
+      print_unary(instr);
+      break;
 
     case Alloc: print_alloc(instr); break;
     case Store: print_store(instr); break;
@@ -133,6 +140,13 @@ namespace tnac::rt::out
     print_operand(bin[1]);
     out() << ", ";
     print_operand(bin[2]);
+  }
+
+  void ir_printer::print_unary(const ir::instruction& un) noexcept
+  {
+    print_assign(un[0]);
+    keyword(un.opcode_str());
+    print_operand(un[1]);
   }
 
   void ir_printer::print_ret(const ir::instruction& ret) noexcept

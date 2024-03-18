@@ -76,6 +76,25 @@ namespace tnac::detail
     case GreaterEq: return ir::op_code::CmpGE;
     case Eq:        return ir::op_code::CmpE;
     case NotEq:     return ir::op_code::CmpNE;
+
+    default: break;
+    }
+
+    return ir::op_code::None;
+  }
+
+  constexpr auto to_unary_opcode(tok_kind tk) noexcept
+  {
+    using enum tok_kind;
+    switch (tk)
+    {
+    case Exclamation: return ir::op_code::CmpNot;
+    case Question:    return ir::op_code::CmpIs;
+    case Plus:        return ir::op_code::Plus;
+    case Minus:       return ir::op_code::Neg;
+    case Tilde:       return ir::op_code::BNeg;
+
+    default: break;
     }
 
     return ir::op_code::None;
@@ -173,13 +192,18 @@ namespace tnac
   void compiler::visit(ast::unary_expr& unary) noexcept
   {
     auto val = m_stack.extract();
+    const auto opType = unary.op().what();
     if (val.is_value())
     {
-      const auto op = eval::detail::conv_unary(unary.op().what());
+      const auto op = eval::detail::conv_unary(opType);
       m_eval.visit_unary(val.get_value(), op);
       carry_val(&unary);
       return;
     }
+
+    const auto opcode = detail::to_unary_opcode(opType);
+    UTILS_ASSERT(opcode != ir::op_code::None);
+    emit_unary(opcode, val);
   }
 
   void compiler::visit(ast::binary_expr& binary) noexcept
@@ -330,6 +354,25 @@ namespace tnac
     m_context.clear_store();
   }
 
+  ir::instruction& compiler::make(ir::op_code oc) noexcept
+  {
+    clear_store();
+    using enum ir::op_code;
+
+    auto&& builder = m_cfg->get_builder();
+    auto&& block = m_context.current_block();
+    auto&& instr = builder.add_instruction(block, oc);
+
+    auto&& res = utils::eq_none(oc, Load) ?
+      builder.make_register(m_names.op_name(oc)):
+      builder.make_register(m_context.register_index());
+
+    instr.add(&res);
+    update_func_start(instr);
+    m_stack.push(&res);
+    return instr;
+  }
+
   ir::vreg& compiler::emit_alloc(string_t varName) noexcept
   {
     auto&& curFn = m_context.current_function();
@@ -348,7 +391,7 @@ namespace tnac
 
     auto op = m_stack.extract();
     auto&& instr = m_cfg->get_builder().add_instruction(block, ir::op_code::Ret);
-    instr.add(std::move(op));
+    instr.add(op);
     update_func_start(instr);
     empty_stack();
   }
@@ -369,10 +412,9 @@ namespace tnac
 
   void compiler::emit_load(semantics::symbol& var) noexcept
   {
-    clear_store();
-    auto res = m_context.last_read(var);
-    if (res)
+    if (auto res = m_context.last_read(var))
     {
+      clear_store();
       m_stack.push(res);
       return;
     }
@@ -380,28 +422,19 @@ namespace tnac
     auto target = m_context.locate(var);
     UTILS_ASSERT(target);
 
-    auto&& builder = m_cfg->get_builder();
-    auto&& block = m_context.current_block();
-    auto&& instr = builder.add_instruction(block, ir::op_code::Load);
-
-    res = &builder.make_register(m_context.register_index());
-    m_context.read_into(var, *res);
-    instr.add(res).add(target);
-
-    update_func_start(instr);
-    m_stack.push(res);
+    auto&& instr = make(ir::op_code::Load).add(target);
+    auto&& res = instr[0];
+    m_context.read_into(var, res.get_reg());
   }
 
   void compiler::emit_binary(ir::op_code oc, ir::operand lhs, ir::operand rhs) noexcept
   {
-    clear_store();
-    auto&& builder = m_cfg->get_builder();
-    auto&& block = m_context.current_block();
-    auto&& instr = builder.add_instruction(block, oc);
-    auto&& res = builder.make_register(m_names.op_name(oc));
-    instr.add(&res).add(lhs).add(rhs);
-    update_func_start(instr);
-    m_stack.push(&res);
+    make(oc).add(lhs).add(rhs);
+  }
+
+  void compiler::emit_unary(ir::op_code oc, ir::operand val) noexcept
+  {
+    make(oc).add(val);
   }
 
 

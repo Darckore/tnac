@@ -54,6 +54,8 @@ namespace tnac::rt::out
 
     void print_binary(const ir::instruction& bin) noexcept;
 
+    void print_unary(const ir::instruction& un) noexcept;
+
     void print_ret(const ir::instruction& ret) noexcept;
 
   private:

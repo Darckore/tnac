@@ -121,6 +121,11 @@ namespace tnac
     void clear_store() noexcept;
 
     //
+    // Prepares an instruction which has a result
+    //
+    ir::instruction& make(ir::op_code oc) noexcept;
+
+    //
     // Creates an alloc instruction for the specified variable
     //
     ir::vreg& emit_alloc(string_t varName) noexcept;
@@ -141,9 +146,14 @@ namespace tnac
     void emit_load(semantics::symbol& var) noexcept;
 
     //
-    // Creates a binary arithmetic instruction
+    // Creates a binary instruction
     //
     void emit_binary(ir::op_code oc, ir::operand lhs, ir::operand rhs) noexcept;
+
+    //
+    // Creates a unary instruction
+    //
+    void emit_unary(ir::op_code oc, ir::operand val) noexcept;
 
   private:
     //
