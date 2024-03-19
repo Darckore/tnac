@@ -508,6 +508,7 @@
     <Expand>
       <Item Name="[in]">*m_in</Item>
       <Item Name="[out]">*m_out</Item>
+      <Item Name="[operand]">m_value</Item>
     </Expand>
   </Type>
 

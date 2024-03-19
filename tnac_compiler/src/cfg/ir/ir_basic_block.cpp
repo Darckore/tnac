@@ -6,10 +6,11 @@ namespace tnac::ir // edge
 
   edge::~edge() noexcept = default;
 
-  edge::edge(basic_block& in, basic_block& out) noexcept :
+  edge::edge(basic_block& in, basic_block& out, operand val) noexcept :
     node{ kind::Edge },
     m_in{ &in },
-    m_out{ &out }
+    m_out{ &out },
+    m_value{ val }
   {}
 
 
@@ -31,6 +32,11 @@ namespace tnac::ir // edge
   basic_block& edge::outgoing() noexcept
   {
     return FROM_CONST(outgoing);
+  }
+
+  operand edge::value() const noexcept
+  {
+    return m_value;
   }
 }
 

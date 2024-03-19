@@ -25,13 +25,11 @@ namespace tnac::ir
 
   protected:
     friend class basic_block;
-    edge(basic_block& in, basic_block& out) noexcept;
+    edge(basic_block& in, basic_block& out, operand val) noexcept;
 
   public:
     //
     // Returns a reference to the incoming basic block
-    // 
-    // const vesrion
     //
     const basic_block& incoming() const noexcept;
 
@@ -42,8 +40,6 @@ namespace tnac::ir
 
     //
     // Returns a reference to the outgoing basic block
-    // 
-    // const vesrion
     //
     const basic_block& outgoing() const noexcept;
 
@@ -52,9 +48,15 @@ namespace tnac::ir
     //
     basic_block& outgoing() noexcept;
 
+    //
+    // Returns the attached value
+    //
+    operand value() const noexcept;
+
   private:
     basic_block* m_in{};
     basic_block* m_out{};
+    operand m_value;
   };
 
 
