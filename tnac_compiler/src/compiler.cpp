@@ -370,7 +370,7 @@ namespace tnac
 
     auto&& builder = m_cfg->get_builder();
     auto&& block = m_context.current_block();
-    auto&& instr = builder.add_instruction(block, oc);
+    auto&& instr = builder.add_instruction(block, oc, m_context.func_end());
 
     auto&& res = utils::eq_none(oc, Load) ?
       builder.make_register(m_names.op_name(oc)):
@@ -400,7 +400,7 @@ namespace tnac
       emit_load(*last);
 
     auto op = m_stack.extract();
-    auto&& instr = m_cfg->get_builder().add_instruction(block, ir::op_code::Ret);
+    auto&& instr = m_cfg->get_builder().add_instruction(block, ir::op_code::Ret, m_context.func_end());
     instr.add(op);
     update_func_start(instr);
     empty_stack();
@@ -410,11 +410,12 @@ namespace tnac
   {
     auto target = m_context.locate(var);
     UTILS_ASSERT(target);
-    m_context.save_store(var);
-
     auto val = m_stack.extract();
+    if(!val.is_param())
+      m_context.save_store(var);
+
     auto&& block = m_context.current_block();
-    auto&& instr = m_cfg->get_builder().add_instruction(block, ir::op_code::Store);
+    auto&& instr = m_cfg->get_builder().add_instruction(block, ir::op_code::Store, m_context.func_end());
     instr.add(val).add(target);
     m_context.modify(var);
     update_func_start(instr);

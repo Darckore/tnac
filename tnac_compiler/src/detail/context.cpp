@@ -27,6 +27,7 @@ namespace tnac::detail // func data
     block_queue m_blocks;
     ir::function* m_curFunction{};
     instr_iter m_funcFirst{};
+    instr_iter m_funcLast{};
     ir::basic_block* m_terminal{};
     reg_idx m_regIdx{};
     symbol* m_lastStore{};
@@ -94,8 +95,15 @@ namespace tnac::detail
 
   void context::enter_function(ir::function& fn) noexcept
   {
+    instr_iter last{};
+    if (auto owner = fn.owner_func())
+      last = owner->entry().begin();
+    if (!last && !m_funcs.empty())
+      last = cur_data().m_funcLast;
+
     auto&& fd = m_funcs.emplace_back();
     fd.m_curFunction = &fn;
+    fd.m_funcLast = last;
   }
   void context::exit_function() noexcept
   {
@@ -158,6 +166,11 @@ namespace tnac::detail
   context::instr_iter context::funct_start() noexcept
   {
     return cur_data().m_funcFirst;
+  }
+
+  context::instr_iter context::func_end() noexcept
+  {
+    return cur_data().m_funcLast;
   }
 
   context::reg_idx context::register_index() noexcept

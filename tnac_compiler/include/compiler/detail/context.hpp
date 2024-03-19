@@ -159,6 +159,11 @@ namespace tnac::detail
     instr_iter funct_start() noexcept;
 
     //
+    // Gets the first instruction of the next function
+    //
+    instr_iter func_end() noexcept;
+
+    //
     // Returns the current register index and increments it
     //
     reg_idx register_index() noexcept;

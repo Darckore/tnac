@@ -45,9 +45,9 @@ namespace tnac::ir
     function* find_function(entity_id id) noexcept;
 
     //
-    // Appends an instruction to the specified basic block
+    // Appends an instruction to the specified basic block before the given iterator
     //
-    instruction& add_instruction(basic_block& owner, op_code op) noexcept;
+    instruction& add_instruction(basic_block& owner, op_code op, instruction_list::iterator pos) noexcept;
 
     //
     // Adds a variable declaration to the specified block before the given iterator
