@@ -68,6 +68,12 @@ namespace tnac::detail
     string_t ret_block_name() noexcept;
 
     //
+    // Returns a prefixed name for a block
+    // prefix.postfix.<idx>
+    //
+    string_t make_block_name(string_t prefix, string_t postfix) noexcept;
+
+    //
     // Creates a mangled name of a module
     //
     string_t mangle_module_name(string_t original, std::size_t parCnt) noexcept;

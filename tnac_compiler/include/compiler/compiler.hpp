@@ -105,9 +105,21 @@ namespace tnac
     //
     bool preview(ast::func_decl& fd) noexcept;
 
+    //
+    // Declares and inits a variable
+    //
     bool preview(ast::var_decl& var) noexcept;
 
+    //
+    // Compiles the assigned value and
+    // generates a variable store instruction
+    //
     bool preview(ast::assign_expr& assign) noexcept;
+
+    //
+    // Handles logical expressions
+    //
+    bool preview(ast::binary_expr& binary) noexcept;
 
   private: // Emitions
     //

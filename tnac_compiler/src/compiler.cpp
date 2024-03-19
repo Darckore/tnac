@@ -82,7 +82,6 @@ namespace tnac::detail
 
     return ir::op_code::None;
   }
-
   constexpr auto to_unary_opcode(tok_kind tk) noexcept
   {
     using enum tok_kind;
@@ -98,6 +97,28 @@ namespace tnac::detail
     }
 
     return ir::op_code::None;
+  }
+  constexpr auto is_land(tok_kind tk) noexcept
+  {
+    return tk == tok_kind::LogAnd;
+  }
+  constexpr auto is_lor(tok_kind tk) noexcept
+  {
+    return tk == tok_kind::LogOr;
+  }
+  constexpr auto is_logical(tok_kind tk) noexcept
+  {
+    return is_land(tk) || is_lor(tk);
+  }
+  constexpr auto logical_to_str(tok_kind tk) noexcept
+  {
+    switch (tk)
+    {
+    case tok_kind::LogAnd: return "land"sv;
+    case tok_kind::LogOr:  return "lor"sv;
+    default: break;
+    }
+    return string_t{};
   }
 }
 
@@ -208,9 +229,12 @@ namespace tnac
 
   void compiler::visit(ast::binary_expr& binary) noexcept
   {
+    const auto opType = binary.op().what();
+    if (detail::is_logical(opType))
+      return;
+
     auto rhs = m_stack.extract();
     auto lhs = m_stack.extract();
-    const auto opType = binary.op().what();
     if (lhs.is_value() && rhs.is_value())
     {
       const auto op = eval::detail::conv_binary(opType);
@@ -351,6 +375,46 @@ namespace tnac
     return false;
   }
 
+  bool compiler::preview(ast::binary_expr& binary) noexcept
+  {
+    const auto opType = binary.op().what();
+    if (!detail::is_logical(opType))
+      return true;
+
+    compile(binary.left());
+    auto leftOp = m_stack.extract();
+    if (leftOp.is_value())
+    {
+      const auto boolVal = eval::to_bool(leftOp.get_value());
+      const auto knownValue = ( boolVal && detail::is_lor(opType)) || // always true
+                              (!boolVal && detail::is_land(opType)); // always false
+      if (knownValue)
+      {
+        // todo: warning - always true/false
+        m_eval.visit_bool_literal(boolVal);
+        carry_val(&binary);
+        return false;
+      }
+    }
+
+    auto opName = detail::logical_to_str(opType);
+    auto&& endBlock = m_context.create_block(m_names.make_block_name(opName, "end"sv));
+    auto&& rhsBlock = m_context.create_block(m_names.make_block_name(opName, "rhs"sv));
+    m_context.enqueue_block(rhsBlock);
+    m_context.enqueue_block(endBlock);
+    m_context.terminate_at(endBlock);
+
+    // todo: jump instruction
+    m_context.exit_block();
+
+    compile(binary.right());
+
+    // todo: jump instruction
+    m_context.exit_block();
+
+    return false;
+  }
+
   // Private members (Emitions)
 
   void compiler::update_func_start(ir::instruction& instr) noexcept
@@ -404,6 +468,7 @@ namespace tnac
     instr.add(op);
     update_func_start(instr);
     empty_stack();
+    m_context.exit_block();
   }
 
   void compiler::emit_store(semantics::symbol& var) noexcept
@@ -462,7 +527,7 @@ namespace tnac
   {
     while (!m_stack.empty())
     {
-      // todo: dead code warning
+      // todo: warning - dead code
       m_stack.pop();
     }
   }
@@ -490,7 +555,6 @@ namespace tnac
     auto&& block = m_context.terminal_or_entry();
     emit_ret(block);
     UTILS_ASSERT(m_stack.empty());
-    m_context.exit_block();
   }
 
   void compiler::compile(semantics::module_sym& mod) noexcept

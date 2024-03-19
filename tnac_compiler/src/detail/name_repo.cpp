@@ -26,6 +26,12 @@ namespace tnac::detail
     return "ret"sv;
   }
 
+  string_t name_repo::make_block_name(string_t prefix, string_t postfix) noexcept
+  {
+    auto name = m_plainNames.format("{}.{}."sv, prefix, postfix);
+    return m_prefNames.next_indexed(name);
+  }
+
   string_t name_repo::mangle_module_name(string_t original, std::size_t parCnt) noexcept
   {
     return mangle(original, {}, parCnt);
