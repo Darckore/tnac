@@ -101,6 +101,7 @@ namespace tnac::ir
   }
 }
 
+
 namespace tnac::ir
 {
   //
@@ -137,6 +138,11 @@ namespace tnac::ir
     bool is_param() const noexcept;
 
     //
+    // Checks whether the operand holds a basic block reference
+    //
+    bool is_block() const noexcept;
+
+    //
     // Returns the stored value
     // Callers must check is_value before using this
     //
@@ -154,10 +160,17 @@ namespace tnac::ir
     //
     func_param get_param() const noexcept;
 
+    //
+    // Returns the stored basic block
+    // Callers must check is_block before using this
+    //
+    basic_block& get_block() const noexcept;
+
   private:
     data_type m_value;
   };
 }
+
 
 namespace tnac::ir
 {

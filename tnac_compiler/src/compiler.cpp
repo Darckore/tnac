@@ -401,15 +401,14 @@ namespace tnac
     auto&& endBlock = m_context.create_block(m_names.make_block_name(opName, "end"sv));
     auto&& rhsBlock = m_context.create_block(m_names.make_block_name(opName, "rhs"sv));
     m_context.enqueue_block(rhsBlock);
-    m_context.enqueue_block(endBlock);
-    m_context.terminate_at(endBlock);
-
-    // todo: jump instruction
+    emit_cond_jump(leftOp, endBlock, rhsBlock);
     m_context.exit_block();
 
     compile(binary.right());
-
-    // todo: jump instruction
+    auto rightOp = m_stack.extract();
+    utils::unused(rightOp);
+    m_context.enqueue_block(endBlock);
+    m_context.terminate_at(endBlock);
     m_context.exit_block();
 
     return false;
@@ -513,6 +512,19 @@ namespace tnac
     make(oc).add(val);
   }
 
+  void compiler::emit_jump(ir::basic_block& dest) noexcept
+  {
+    utils::unused(dest);
+  }
+
+  void compiler::emit_cond_jump(ir::operand cond, ir::basic_block& ifTrue, ir::basic_block& ifFalse) noexcept
+  {
+    auto&& block = m_context.current_block();
+    auto&& instr = m_cfg->get_builder().add_instruction(block, ir::op_code::Jump, m_context.func_end());
+    instr.add(cond).add(&ifTrue).add(&ifFalse);
+    m_cfg->connect(block, ifTrue, cond);
+    m_cfg->connect(block, ifFalse, cond);
+  }
 
   // Private members
 

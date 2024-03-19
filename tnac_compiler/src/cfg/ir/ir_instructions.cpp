@@ -95,6 +95,16 @@ namespace tnac::ir // operand
     UTILS_ASSERT(is_param());
     return std::get<func_param>(m_value);
   }
+
+  bool operand::is_block() const noexcept
+  {
+    return std::holds_alternative<basic_block*>(m_value);
+  }
+  basic_block& operand::get_block() const noexcept
+  {
+    UTILS_ASSERT(is_block());
+    return *std::get<basic_block*>(m_value);
+  }
 }
 
 

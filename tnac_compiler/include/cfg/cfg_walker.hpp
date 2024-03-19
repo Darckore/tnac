@@ -114,6 +114,14 @@ namespace tnac::ir
       }
 
       visit_root(start);
+
+      for (auto conn : start->outs())
+      {
+        auto&& out = conn->outgoing();
+
+        if(out.is_last_pred(*conn))
+          walk_blocks(&out);
+      }
     }
 
     //

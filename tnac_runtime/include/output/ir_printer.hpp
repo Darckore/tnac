@@ -58,6 +58,8 @@ namespace tnac::rt::out
 
     void print_ret(const ir::instruction& ret) noexcept;
 
+    void print_jump(const ir::instruction& jmp) noexcept;
+
   private:
     out_stream& out() noexcept;
 
@@ -73,9 +75,11 @@ namespace tnac::rt::out
 
     void value(eval::value val) noexcept;
 
-    void vreg(ir::vreg& reg) noexcept;
+    void vreg(const ir::vreg& reg) noexcept;
 
     void param(ir::func_param par) noexcept;
+
+    void block(const ir::basic_block& block) noexcept;
 
     void plain(string_t str) noexcept;
 

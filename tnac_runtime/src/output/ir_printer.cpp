@@ -89,7 +89,7 @@ namespace tnac::rt::out
     case Store: print_store(instr); break;
     case Load:  print_load(instr);  break;
     case Call:  break;
-    case Jump:  break;
+    case Jump:  print_jump(instr);  break;
     case Ret:   print_ret(instr);   break;
     }
     endl();
@@ -106,6 +106,8 @@ namespace tnac::rt::out
       vreg(op.get_reg());
     else if (op.is_param())
       param(op.get_param());
+    else if (op.is_block())
+      block(op.get_block());
   }
 
   void ir_printer::print_assign(const ir::operand& op) noexcept
@@ -155,6 +157,20 @@ namespace tnac::rt::out
   {
     keyword(ret.opcode_str());
     print_operand(ret[0]);
+  }
+
+  void ir_printer::print_jump(const ir::instruction& jmp) noexcept
+  {
+    keyword(jmp.opcode_str());
+    print_operand(jmp[0]);
+
+    if (jmp.operand_count() < 3)
+      return;
+
+    out() << ", ";
+    print_operand(jmp[1]);
+    out() << ", ";
+    print_operand(jmp[2]);
   }
 
 
@@ -209,13 +225,19 @@ namespace tnac::rt::out
     eval::on_value(val, visitor);
   }
 
-  void ir_printer::vreg(ir::vreg& reg) noexcept
+  void ir_printer::vreg(const ir::vreg& reg) noexcept
   {
     out() << '%';
     if (reg.is_named())
       out() << reg.name();
     else
       out() << reg.index();
+  }
+
+  void ir_printer::block(const ir::basic_block& block) noexcept
+  {
+    keyword("label"sv);
+    name(block.name());
   }
 
   void ir_printer::param(ir::func_param par) noexcept

@@ -167,6 +167,16 @@ namespace tnac
     //
     void emit_unary(ir::op_code oc, ir::operand val) noexcept;
 
+    //
+    // Creates an unconditional jump instruction
+    //
+    void emit_jump(ir::basic_block& dest) noexcept;
+
+    //
+    // Creates a conditional jump instruction
+    //
+    void emit_cond_jump(ir::operand cond, ir::basic_block& ifTrue, ir::basic_block& ifFalse) noexcept;
+
   private:
     //
     // Transfers a calculated value to the internal stack
