@@ -133,6 +133,11 @@ namespace tnac
     void clear_store() noexcept;
 
     //
+    // Converges two or more conditional branches together
+    //
+    void converge() noexcept;
+
+    //
     // Prepares an instruction which has a result
     //
     ir::instruction& make(ir::op_code oc) noexcept;
@@ -176,6 +181,11 @@ namespace tnac
     // Creates a conditional jump instruction
     //
     void emit_cond_jump(ir::operand cond, ir::basic_block& ifTrue, ir::basic_block& ifFalse) noexcept;
+
+    //
+    // Creates a phi node
+    //
+    void emit_phi() noexcept;
 
   private:
     //

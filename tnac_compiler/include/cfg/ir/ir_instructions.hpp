@@ -211,7 +211,9 @@ namespace tnac::ir
 
     Call,
     Jump,
-    Ret
+    Ret,
+
+    Phi
   };
 
   //

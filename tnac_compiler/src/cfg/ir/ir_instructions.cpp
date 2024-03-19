@@ -165,6 +165,8 @@ namespace tnac::ir // instruction
     case Call:  return "call"sv;
     case Jump:  return "jmp"sv;
     case Ret:   return "ret"sv;
+
+    case Phi:   return "phi"sv;
     }
 
     UTILS_ASSERT(false);
@@ -233,6 +235,8 @@ namespace tnac::ir // instruction
     case Jump:  count = 1; break;
 
     case Ret:   count = 1; break;
+
+    case Phi:   count = 3; break; // 2 branches is the most common case (probably)
     }
 
     m_operands.reserve(count);

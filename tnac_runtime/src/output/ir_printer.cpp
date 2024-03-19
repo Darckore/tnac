@@ -91,6 +91,8 @@ namespace tnac::rt::out
     case Call:  break;
     case Jump:  print_jump(instr);  break;
     case Ret:   print_ret(instr);   break;
+
+    case Phi: break;
     }
     endl();
   }

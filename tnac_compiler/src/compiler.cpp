@@ -409,6 +409,7 @@ namespace tnac
 
     m_context.enter_block(endBlock);
     m_context.terminate_at(endBlock);
+    converge();
 
     return false;
   }
@@ -423,6 +424,20 @@ namespace tnac
   void compiler::clear_store() noexcept
   {
     m_context.clear_store();
+  }
+
+  void compiler::converge() noexcept
+  {
+    auto preds = m_context.current_block().preds();
+    if (preds.empty())
+      return;
+
+    // Corner case, some degenerate branch here
+    if (preds.size() == 1)
+    {
+      m_stack.push(preds.front()->value());
+      return;
+    }
   }
 
   ir::instruction& compiler::make(ir::op_code oc) noexcept
@@ -526,6 +541,11 @@ namespace tnac
     instr.add(cond).add(&ifTrue).add(&ifFalse);
     m_cfg->connect(block, ifTrue, cond);
     m_cfg->connect(block, ifFalse, cond);
+  }
+
+  void compiler::emit_phi() noexcept
+  {
+
   }
 
   // Private members
