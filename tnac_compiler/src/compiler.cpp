@@ -400,16 +400,15 @@ namespace tnac
     auto opName = detail::logical_to_str(opType);
     auto&& endBlock = m_context.create_block(m_names.make_block_name(opName, "end"sv));
     auto&& rhsBlock = m_context.create_block(m_names.make_block_name(opName, "rhs"sv));
-    m_context.enqueue_block(rhsBlock);
     emit_cond_jump(leftOp, endBlock, rhsBlock);
-    m_context.exit_block();
 
+    m_context.enter_block(rhsBlock);
     compile(binary.right());
     auto rightOp = m_stack.extract();
-    utils::unused(rightOp);
-    m_context.enqueue_block(endBlock);
+    emit_jump(rightOp, endBlock);
+
+    m_context.enter_block(endBlock);
     m_context.terminate_at(endBlock);
-    m_context.exit_block();
 
     return false;
   }
@@ -512,9 +511,12 @@ namespace tnac
     make(oc).add(val);
   }
 
-  void compiler::emit_jump(ir::basic_block& dest) noexcept
+  void compiler::emit_jump(ir::operand value, ir::basic_block& dest) noexcept
   {
-    utils::unused(dest);
+    auto&& block = m_context.current_block();
+    auto&& instr = m_cfg->get_builder().add_instruction(block, ir::op_code::Jump, m_context.func_end());
+    instr.add(&dest);
+    m_cfg->connect(block, dest, value);
   }
 
   void compiler::emit_cond_jump(ir::operand cond, ir::basic_block& ifTrue, ir::basic_block& ifFalse) noexcept
@@ -548,7 +550,7 @@ namespace tnac
   {
     auto _ = m_names.init_indicies();
     auto&& entry = m_context.create_block(m_names.entry_block_name());
-    m_context.enqueue_block(entry);
+    m_context.enter_block(entry);
     for (ir::function::size_type idx{}; auto param : params)
     {
       m_stack.push(ir::func_param{ idx++ });

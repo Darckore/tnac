@@ -24,7 +24,7 @@ namespace tnac::detail // func data
 
     ~func_data() noexcept = default;
 
-    block_queue m_blocks;
+    ir::basic_block* m_curBlock{};
     ir::function* m_curFunction{};
     instr_iter m_funcFirst{};
     instr_iter m_funcLast{};
@@ -121,16 +121,16 @@ namespace tnac::detail
     return current_function().create_block(name);
   }
 
-  void context::enqueue_block(ir::basic_block& block) noexcept
+  void context::enter_block(ir::basic_block& block) noexcept
   {
-    cur_data().m_blocks.push(&block);
+    cur_data().m_curBlock = &block;
   }
 
   ir::basic_block& context::current_block() noexcept
   {
     auto&& fd = cur_data();
-    UTILS_ASSERT(!fd.m_blocks.empty());
-    return *fd.m_blocks.front();
+    UTILS_ASSERT(fd.m_curBlock);
+    return *fd.m_curBlock;
   }
 
   ir::basic_block* context::terminal_block() noexcept
@@ -152,8 +152,7 @@ namespace tnac::detail
   void context::exit_block() noexcept
   {
     auto&& fd = cur_data();
-    UTILS_ASSERT(!fd.m_blocks.empty());
-    fd.m_blocks.pop();
+    fd.m_curBlock = {};
   }
 
   void context::func_start_at(ir::instruction& instr) noexcept

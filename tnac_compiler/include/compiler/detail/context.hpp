@@ -39,7 +39,6 @@ namespace tnac::detail
     using module_def   = ast::module_def;
     using data_store   = std::unordered_map<module_sym*, module_def*>;
     using module_stack = std::vector<module_sym*>;
-    using block_queue  = std::queue<ir::basic_block*>;
     using instr_iter   = utils::ilist<ir::instruction>::iterator;
     using symbol       = semantics::symbol;
     using reg_idx      = std::uint64_t;
@@ -117,12 +116,12 @@ namespace tnac::detail
     ir::basic_block& create_block(string_t name) noexcept;
 
     //
-    // Adds the given basic block to the queue
+    // Sets the given basic block as current
     //
-    void enqueue_block(ir::basic_block& block) noexcept;
+    void enter_block(ir::basic_block& block) noexcept;
 
     //
-    // Returns the basic block from the top of the queue
+    // Returns the current basic block
     //
     ir::basic_block& current_block() noexcept;
 

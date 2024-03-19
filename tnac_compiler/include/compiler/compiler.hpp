@@ -170,7 +170,7 @@ namespace tnac
     //
     // Creates an unconditional jump instruction
     //
-    void emit_jump(ir::basic_block& dest) noexcept;
+    void emit_jump(ir::operand value, ir::basic_block& dest) noexcept;
 
     //
     // Creates a conditional jump instruction
