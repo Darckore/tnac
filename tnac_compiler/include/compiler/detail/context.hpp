@@ -197,6 +197,12 @@ namespace tnac::detail
     //
     ir::vreg* last_read(symbol& var) noexcept;
 
+    //
+    // Allows overriding the position used to add instruction (func last)
+    // Returns the old one
+    //
+    instr_iter override_last(instr_iter newPos) noexcept;
+
   private:
     //
     // Returns function data from the top of the data stack

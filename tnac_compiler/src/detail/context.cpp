@@ -221,6 +221,14 @@ namespace tnac::detail
     return vd->m_lastRead;
   }
 
+  context::instr_iter context::override_last(instr_iter newPos) noexcept
+  {
+    auto&& fd = cur_data();
+    auto prev = fd.m_funcLast;
+    fd.m_funcLast = newPos;
+    return prev;
+  }
+
 
   // Private members
 
