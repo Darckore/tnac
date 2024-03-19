@@ -108,6 +108,38 @@ namespace tnac::ir // basic block
     return m_last ? std::next(m_last) : m_last;
   }
 
+  bool basic_block::is_last_pred(const edge& e) const noexcept
+  {
+    if (m_in.empty())
+      return false;
+    return m_in.back() == &e;
+  }
+
+  bool basic_block::is_last_connection(const basic_block& bb) const noexcept
+  {
+    if (m_in.empty())
+      return false;
+    return &m_in.back()->incoming() == &bb;
+  }
+
+  basic_block::const_edge_view basic_block::preds() const noexcept
+  {
+    return m_in;
+  }
+  basic_block::edge_view basic_block::preds() noexcept
+  {
+    return m_in;
+  }
+
+  basic_block::const_edge_view basic_block::outs() const noexcept
+  {
+    return m_out;
+  }
+  basic_block::edge_view basic_block::outs() noexcept
+  {
+    return m_out;
+  }
+
 
   // Protected members
 

@@ -70,6 +70,8 @@ namespace tnac::ir
     using instruction_iter       = utils::ilist<instruction>::iterator;
     using const_instruction_iter = utils::ilist<instruction>::const_iterator;
     using edge_list              = std::vector<edge*>;
+    using edge_view              = std::span<edge*>;
+    using const_edge_view        = std::span<const edge* const>;
 
   protected:
     friend class edge;
@@ -126,6 +128,36 @@ namespace tnac::ir
     // Returns an iterator past the last instruction
     //
     const_instruction_iter end() const noexcept;
+
+    //
+    // Checks whether the given edge is the last pred
+    //
+    bool is_last_pred(const edge& e) const noexcept;
+
+    //
+    // Checks whether the last pred connects to the given block
+    //
+    bool is_last_connection(const basic_block& bb) const noexcept;
+
+    //
+    // Returns a view into preds
+    //
+    const_edge_view preds() const noexcept;
+
+    //
+    // Returns a view into preds
+    //
+    edge_view preds() noexcept;
+
+    //
+    // Returns a view into outs
+    //
+    const_edge_view outs() const noexcept;
+
+    //
+    // Returns a view into outs
+    //
+    edge_view outs() noexcept;
 
   protected:
     //
