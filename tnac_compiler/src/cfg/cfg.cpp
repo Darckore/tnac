@@ -35,6 +35,29 @@ namespace tnac::ir
     return m_builder->find_function(id);
   }
 
+  edge& cfg::connect(basic_block& from, basic_block& to, operand val) noexcept
+  {
+    return m_builder->make_edge(from, to, val);
+  }
+
+  const cfg::instr_list& cfg::instructions() const noexcept
+  {
+    return m_builder->instructions();
+  }
+  cfg::instr_list& cfg::instructions() noexcept
+  {
+    return FROM_CONST(instructions);
+  }
+
+  const cfg::edge_list& cfg::edges() const noexcept
+  {
+    return m_builder->edges();
+  }
+  cfg::edge_list& cfg::edges() noexcept
+  {
+    return FROM_CONST(edges);
+  }
+
 
   // Private members
 

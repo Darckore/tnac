@@ -52,6 +52,21 @@ namespace tnac::ir
     return m_regs.emplace_front(idx);
   }
 
+  edge& builder::make_edge(basic_block& from, basic_block& to, operand val) noexcept
+  {
+    return m_edges.emplace_back(from, to, val);
+  }
+
+  builder::instruction_list& builder::instructions() noexcept
+  {
+    return m_instructions;
+  }
+
+  builder::edge_list& builder::edges() noexcept
+  {
+    return m_edges;
+  }
+
 
   // Private members
 

@@ -500,6 +500,8 @@
       <Item Name="[name]">m_name,sb</Item>
       <Item Name="[first instruction]">m_first</Item>
       <Item Name="[last instruction]">m_last</Item>
+      <Item Name="[preds]">m_in</Item>
+      <Item Name="[out]">m_out</Item>
     </Expand>
   </Type>
 
@@ -547,6 +549,7 @@
       <Item Name="[functions]">m_functions</Item>
       <Item Name="[basic blocks]">m_blocks</Item>
       <Item Name="[instructions]">m_instructions</Item>
+      <Item Name="[edges]">m_edges</Item>
       <Item Name="[registers]">m_regs</Item>
     </Expand>
   </Type>

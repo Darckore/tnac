@@ -20,6 +20,7 @@ namespace tnac::ir
     using block_store      = std::unordered_map<entity_id, block_map>;
     using instruction_list = instruction::list_type;
     using register_store   = std::forward_list<vreg>;
+    using edge_list        = edge::list_type;
 
   public:
     CLASS_SPECIALS_NONE_CUSTOM(builder);
@@ -64,6 +65,21 @@ namespace tnac::ir
     //
     vreg& make_register(vreg::idx_type idx) noexcept;
 
+    //
+    // Creates an edge between basic blocks
+    //
+    edge& make_edge(basic_block& from, basic_block& to, operand val) noexcept;
+
+    //
+    // Returns a reference to the instruction list
+    //
+    instruction_list& instructions() noexcept;
+
+    //
+    // Returns a reference to the edge list
+    //
+    edge_list& edges() noexcept;
+
   private:
     //
     // Creates a generic function
@@ -74,6 +90,7 @@ namespace tnac::ir
     func_store m_functions;
     block_store m_blocks;
     instruction_list m_instructions;
+    edge_list m_edges;
     register_store m_regs;
   };
 }

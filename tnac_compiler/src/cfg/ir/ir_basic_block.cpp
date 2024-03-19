@@ -11,7 +11,10 @@ namespace tnac::ir // edge
     m_in{ &in },
     m_out{ &out },
     m_value{ val }
-  {}
+  {
+    m_in->add_out(this);
+    m_out->add_pred(this);
+  }
 
 
   // Public members
@@ -103,5 +106,17 @@ namespace tnac::ir // basic block
   basic_block::const_instruction_iter basic_block::end() const noexcept
   {
     return m_last ? std::next(m_last) : m_last;
+  }
+
+
+  // Protected members
+
+  void basic_block::add_pred(edge* e) noexcept
+  {
+    m_in.push_back(e);
+  }
+  void basic_block::add_out(edge* e) noexcept
+  {
+    m_out.push_back(e);
   }
 }

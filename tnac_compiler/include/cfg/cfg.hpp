@@ -17,6 +17,8 @@ namespace tnac::ir
     using name_t      = function::name_t;
     using module_list = std::vector<function*>;
     using size_type   = module_list::size_type;
+    using instr_list  = builder::instruction_list;
+    using edge_list   = builder::edge_list;
 
   public:
     CLASS_SPECIALS_NONE(cfg);
@@ -45,6 +47,31 @@ namespace tnac::ir
     // Returns a pointer to the module or function corresponding to the given id
     //
     function* find_entity(entity_id id) noexcept;
+
+    //
+    // Connects blocks with an edge
+    //
+    edge& connect(basic_block& from, basic_block& to, operand val) noexcept;
+
+    //
+    // Returns a reference to the instruction list
+    //
+    const instr_list& instructions() const noexcept;
+
+    //
+    // Returns a reference to the instruction list
+    //
+    instr_list& instructions() noexcept;
+
+    //
+    // Returns a reference to the edge list
+    //
+    const edge_list& edges() const noexcept;
+
+    //
+    // Returns a reference to the edge list
+    //
+    edge_list& edges() noexcept;
 
   public:
     //

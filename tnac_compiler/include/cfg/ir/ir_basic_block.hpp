@@ -17,14 +17,15 @@ namespace tnac::ir
   //
   // Represents a graph edge connecting two basic blocks
   //
-  class edge final : public node
+  class edge final :
+    public utils::ilist_node<edge>,
+    public node
   {
   public:
     CLASS_SPECIALS_NONE(edge);
+
     ~edge() noexcept;
 
-  protected:
-    friend class basic_block;
     edge(basic_block& in, basic_block& out, operand val) noexcept;
 
   public:
@@ -66,8 +67,12 @@ namespace tnac::ir
   class basic_block final : public node
   {
   public:
-    using instruction_iter = utils::ilist<instruction>::iterator;
+    using instruction_iter       = utils::ilist<instruction>::iterator;
     using const_instruction_iter = utils::ilist<instruction>::const_iterator;
+    using edge_list              = std::vector<edge*>;
+
+  protected:
+    friend class edge;
 
   public:
     CLASS_SPECIALS_NONE(basic_block);
@@ -122,11 +127,24 @@ namespace tnac::ir
     //
     const_instruction_iter end() const noexcept;
 
+  protected:
+    //
+    // Appends an incoming edge
+    //
+    void add_pred(edge* e) noexcept;
+
+    //
+    // Appends an outgoind edge
+    //
+    void add_out(edge* e) noexcept;
+
   private:
     function* m_owner{};
     string_t m_name;
     instruction_iter m_first;
     instruction_iter m_last;
+    edge_list m_in;
+    edge_list m_out;
   };
 
   using block_container = detail::ir_container<string_t, basic_block>;
