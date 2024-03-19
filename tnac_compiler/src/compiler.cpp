@@ -400,7 +400,10 @@ namespace tnac
     auto opName = detail::logical_to_str(opType);
     auto&& endBlock = m_context.create_block(m_names.make_block_name(opName, "end"sv));
     auto&& rhsBlock = m_context.create_block(m_names.make_block_name(opName, "rhs"sv));
-    emit_cond_jump(leftOp, endBlock, rhsBlock);
+    if(detail::is_lor(opType))
+      emit_cond_jump(leftOp, endBlock, rhsBlock);
+    else
+      emit_cond_jump(leftOp, rhsBlock, endBlock);
 
     m_context.enter_block(rhsBlock);
     compile(binary.right());
