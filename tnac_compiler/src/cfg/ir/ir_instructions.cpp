@@ -105,6 +105,16 @@ namespace tnac::ir // operand
     UTILS_ASSERT(is_block());
     return *std::get<basic_block*>(m_value);
   }
+
+  bool operand::is_edge() const noexcept
+  {
+    return std::holds_alternative<edge*>(m_value);
+  }
+  edge& operand::get_edge() const noexcept
+  {
+    UTILS_ASSERT(is_edge());
+    return *std::get<edge*>(m_value);
+  }
 }
 
 
@@ -114,13 +124,17 @@ namespace tnac::ir // instruction
 
   instruction::~instruction() noexcept = default;
 
-  instruction::instruction(basic_block& owner, op_code code) noexcept :
+  instruction::instruction(basic_block& owner, op_code code, size_type count) noexcept :
     node{ kind::Instruction },
     m_block{ &owner },
     m_opCode{ code }
   {
-    prealloc();
+    prealloc(count);
   }
+
+  instruction::instruction(basic_block& owner, op_code code) noexcept :
+    instruction{ owner, code, estimate_op_count(code) }
+  {}
 
 
   const operand& instruction::operator[](size_type idx) const noexcept
@@ -198,13 +212,18 @@ namespace tnac::ir // instruction
     return opcode_str(m_opCode);
   }
 
+  instruction::size_type instruction::operand_count() const noexcept
+  {
+    return m_operands.size();
+  }
+
 
   // Private members
 
-  void instruction::prealloc() noexcept
+  instruction::size_type instruction::estimate_op_count(op_code code) noexcept
   {
     auto count = size_type{};
-    switch (m_opCode)
+    switch (code)
     {
     case Add:   count = 3; break;
     case Sub:   count = 3; break;
@@ -239,12 +258,12 @@ namespace tnac::ir // instruction
     case Phi:   count = 3; break; // 2 branches is the most common case (probably)
     }
 
-    m_operands.reserve(count);
+    return count;
   }
 
-  instruction::size_type instruction::operand_count() const noexcept
+  void instruction::prealloc(size_type size) noexcept
   {
-    return m_operands.size();
+    m_operands.reserve(size);
   }
 
 }

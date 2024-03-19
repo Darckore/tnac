@@ -21,6 +21,7 @@ namespace tnac::ir
     using instruction_list = instruction::list_type;
     using register_store   = std::forward_list<vreg>;
     using edge_list        = edge::list_type;
+    using size_type        = instruction::size_type;
 
   public:
     CLASS_SPECIALS_NONE_CUSTOM(builder);
@@ -49,6 +50,12 @@ namespace tnac::ir
     // Appends an instruction to the specified basic block before the given iterator
     //
     instruction& add_instruction(basic_block& owner, op_code op, instruction_list::iterator pos) noexcept;
+
+    //
+    // Appends an instruction to the specified basic block before the given iterator
+    // Preallocs space for operands according to the count parameter
+    //
+    instruction& add_instruction(basic_block& owner, op_code op, size_type count, instruction_list::iterator pos) noexcept;
 
     //
     // Adds a variable declaration to the specified block before the given iterator

@@ -92,7 +92,7 @@ namespace tnac::rt::out
     case Jump:  print_jump(instr);  break;
     case Ret:   print_ret(instr);   break;
 
-    case Phi: break;
+    case Phi:   print_phi(instr);   break;
     }
     endl();
   }
@@ -110,6 +110,8 @@ namespace tnac::rt::out
       param(op.get_param());
     else if (op.is_block())
       block(op.get_block());
+    else if (op.is_edge())
+      edge(op.get_edge());
   }
 
   void ir_printer::print_assign(const ir::operand& op) noexcept
@@ -175,6 +177,20 @@ namespace tnac::rt::out
     print_operand(jmp[2]);
   }
 
+  void ir_printer::print_phi(const ir::instruction& phi) noexcept
+  {
+    print_assign(phi[0]);
+    keyword(phi.opcode_str());
+
+    const auto ops = phi.operand_count();
+    using st = decltype(phi.operand_count());
+    for (auto count = st{ 1 }; count < ops; ++count)
+    {
+      print_operand(phi[count]);
+      if (count < ops - 1)
+        out() << ", ";
+    }
+  }
 
   out_stream& ir_printer::out() noexcept
   {
@@ -241,6 +257,16 @@ namespace tnac::rt::out
     keyword("label"sv);
     name("%"sv);
     name(block.name());
+  }
+
+  void ir_printer::edge(const ir::edge& edge) noexcept
+  {
+    out() << "[ ";
+    print_operand(edge.value());
+    out() << ", ";
+    name("%"sv);
+    name(edge.incoming().name());
+    out() << " ]";
   }
 
   void ir_printer::param(ir::func_param par) noexcept

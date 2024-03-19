@@ -11,7 +11,9 @@
 function*,\
 basic_block*,\
 vreg*,\
+edge*,\
 func_param
+
 
 namespace tnac::ir
 {
@@ -90,6 +92,7 @@ namespace tnac::ir
 {
   class function;
   class basic_block;
+  class edge;
 
   namespace detail
   {
@@ -143,6 +146,11 @@ namespace tnac::ir
     bool is_block() const noexcept;
 
     //
+    // Checks whether the operand holds an edge reference
+    //
+    bool is_edge() const noexcept;
+
+    //
     // Returns the stored value
     // Callers must check is_value before using this
     //
@@ -165,6 +173,12 @@ namespace tnac::ir
     // Callers must check is_block before using this
     //
     basic_block& get_block() const noexcept;
+
+    //
+    // Returns the stored edge
+    // Callers must check is_edge before using this
+    //
+    edge& get_edge() const noexcept;
 
   private:
     data_type m_value;
@@ -233,6 +247,8 @@ namespace tnac::ir
 
     virtual ~instruction() noexcept;
 
+    instruction(basic_block& owner, op_code code, size_type count) noexcept;
+
     instruction(basic_block& owner, op_code code) noexcept;
 
     //
@@ -280,9 +296,14 @@ namespace tnac::ir
 
   private:
     //
-    // Reserves memory for operands according to the op code
+    // Calculates the expected number of operands by op code
     //
-    void prealloc() noexcept;
+    static size_type estimate_op_count(op_code code) noexcept;
+
+    //
+    // Reserves memory for operands
+    //
+    void prealloc(size_type size) noexcept;
 
   private:
     basic_block* m_block{};

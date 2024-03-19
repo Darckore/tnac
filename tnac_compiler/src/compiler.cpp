@@ -438,18 +438,22 @@ namespace tnac
       m_stack.push(preds.front()->value());
       return;
     }
+
+    emit_phi(preds);
   }
 
-  ir::instruction& compiler::make(ir::op_code oc) noexcept
+  ir::instruction& compiler::make(ir::op_code oc, size_opt prealloc /*= {}*/) noexcept
   {
     clear_store();
     using enum ir::op_code;
 
     auto&& builder = m_cfg->get_builder();
     auto&& block = m_context.current_block();
-    auto&& instr = builder.add_instruction(block, oc, m_context.func_end());
+    auto&& instr = prealloc ?
+      builder.add_instruction(block, oc, *prealloc, m_context.func_end()):
+      builder.add_instruction(block, oc, m_context.func_end());
 
-    auto&& res = utils::eq_none(oc, Load) ?
+    auto&& res = utils::eq_none(oc, Load, Phi) ?
       builder.make_register(m_names.op_name(oc)):
       builder.make_register(m_context.register_index());
 
@@ -532,6 +536,7 @@ namespace tnac
     auto&& instr = m_cfg->get_builder().add_instruction(block, ir::op_code::Jump, m_context.func_end());
     instr.add(&dest);
     m_cfg->connect(block, dest, value);
+    update_func_start(instr);
   }
 
   void compiler::emit_cond_jump(ir::operand cond, ir::basic_block& ifTrue, ir::basic_block& ifFalse) noexcept
@@ -541,11 +546,16 @@ namespace tnac
     instr.add(cond).add(&ifTrue).add(&ifFalse);
     m_cfg->connect(block, ifTrue, cond);
     m_cfg->connect(block, ifFalse, cond);
+    update_func_start(instr);
   }
 
-  void compiler::emit_phi() noexcept
+  void compiler::emit_phi(edge_view edges) noexcept
   {
-
+    auto&& instr = make(ir::op_code::Phi, edges.size() + 1);
+    for (auto edge : edges)
+    {
+      instr.add(edge);
+    }
   }
 
   // Private members

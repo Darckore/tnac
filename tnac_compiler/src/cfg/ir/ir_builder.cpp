@@ -27,6 +27,13 @@ namespace tnac::ir
     return fIt != m_functions.end() ? &fIt->second : nullptr;
   }
 
+  instruction& builder::add_instruction(basic_block& owner, op_code op, size_type count, instruction_list::iterator pos) noexcept
+  {
+    auto&& newInstr = m_instructions.emplace_before(pos, owner, op, count);
+    owner.add_instruction(newInstr);
+    return newInstr;
+  }
+
   instruction& builder::add_instruction(basic_block& owner, op_code op, instruction_list::iterator pos) noexcept
   {
     auto&& newInstr = m_instructions.emplace_before(pos, owner, op);

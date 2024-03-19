@@ -17,6 +17,7 @@ namespace tnac
   namespace ir
   {
     class cfg;
+    class edge;
   }
 
   namespace eval
@@ -47,6 +48,10 @@ namespace tnac
 
     using params_t = std::vector<ast::param_decl*>;
     using body_t   = ast::scope::elem_list;
+
+    using edge_view = std::span<ir::edge*>;
+    using size_type = edge_view::size_type;
+    using size_opt  = std::optional<size_type>;
 
   public:
     CLASS_SPECIALS_NONE(compiler);
@@ -140,7 +145,7 @@ namespace tnac
     //
     // Prepares an instruction which has a result
     //
-    ir::instruction& make(ir::op_code oc) noexcept;
+    ir::instruction& make(ir::op_code oc, size_opt prealloc = {}) noexcept;
 
     //
     // Creates an alloc instruction for the specified variable
@@ -185,7 +190,7 @@ namespace tnac
     //
     // Creates a phi node
     //
-    void emit_phi() noexcept;
+    void emit_phi(edge_view edges) noexcept;
 
   private:
     //
