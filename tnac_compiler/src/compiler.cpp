@@ -393,8 +393,13 @@ namespace tnac
         // todo: warning - always true/false
         m_eval.visit_bool_literal(boolVal);
         carry_val(&binary);
-        return false;
       }
+      else
+      {
+        compile(binary.right());
+      }
+
+      return false;
     }
 
     auto opName = detail::logical_to_str(opType);
