@@ -165,7 +165,10 @@ namespace tnac::detail
 
   context::instr_iter context::funct_start() noexcept
   {
-    return cur_data().m_funcFirst;
+    auto&& fd = cur_data();
+    if (fd.m_funcFirst)
+      return fd.m_funcFirst;
+    return fd.m_funcLast;
   }
 
   context::instr_iter context::func_end() noexcept
