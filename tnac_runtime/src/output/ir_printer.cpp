@@ -264,8 +264,7 @@ namespace tnac::rt::out
     out() << "[ ";
     print_operand(edge.value());
     out() << ", ";
-    name("%"sv);
-    name(edge.incoming().name());
+    block(edge.incoming());
     out() << " ]";
   }
 
