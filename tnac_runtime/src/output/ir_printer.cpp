@@ -237,6 +237,7 @@ namespace tnac::rt::out
   void ir_printer::block(const ir::basic_block& block) noexcept
   {
     keyword("label"sv);
+    name("%"sv);
     name(block.name());
   }
 
