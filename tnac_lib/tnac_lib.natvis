@@ -532,10 +532,10 @@
       <Item Name="[owner]">*m_block</Item>
       <Item Name="[operands]">m_operands</Item>
       <Item Name="[opcode]">m_opCode,en</Item>
-      <Item Name="[next]" Condition="m_next">*m_next</Item>
-      <Item Name="[next]" Condition="!m_next">"null",sb</Item>
       <Item Name="[prev]" Condition="m_prev">*m_prev</Item>
       <Item Name="[prev]" Condition="!m_prev">"null",sb</Item>
+      <Item Name="[next]" Condition="m_next">*m_next</Item>
+      <Item Name="[next]" Condition="!m_next">"null",sb</Item>
     </Expand>
   </Type>
 
