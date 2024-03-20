@@ -428,6 +428,8 @@ namespace tnac
         m_stack.push(leftOp);
       }
 
+      m_context.override_last(lastEnd);
+      m_context.current_function().delete_block_tree(rhsBlock);
       return false;
     }
 

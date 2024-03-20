@@ -96,6 +96,12 @@ namespace tnac::ir
     //
     basic_block& create_block(string_t name) noexcept;
 
+    //
+    // Deletes a tree of basic blocks starting with the given one
+    // Walks the outs to reach subsequent blocks
+    //
+    void delete_block_tree(basic_block& root) noexcept;
+
   private:
     //
     // Adds a nested function

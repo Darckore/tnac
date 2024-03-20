@@ -1,4 +1,5 @@
 #include "cfg/ir/ir_function.hpp"
+#include "cfg/ir/ir_instructions.hpp"
 
 namespace tnac::ir
 {
@@ -87,6 +88,18 @@ namespace tnac::ir
       m_entry = &block;
 
     return block;
+  }
+
+  void function::delete_block_tree(basic_block& root) noexcept
+  {
+    root.clear_instructions();
+    for (auto out : root.outs())
+    {
+      auto&& target = out->outgoing();
+      if(target.is_last_connection(root))
+        delete_block_tree(target);
+    }
+    m_blocks.remove(root.name());
   }
 
 

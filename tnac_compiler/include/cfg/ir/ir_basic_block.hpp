@@ -110,6 +110,11 @@ namespace tnac::ir
     basic_block& add_instruction_front(instruction& in) noexcept;
 
     //
+    // Deletes all instructions and sets first and last iterators to nothing
+    //
+    void clear_instructions() noexcept;
+
+    //
     // Returns an iterator to the first instruction
     //
     instruction_iter begin() noexcept;

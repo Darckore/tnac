@@ -91,6 +91,25 @@ namespace tnac::ir // basic block
     return *this;
   }
 
+  void basic_block::clear_instructions() noexcept
+  {
+    if (!m_first)
+      return;
+
+    auto&& list = m_first->list();
+    auto endIt = end();
+    for (auto instrIt = begin();; )
+    {
+      auto next = std::next(instrIt);
+      list.remove(instrIt);
+      if (next == endIt)
+        break;
+      instrIt = next;
+    }
+    m_first = {};
+    m_last = {};
+  }
+
   basic_block::instruction_iter basic_block::begin() noexcept
   {
     return m_first;
