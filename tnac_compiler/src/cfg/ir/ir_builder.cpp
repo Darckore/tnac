@@ -45,7 +45,7 @@ namespace tnac::ir
   {
     auto&& var = m_instructions.emplace_before(pos, owner, op_code::Alloc);
     auto ownerBeg = owner.begin();
-    if (pos == owner.begin() || !ownerBeg)
+    if (pos == ownerBeg || !ownerBeg)
       owner.add_instruction_front(var);
 
     return var;
