@@ -346,6 +346,7 @@ namespace tnac
 
   bool compiler::preview(ast::func_decl& fd) noexcept
   {
+    auto lastVal = m_stack.extract();
     auto&& owner = m_context.current_function();
     const auto parCnt = fd.param_count();
     auto funcName = m_names.mangle_func_name(fd.name(), owner, parCnt);
@@ -353,6 +354,7 @@ namespace tnac
     m_context.enter_function(func);
     compile(fd.params(), fd.body().children());
     m_context.exit_function();
+    m_stack.push(lastVal);
     return false;
   }
 
