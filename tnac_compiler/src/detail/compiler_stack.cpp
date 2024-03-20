@@ -34,6 +34,13 @@ namespace tnac::detail
     return top();
   }
 
+  compiler_stack::value_type compiler_stack::try_extract() noexcept
+  {
+    if (empty())
+      return eval::value{};
+    return extract();
+  }
+
   bool compiler_stack::empty() const noexcept
   {
     return m_data.empty();

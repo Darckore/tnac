@@ -40,9 +40,16 @@ namespace tnac::detail
     void pop() noexcept;
 
     //
-    // Pops the top item and removes it from the stack
+    // Saves the top item and removes it from the stack
+    // Then returns the extracted value
     //
     value_type extract() noexcept;
+
+    //
+    // Extracts the item from the top of the stack
+    // If the stack is empty, returns an undefined value
+    //
+    value_type try_extract() noexcept;
 
     //
     // Checks whether the stack has any data

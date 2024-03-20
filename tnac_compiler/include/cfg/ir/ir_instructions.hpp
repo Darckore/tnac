@@ -126,6 +126,11 @@ namespace tnac::ir
 
   public:
     //
+    // True if the operand holds an undefined value
+    //
+    bool is_undef() const noexcept;
+
+    //
     // Checks whether the operand holds a known value
     //
     bool is_value() const noexcept;

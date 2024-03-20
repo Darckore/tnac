@@ -66,6 +66,13 @@ namespace tnac::ir // operand
 
   // Public members
 
+  bool operand::is_undef() const noexcept
+  {
+    if (!is_value())
+      return false;
+    return !get_value();
+  }
+
   bool operand::is_value() const noexcept
   {
     return std::holds_alternative<eval::value>(m_value);
