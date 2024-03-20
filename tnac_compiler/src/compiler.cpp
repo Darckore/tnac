@@ -381,17 +381,22 @@ namespace tnac
     if (!detail::is_logical(opType))
       return true;
 
+    auto checkUncond = [opType](eval::value val) noexcept
+      {
+        const auto boolVal = eval::to_bool(val);
+        const auto knownVal = ( boolVal && detail::is_lor(opType)) || // always true
+                              (!boolVal && detail::is_land(opType));  // always false
+        return knownVal ? boolVal : std::optional<bool>{};
+      };
+
     compile(binary.left());
     auto leftOp = m_stack.extract();
     if (leftOp.is_value())
     {
-      const auto boolVal = eval::to_bool(leftOp.get_value());
-      const auto knownValue = ( boolVal && detail::is_lor(opType)) || // always true
-                              (!boolVal && detail::is_land(opType)); // always false
-      if (knownValue)
+      if (auto known = checkUncond(leftOp.get_value()))
       {
         // todo: warning - always true/false
-        m_eval.visit_bool_literal(boolVal);
+        m_eval.visit_bool_literal(*known);
         carry_val(&binary);
       }
       else
@@ -412,7 +417,6 @@ namespace tnac
     compile(binary.right());
 
     auto rightOp = m_stack.extract();
-    
     auto&& endBlock = m_context.create_block(m_names.make_block_name(opName, "end"sv));
     lastEnd = m_context.override_last(lastBlock.end());
     m_context.enter_block(lastBlock);
