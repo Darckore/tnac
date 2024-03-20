@@ -381,29 +381,30 @@ namespace tnac
     if (!detail::is_logical(opType))
       return true;
 
-    auto checkUncond = [opType](eval::value val) noexcept
+    auto alwaysSame = [&](eval::value val) noexcept
       {
         const auto boolVal = eval::to_bool(val);
         const auto knownVal = ( boolVal && detail::is_lor(opType)) || // always true
                               (!boolVal && detail::is_land(opType));  // always false
-        return knownVal ? boolVal : std::optional<bool>{};
+
+        if(knownVal)
+        {
+          // todo: warning - always true/false
+          m_eval.visit_bool_literal(boolVal);
+          carry_val(&binary);
+          return true;
+        }
+        return false;
       };
 
     compile(binary.left());
     auto leftOp = m_stack.extract();
     if (leftOp.is_value())
     {
-      if (auto known = checkUncond(leftOp.get_value()))
-      {
-        // todo: warning - always true/false
-        m_eval.visit_bool_literal(*known);
-        carry_val(&binary);
-      }
-      else
+      if (!alwaysSame(leftOp.get_value()))
       {
         compile(binary.right());
       }
-
       return false;
     }
 
@@ -417,6 +418,19 @@ namespace tnac
     compile(binary.right());
 
     auto rightOp = m_stack.extract();
+    if (rightOp.is_value())
+    {
+      m_context.enter_block(lastBlock);
+      m_context.override_last(lastBlock.end());
+      m_context.terminate_at(lastBlock);
+      if (!alwaysSame(rightOp.get_value()))
+      {
+        m_stack.push(leftOp);
+      }
+
+      return false;
+    }
+
     auto&& endBlock = m_context.create_block(m_names.make_block_name(opName, "end"sv));
     lastEnd = m_context.override_last(lastBlock.end());
     m_context.enter_block(lastBlock);
