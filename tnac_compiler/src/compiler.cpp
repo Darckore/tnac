@@ -402,17 +402,29 @@ namespace tnac
       return false;
     }
 
+    auto&& lastBlock = m_context.current_block();
+    auto lastEnd = m_context.func_end();
+
     auto opName = detail::logical_to_str(opType);
-    auto&& endBlock = m_context.create_block(m_names.make_block_name(opName, "end"sv));
     auto&& rhsBlock = m_context.create_block(m_names.make_block_name(opName, "rhs"sv));
+    m_context.enter_block(rhsBlock);
+    m_context.terminate_at(rhsBlock);
+    compile(binary.right());
+
+    auto rightOp = m_stack.extract();
+    
+    auto&& endBlock = m_context.create_block(m_names.make_block_name(opName, "end"sv));
+    lastEnd = m_context.override_last(lastBlock.end());
+    m_context.enter_block(lastBlock);
     if(detail::is_lor(opType))
       emit_cond_jump(leftOp, endBlock, rhsBlock);
     else
       emit_cond_jump(leftOp, rhsBlock, endBlock);
 
-    m_context.enter_block(rhsBlock);
-    compile(binary.right());
-    auto rightOp = m_stack.extract();
+    auto finalBlock = m_context.terminal_block();
+    UTILS_ASSERT(finalBlock);
+    lastEnd = m_context.override_last(finalBlock->end());
+    m_context.enter_block(*finalBlock);
     emit_jump(rightOp, endBlock);
 
     m_context.enter_block(endBlock);
