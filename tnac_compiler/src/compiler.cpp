@@ -457,6 +457,34 @@ namespace tnac
     return false;
   }
 
+  bool compiler::preview(ast::cond_short& cond) noexcept
+  {
+    compile(cond.cond());
+    auto checkedVal = m_stack.extract();
+    if (checkedVal.is_value())
+    {
+      auto boolVal = eval::to_bool(checkedVal.get_value());
+      if (boolVal && !cond.has_true())
+      {
+        m_stack.push(checkedVal);
+      }
+      else if (!boolVal && !cond.has_false())
+      {
+        m_stack.push(eval::value{});
+      }
+      else
+      {
+        auto&& condPart = boolVal ? cond.on_true() : cond.on_false();
+        compile(condPart);
+      }
+
+      return false;
+    }
+
+    return false;
+  }
+
+
   // Private members (Emitions)
 
   void compiler::update_func_start(ir::instruction& instr) noexcept

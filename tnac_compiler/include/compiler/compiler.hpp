@@ -126,6 +126,11 @@ namespace tnac
     //
     bool preview(ast::binary_expr& binary) noexcept;
 
+    //
+    // Handles short conditionals
+    //
+    bool preview(ast::cond_short& cond) noexcept;
+
   private: // Emitions
     //
     // Updates the first instruction in the context if needed
