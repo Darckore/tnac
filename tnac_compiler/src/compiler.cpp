@@ -120,6 +120,10 @@ namespace tnac::detail
     }
     return string_t{};
   }
+  constexpr auto is_assign(tok_kind tk) noexcept
+  {
+    return utils::eq_any(tk, tok_kind::Assign);
+  }
 }
 
 namespace tnac
@@ -230,7 +234,7 @@ namespace tnac
   void compiler::visit(ast::binary_expr& binary) noexcept
   {
     const auto opType = binary.op().what();
-    if (detail::is_logical(opType))
+    if (detail::is_logical(opType) || detail::is_assign(opType))
       return;
 
     auto rhs = extract();
