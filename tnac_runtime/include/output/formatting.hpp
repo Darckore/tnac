@@ -23,20 +23,24 @@ namespace tnac::rt::fmt
   enum class clr : std::uint8_t
   {
     Default,
+    Black,
+    White,
+    
+    DarkRed,
+    DarkGreen,
+    DarkYellow,
+    DarkBlue,
+    DarkMagenta,
+    DarkCyan,
+    LightGray,
+    DarkGray,
     
     Red,
-    Yellow,
     Green,
+    Orange,
     Blue,
-    Cyan,
-    White,
-
-    BoldRed,
-    BoldYellow,
-    BoldGreen,
-    BoldBlue,
-    BoldCyan,
-    BoldWhite
+    Magenta,
+    Cyan
   };
 
   //

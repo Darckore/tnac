@@ -222,7 +222,7 @@ namespace tnac::rt::out
 
   void lister::print(const ast::error_expr& expr) noexcept
   {
-    fmt::add_clr(out(), fmt::clr::BoldRed);
+    fmt::add_clr(out(), fmt::clr::Red);
     out() << "\\" << expr.message();
     default_style();
   }
@@ -455,7 +455,7 @@ namespace tnac::rt::out
   void lister::id_style() noexcept
   {
     reset_style();
-    fmt::add_clr(out(), fmt::clr::BoldGreen);
+    fmt::add_clr(out(), fmt::clr::Green);
   }
   void lister::kw_style() noexcept
   {
@@ -465,7 +465,7 @@ namespace tnac::rt::out
   void lister::lit_style() noexcept
   {
     reset_style();
-    fmt::add_clr(out(), fmt::clr::BoldYellow);
+    fmt::add_clr(out(), fmt::clr::Orange);
   }
   void lister::default_style() noexcept
   {
@@ -474,6 +474,6 @@ namespace tnac::rt::out
   void lister::comment_style() noexcept
   {
     reset_style();
-    fmt::add_clr(out(), fmt::clr::Blue);
+    fmt::add_clr(out(), fmt::clr::DarkGray);
   }
 }

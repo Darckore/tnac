@@ -24,10 +24,10 @@ namespace tnac::rt::out
       const auto kind = scope->kind();
       switch (kind)
       {
-      case Global:   fmt::print(out(), fmt::clr::White, "Global"sv); break;
-      case Module:   print_module(scope->mod());                     break;
-      case Function: print_func(scope->func());                      break;
-      case Block:    print_internal_scope(*scope);                   break;
+      case Global:   fmt::print(out(), fmt::clr::Blue, "Global"sv); break;
+      case Module:   print_module(scope->mod());                    break;
+      case Function: print_func(scope->func());                     break;
+      case Block:    print_internal_scope(*scope);                  break;
       }
 
       if (kind != Global)
@@ -44,7 +44,7 @@ namespace tnac::rt::out
 
   void sym_printer::print_module(const semantics::module_sym& modRef) noexcept
   {
-    fmt::print(out(), fmt::clr::BoldCyan, modRef.name());
+    fmt::print(out(), fmt::clr::Cyan, modRef.name());
     print_params(modRef.params(), true);
   }
 
@@ -55,7 +55,7 @@ namespace tnac::rt::out
 
   void sym_printer::print_param(const semantics::parameter& par) noexcept
   {
-    fmt::print(out(), fmt::clr::Yellow, par.name());
+    fmt::print(out(), fmt::clr::Orange, par.name());
   }
 
   void sym_printer::print_func(const semantics::function& func) noexcept
@@ -78,7 +78,7 @@ namespace tnac::rt::out
 
   void sym_printer::print_scope_ref(const semantics::scope_ref& sr) noexcept
   {
-    fmt::print(out(), fmt::clr::BoldWhite, sr.name());
+    fmt::print(out(), fmt::clr::White, sr.name());
   }
 
   void sym_printer::print_sym(const semantics::symbol& sym) noexcept

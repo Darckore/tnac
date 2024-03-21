@@ -65,7 +65,7 @@ namespace tnac::rt
 
   void driver::error_mark() noexcept
   {
-    fmt::print(m_state.err(), fmt::clr::BoldRed, " error: "sv);
+    fmt::print(m_state.err(), fmt::clr::Red, " error: "sv);
   }
 
   void driver::post_error(string_t msg) noexcept

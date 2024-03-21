@@ -12,22 +12,30 @@ namespace tnac::rt::fmt
       return;
 
     using enum clr;
+    out << "\x1b[";
     switch (c)
     {
-    case Red:        out << "\x1b[31m";        break;
-    case Green:      out << "\x1b[32m";        break;
-    case Yellow:     out << "\x1b[33m";        break;
-    case Blue:       out << "\x1b[34m";        break;
-    case Cyan:       out << "\x1b[36m";        break;
-    case White:      out << "\x1b[37m";        break;
-    case BoldRed:    out << "\x1b[31m";        break;
-    case BoldGreen:  out << "\x1b[32m\x1b[1m"; break;
-    case BoldYellow: out << "\x1b[33m\x1b[1m"; break;
-    case BoldBlue:   out << "\x1b[34m\x1b[1m"; break;
-    case BoldCyan:   out << "\x1b[36m\x1b[1m"; break;
-    case BoldWhite:  out << "\x1b[37m\x1b[1m"; break;
-    default:                                   break;
+    case Default:     out << "39"; break;
+    case Black:       out << "30"; break;
+    case White:       out << "97"; break;
+
+    case DarkRed:     out << "31"; break;
+    case DarkGreen:   out << "32"; break;
+    case DarkYellow:  out << "33"; break;
+    case DarkBlue:    out << "34"; break;
+    case DarkMagenta: out << "35"; break;
+    case DarkCyan:    out << "36"; break;
+
+    case LightGray:   out << "37"; break;
+    case DarkGray:    out << "90"; break;
+    case Red:         out << "91"; break;
+    case Green:       out << "92"; break;
+    case Orange:      out << "93"; break;
+    case Blue:        out << "94"; break;
+    case Magenta:     out << "95"; break;
+    case Cyan:        out << "96"; break;
     }
+    out << 'm';
   }
 
   void clear_clr(std::ostream& out) noexcept

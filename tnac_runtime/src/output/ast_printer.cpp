@@ -435,12 +435,12 @@ namespace tnac::rt::out
 
   void ast_printer::node_designator(string_t str) noexcept
   {
-    fmt::print(out(), fmt::clr::BoldWhite, str);
+    fmt::print(out(), fmt::clr::DarkYellow, str);
   }
 
   void ast_printer::failure_condition(string_t str) noexcept
   {
-    fmt::print(out(), fmt::clr::BoldRed, str);
+    fmt::print(out(), fmt::clr::Red, str);
   }
 
   void ast_printer::node_value(string_t str) noexcept
@@ -450,7 +450,7 @@ namespace tnac::rt::out
 
   void ast_printer::module_name(string_t str) noexcept
   {
-    fmt::print(out(), fmt::clr::BoldCyan, str);
+    fmt::print(out(), fmt::clr::DarkCyan, str);
   }
 
   void ast_printer::invalid_mark(const ast::node& n) noexcept
@@ -461,7 +461,7 @@ namespace tnac::rt::out
 
   void ast_printer::location_info(src::loc_wrapper loc) noexcept
   {
-    fmt::add_clr(out(), fmt::clr::Yellow);
+    fmt::add_clr(out(), fmt::clr::DarkGray);
     out() << " (" << loc << ')';
     fmt::clear_clr(out());
   }

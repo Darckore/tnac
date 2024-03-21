@@ -230,7 +230,7 @@ namespace tnac::rt::out
 
   void ir_printer::kw_string(string_t kw) noexcept
   {
-    fmt::print(out(), fmt::clr::BoldBlue, kw);
+    fmt::print(out(), fmt::clr::Blue, kw);
   }
 
   void ir_printer::keyword(string_t kw) noexcept
@@ -241,12 +241,12 @@ namespace tnac::rt::out
 
   void ir_printer::name(string_t n) noexcept
   {
-    fmt::print(out(), fmt::clr::BoldCyan, n);
+    fmt::print(out(), fmt::clr::Cyan, n);
   }
 
   void ir_printer::id(entity_id i) noexcept
   {
-    fmt::print(out(), fmt::clr::Yellow, i);
+    fmt::print(out(), fmt::clr::DarkYellow, i);
   }
 
   void ir_printer::value(eval::value val) noexcept
@@ -262,7 +262,7 @@ namespace tnac::rt::out
       },
       [&](auto v) noexcept
       {
-        fmt::print(out(), fmt::clr::BoldYellow, v);
+        fmt::print(out(), fmt::clr::Orange, v);
       }
     };
 
@@ -297,7 +297,7 @@ namespace tnac::rt::out
   void ir_printer::param(ir::func_param par) noexcept
   {
     keyword("param"sv);
-    fmt::print(out(), fmt::clr::BoldYellow, *par);
+    fmt::print(out(), fmt::clr::Orange, *par);
   }
 
   void ir_printer::plain(string_t str) noexcept

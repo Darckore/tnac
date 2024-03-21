@@ -40,7 +40,7 @@ namespace tnac::rt::out
           out() << ' ';
           print_sym(*sym);
           out() << " at ";
-          fmt::println(out(), fmt::clr::White, sym->at());
+          fmt::println(out(), fmt::clr::DarkGray, sym->at());
         }
 
         if (std::next(it) != collection.end())
