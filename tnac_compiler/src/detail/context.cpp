@@ -31,6 +31,7 @@ namespace tnac::detail // func data
     ir::basic_block* m_terminal{};
     reg_idx m_regIdx{};
     symbol* m_lastStore{};
+    var_store m_vars;
   };
 }
 
@@ -60,7 +61,8 @@ namespace tnac::detail
 
   void context::store(symbol& sym, ir::vreg& reg) noexcept
   {
-    auto newIt = m_vars.try_emplace(&sym, var_data{});
+    auto&& fd = cur_data();
+    auto newIt = fd.m_vars.try_emplace(&sym, var_data{});
     auto&& item = newIt.first->second;
     item.m_reg = &reg;
   }
@@ -75,7 +77,6 @@ namespace tnac::detail
   {
     m_funcs.clear();
     m_data.clear();
-    m_vars.clear();
   }
 
   void context::push(module_sym& sym) noexcept
@@ -123,8 +124,9 @@ namespace tnac::detail
 
   void context::enter_block(ir::basic_block& block) noexcept
   {
-    cur_data().m_curBlock = &block;
-    for (auto&& var : m_vars)
+    auto&& fd = cur_data();
+    fd.m_curBlock = &block;
+    for (auto&& var : fd.m_vars)
     {
       var.second.m_modified = true;
       var.second.m_lastRead = {};
@@ -245,7 +247,8 @@ namespace tnac::detail
 
   context::var_data* context::locate_var(symbol& sym) noexcept
   {
-    auto found = m_vars.find(&sym);
-    return found != m_vars.end() ? &found->second : nullptr;
+    auto&& fd = cur_data();
+    auto found = fd.m_vars.find(&sym);
+    return found != fd.m_vars.end() ? &found->second : nullptr;
   }
 }

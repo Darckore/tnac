@@ -218,6 +218,5 @@ namespace tnac::detail
     data_store m_data;
     module_stack m_stack;
     data_stack m_funcs;
-    var_store m_vars;
   };
 }
