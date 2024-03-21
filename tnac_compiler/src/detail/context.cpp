@@ -124,6 +124,11 @@ namespace tnac::detail
   void context::enter_block(ir::basic_block& block) noexcept
   {
     cur_data().m_curBlock = &block;
+    for (auto&& var : m_vars)
+    {
+      var.second.m_modified = true;
+      var.second.m_lastRead = {};
+    }
   }
 
   ir::basic_block& context::current_block() noexcept
