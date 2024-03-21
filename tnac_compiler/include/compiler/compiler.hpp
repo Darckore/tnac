@@ -85,14 +85,12 @@ namespace tnac
     void visit(ast::id_expr& id) noexcept;
     void visit(ast::unary_expr& unary) noexcept;
     void visit(ast::binary_expr& binary) noexcept;
-    void visit(ast::assign_expr& assign) noexcept;
     void visit(ast::array_expr& arr) noexcept;
     void visit(ast::abs_expr& abs) noexcept;
     void visit(ast::typed_expr& typed) noexcept;
     void visit(ast::call_expr& call) noexcept;
     void visit(ast::matcher& matcher) noexcept;
     void visit(ast::pattern& pattern) noexcept;
-    void visit(ast::cond_short& cond) noexcept;
     void visit(ast::cond_expr& cond) noexcept;
     void visit(ast::dot_expr& dot) noexcept;
 

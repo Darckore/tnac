@@ -248,11 +248,6 @@ namespace tnac
     emit_binary(opcode, lhs, rhs);
   }
 
-  void compiler::visit(ast::assign_expr& assign) noexcept
-  {
-    utils::unused(assign);
-  }
-
   void compiler::visit(ast::array_expr& arr) noexcept
   {
     utils::unused(arr);
@@ -289,11 +284,6 @@ namespace tnac
   void compiler::visit(ast::pattern& pattern) noexcept
   {
     utils::unused(pattern);
-  }
-
-  void compiler::visit(ast::cond_short& cond) noexcept
-  {
-    utils::unused(cond);
   }
 
   void compiler::visit(ast::cond_expr& cond) noexcept
