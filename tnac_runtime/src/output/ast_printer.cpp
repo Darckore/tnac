@@ -421,7 +421,7 @@ namespace tnac::rt::out
     if (m_indetations.empty())
       return;
 
-    for (auto&& last = last_indent(); auto && cur : m_indetations)
+    for (auto&& last = last_indent(); auto&& cur : m_indetations)
     {
       if (&cur != &last)
       {

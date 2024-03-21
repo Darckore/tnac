@@ -35,6 +35,7 @@ namespace tnac::rt::out
   {
     kw_string(bb.name());
     plain(":"sv);
+    print_preds(bb);
     endl();
     return true;
   }
@@ -99,6 +100,31 @@ namespace tnac::rt::out
 
 
   // Private members
+
+  void ir_printer::print_preds(const ir::basic_block& target) noexcept
+  {
+    using st = decltype(target.preds().size());
+    auto preds = target.preds();
+    if (preds.empty())
+      return;
+
+    constexpr auto offset = st{ 50 };
+    const auto actualOffset = offset - (target.name().length() + 1);
+    for (auto off = actualOffset; off; --off)
+      out() << ' ';
+    const auto predCount = preds.size();
+    fmt::add_clr(out(), fmt::clr::White);
+    out() << "; preds = ";
+    for (auto idx = st{}; auto pred : preds)
+    {
+      auto&& predBlock = pred->incoming();
+      out() << '%' << predBlock.name();
+      if (idx < predCount - 1)
+        out() << ", ";
+      ++idx;
+    }
+    fmt::clear_clr(out());
+  }
 
   void ir_printer::print_operand(const ir::operand& op) noexcept
   {

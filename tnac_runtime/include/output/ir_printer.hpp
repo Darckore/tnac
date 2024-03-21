@@ -42,6 +42,8 @@ namespace tnac::rt::out
     void visit(const ir::instruction& instr) noexcept;
 
   private:
+    void print_preds(const ir::basic_block& target) noexcept;
+
     void print_operand(const ir::operand& op) noexcept;
 
     void print_assign(const ir::operand& op) noexcept;
