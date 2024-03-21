@@ -212,7 +212,7 @@ namespace tnac
 
   void compiler::visit(ast::unary_expr& unary) noexcept
   {
-    auto val = m_stack.extract();
+    auto val = extract();
     const auto opType = unary.op().what();
     if (val.is_value())
     {
@@ -233,8 +233,8 @@ namespace tnac
     if (detail::is_logical(opType))
       return;
 
-    auto rhs = m_stack.extract();
-    auto lhs = m_stack.extract();
+    auto rhs = extract();
+    auto lhs = extract();
     if (lhs.is_value() && rhs.is_value())
     {
       const auto op = eval::detail::conv_binary(opType);
@@ -260,7 +260,7 @@ namespace tnac
 
   void compiler::visit(ast::abs_expr& abs) noexcept
   {
-    auto val = m_stack.extract();
+    auto val = extract();
     if (val.is_value())
     {
       m_eval.visit_unary(val.get_value(), eval::val_ops::AbsoluteValue);
@@ -401,7 +401,7 @@ namespace tnac
       };
 
     compile(binary.left());
-    auto leftOp = m_stack.extract();
+    auto leftOp = extract();
     if (leftOp.is_value())
     {
       if (!alwaysSame(leftOp.get_value()))
@@ -420,7 +420,7 @@ namespace tnac
     m_context.terminate_at(rhsBlock);
     compile(binary.right());
 
-    auto rightOp = m_stack.extract();
+    auto rightOp = extract();
     if (rightOp.is_value())
     {
       m_context.enter_block(lastBlock);
@@ -460,7 +460,7 @@ namespace tnac
   bool compiler::preview(ast::cond_short& cond) noexcept
   {
     compile(cond.cond());
-    auto checkedVal = m_stack.extract();
+    auto checkedVal = extract();
     if (checkedVal.is_value())
     {
       auto boolVal = eval::to_bool(checkedVal.get_value());
@@ -603,6 +603,7 @@ namespace tnac
 
   void compiler::emit_jump(ir::operand value, ir::basic_block& dest) noexcept
   {
+    clear_store();
     auto&& block = m_context.current_block();
     auto&& instr = m_cfg->get_builder().add_instruction(block, ir::op_code::Jump, m_context.func_end());
     instr.add(&dest);
@@ -612,6 +613,7 @@ namespace tnac
 
   void compiler::emit_cond_jump(ir::operand cond, ir::basic_block& ifTrue, ir::basic_block& ifFalse) noexcept
   {
+    clear_store();
     auto&& block = m_context.current_block();
     auto&& instr = m_cfg->get_builder().add_instruction(block, ir::op_code::Jump, m_context.func_end());
     instr.add(cond).add(&ifTrue).add(&ifFalse);
@@ -622,6 +624,7 @@ namespace tnac
 
   void compiler::emit_phi(edge_view edges) noexcept
   {
+    clear_store();
     auto&& instr = make(ir::op_code::Phi, edges.size() + 1);
     for (auto edge : edges)
     {
@@ -630,6 +633,20 @@ namespace tnac
   }
 
   // Private members
+
+  ir::operand compiler::extract() noexcept
+  {
+    if (!m_stack.empty())
+      return m_stack.extract();
+
+    if (auto last = m_context.last_store())
+    {
+      emit_load(*last);
+      return m_stack.extract();
+    }
+
+    return eval::value{};
+  }
 
   void compiler::carry_val(entity_id id) noexcept
   {

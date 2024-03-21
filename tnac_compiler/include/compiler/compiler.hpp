@@ -199,6 +199,13 @@ namespace tnac
 
   private:
     //
+    // Extracts the last values from the stack
+    // If the stack is empty, loads the last stored value
+    // If there's no last stored value, the result is undef
+    //
+    ir::operand extract() noexcept;
+
+    //
     // Transfers a calculated value to the internal stack
     //
     void carry_val(entity_id id) noexcept;
