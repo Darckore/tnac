@@ -481,6 +481,35 @@ namespace tnac
       return false;
     }
 
+    constexpr auto namePref = "cond";
+    auto&& onTrue  = m_context.create_block(m_names.make_block_name(namePref, "true"sv));
+    auto&& onFalse = m_context.create_block(m_names.make_block_name(namePref, "false"sv));
+
+    emit_cond_jump(checkedVal, onTrue, onFalse);
+    auto&& endBlock = m_context.create_block(m_names.make_block_name(namePref, "end"sv));
+
+    m_context.enter_block(onTrue);
+    m_context.terminate_at(onTrue);
+    if (!cond.has_true())
+      m_stack.push(checkedVal);
+    else
+      compile(cond.on_true());
+    auto trueRes = extract();
+    emit_jump(trueRes, endBlock);
+
+    m_context.enter_block(onFalse);
+    m_context.terminate_at(onFalse);
+    if (!cond.has_false())
+      m_stack.push(eval::value{});
+    else
+      compile(cond.on_false());
+    auto falseRes = extract();
+    emit_jump(falseRes, endBlock);
+
+    m_context.enter_block(endBlock);
+    m_context.terminate_at(endBlock);
+    converge();
+
     return false;
   }
 
