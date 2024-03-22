@@ -22,6 +22,8 @@ namespace tnac::detail
   static constexpr auto fileErr{ "Failed to {} file '{}'. Reason: '{}'"sv };
 
   static constexpr auto moduleError{ "Compilation stopped due to errors in module '{}'"sv };
+
+  static constexpr auto conditionSame{ "The condition is always {}"sv };
 }
 
 namespace tnac
@@ -72,6 +74,11 @@ namespace tnac
   string_t diag::compilation_stopped(string_t moduleName) noexcept
   {
     return format(detail::moduleError, moduleName);
+  }
+
+  string_t diag::condition_same(bool value) noexcept
+  {
+    return format(detail::conditionSame, value);
   }
 
 

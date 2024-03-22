@@ -458,6 +458,7 @@ namespace tnac
     if (checkedVal.is_value())
     {
       auto boolVal = eval::to_bool(checkedVal.get_value());
+      warning(cond.cond().pos().at(), diag::condition_same(boolVal));
       if (boolVal && !cond.has_true())
       {
         m_stack.push(checkedVal);
@@ -786,5 +787,13 @@ namespace tnac
       return;
 
     m_feedback->compile_error(std::move(loc), msg);
+  }
+
+  void compiler::warning(src::loc_wrapper loc, string_t msg) noexcept
+  {
+    if (!m_feedback)
+      return;
+
+    m_feedback->compile_warning(std::move(loc), msg);
   }
 }

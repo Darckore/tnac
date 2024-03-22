@@ -64,6 +64,11 @@ namespace tnac
     //
     static string_t compilation_stopped(string_t moduleName) noexcept;
 
+    //
+    // Returns a 'condition is always true/false' warning
+    //
+    static string_t condition_same(bool value) noexcept;
+
   public: // Parsing
     //
     // Returns an 'expected expr' message
