@@ -88,6 +88,11 @@ namespace tnac
     return format(detail::logicalSame, op, value, operand);
   }
 
+  string_t diag::unreachable() noexcept
+  {
+    return "Unreachable code"sv;
+  }
+
 
   // Public members(Parsing)
 

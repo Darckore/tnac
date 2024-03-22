@@ -300,6 +300,16 @@ namespace tnac
     utils::unused(dot);
   }
 
+  bool compiler::exit_child(ast::node& node) noexcept
+  {
+    return !node.is(ast::node_kind::Ret);
+  }
+
+  void compiler::post_exit(ast::node& node) noexcept
+  {
+    utils::unused(node);
+  }
+
   // Decls
 
   void compiler::visit(ast::param_decl& param) noexcept
@@ -699,9 +709,17 @@ namespace tnac
       m_stack.push(ir::func_param{ idx++ });
       compile(*param);
     }
+
+    bool retHit{};
     for (auto child : body)
     {
+      if (retHit)
+      {
+        post_exit(*child);
+        break;
+      }
       compile(*child);
+      retHit = !exit_child(*child);
     }
 
     if (m_stack.empty())

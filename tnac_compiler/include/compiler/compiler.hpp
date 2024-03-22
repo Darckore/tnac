@@ -94,6 +94,9 @@ namespace tnac
     void visit(ast::cond_expr& cond) noexcept;
     void visit(ast::dot_expr& dot) noexcept;
 
+    bool exit_child(ast::node& node) noexcept;
+    void post_exit(ast::node& node) noexcept;
+
   public: // Decls
     void visit(ast::param_decl& param) noexcept;
 

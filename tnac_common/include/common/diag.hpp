@@ -74,6 +74,11 @@ namespace tnac
     //
     static string_t logical_same(string_t op, bool isLhs, bool value) noexcept;
 
+    //
+    // Returns an 'unreachable code' warning
+    //
+    static string_t unreachable() noexcept;
+
   public: // Parsing
     //
     // Returns an 'expected expr' message
