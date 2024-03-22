@@ -67,12 +67,14 @@ namespace tnac::ast
     using node_t    = N;
     using node_ptr  = node_t*;
     using node_ref  = node_t&;
+    using loc_opt   = std::optional<src::loc_wrapper>;
 
+  public:
     //
     // Destination type for casts between various ast kinds
     //
     template <typename T>
-    using dest = decltype(utils::try_cast<T>(node_ptr{}));
+    using dest = std::conditional_t<std::is_const_v<node_t>, const T, T>*;
 
     static constexpr auto order = VO;
 
@@ -105,6 +107,17 @@ namespace tnac::ast
       visit_root(root);
     }
 
+    //
+    // Attempts to extract location from a node
+    //
+    loc_opt try_get_location(node_ref node) noexcept
+    {
+      return apply(&node, [this](auto n) noexcept
+        {
+          return get_loc(n);
+        });
+    }
+
   private:
     //
     // Casts itself to a reference to derived
@@ -112,6 +125,22 @@ namespace tnac::ast
     derived_t& to_derived() noexcept
     {
       return static_cast<derived_t&>(*this);
+    }
+
+    //
+    // Extracts location from an expression
+    //
+    loc_opt get_loc(dest<expr> e) noexcept
+    {
+      return e->pos().at();
+    }
+
+    //
+    // Dumps extract location attempts on nodes that don't have it
+    //
+    loc_opt get_loc(node_ptr) noexcept
+    {
+      return {};
     }
 
     //
@@ -187,6 +216,13 @@ namespace tnac::ast
     bool preview(Node*) noexcept
     {
       return true;
+    }
+
+    //
+    // Stub visit_impl
+    //
+    void visit_impl(node_ptr) noexcept
+    {
     }
 
     //
@@ -631,49 +667,59 @@ namespace tnac::ast
       visit(res);
     }
 
+    //
+    // Applies the given function according to the node type
+    //
+    template <typename F>
+    auto apply(node_ptr n, F&& dispatch) noexcept
+    {
+      using utils::cast;
+      using enum node_kind;
+      auto&& cur = *n;
+
+      switch (cur.what())
+      {
+      case Root:       return dispatch(&cast<root>(cur));
+      case Module:     return dispatch(&cast<module_def>(cur));
+      case Import:     return dispatch(&cast<import_dir>(cur));
+      case Scope:      return dispatch(&cast<scope>(cur));
+      case Result:     return dispatch(&cast<result_expr>(cur));
+      case Ret:        return dispatch(&cast<ret_expr>(cur));
+      case Literal:    return dispatch(&cast<lit_expr>(cur));
+      case Identifier: return dispatch(&cast<id_expr>(cur));
+      case Unary:      return dispatch(&cast<unary_expr>(cur));
+      case Binary:     return dispatch(&cast<binary_expr>(cur));
+      case Assign:     return dispatch(&cast<assign_expr>(cur));
+      case Decl:       return dispatch(&cast<decl_expr>(cur));
+      case VarDecl:    return dispatch(&cast<var_decl>(cur));
+      case ParamDecl:  return dispatch(&cast<param_decl>(cur));
+      case FuncDecl:   return dispatch(&cast<func_decl>(cur));
+      case Array:      return dispatch(&cast<array_expr>(cur));
+      case Paren:      return dispatch(&cast<paren_expr>(cur));
+      case Abs:        return dispatch(&cast<abs_expr>(cur));
+      case Typed:      return dispatch(&cast<typed_expr>(cur));
+      case Call:       return dispatch(&cast<call_expr>(cur));
+      case Matcher:    return dispatch(&cast<matcher>(cur));
+      case Pattern:    return dispatch(&cast<pattern>(cur));
+      case CondShort:  return dispatch(&cast<cond_short>(cur));
+      case Cond:       return dispatch(&cast<cond_expr>(cur));
+      case Dot:        return dispatch(&cast<dot_expr>(cur));
+      case Error:      return dispatch(&cast<error_expr>(cur));
+
+      default:         return dispatch(&cur);
+      }
+    }
 
     //
     // Dispatches visit calls according to the node type
     //
     void visit_root(node_ptr n) noexcept
     {
-      using utils::cast;
-
-      if (!n)
-        return;
-
-      using enum node_kind;
-      auto&& cur = *n;
-
-      switch (cur.what())
-      {
-      case Root:       visit_impl(&cast<root>(cur));        break;
-      case Module:     visit_impl(&cast<module_def>(cur));  break;
-      case Import:     visit_impl(&cast<import_dir>(cur));  break;
-      case Scope:      visit_impl(&cast<scope>(cur));       break;
-      case Result:     visit_impl(&cast<result_expr>(cur)); break;
-      case Ret:        visit_impl(&cast<ret_expr>(cur));    break;
-      case Literal:    visit_impl(&cast<lit_expr>(cur));    break;
-      case Identifier: visit_impl(&cast<id_expr>(cur));     break;
-      case Unary:      visit_impl(&cast<unary_expr>(cur));  break;
-      case Binary:     visit_impl(&cast<binary_expr>(cur)); break;
-      case Assign:     visit_impl(&cast<assign_expr>(cur)); break;
-      case Decl:       visit_impl(&cast<decl_expr>(cur));   break;
-      case VarDecl:    visit_impl(&cast<var_decl>(cur));    break;
-      case ParamDecl:  visit_impl(&cast<param_decl>(cur));  break;
-      case FuncDecl:   visit_impl(&cast<func_decl>(cur));   break;
-      case Array:      visit_impl(&cast<array_expr>(cur));  break;
-      case Paren:      visit_impl(&cast<paren_expr>(cur));  break;
-      case Abs:        visit_impl(&cast<abs_expr>(cur));    break;
-      case Typed:      visit_impl(&cast<typed_expr>(cur));  break;
-      case Call:       visit_impl(&cast<call_expr>(cur));   break;
-      case Matcher:    visit_impl(&cast<matcher>(cur));     break;
-      case Pattern:    visit_impl(&cast<pattern>(cur));     break;
-      case CondShort:  visit_impl(&cast<cond_short>(cur));  break;
-      case Cond:       visit_impl(&cast<cond_expr>(cur));   break;
-      case Dot:        visit_impl(&cast<dot_expr>(cur));    break;
-      case Error:      visit_impl(&cast<error_expr>(cur));  break;
-      }
+      if (!n) return;
+      apply(n, [this](auto node) noexcept
+        {
+          visit_impl(node);
+        });
     }
   };
 

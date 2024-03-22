@@ -124,6 +124,15 @@ namespace tnac::detail
   {
     return utils::eq_any(tk, tok_kind::Assign);
   }
+
+  static auto is_func(const ast::node* node) noexcept
+  {
+    auto declExpr = utils::try_cast<ast::decl_expr>(node);
+    if (!declExpr)
+      return false;
+
+    return declExpr->declarator().is(ast::node_kind::FuncDecl);
+  }
 }
 
 namespace tnac
@@ -307,7 +316,9 @@ namespace tnac
 
   void compiler::post_exit(ast::node& node) noexcept
   {
-    utils::unused(node);
+    auto loc = try_get_location(node);
+    if (!loc) return;
+    warning(*loc, diag::unreachable());
   }
 
   // Decls
@@ -710,17 +721,7 @@ namespace tnac
       compile(*param);
     }
 
-    bool retHit{};
-    for (auto child : body)
-    {
-      if (retHit)
-      {
-        post_exit(*child);
-        break;
-      }
-      compile(*child);
-      retHit = !exit_child(*child);
-    }
+    compile(body);
 
     if (m_stack.empty())
     {
@@ -730,6 +731,39 @@ namespace tnac
     auto&& block = m_context.terminal_or_entry();
     emit_ret(block);
     UTILS_ASSERT(m_stack.empty());
+  }
+
+  void compiler::compile(body_t& body) noexcept
+  {
+    bool haveRet = false;
+    bool skipRest = false;
+    bool compileExprs = true;
+    for (auto child : body)
+    {
+      if (haveRet)
+        compileExprs = false;
+
+      const auto func = detail::is_func(child);
+      if (compileExprs || func)
+      {
+        compile(*child);
+      }
+
+      if (haveRet)
+      {
+        skipRest = true;
+        if (!func)
+        {
+          haveRet = false;
+          post_exit(*child);
+        }
+      }
+
+      if (skipRest)
+        continue;
+
+      haveRet = !exit_child(*child);
+    }
   }
 
   void compiler::compile(semantics::module_sym& mod) noexcept

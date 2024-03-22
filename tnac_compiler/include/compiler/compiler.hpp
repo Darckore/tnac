@@ -222,6 +222,11 @@ namespace tnac
     void compile(params_t& params, body_t& body) noexcept;
 
     //
+    // Compiles a scope body
+    //
+    void compile(body_t& body) noexcept;
+
+    //
     // Compiles the given module
     //
     void compile(semantics::module_sym& mod) noexcept;
