@@ -106,8 +106,9 @@ namespace tnac::src
       info = m_lines[lineNum];
     }
 
-    if (info.end > m_buffer.size())
-      return {};
+    const auto bufSz = m_buffer.size();
+    if (info.end > bufSz)
+      info.end = bufSz;
 
     auto bufIt = m_buffer.begin();
     return utils::rtrim(string_t{ std::next(bufIt, info.beg), std::next(bufIt, info.end) });
