@@ -251,14 +251,26 @@ namespace tnac::rt::out
 
   void ir_printer::value(eval::value val) noexcept
   {
-    keyword(val.id_str());
+    if(val)
+      keyword(val.id_str());
+
     auto visitor = utils::visitor
     {
       [&](eval::invalid_val_t) noexcept
-      {},
+      {
+        kw_string(val.id_str());
+      },
       [&](eval::array_type) noexcept
       {
         // todo: arrays
+      },
+      [&](eval::function_type f) noexcept
+      {
+        auto&& func = *f;
+        id(func.id());
+        out() << " [";
+        name(func.name());
+        out() << ']';
       },
       [&](auto v) noexcept
       {

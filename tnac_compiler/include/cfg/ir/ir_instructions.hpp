@@ -8,7 +8,6 @@
 #include "eval/types/traits.hpp"
 
 #define TNAC_OPERANDS eval::value,\
-function*,\
 basic_block*,\
 vreg*,\
 edge*,\
@@ -90,7 +89,6 @@ namespace tnac::ir
 
 namespace tnac::ir
 {
-  class function;
   class basic_block;
   class edge;
 

@@ -99,6 +99,7 @@ namespace tnac
 
   public: // Decls
     void visit(ast::param_decl& param) noexcept;
+    void visit(ast::func_decl& fd) noexcept;
 
   public: // Previews
     //

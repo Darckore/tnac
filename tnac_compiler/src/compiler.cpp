@@ -330,6 +330,15 @@ namespace tnac
     emit_store(sym);
   }
 
+  void compiler::visit(ast::func_decl& fd) noexcept
+  {
+    auto&& sym = fd.symbol();
+    auto func = m_cfg->find_entity(&sym);
+    UTILS_ASSERT(func);
+    auto funcVal = m_eval.make_function(&fd, eval::function_type{ *func });
+    m_stack.push(funcVal);
+  }
+
   // Previews
 
   bool compiler::preview(ast::root& root) noexcept
