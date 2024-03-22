@@ -30,7 +30,7 @@ namespace tnac::rt::fmt
     case DarkGray:    out << "90"; break;
     case Red:         out << "91"; break;
     case Green:       out << "92"; break;
-    case Orange:      out << "93"; break;
+    case Yellow:      out << "93"; break;
     case Blue:        out << "94"; break;
     case Magenta:     out << "95"; break;
     case Cyan:        out << "96"; break;

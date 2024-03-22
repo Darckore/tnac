@@ -37,7 +37,7 @@ namespace tnac::rt::fmt
     
     Red,
     Green,
-    Orange,
+    Yellow,
     Blue,
     Magenta,
     Cyan

@@ -465,7 +465,7 @@ namespace tnac::rt::out
   void lister::lit_style() noexcept
   {
     reset_style();
-    fmt::add_clr(out(), fmt::clr::Orange);
+    fmt::add_clr(out(), fmt::clr::Yellow);
   }
   void lister::default_style() noexcept
   {

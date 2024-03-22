@@ -111,7 +111,7 @@ namespace tnac::rt
   {
     buf_t input;
 
-    fmt::print(m_state->out(), fmt::clr::Orange, ">> "sv);
+    fmt::print(m_state->out(), fmt::clr::Yellow, ">> "sv);
     std::getline(m_state->in(), input);
     if (utils::ltrim(input).empty())
     {
@@ -150,7 +150,7 @@ namespace tnac::rt
 
   void repl::on_exit() noexcept
   {
-    fmt::println(m_state->out(), fmt::clr::Orange, "\nGoody-bye"sv);
+    fmt::println(m_state->out(), fmt::clr::Yellow, "\nGoody-bye"sv);
     m_state->stop();
   }
 

@@ -262,7 +262,7 @@ namespace tnac::rt::out
       },
       [&](auto v) noexcept
       {
-        fmt::print(out(), fmt::clr::Orange, v);
+        fmt::print(out(), fmt::clr::Yellow, v);
       }
     };
 
@@ -297,7 +297,7 @@ namespace tnac::rt::out
   void ir_printer::param(ir::func_param par) noexcept
   {
     keyword("param"sv);
-    fmt::print(out(), fmt::clr::Orange, *par);
+    fmt::print(out(), fmt::clr::Yellow, *par);
   }
 
   void ir_printer::plain(string_t str) noexcept

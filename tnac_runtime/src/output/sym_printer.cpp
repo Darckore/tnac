@@ -55,7 +55,7 @@ namespace tnac::rt::out
 
   void sym_printer::print_param(const semantics::parameter& par) noexcept
   {
-    fmt::print(out(), fmt::clr::Orange, par.name());
+    fmt::print(out(), fmt::clr::Yellow, par.name());
   }
 
   void sym_printer::print_func(const semantics::function& func) noexcept
