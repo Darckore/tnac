@@ -12,10 +12,27 @@ namespace tnac::ast
     //
     // Defines a derived visitor ability to react on exit from a scope child
     //
-    template <typename Visitor>
-    concept has_exit_child = requires(Visitor v)
+    template <typename N, typename Visitor>
+    concept has_exit_child = 
+      ast_node<N> &&
+      requires(Visitor v, N* node)
     {
-      { v.exit_child() }->std::same_as<bool>;
+      { v.exit_child(*node) }->std::same_as<bool>;
+    };
+
+    //
+    // Defines a derived visitor ability to react on exit from a scope child
+    // in case when the derived class stopped further iteration by returning
+    // false from it exit_child method
+    // This provides access to the next child node which would be visited
+    // if exit_child returned true
+    //
+    template <typename N, typename Visitor>
+    concept has_post_exit =
+      ast_node<N> &&
+      requires(Visitor v, N* node)
+    {
+      v.post_exit(*node);
     };
 
     //
@@ -101,16 +118,37 @@ namespace tnac::ast
     // Is called after a child in a scope has been visited,
     // and another one is about to be entered
     //
-    bool exit_child() noexcept
+    bool exit_child(detail::has_exit_child<derived_t> auto* child) noexcept
     {
-      if constexpr (detail::has_exit_child<derived_t>)
-      {
-        return to_derived().exit_child();
-      }
-      else
-      {
-        return true;
-      }
+      return to_derived().exit_child(*child);
+    }
+
+    //
+    // Dumps the exit_child call for nodes for which the derived visitor class
+    // doesn't provide a suitable method
+    //
+    template <typename Node>
+    bool exit_child(Node*) noexcept
+    {
+      return true;
+    }
+
+    //
+    // Called on the child node following the one for which
+    // exit_child returned false
+    //
+    void post_exit(detail::has_post_exit<derived_t> auto* child) noexcept
+    {
+      to_derived().post_exit(*child);
+    }
+
+    //
+    // Dumps the post_exit call for nodes for which the derived visitor class
+    // doesn't provide a suitable method
+    //
+    template <typename Node>
+    void post_exit(Node*) noexcept
+    {
     }
 
     //
@@ -152,6 +190,25 @@ namespace tnac::ast
     }
 
     //
+    // Visits a node list
+    //
+    void visit_children(auto&& list) noexcept
+    {
+      auto going = true;
+      for (auto child : list)
+      {
+        if (!going)
+        {
+          post_exit(child);
+          return;
+        }
+
+        visit_root(child);
+        going = exit_child(child);
+      }
+    }
+
+    //
     // Visits an error expression
     //
     void visit_impl(dest<error_expr> err) noexcept
@@ -169,12 +226,7 @@ namespace tnac::ast
 
       if (preview(r))
       {
-        for (auto child : r->modules())
-        {
-          visit_root(child);
-          if (!exit_child())
-            break;
-        }
+        visit_children(r->modules());
       }
 
       if constexpr (is_bottom_up())
@@ -197,12 +249,7 @@ namespace tnac::ast
         for (auto i : m->imports())
           visit_root(i);
 
-        for (auto child : m->children())
-        {
-          visit_root(child);
-          if (!exit_child())
-            break;
-        }
+        visit_children(m->children());
       }
 
       if constexpr (is_bottom_up())
@@ -227,12 +274,7 @@ namespace tnac::ast
 
       if (preview(s))
       {
-        for (auto child : s->children())
-        {
-          visit_root(child);
-          if (!exit_child())
-            break;
-        }
+        visit_children(s->children());
       }
 
       if constexpr (is_bottom_up())
