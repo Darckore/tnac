@@ -125,14 +125,29 @@ namespace tnac::detail
     return utils::eq_any(tk, tok_kind::Assign);
   }
 
-  static auto is_func(const ast::node* node) noexcept
-  {
-    auto declExpr = utils::try_cast<ast::decl_expr>(node);
-    if (!declExpr)
-      return false;
+  template <typename F>
+  concept fv_callback = std::is_nothrow_invocable_v<F, ast::func_decl&>;
 
-    return declExpr->declarator().is(ast::node_kind::FuncDecl);
-  }
+  template <fv_callback Func>
+  class func_visitor final : public ast::bottom_up_visitor<func_visitor<Func>>
+  {
+  public:
+    CLASS_SPECIALS_NONE(func_visitor);
+
+    func_visitor(Func callback) noexcept :
+      m_callback{ std::move(callback) }
+    {}
+
+    bool preview(ast::func_decl& fd) noexcept
+    {
+      if(!fd.name().starts_with('`'))
+        m_callback(fd);
+      return false;
+    }
+
+  private:
+    Func m_callback;
+  };
 }
 
 namespace tnac
@@ -744,35 +759,45 @@ namespace tnac
 
   void compiler::compile(body_t& body) noexcept
   {
-    bool haveRet = false;
-    bool skipRest = false;
     bool compileExprs = true;
+    bool reportExit = false;
     for (auto child : body)
     {
-      if (haveRet)
-        compileExprs = false;
-
-      const auto func = detail::is_func(child);
-      if (compileExprs || func)
+      if (compileExprs)
       {
         compile(*child);
       }
 
-      if (haveRet)
+      if (!exit_child(*child))
       {
-        skipRest = true;
-        if (!func)
-        {
-          haveRet = false;
-          post_exit(*child);
-        }
+        reportExit = true;
+        compileExprs = false;
+        continue;
       }
 
-      if (skipRest)
+      if (compileExprs)
         continue;
 
-      haveRet = !exit_child(*child);
+      const auto hasFunc = compile_funcs(*child);
+      if (!hasFunc && reportExit)
+      {
+        reportExit = false;
+        post_exit(*child);
+      }
     }
+  }
+
+  bool compiler::compile_funcs(ast::node& expr) noexcept
+  {
+    bool res = false;
+    detail::func_visitor fv{ [&](ast::func_decl& fd) noexcept
+      {
+        preview(fd);
+        res = true;
+      } };
+
+    fv(&expr);
+    return res;
   }
 
   void compiler::compile(semantics::module_sym& mod) noexcept

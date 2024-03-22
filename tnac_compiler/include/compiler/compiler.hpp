@@ -228,6 +228,13 @@ namespace tnac
     void compile(body_t& body) noexcept;
 
     //
+    // Visits all subexpressions of the given expression and compiles functions
+    // except anonimous ones
+    // Returns true if any functions were encountered
+    //
+    bool compile_funcs(ast::node& expr) noexcept;
+
+    //
     // Compiles the given module
     //
     void compile(semantics::module_sym& mod) noexcept;
