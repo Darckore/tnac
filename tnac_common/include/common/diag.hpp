@@ -69,6 +69,11 @@ namespace tnac
     //
     static string_t condition_same(bool value) noexcept;
 
+    //
+    // Returns a 'logical expr is always true/false' warning
+    //
+    static string_t logical_same(string_t op, bool isLhs, bool value) noexcept;
+
   public: // Parsing
     //
     // Returns an 'expected expr' message

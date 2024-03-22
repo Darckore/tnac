@@ -378,7 +378,7 @@ namespace tnac
     if (!detail::is_logical(opType))
       return true;
 
-    auto alwaysSame = [&](eval::value val) noexcept
+    auto alwaysSame = [&](eval::value val, bool isLhs) noexcept
       {
         const auto boolVal = eval::to_bool(val);
         const auto knownVal = ( boolVal && detail::is_lor(opType)) || // always true
@@ -386,7 +386,8 @@ namespace tnac
 
         if(knownVal)
         {
-          // todo: warning - always true/false
+          auto binOp = binary.op();
+          warning(binOp.at(), diag::logical_same(binOp.value(), isLhs, boolVal));
           m_eval.visit_bool_literal(boolVal);
           carry_val(&binary);
           return true;
@@ -398,7 +399,7 @@ namespace tnac
     auto leftOp = extract();
     if (leftOp.is_value())
     {
-      if (!alwaysSame(leftOp.get_value()))
+      if (!alwaysSame(leftOp.get_value(), true))
       {
         compile(binary.right());
       }
@@ -420,7 +421,7 @@ namespace tnac
       m_context.enter_block(lastBlock);
       m_context.override_last(lastBlock.end());
       m_context.terminate_at(lastBlock);
-      if (!alwaysSame(rightOp.get_value()))
+      if (!alwaysSame(rightOp.get_value(), false))
       {
         m_stack.push(leftOp);
       }

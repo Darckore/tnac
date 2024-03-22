@@ -24,6 +24,7 @@ namespace tnac::detail
   static constexpr auto moduleError{ "Compilation stopped due to errors in module '{}'"sv };
 
   static constexpr auto conditionSame{ "The condition is always {}"sv };
+  static constexpr auto logicalSame{ "The logical '{}' expression is always {}. Check the {} operand"sv };
 }
 
 namespace tnac
@@ -79,6 +80,12 @@ namespace tnac
   string_t diag::condition_same(bool value) noexcept
   {
     return format(detail::conditionSame, value);
+  }
+
+  string_t diag::logical_same(string_t op, bool isLhs, bool value) noexcept
+  {
+    const auto operand = isLhs ? "left"sv : "right"sv;
+    return format(detail::logicalSame, op, value, operand);
   }
 
 
