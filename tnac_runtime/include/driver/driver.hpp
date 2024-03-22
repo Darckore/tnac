@@ -46,14 +46,29 @@ namespace tnac::rt
     void error_mark() noexcept;
 
     //
+    // Prints the warning mark
+    //
+    void warning_mark() noexcept;
+
+    //
     // Posts an error message
     //
     void post_error(string_t msg) noexcept;
 
     //
+    // Posts a warning message
+    //
+    void post_warning(string_t msg) noexcept;
+
+    //
     // Retrieves a code line by location
     //
     string_t fetch_line(src::loc_wrapper at) noexcept;
+
+    //
+    // Retrieves a line by location and posts it to the given stream
+    //
+    void post_line(out_stream& stream, src::loc_wrapper at) noexcept;
 
     //
     // Posts a generic error
@@ -64,6 +79,11 @@ namespace tnac::rt
     // Posts a compile or parse error
     //
     void on_error(src::loc_wrapper loc, string_t msg) noexcept;
+
+    //
+    // Posts a warning
+    //
+    void on_warning(src::loc_wrapper loc, string_t msg) noexcept;
 
   private:
     feedback m_feedback;

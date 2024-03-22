@@ -88,6 +88,15 @@ namespace tnac
     }
 
     //
+    // Sets a handler for a compile warning
+    //
+    template <detail::compile_err_handler F>
+    void on_compile_warning(F handler) noexcept
+    {
+      m_compileWarningHandler = std::move(handler);
+    }
+
+    //
     // Sets a handler for a command
     //
     template <detail::cmd_handler F>
@@ -122,6 +131,11 @@ namespace tnac
     void compile_error(src::loc_wrapper&& loc, string_t msg) noexcept;
 
     //
+    // Invokes the compile warning handler
+    //
+    void compile_warning(src::loc_wrapper&& loc, string_t msg) noexcept;
+
+    //
     // Invokes the command handler
     //
     void command(ast::command&& cmd) noexcept;
@@ -135,6 +149,7 @@ namespace tnac
     gerr_handler_t m_genericErrorHandler;
     perr_handler_t m_parseErrorHandler;
     cerr_handler_t m_compileErrorHandler;
+    cerr_handler_t m_compileWarningHandler;
     cmd_handler_t  m_commandHandler;
     file_loader_t  m_fileLoader;
   };

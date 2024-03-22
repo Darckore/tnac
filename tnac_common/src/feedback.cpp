@@ -39,9 +39,14 @@ namespace tnac
     m_parseErrorHandler(err);
   }
 
-  void feedback::compile_error(src::loc_wrapper&& lok, string_t msg) noexcept
+  void feedback::compile_error(src::loc_wrapper&& loc, string_t msg) noexcept
   {
-    m_compileErrorHandler(std::move(lok), msg);
+    m_compileErrorHandler(std::move(loc), msg);
+  }
+
+  void feedback::compile_warning(src::loc_wrapper&& loc, string_t msg) noexcept
+  {
+    m_compileWarningHandler(std::move(loc), msg);
   }
 
   void feedback::command(ast::command&& cmd) noexcept

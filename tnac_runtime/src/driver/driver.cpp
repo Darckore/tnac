@@ -59,8 +59,10 @@ namespace tnac::rt
       { on_error("Generic"sv, msg); });
     m_feedback.on_parse_error([this](const ast::error_expr& err) noexcept
       { on_error(err.at().at(), err.message()); });
-    m_feedback.on_compile_error([this](src::loc_wrapper&& lok, string_t msg) noexcept
-      { on_error(lok, msg); });
+    m_feedback.on_compile_error([this](src::loc_wrapper&& loc, string_t msg) noexcept
+      { on_error(loc, msg); });
+    m_feedback.on_compile_warning([this](src::loc_wrapper&& loc, string_t msg) noexcept
+      { on_warning(loc, msg); });
   }
 
   void driver::error_mark() noexcept
@@ -68,9 +70,20 @@ namespace tnac::rt
     fmt::print(m_state.err(), fmt::clr::Red, " error: "sv);
   }
 
+  void driver::warning_mark() noexcept
+  {
+    fmt::print(m_state.err(), fmt::clr::Yellow, " warning: "sv);
+  }
+
   void driver::post_error(string_t msg) noexcept
   {
     error_mark();
+    m_state.err() << msg << '\n';
+  }
+
+  void driver::post_warning(string_t msg) noexcept
+  {
+    warning_mark();
     m_state.err() << msg << '\n';
   }
 
@@ -80,6 +93,17 @@ namespace tnac::rt
       return *replLine;
 
     return m_tnac.fetch_line(at);
+  }
+
+  void driver::post_line(out_stream& stream, src::loc_wrapper at) noexcept
+  {
+    auto line = fetch_line(at);
+    if (line.empty())
+      return;
+
+    fmt::add_clr(stream, fmt::clr::White);
+    stream << line << '\n' << std::setw(at->col() + 2) << "^\n";
+    fmt::clear_clr(stream);
   }
 
   void driver::on_error(string_t prefix, string_t msg) noexcept
@@ -93,14 +117,15 @@ namespace tnac::rt
     using namespace out;
     m_state.err() << loc << ':';
     post_error(msg);
+    post_line(m_state.err(), loc);
+  }
 
-    auto line = fetch_line(loc);
-    if (line.empty())
-      return;
-
-    fmt::add_clr(m_state.err(), fmt::clr::White);
-    m_state.err() << line << '\n' << std::setw(loc->col() + 2) << "^\n";
-    fmt::clear_clr(m_state.err());
+  void driver::on_warning(src::loc_wrapper loc, string_t msg) noexcept
+  {
+    using namespace out;
+    m_state.err() << loc << ':';
+    post_warning(msg);
+    post_line(m_state.err(), loc);
   }
 
 }
