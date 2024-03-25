@@ -94,6 +94,10 @@ namespace tnac::rt::out
     case Jump:   print_jump(instr);  break;
     case Ret:    print_ret(instr);   break;
     case Phi:    print_phi(instr);   break;
+
+    case Cplx:
+      print_inst(instr);
+      break;
     }
     endl();
   }
@@ -229,6 +233,23 @@ namespace tnac::rt::out
     }
   }
 
+  void ir_printer::print_inst(const ir::instruction& inst) noexcept
+  {
+    print_assign(inst[0]);
+    keyword(inst.opcode_str());
+
+    out() << "[ ";
+    const auto ops = inst.operand_count();
+    using st = decltype(inst.operand_count());
+    for (auto count = st{ 1 }; count < ops; ++count)
+    {
+      print_operand(inst[count]);
+      if (count < ops - 1)
+        out() << ", ";
+    }
+    out() << " ]";
+  }
+
   out_stream& ir_printer::out() noexcept
   {
     return *m_out;
@@ -277,27 +298,27 @@ namespace tnac::rt::out
       },
       [&](eval::complex_type c) noexcept
       {
-        out() << '[';
+        out() << "[ ";
         fmt::print(out(), fmt::clr::Yellow, c.real());
         out() << ", ";
         fmt::print(out(), fmt::clr::Yellow, c.imag());
-        out() << ']';
+        out() << " ]";
       },
       [&](eval::fraction_type f) noexcept
       {
-        out() << '[';
+        out() << "[ ";
         fmt::print(out(), fmt::clr::Yellow, f.num() * f.sign());
         out() << ", ";
         fmt::print(out(), fmt::clr::Yellow, f.denom());
-        out() << ']';
+        out() << " ]";
       },
       [&](eval::function_type f) noexcept
       {
         auto&& func = *f;
         id(func.id());
-        out() << " [";
+        out() << " [ ";
         name(func.name());
-        out() << ']';
+        out() << " ]";
       },
       [&](auto v) noexcept
       {

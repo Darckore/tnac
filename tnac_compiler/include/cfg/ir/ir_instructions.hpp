@@ -231,7 +231,9 @@ namespace tnac::ir
     Jump,
     Ret,
 
-    Phi
+    Phi,
+
+    Cplx
   };
 
   //

@@ -66,6 +66,8 @@ namespace tnac::rt::out
 
     void print_phi(const ir::instruction& phi) noexcept;
 
+    void print_inst(const ir::instruction& inst) noexcept;
+
   private:
     out_stream& out() noexcept;
 

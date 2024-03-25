@@ -190,6 +190,8 @@ namespace tnac::ir // instruction
     case Ret:    return "ret"sv;
 
     case Phi:    return "phi"sv;
+
+    case Cplx:   return "cplx"sv;
     }
 
     UTILS_ASSERT(false);
@@ -266,6 +268,8 @@ namespace tnac::ir // instruction
     case Ret:    count = 1; break;
 
     case Phi:    count = 3; break; // 2 branches is the most common case (probably)
+
+    case Cplx:   count = 3; break;
     }
 
     return count;
