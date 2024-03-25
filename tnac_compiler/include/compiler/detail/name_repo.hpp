@@ -4,6 +4,7 @@
 
 #pragma once
 #include "cfg/ir/ir.hpp"
+#include "sema/sym/sym_module.hpp"
 
 namespace tnac::detail
 {
@@ -76,7 +77,7 @@ namespace tnac::detail
     //
     // Creates a mangled name of a module
     //
-    string_t mangle_module_name(string_t original, std::size_t parCnt) noexcept;
+    string_t mangle_module_name(semantics::module_sym& sym, std::size_t parCnt) noexcept;
 
     //
     // Creates a mangled name of a function
@@ -87,12 +88,6 @@ namespace tnac::detail
     // Creates a name for an operation from op code
     //
     string_t op_name(ir::op_code oc) noexcept;
-
-  private:
-    //
-    // Mangles a function or module name
-    //
-    string_t mangle(string_t original, const ir::function* owner, std::size_t parCnt) noexcept;
 
   private:
     utils::string_pool m_plainNames;

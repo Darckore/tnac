@@ -909,7 +909,7 @@ namespace tnac
     UTILS_ASSERT(def);
 
     const auto parCnt = mod.param_count();
-    auto modName = m_names.mangle_module_name(mod.name(), parCnt);
+    auto modName = m_names.mangle_module_name(mod, parCnt);
     auto&& irMod = m_cfg->declare_module(&mod, modName, parCnt);
     m_context.enter_function(irMod);
     compile(def->params(), def->children());
