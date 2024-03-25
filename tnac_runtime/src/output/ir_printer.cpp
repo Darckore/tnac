@@ -283,6 +283,14 @@ namespace tnac::rt::out
         fmt::print(out(), fmt::clr::Yellow, c.imag());
         out() << ']';
       },
+      [&](eval::fraction_type f) noexcept
+      {
+        out() << '[';
+        fmt::print(out(), fmt::clr::Yellow, f.num() * f.sign());
+        out() << ", ";
+        fmt::print(out(), fmt::clr::Yellow, f.denom());
+        out() << ']';
+      },
       [&](eval::function_type f) noexcept
       {
         auto&& func = *f;

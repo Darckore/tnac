@@ -60,6 +60,14 @@ namespace tnac::eval // Internals
     return arr;
   }
 
+  void evaluator::fill_args(value_container auto& args, size_type count) noexcept
+  {
+    for (auto idx = size_type{}; idx < count; ++idx)
+    {
+      args[idx] = fetch_next();
+    }
+  }
+
   template <expr_result Obj, typename T, T... Seq>
   void evaluator::instantiate(const std::array<stored_value, sizeof...(Seq)>& args, std::integer_sequence<T, Seq...>) noexcept
   {
@@ -76,15 +84,13 @@ namespace tnac::eval // Internals
     reg_value(std::move(*instance));
   }
 
-  template <expr_result Obj, typename... Args> requires utils::all_same<stored_value, Args...>
-  void evaluator::instantiate(Args ...args) noexcept
+  template <expr_result Obj>
+  void evaluator::instantiate(size_type argSz) noexcept
   {
-    using type_info = eval::type_info<Obj>;
-    static constexpr auto max = type_info::maxArgs;
-    static_assert(sizeof ...(Args) == max);
-
-    const std::array argList{ std::move(args)... };
-    instantiate<Obj>(argList, std::make_index_sequence<max>{});
+    static constexpr auto max = type_info<Obj>::maxArgs;
+    std::array<stored_value, max> args{};
+    fill_args(args, argSz);
+    instantiate<Obj>(args, std::make_index_sequence<max>{});
   }
 }
 
@@ -708,7 +714,16 @@ namespace tnac::eval
 
   void evaluator::instantiate(type_id type, size_type argSz) noexcept
   {
-    utils::unused(type, argSz);
+    switch (type)
+    {
+    case type_id::Bool:     instantiate<bool_type>(argSz); break;
+    case type_id::Int:      instantiate<int_type>(argSz); break;
+    case type_id::Float:    instantiate<float_type>(argSz); break;
+    case type_id::Complex:  instantiate<complex_type>(argSz); break;
+    case type_id::Fraction: instantiate<fraction_type>(argSz); break;
+
+    default: break;
+    }
   }
 
   value evaluator::make_function(entity_id ent, function_type f) noexcept

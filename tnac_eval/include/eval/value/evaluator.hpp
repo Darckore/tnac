@@ -170,16 +170,21 @@ namespace tnac::eval
     void visit_binary(expr_result auto lhs, value rhs, val_ops op) noexcept;
 
     //
+    // Fills the specified number of arg values in the given container
+    //
+    void fill_args(value_container auto& args, size_type count) noexcept;
+
+    //
     // Dispatches the instantiation call
     //
     template <expr_result Obj, typename T, T... Seq>
     void instantiate(const std::array<stored_value, sizeof...(Seq)>& args, std::integer_sequence<T, Seq...>) noexcept;
 
     //
-    // Instantiates an object
+    // Fills the specified number of args from the stack and instantiates an object
     //
-    template <expr_result Obj, typename... Args> requires utils::all_same<stored_value, Args...>
-    void instantiate(Args ...args) noexcept;
+    template <expr_result Obj>
+    void instantiate(size_type argSz) noexcept;
 
   public:
     //
@@ -269,17 +274,6 @@ namespace tnac::eval
     // Resets the last evaluation result and returns an empty value
     //
     void clear_result() noexcept;
-
-    //
-    // Fills the specified number of arg values in the given container
-    //
-    void fill_args(value_container auto& args, size_type count) noexcept
-    {
-      for (auto idx = count; idx > size_type{}; --idx)
-      {
-        args[idx - 1] = fetch_next();
-      }
-    }
 
     //
     // Creates and registers an array
