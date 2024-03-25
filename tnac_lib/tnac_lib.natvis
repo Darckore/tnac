@@ -290,6 +290,13 @@
     </Expand>
   </Type>
 
+  <Type Name="tnac::ast::typed_expr">
+    <DisplayString>{m_kind,en} ({m_pos.m_kind,en})</DisplayString>
+    <Expand>
+      <Item Name="[args]">m_args</Item>
+    </Expand>
+  </Type>
+
   <Type Name="tnac::ast::call_expr">
     <DisplayString>{m_kind,en} ({m_pos.m_value,sb})</DisplayString>
     <Expand>
