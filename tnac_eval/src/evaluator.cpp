@@ -75,6 +75,17 @@ namespace tnac::eval // Internals
 
     reg_value(std::move(*instance));
   }
+
+  template <expr_result Obj, typename... Args> requires utils::all_same<stored_value, Args...>
+  void evaluator::instantiate(Args ...args) noexcept
+  {
+    using type_info = eval::type_info<Obj>;
+    static constexpr auto max = type_info::maxArgs;
+    static_assert(sizeof ...(Args) == max);
+
+    const std::array argList{ std::move(args)... };
+    instantiate<Obj>(argList, std::make_index_sequence<max>{});
+  }
 }
 
 

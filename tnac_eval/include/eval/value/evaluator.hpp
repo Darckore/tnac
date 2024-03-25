@@ -175,6 +175,12 @@ namespace tnac::eval
     template <expr_result Obj, typename T, T... Seq>
     void instantiate(const std::array<stored_value, sizeof...(Seq)>& args, std::integer_sequence<T, Seq...>) noexcept;
 
+    //
+    // Instantiates an object
+    //
+    template <expr_result Obj, typename... Args> requires utils::all_same<stored_value, Args...>
+    void instantiate(Args ...args) noexcept;
+
   public:
     //
     // Locks the given ref counted value
@@ -182,20 +188,6 @@ namespace tnac::eval
     auto lock(const lockable auto& val) noexcept
     {
       return value_lock{ val, m_registry };
-    }
-
-    //
-    // Instantiates an object
-    //
-    template <expr_result Obj, typename... Args> requires utils::all_same<stored_value, Args...>
-    void instantiate(Args ...args) noexcept
-    {
-      using type_info = eval::type_info<Obj>;
-      static constexpr auto max = type_info::maxArgs;
-      static_assert(sizeof ...(Args) == max);
-
-      const std::array argList{ std::move(args)... };
-      instantiate<Obj>(argList, std::make_index_sequence<max>{});
     }
 
     //

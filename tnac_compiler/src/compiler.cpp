@@ -125,6 +125,31 @@ namespace tnac::detail
     return utils::eq_any(tk, tok_kind::Assign);
   }
 
+  template <typename T>
+  constexpr auto expected_args() -> std::pair<std::size_t, std::size_t>
+  {
+    using ti = eval::type_info<T>;
+    return { ti::minArgs, ti::maxArgs };
+  }
+
+  auto expected_args(const token& tk) noexcept -> std::pair<std::size_t, std::size_t>
+  {
+    using detail::expected_args;
+    using enum tok_kind;
+
+    switch (tk.what())
+    {
+    case KwComplex:  return expected_args<eval::complex_type>();
+    case KwFraction: return expected_args<eval::fraction_type>();
+    case KwInt:      return expected_args<eval::int_type>();
+    case KwFloat:    return expected_args<eval::float_type>();
+    case KwBool:     return expected_args<eval::bool_type>();
+
+    default: UTILS_ASSERT(false); break;
+    }
+    return {};
+  }
+
   template <typename F>
   concept fv_callback = std::is_nothrow_invocable_v<F, ast::func_decl&>;
 
@@ -201,7 +226,7 @@ namespace tnac
     if (auto last = m_context.last_store())
       emit_load(*last);
     if (m_stack.empty())
-      m_stack.push(eval::value{});
+      m_stack.push_undef();
     else
       m_stack.push(m_stack.top());
   }
@@ -296,7 +321,19 @@ namespace tnac
 
   void compiler::visit(ast::typed_expr& typed) noexcept
   {
-    utils::unused(typed);
+    auto&& args = typed.args();
+    const auto argSz = args.size();
+    if (const auto argLimits = detail::expected_args(typed.name());
+        !utils::in_range(argSz, argLimits.first, argLimits.second))
+    {
+      const auto threshold = argSz < argLimits.first ? argLimits.first : argLimits.second;
+      error(diag::wrong_arg_num(threshold, argSz));
+      m_stack.drop(argSz);
+      m_stack.push_undef();
+      return;
+    }
+
+    utils::unused(argSz);
   }
 
   void compiler::visit(ast::call_expr& call) noexcept
@@ -511,7 +548,7 @@ namespace tnac
       }
       else if (!boolVal && !cond.has_false())
       {
-        m_stack.push(eval::value{});
+        m_stack.push_undef();
       }
       else
       {
@@ -545,7 +582,7 @@ namespace tnac
     m_context.enter_block(onFalse);
     m_context.terminate_at(onFalse);
     if (!cond.has_false())
-      m_stack.push(eval::value{});
+      m_stack.push_undef();
     else
       compile(cond.on_false());
     auto falseRes = extract();
@@ -775,7 +812,7 @@ namespace tnac
 
     if (m_stack.empty())
     {
-      m_stack.push(eval::value{}); // Undefined, probably, an empty body
+      m_stack.push_undef(); // Undefined, probably, an empty body
     }
 
     auto&& block = m_context.terminal_or_entry();

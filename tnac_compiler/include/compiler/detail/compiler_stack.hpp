@@ -15,6 +15,7 @@ namespace tnac::detail
   public:
     using value_type = ir::operand;
     using data_type  = std::vector<value_type>;
+    using size_type  = data_type::size_type;
 
   public:
     CLASS_SPECIALS_NONE_CUSTOM(compiler_stack);
@@ -30,6 +31,11 @@ namespace tnac::detail
     void push(ir::operand op) noexcept;
 
     //
+    // Pushes an undefined value to the stack
+    //
+    void push_undef() noexcept;
+
+    //
     // Returns the current top item
     //
     value_type top() noexcept;
@@ -38,6 +44,11 @@ namespace tnac::detail
     // Removes the top item
     //
     void pop() noexcept;
+
+    //
+    // Discards the specified number of items from the stack
+    //
+    void drop(size_type count) noexcept;
 
     //
     // Saves the top item and removes it from the stack
@@ -55,6 +66,11 @@ namespace tnac::detail
     // Checks whether the stack has any data
     //
     bool empty() const noexcept;
+
+    //
+    // Checks whether the stack has the given number of known values at the top
+    //
+    bool has_values(size_type count) const noexcept;
 
   private:
     data_type m_data;
