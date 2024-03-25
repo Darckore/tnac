@@ -58,6 +58,8 @@ namespace tnac::rt::out
 
     void print_unary(const ir::instruction& un) noexcept;
 
+    void print_select(const ir::instruction& sel) noexcept;
+
     void print_ret(const ir::instruction& ret) noexcept;
 
     void print_jump(const ir::instruction& jmp) noexcept;

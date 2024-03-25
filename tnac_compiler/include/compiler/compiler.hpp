@@ -199,6 +199,11 @@ namespace tnac
     //
     void emit_phi(edge_view edges) noexcept;
 
+    //
+    // Creates a select node
+    //
+    void emit_select(ir::operand cond, ir::operand onTrue, ir::operand onFalse) noexcept;
+
   private:
     //
     // Extracts the last values from the stack

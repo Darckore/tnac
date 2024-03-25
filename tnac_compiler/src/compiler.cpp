@@ -523,12 +523,13 @@ namespace tnac
     }
 
     constexpr auto namePref = "cond";
-    auto&& onTrue  = m_context.create_block(m_names.make_block_name(namePref, "true"sv));
-    auto&& onFalse = m_context.create_block(m_names.make_block_name(namePref, "false"sv));
+    auto&& lastBlock = m_context.current_block();
+    auto lastEnd = m_context.func_end();
 
-    emit_cond_jump(checkedVal, onTrue, onFalse);
     auto&& endBlock = m_context.create_block(m_names.make_block_name(namePref, "end"sv));
 
+    m_stack.push(checkedVal);
+    auto&& onTrue  = m_context.create_block(m_names.make_block_name(namePref, "true"sv));
     m_context.enter_block(onTrue);
     m_context.terminate_at(onTrue);
     if (!cond.has_true())
@@ -536,8 +537,11 @@ namespace tnac
     else
       compile(cond.on_true());
     auto trueRes = extract();
+    extract();
     emit_jump(trueRes, endBlock);
 
+    m_stack.push(checkedVal);
+    auto&& onFalse = m_context.create_block(m_names.make_block_name(namePref, "false"sv));
     m_context.enter_block(onFalse);
     m_context.terminate_at(onFalse);
     if (!cond.has_false())
@@ -545,7 +549,23 @@ namespace tnac
     else
       compile(cond.on_false());
     auto falseRes = extract();
+    extract();
     emit_jump(falseRes, endBlock);
+
+    lastEnd = m_context.override_last(lastBlock.end());
+    m_context.enter_block(lastBlock);
+    if (trueRes.is_value() && falseRes.is_value())
+    {
+      emit_select(checkedVal, trueRes, falseRes);
+      auto&& curFn = m_context.current_function();
+      curFn.delete_block_tree(onTrue);
+      curFn.delete_block_tree(onFalse);
+      m_context.terminate_at(lastBlock);
+      m_context.override_last(lastEnd);
+      return false;
+    }
+
+    emit_cond_jump(checkedVal, onTrue, onFalse);
 
     m_context.enter_block(endBlock);
     m_context.terminate_at(endBlock);
@@ -700,6 +720,12 @@ namespace tnac
     {
       instr.add(edge);
     }
+  }
+
+  void compiler::emit_select(ir::operand cond, ir::operand onTrue, ir::operand onFalse) noexcept
+  {
+    clear_store();
+    make(ir::op_code::Select).add(cond).add(onTrue).add(onFalse);
   }
 
   // Private members

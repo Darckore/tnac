@@ -86,14 +86,14 @@ namespace tnac::rt::out
       print_unary(instr);
       break;
 
-    case Alloc: print_alloc(instr); break;
-    case Store: print_store(instr); break;
-    case Load:  print_load(instr);  break;
-    case Call:  break;
-    case Jump:  print_jump(instr);  break;
-    case Ret:   print_ret(instr);   break;
-
-    case Phi:   print_phi(instr);   break;
+    case Select: print_select(instr); break;
+    case Alloc:  print_alloc(instr); break;
+    case Store:  print_store(instr); break;
+    case Load:   print_load(instr);  break;
+    case Call:   break;
+    case Jump:   print_jump(instr);  break;
+    case Ret:    print_ret(instr);   break;
+    case Phi:    print_phi(instr);   break;
     }
     endl();
   }
@@ -181,6 +181,17 @@ namespace tnac::rt::out
     print_assign(un[0]);
     keyword(un.opcode_str());
     print_operand(un[1]);
+  }
+
+  void ir_printer::print_select(const ir::instruction& sel) noexcept
+  {
+    print_assign(sel[0]);
+    keyword(sel.opcode_str());
+    print_operand(sel[1]);
+    out() << ", ";
+    print_operand(sel[2]);
+    out() << ", ";
+    print_operand(sel[3]);
   }
 
   void ir_printer::print_ret(const ir::instruction& ret) noexcept

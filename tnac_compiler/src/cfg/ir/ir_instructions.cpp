@@ -180,14 +180,16 @@ namespace tnac::ir // instruction
     case CmpNot: return "not"sv;
     case CmpIs:  return "is"sv;
 
-    case Alloc: return "alloc"sv;
-    case Store: return "store"sv;
-    case Load:  return "load"sv;
-    case Call:  return "call"sv;
-    case Jump:  return "jmp"sv;
-    case Ret:   return "ret"sv;
+    case Alloc:  return "alloc"sv;
+    case Store:  return "store"sv;
+    case Load:   return "load"sv;
 
-    case Phi:   return "phi"sv;
+    case Select: return "sel"sv;
+    case Call:   return "call"sv;
+    case Jump:   return "jmp"sv;
+    case Ret:    return "ret"sv;
+
+    case Phi:    return "phi"sv;
     }
 
     UTILS_ASSERT(false);
@@ -232,19 +234,19 @@ namespace tnac::ir // instruction
     auto count = size_type{};
     switch (code)
     {
-    case Add:   count = 3; break;
-    case Sub:   count = 3; break;
-    case Mul:   count = 3; break;
-    case Div:   count = 3; break;
-    case Mod:   count = 3; break;
-    case Pow:   count = 3; break;
-    case Root:  count = 3; break;
-    case And:   count = 3; break;
-    case Or:    count = 3; break;
-    case Xor:   count = 3; break;
-    case CmpE:  count = 3; break;
-    case CmpL:  count = 3; break;
-    case CmpLE: count = 3; break;
+    case Add:    count = 3; break;
+    case Sub:    count = 3; break;
+    case Mul:    count = 3; break;
+    case Div:    count = 3; break;
+    case Mod:    count = 3; break;
+    case Pow:    count = 3; break;
+    case Root:   count = 3; break;
+    case And:    count = 3; break;
+    case Or:     count = 3; break;
+    case Xor:    count = 3; break;
+    case CmpE:   count = 3; break;
+    case CmpL:   count = 3; break;
+    case CmpLE:  count = 3; break;
 
     case Abs:    count = 2; break;
     case Plus:   count = 2; break;
@@ -253,16 +255,17 @@ namespace tnac::ir // instruction
     case CmpNot: count = 2; break;
     case CmpIs:  count = 2; break;
 
-    case Store: count = 2; break;
-    case Load:  count = 2; break;
-    case Alloc: count = 1; break;
+    case Store:  count = 2; break;
+    case Load:   count = 2; break;
+    case Alloc:  count = 1; break;
 
-    case Call:  count = 2; break;
-    case Jump:  count = 1; break;
+    case Select: count = 4; break;
+    case Call:   count = 2; break;
+    case Jump:   count = 1; break;
 
-    case Ret:   count = 1; break;
+    case Ret:    count = 1; break;
 
-    case Phi:   count = 3; break; // 2 branches is the most common case (probably)
+    case Phi:    count = 3; break; // 2 branches is the most common case (probably)
     }
 
     return count;

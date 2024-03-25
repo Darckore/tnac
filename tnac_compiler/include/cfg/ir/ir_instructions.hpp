@@ -226,6 +226,7 @@ namespace tnac::ir
     Load,
     Alloc,
 
+    Select,
     Call,
     Jump,
     Ret,
