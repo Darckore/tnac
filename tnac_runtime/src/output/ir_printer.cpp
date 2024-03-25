@@ -275,6 +275,14 @@ namespace tnac::rt::out
       {
         // todo: arrays
       },
+      [&](eval::complex_type c) noexcept
+      {
+        out() << '[';
+        fmt::print(out(), fmt::clr::Yellow, c.real());
+        out() << ", ";
+        fmt::print(out(), fmt::clr::Yellow, c.imag());
+        out() << ']';
+      },
       [&](eval::function_type f) noexcept
       {
         auto&& func = *f;
