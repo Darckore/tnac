@@ -149,6 +149,22 @@ namespace tnac::detail
     }
     return {};
   }
+  auto to_type_id(const token& tk) noexcept
+  {
+    using enum tok_kind;
+
+    switch (tk.what())
+    {
+    case KwComplex:  return eval::type_id::Complex;
+    case KwFraction: return eval::type_id::Fraction;
+    case KwInt:      return eval::type_id::Int;
+    case KwFloat:    return eval::type_id::Float;
+    case KwBool:     return eval::type_id::Bool;
+
+    default: UTILS_ASSERT(false); break;
+    }
+    return eval::type_id::Invalid;
+  }
 
   template <typename F>
   concept fv_callback = std::is_nothrow_invocable_v<F, ast::func_decl&>;
@@ -323,13 +339,27 @@ namespace tnac
   {
     auto&& args = typed.args();
     const auto argSz = args.size();
-    if (const auto argLimits = detail::expected_args(typed.name());
+    if (const auto argLimits = detail::expected_args(typed.type_name());
         !utils::in_range(argSz, argLimits.first, argLimits.second))
     {
       const auto threshold = argSz < argLimits.first ? argLimits.first : argLimits.second;
       error(diag::wrong_arg_num(threshold, argSz));
       m_stack.drop(argSz);
       m_stack.push_undef();
+      return;
+    }
+
+    const auto typeId = detail::to_type_id(typed.type_name());
+    if (m_stack.has_values(argSz))
+    {
+      auto count = argSz;
+      while (count--)
+      {
+        auto val = m_stack.extract();
+        m_eval.push_value(val.get_value());
+      }
+      m_eval.instantiate(typeId, argSz);
+      carry_val(&typed);
       return;
     }
 

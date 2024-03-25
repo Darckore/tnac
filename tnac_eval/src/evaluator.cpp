@@ -706,6 +706,11 @@ namespace tnac::eval
 
   // Public members
 
+  void evaluator::instantiate(type_id type, size_type argSz) noexcept
+  {
+    utils::unused(type, argSz);
+  }
+
   value evaluator::make_function(entity_id ent, function_type f) noexcept
   {
     VALUE_GUARD(m_curEntity, ent);

@@ -191,6 +191,11 @@ namespace tnac::eval
     }
 
     //
+    // Instantiates an object using the specified number of args
+    //
+    void instantiate(type_id type, size_type argSz) noexcept;
+
+    //
     // Stores a value for a function
     //
     value make_function(entity_id ent, function_type f) noexcept;
