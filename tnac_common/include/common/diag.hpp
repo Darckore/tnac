@@ -79,6 +79,11 @@ namespace tnac
     //
     static string_t unreachable() noexcept;
 
+    //
+    // Returns a 'ret is here' message
+    //
+    static string_t ret_here() noexcept;
+
   public: // Parsing
     //
     // Returns an 'expected expr' message

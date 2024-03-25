@@ -93,6 +93,11 @@ namespace tnac
     return "Unreachable code"sv;
   }
 
+  string_t diag::ret_here() noexcept
+  {
+    return "The related ret expression is here"sv;
+  }
+
 
   // Public members(Parsing)
 

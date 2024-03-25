@@ -280,6 +280,11 @@ namespace tnac
     //
     void warning(src::loc_wrapper loc, string_t msg) noexcept;
 
+    //
+    // Posts a note
+    //
+    void note(src::loc_wrapper loc, string_t msg) noexcept;
+
   private:
     sema* m_sema{};
     feedback* m_feedback{};

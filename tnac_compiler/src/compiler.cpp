@@ -787,6 +787,7 @@ namespace tnac
   {
     bool compileExprs = true;
     bool reportExit = false;
+    ast::node* ret{};
     for (auto child : body)
     {
       if (compileExprs)
@@ -796,6 +797,7 @@ namespace tnac
 
       if (!exit_child(*child))
       {
+        ret = child;
         reportExit = true;
         compileExprs = false;
         continue;
@@ -809,6 +811,10 @@ namespace tnac
       {
         reportExit = false;
         post_exit(*child);
+        if (!ret->is(ast::node_kind::Ret))
+          continue;
+        if (auto loc = try_get_location(*ret))
+          note(std::move(*loc), diag::ret_here());
       }
     }
   }
@@ -908,5 +914,13 @@ namespace tnac
       return;
 
     m_feedback->compile_warning(std::move(loc), msg);
+  }
+
+  void compiler::note(src::loc_wrapper loc, string_t msg) noexcept
+  {
+    if (!m_feedback)
+      return;
+
+    m_feedback->compile_note(std::move(loc), msg);
   }
 }

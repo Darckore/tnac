@@ -51,6 +51,11 @@ namespace tnac::rt
     void warning_mark() noexcept;
 
     //
+    // Prints the note mark
+    //
+    void note_mark() noexcept;
+
+    //
     // Posts an error message
     //
     void post_error(string_t msg) noexcept;
@@ -59,6 +64,11 @@ namespace tnac::rt
     // Posts a warning message
     //
     void post_warning(string_t msg) noexcept;
+
+    //
+    // Posts a note message
+    //
+    void post_note(string_t msg) noexcept;
 
     //
     // Retrieves a code line by location
@@ -84,6 +94,11 @@ namespace tnac::rt
     // Posts a warning
     //
     void on_warning(src::loc_wrapper loc, string_t msg) noexcept;
+
+    //
+    // Posts a note
+    //
+    void on_note(src::loc_wrapper loc, string_t msg) noexcept;
 
   private:
     feedback m_feedback;

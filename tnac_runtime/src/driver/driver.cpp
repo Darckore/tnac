@@ -63,6 +63,8 @@ namespace tnac::rt
       { on_error(loc, msg); });
     m_feedback.on_compile_warning([this](src::loc_wrapper&& loc, string_t msg) noexcept
       { on_warning(loc, msg); });
+    m_feedback.on_compile_note([this](src::loc_wrapper&& loc, string_t msg) noexcept
+      { on_note(loc, msg); });
   }
 
   void driver::error_mark() noexcept
@@ -75,6 +77,11 @@ namespace tnac::rt
     fmt::print(m_state.err(), fmt::clr::Yellow, " warning: "sv);
   }
 
+  void driver::note_mark() noexcept
+  {
+    fmt::print(m_state.err(), fmt::clr::Cyan, " note: "sv);
+  }
+
   void driver::post_error(string_t msg) noexcept
   {
     error_mark();
@@ -84,6 +91,12 @@ namespace tnac::rt
   void driver::post_warning(string_t msg) noexcept
   {
     warning_mark();
+    m_state.err() << msg << '\n';
+  }
+
+  void driver::post_note(string_t msg) noexcept
+  {
+    note_mark();
     m_state.err() << msg << '\n';
   }
 
@@ -125,6 +138,14 @@ namespace tnac::rt
     using namespace out;
     m_state.err() << loc << ':';
     post_warning(msg);
+    post_line(m_state.err(), loc);
+  }
+
+  void driver::on_note(src::loc_wrapper loc, string_t msg) noexcept
+  {
+    using namespace out;
+    m_state.err() << loc << ':';
+    post_note(msg);
     post_line(m_state.err(), loc);
   }
 
