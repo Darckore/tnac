@@ -233,6 +233,7 @@ namespace tnac::ir // instruction
 
   instruction::size_type instruction::estimate_op_count(op_code code) noexcept
   {
+    using eval::type_info;
     auto count = size_type{};
     switch (code)
     {
@@ -269,7 +270,7 @@ namespace tnac::ir // instruction
 
     case Phi:    count = 3; break; // 2 branches is the most common case (probably)
 
-    case Cplx:   count = 3; break;
+    case Cplx:   type_info<eval::complex_type>::maxArgs + 1; break;
     }
 
     return count;

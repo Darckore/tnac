@@ -166,6 +166,30 @@ namespace tnac::detail
     return eval::type_id::Invalid;
   }
 
+  constexpr auto to_inst_code(eval::type_id ti) noexcept
+  {
+    using enum eval::type_id;
+    switch (ti)
+    {
+    case Bool: break;
+    case Int: break;
+    case Float: break;
+    case Fraction: break;
+    case Complex: return ir::op_code::Cplx;
+    case Array: break;
+
+    default: UTILS_ASSERT(false); break;
+    }
+
+    return ir::op_code::None;
+  }
+
+  constexpr auto needs_named_reg(ir::op_code oc) noexcept
+  {
+    using enum ir::op_code;
+    return utils::eq_none(oc, Load, Phi, Cplx);
+  }
+
   template <typename F>
   concept fv_callback = std::is_nothrow_invocable_v<F, ast::func_decl&>;
 
@@ -339,8 +363,8 @@ namespace tnac
   {
     auto&& args = typed.args();
     const auto argSz = args.size();
-    if (const auto argLimits = detail::expected_args(typed.type_name());
-        !utils::in_range(argSz, argLimits.first, argLimits.second))
+    const auto argLimits = detail::expected_args(typed.type_name());
+    if (!utils::in_range(argSz, argLimits.first, argLimits.second))
     {
       const auto threshold = argSz < argLimits.first ? argLimits.first : argLimits.second;
       error(diag::wrong_arg_num(threshold, argSz));
@@ -363,7 +387,7 @@ namespace tnac
       return;
     }
 
-    utils::unused(argSz);
+    emit_inst(detail::to_inst_code(typeId), argLimits.second, argSz);
   }
 
   void compiler::visit(ast::call_expr& call) noexcept
@@ -681,7 +705,7 @@ namespace tnac
       builder.add_instruction(block, oc, *prealloc, m_context.func_end()):
       builder.add_instruction(block, oc, m_context.func_end());
 
-    auto&& res = utils::eq_none(oc, Load, Phi) ?
+    auto&& res = detail::needs_named_reg(oc) ?
       builder.make_register(m_names.op_name(oc)):
       builder.make_register(m_context.register_index());
 
@@ -793,6 +817,15 @@ namespace tnac
   {
     clear_store();
     make(ir::op_code::Select).add(cond).add(onTrue).add(onFalse);
+  }
+
+  void compiler::emit_inst(ir::op_code oc, size_type opCount, size_type factCount) noexcept
+  {
+    utils::unused(opCount);
+    auto&& instr = make(oc);
+    auto res = extract();
+    m_stack.fill(instr, factCount);
+    m_stack.push(res);
   }
 
   // Private members

@@ -200,9 +200,14 @@ namespace tnac
     void emit_phi(edge_view edges) noexcept;
 
     //
-    // Creates a select node
+    // Creates a select instruction
     //
     void emit_select(ir::operand cond, ir::operand onTrue, ir::operand onFalse) noexcept;
+
+    //
+    // Creates an instance instruction
+    //
+    void emit_inst(ir::op_code oc, size_type opCount, size_type factCount) noexcept;
 
   private:
     //

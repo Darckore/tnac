@@ -81,4 +81,18 @@ namespace tnac::detail
     return true;
   }
 
+  void compiler_stack::fill(ir::instruction& instr, size_type count) noexcept
+  {
+    if (!count)
+      return;
+
+    UTILS_ASSERT(m_data.size() >= count);
+    auto beg = std::next(m_data.begin(), m_data.size() - count);
+    for (auto it = beg; it < m_data.end(); ++it)
+      instr.add(*it);
+
+    while (count--)
+      pop();
+  }
+
 }

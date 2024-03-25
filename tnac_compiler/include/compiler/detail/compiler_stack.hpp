@@ -72,6 +72,12 @@ namespace tnac::detail
     //
     bool has_values(size_type count) const noexcept;
 
+    //
+    // Fills operands to the instruction
+    // Operands are read in reverse order (offset to top)
+    //
+    void fill(ir::instruction& instr, size_type count) noexcept;
+
   private:
     data_type m_data;
   };
