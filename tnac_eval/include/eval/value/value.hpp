@@ -128,6 +128,12 @@ namespace tnac::eval
 
   public:
     //
+    // Returns an integer zero
+    //
+    static value zero() noexcept;
+
+  public:
+    //
     // Returns the value's type id
     //
     type_id id() const noexcept;

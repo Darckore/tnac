@@ -233,6 +233,10 @@ namespace tnac::ir
 
     Phi,
 
+    Bool,
+    Int,
+    Float,
+    Frac,
     Cplx
   };
 

@@ -191,6 +191,10 @@ namespace tnac::ir // instruction
 
     case Phi:    return "phi"sv;
 
+    case Bool:   return "bool"sv;
+    case Int:    return "int"sv;
+    case Float:  return "float"sv;
+    case Frac:   return "frac"sv;
     case Cplx:   return "cplx"sv;
     }
 
@@ -270,7 +274,11 @@ namespace tnac::ir // instruction
 
     case Phi:    count = 3; break; // 2 branches is the most common case (probably)
 
-    case Cplx:   type_info<eval::complex_type>::maxArgs + 1; break;
+    case Bool:   count = type_info<eval::bool_type>::maxArgs + 1;     break;
+    case Int:    count = type_info<eval::int_type>::maxArgs + 1;      break;
+    case Float:  count = type_info<eval::float_type>::maxArgs + 1;    break;
+    case Frac:   count = type_info<eval::fraction_type>::maxArgs + 1; break;
+    case Cplx:   count = type_info<eval::complex_type>::maxArgs + 1;  break;
     }
 
     return count;

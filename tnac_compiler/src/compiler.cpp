@@ -171,12 +171,11 @@ namespace tnac::detail
     using enum eval::type_id;
     switch (ti)
     {
-    case Bool: break;
-    case Int: break;
-    case Float: break;
-    case Fraction: break;
-    case Complex: return ir::op_code::Cplx;
-    case Array: break;
+    case Bool:     return ir::op_code::Bool;
+    case Int:      return ir::op_code::Int;
+    case Float:    return ir::op_code::Float;
+    case Fraction: return ir::op_code::Frac;
+    case Complex:  return ir::op_code::Cplx;
 
     default: UTILS_ASSERT(false); break;
     }
@@ -187,7 +186,7 @@ namespace tnac::detail
   constexpr auto needs_named_reg(ir::op_code oc) noexcept
   {
     using enum ir::op_code;
-    return utils::eq_none(oc, Load, Phi, Cplx);
+    return utils::eq_none(oc, Load, Phi, Bool, Int, Float, Frac, Cplx);
   }
 
   template <typename F>
@@ -821,10 +820,15 @@ namespace tnac
 
   void compiler::emit_inst(ir::op_code oc, size_type opCount, size_type factCount) noexcept
   {
-    utils::unused(opCount);
+    UTILS_ASSERT(factCount <= opCount);
     auto&& instr = make(oc);
     auto res = extract();
     m_stack.fill(instr, factCount);
+    while (factCount < opCount)
+    {
+      instr.add(eval::value::zero());
+      ++factCount;
+    }
     m_stack.push(res);
   }
 

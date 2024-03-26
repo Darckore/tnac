@@ -63,6 +63,13 @@ namespace tnac::eval
     };
   }
 
+  value value::zero() noexcept
+  {
+    static const auto i0 = int_type{};
+    return value{ &i0 };
+  }
+
+
   // Special members
 
   value::operator bool() const noexcept

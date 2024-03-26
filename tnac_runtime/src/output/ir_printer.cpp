@@ -95,6 +95,10 @@ namespace tnac::rt::out
     case Ret:    print_ret(instr);   break;
     case Phi:    print_phi(instr);   break;
 
+    case Bool:
+    case Int:
+    case Float:
+    case Frac:
     case Cplx:
       print_inst(instr);
       break;
