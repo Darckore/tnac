@@ -370,7 +370,7 @@ namespace tnac::rt::out
   void ir_printer::declare_funcs(const ir::cfg& gr) noexcept
   {
     std::queue<ir::function*> fnq;
-    for (auto mod : gr)
+    for (auto mod : gr | views::reverse)
     {
       fnq.push(mod);
     }
