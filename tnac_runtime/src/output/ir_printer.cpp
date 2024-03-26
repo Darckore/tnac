@@ -238,7 +238,6 @@ namespace tnac::rt::out
     print_assign(inst[0]);
     keyword(inst.opcode_str());
 
-    out() << "[ ";
     const auto ops = inst.operand_count();
     using st = decltype(inst.operand_count());
     for (auto count = st{ 1 }; count < ops; ++count)
@@ -247,7 +246,6 @@ namespace tnac::rt::out
       if (count < ops - 1)
         out() << ", ";
     }
-    out() << " ]";
   }
 
   out_stream& ir_printer::out() noexcept
