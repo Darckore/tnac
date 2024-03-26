@@ -1,24 +1,4 @@
 #if 0
-  void evaluator::visit(ast::typed_expr& expr) noexcept
-  {
-    if (return_path())
-      return;
-
-    using enum tok_kind;
-    using detail::instance;
-
-    switch (expr.type_name().what())
-    {
-    case KwComplex:  instance<eval::complex_type>{ m_visitor, m_errHandler }(expr);  break;
-    case KwFraction: instance<eval::fraction_type>{ m_visitor, m_errHandler }(expr); break;
-    case KwInt:      instance<eval::int_type>{ m_visitor, m_errHandler }(expr); break;
-    case KwFloat:    instance<eval::float_type>{ m_visitor, m_errHandler }(expr); break;
-    case KwBool:     instance<eval::bool_type>{ m_visitor, m_errHandler }(expr); break;
-    
-    default: UTILS_ASSERT(false); break;
-    }
-  }
-
   void evaluator::visit(ast::call_expr& expr) noexcept
   {
     if (return_path())
@@ -60,20 +40,7 @@
     using eval::val_ops;
     for (auto child : expr.patterns().children())
     {
-      if (!child->is(ast::node_kind::Pattern))
-      {
-        m_visitor.clear_result();
-        return false;
-      }
-
       auto&& pattern = utils::cast<ast::pattern>(*child);
-      
-      if (!pattern.matcher().is(ast::node_kind::Matcher))
-      {
-        m_visitor.clear_result();
-        return false;
-      }
-
       auto&& matcher = utils::cast<ast::matcher>(pattern.matcher());
       
       eval::stored_value currentMatch{};

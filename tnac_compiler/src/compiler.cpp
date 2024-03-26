@@ -306,17 +306,7 @@ namespace tnac
   {
     auto val = extract();
     const auto opType = unary.op().what();
-    if (val.is_value())
-    {
-      const auto op = eval::detail::conv_unary(opType);
-      m_eval.visit_unary(val.get_value(), op);
-      carry_val(&unary);
-      return;
-    }
-
-    const auto opcode = detail::to_unary_opcode(opType);
-    UTILS_ASSERT(opcode != ir::op_code::None);
-    emit_unary(opcode, val);
+    compile_unary(&unary, val, opType);
   }
 
   void compiler::visit(ast::binary_expr& binary) noexcept
@@ -392,21 +382,6 @@ namespace tnac
   void compiler::visit(ast::call_expr& call) noexcept
   {
     utils::unused(call);
-  }
-
-  void compiler::visit(ast::matcher& matcher) noexcept
-  {
-    utils::unused(matcher);
-  }
-
-  void compiler::visit(ast::pattern& pattern) noexcept
-  {
-    utils::unused(pattern);
-  }
-
-  void compiler::visit(ast::cond_expr& cond) noexcept
-  {
-    utils::unused(cond);
   }
 
   void compiler::visit(ast::dot_expr& dot) noexcept
@@ -664,6 +639,17 @@ namespace tnac
     return false;
   }
 
+  bool compiler::preview(ast::cond_expr& cond) noexcept
+  {
+    compile(cond.cond());
+    auto checkedVal = extract();
+    for (auto pattern : cond.patterns().children())
+    {
+      compile(utils::cast<ast::pattern>(*pattern), checkedVal);
+    }
+    return false;
+  }
+
 
   // Private members (Emitions)
 
@@ -862,6 +848,49 @@ namespace tnac
       // todo: warning - dead code
       m_stack.pop();
     }
+  }
+
+  void compiler::compile_unary(entity_id expr, const ir::operand& val, tok_kind opType) noexcept
+  {
+    if (val.is_value())
+    {
+      const auto op = eval::detail::conv_unary(opType);
+      m_eval.visit_unary(val.get_value(), op);
+      carry_val(expr);
+      return;
+    }
+
+    const auto opcode = detail::to_unary_opcode(opType);
+    UTILS_ASSERT(opcode != ir::op_code::None);
+    emit_unary(opcode, val);
+  }
+
+  bool compiler::compile(ast::pattern& pattern, const ir::operand& checked) noexcept
+  {
+    auto&& matcher = utils::cast<ast::matcher>(pattern.matcher());
+    if (matcher.is_default())
+    {
+      compile(pattern.body());
+      return true;
+    }
+
+    if (matcher.is_unary())
+    {
+      const auto op = matcher.pos().what();
+      compile_unary(&matcher, checked, op);
+    }
+
+    bool matchFound{};
+    auto res = extract();
+    if (res.is_value())
+    {
+      matchFound = eval::to_bool(res.get_value());
+      if (!matchFound)
+        return false;
+    }
+
+    compile(pattern.body());
+    return matchFound;
   }
 
   void compiler::compile(params_t& params, body_t& body) noexcept

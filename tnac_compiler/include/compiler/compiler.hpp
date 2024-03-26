@@ -89,9 +89,6 @@ namespace tnac
     void visit(ast::abs_expr& abs) noexcept;
     void visit(ast::typed_expr& typed) noexcept;
     void visit(ast::call_expr& call) noexcept;
-    void visit(ast::matcher& matcher) noexcept;
-    void visit(ast::pattern& pattern) noexcept;
-    void visit(ast::cond_expr& cond) noexcept;
     void visit(ast::dot_expr& dot) noexcept;
 
     bool exit_child(ast::node& node) noexcept;
@@ -132,6 +129,11 @@ namespace tnac
     // Handles short conditionals
     //
     bool preview(ast::cond_short& cond) noexcept;
+
+    //
+    // Handles conditionals
+    //
+    bool preview(ast::cond_expr& cond) noexcept;
 
   private: // Emitions
     //
@@ -226,6 +228,17 @@ namespace tnac
     // Empties the stack on the next instruction
     //
     void empty_stack() noexcept;
+
+    //
+    // Compiles a unary expression
+    //
+    void compile_unary(entity_id expr, const ir::operand& val, tok_kind opType) noexcept;
+
+    //
+    // Compiles a pattern
+    // Returns true if the pattern is known to match (when we have exact values)
+    //
+    bool compile(ast::pattern& pattern, const ir::operand& checked) noexcept;
 
     //
     // Compiles the implementation of a function or module
