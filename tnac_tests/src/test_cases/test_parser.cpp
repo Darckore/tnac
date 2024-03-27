@@ -802,6 +802,66 @@ namespace tnac::tests
     tree_checker::check_tree_structure(exp, input);
   }
 
+  TEST(parser, t_struct_cond_short_true)
+  {
+    constexpr auto input = "a = 42; { a > 0 }->{ a + 1 }"sv;
+
+    /*
+    * cond-short
+    *   >
+    *     a
+    *     0
+    *   +
+    *     a
+    *     1
+    *   -
+    *     a
+    *     2
+    */
+
+    std::array exp{
+      expected_node{   "a", Identifier, Binary},
+      expected_node{   "0", Literal,    Binary},
+      expected_node{   ">", Binary,     CondShort},
+      expected_node{   "a", Identifier, Binary},
+      expected_node{   "1", Literal,    Binary},
+      expected_node{   "+", Binary,     CondShort},
+      expected_node{    {}, CondShort,  Module },
+    };
+
+    tree_checker::check_tree_structure(exp, input);
+  }
+
+  TEST(parser, t_struct_cond_short_false)
+  {
+    constexpr auto input = "a = 42; { a > 0 }->{ , a - 2 }"sv;
+
+    /*
+    * cond-short
+    *   >
+    *     a
+    *     0
+    *   +
+    *     a
+    *     1
+    *   -
+    *     a
+    *     2
+    */
+
+    std::array exp{
+      expected_node{   "a", Identifier, Binary},
+      expected_node{   "0", Literal,    Binary},
+      expected_node{   ">", Binary,     CondShort},
+      expected_node{   "a", Identifier, Binary},
+      expected_node{   "2", Literal,    Binary},
+      expected_node{   "-", Binary,     CondShort},
+      expected_node{    {}, CondShort,  Module },
+    };
+
+    tree_checker::check_tree_structure(exp, input);
+  }
+
   TEST(parser, t_errors)
   {
     tree_checker::check_error("2 + "sv, "Expected expression"sv);
