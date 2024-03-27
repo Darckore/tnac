@@ -257,9 +257,8 @@ namespace tnac::tests
     constexpr auto input = "-42"sv;
 
     /*
-          -'-'
-         |
-        42
+    * -
+    *   42
     */
 
     std::array exp{
@@ -275,13 +274,11 @@ namespace tnac::tests
     constexpr auto input = "-(42 + 69)"sv;
 
     /*
-                -'-'
-               |
-             -()
-            |
-          -'+'-
-         |     |
-        42     69
+    * -
+    *   ()
+    *     +
+    *       42
+    *       69
     */
 
     std::array exp{
@@ -300,11 +297,10 @@ namespace tnac::tests
     constexpr auto input = "|42 + 69|"sv;
 
     /*
-             -||
-            |
-          -'+'-
-         |     |
-        42     69
+    * ||
+    *   +
+    *     42
+    *     69
     */
 
     std::array exp{
@@ -322,11 +318,10 @@ namespace tnac::tests
     constexpr auto input = "42 + -2"sv;
 
     /*
-          -'+'-
-         |     |
-        42    '-'
-               |
-               2
+    * +
+    *   42
+    *   -
+    *     2
     */
 
     std::array exp{
@@ -344,9 +339,8 @@ namespace tnac::tests
     constexpr auto input = "-_result"sv;
 
     /*
-             -'-'
-            |
-        _result
+    * -
+    *   _result
     */
 
     std::array exp{
@@ -362,9 +356,9 @@ namespace tnac::tests
     constexpr auto input = "_result + 1"sv;
 
     /*
-             -'+'---
-            |       |
-        _result     1
+    * +
+    *   _result
+    *   1
     */
 
     std::array exp{
@@ -381,11 +375,11 @@ namespace tnac::tests
     constexpr auto input = "128 - 127-1"sv;
 
     /*
-             --'-'-
-            |      |
-          -'-'-    1
-         |     |
-        128   127
+    * -
+    *   -
+    *     128
+    *     127
+    *   1
     */
 
     std::array exp{
@@ -404,11 +398,13 @@ namespace tnac::tests
     constexpr auto input = "10 ** 2 * 4 // 5"sv;
 
     /*
-               -----'*'-----
-              |             |
-           --'**'--      --'//'--
-          |        |    |        |
-         10        2    4        5
+    * *
+    *   **
+    *     10
+    *     2
+    *   //
+    *     4
+    *     5
     */
 
     std::array exp{
@@ -429,15 +425,16 @@ namespace tnac::tests
     constexpr auto input = "42 + -2 + 69 * 5 + 1"sv;
 
     /*
-                       -------'+'--
-                      |            |
-              -------'+'--         1
-             |            |
-           -'+'-        -'*'- 
-          |     |      |     |
-         42    '-'    69     5
-                |
-                2
+    * +
+    *   +
+    *     +
+    *       42
+    *       -
+    *         2
+    *     *
+    *       69
+    *       5
+    *   1
     */
 
     std::array exp{
@@ -461,11 +458,11 @@ namespace tnac::tests
     constexpr auto input = "f(a) ; : f(1+2)"sv;
 
     /*
-             --call-expr--
-            |             |
-           'f'         --'+'--
-                      |       |
-                      1       2
+    * call
+    *     f
+    *     +
+    *       1
+    *       2
     */
 
     std::array exp{
@@ -484,9 +481,9 @@ namespace tnac::tests
     constexpr auto input = "_cplx(1,2)"sv;
 
     /*
-         --'_cplx'--
-        |           |
-        1           2
+    * _cplx
+    *     1
+    *     2
     */
 
     std::array exp{
@@ -503,13 +500,15 @@ namespace tnac::tests
     constexpr auto input = "_cplx(1 + 2, 2 * 2 + 3)"sv;
 
     /*
-               --'_cplx'-----
-              |              |
-           --'+'--        --'+'--
-          |       |      |       |
-          1       2   --'*'--    3
-                     |       |
-                     2       2
+    * _cplx
+    *     +
+    *       1
+    *       2
+    *     +
+    *       *
+    *         2
+    *         2
+    *       3
     */
 
     std::array exp{
@@ -532,15 +531,16 @@ namespace tnac::tests
     constexpr auto input = "42 * ( 1 + 2) + 2 * 69"sv;
 
     /*
-              -----'+'---
-             |           |
-          --'*'--      -'*'-
-         |       |    |     |
-        42     -()    2     69
-              |
-            -'+'-
-           |     |
-           1     2
+    * +
+    *   *
+    *     42
+    *     ()
+    *       +
+    *         1
+    *         2
+    *   *
+    *     2
+    *     69
     */
 
     std::array exp{
@@ -562,21 +562,22 @@ namespace tnac::tests
   TEST(parser, t_bitwise_precedence)
   {
     constexpr auto input = "1 | 2 ^ 3 & 4 + 5 & 6 | 7 ^ 8"sv;
-
     /*
-            --'|'-----------
-           |                |
-        --'|'--          --'^'--
-       |       |        |       |
-      '1'   --'^'--    '7'     '8'
-           |       |
-          '2'   --'&'--
-               |       |
-            --'&'--   '6'
-           |       |
-          '3'   --'+'--
-               |       |
-              '4'     '5'
+    * |
+    *   |
+    *     1
+    *     ^
+    *       2
+    *       &
+    *         &
+    *           3
+    *           +
+    *             4
+    *             5
+    *       6
+    *   ^
+    *     7
+    *     8
     */
 
     std::array exp{
@@ -605,13 +606,11 @@ namespace tnac::tests
     constexpr auto input = "a = 42 + 1"sv;
 
     /*
-                -decl-expr
-               |
-             -'a'
-            |
-          -'+'-
-         |     |
-        42     1
+    * decl
+    *   a
+    *   +
+    *     42
+    *     1
     */
 
     std::array exp{
@@ -630,21 +629,15 @@ namespace tnac::tests
     constexpr auto input = "a = b = c = 42 + 1"sv;
 
     /*
-                                  -decl-expr
-                                 |
-                               -'a'
-                              |
-                         -decl-expr
-                        |
-                      -'b'
-                     |
-                -decl-expr
-               |
-             -'c'
-            |
-          -'+'-
-         |     |
-        42     1
+    * decl
+    *   a
+    *   decl
+    *     b
+    *     decl
+    *       c
+    *       +
+    *         42
+    *         1
     */
 
     std::array exp{
@@ -667,11 +660,10 @@ namespace tnac::tests
     constexpr auto input = "f() ;"sv;
 
     /*
-             - decl-expr
-            |
-          -'f'-
-         |     |
-        { }   { }
+    * decl
+    *   f
+    *     ()
+    *     {}
     */
 
     std::array exp{
@@ -688,13 +680,10 @@ namespace tnac::tests
     constexpr auto input = "f(p1, p2, p3) ;"sv;
 
     /*
-           - decl-expr
-          |
-        -'f'----------
-       |              |
-       |- 'p1'       { }
-       |- 'p2'
-       |- 'p3'
+    * decl
+    *   f
+    *   (p1, p2, p3)
+    *   {}
     */
 
     std::array exp{
@@ -714,15 +703,14 @@ namespace tnac::tests
     constexpr auto input = "f(p) p+1;"sv;
 
     /*
-            - decl-expr
-           |
-         -'f'-----
-        |         |
-        |- 'p'    |------
-                         |
-                      --'+'--
-                     |       |
-                    'p'     '1'
+    * decl
+    *   f
+    *     (p)
+    *     {
+    *       +
+    *         p
+    *         1
+    *     }
     */
 
     std::array exp{
