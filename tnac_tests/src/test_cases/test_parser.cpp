@@ -136,6 +136,11 @@ namespace tnac::tests
         check_node(decl, decl.name());
       }
 
+      void visit(const ast::cond_short& cond) noexcept
+      {
+        check_node(cond, {});
+      }
+
       void visit(const ast::binary_expr& expr) noexcept
       {
         check_node(expr, expr.op().value());
@@ -759,6 +764,39 @@ namespace tnac::tests
       expected_node{    {}, Scope,      FuncDecl },
       expected_node{   "f", FuncDecl,   Decl },
       expected_node{    {}, Decl,       Module },
+    };
+
+    tree_checker::check_tree_structure(exp, input);
+  }
+
+  TEST(parser, t_struct_cond_short)
+  {
+    constexpr auto input = "a = 42; { a > 0 }->{ a + 1, a - 2 }"sv;
+
+    /*
+    * cond-short
+    *   >
+    *     a
+    *     0
+    *   +
+    *     a
+    *     1
+    *   -
+    *     a
+    *     2
+    */
+
+    std::array exp{
+      expected_node{   "a", Identifier, Binary},
+      expected_node{   "0", Literal,    Binary},
+      expected_node{   ">", Binary,     CondShort},
+      expected_node{   "a", Identifier, Binary},
+      expected_node{   "1", Literal,    Binary},
+      expected_node{   "+", Binary,     CondShort},
+      expected_node{   "a", Identifier, Binary},
+      expected_node{   "2", Literal,    Binary},
+      expected_node{   "-", Binary,     CondShort},
+      expected_node{    {}, CondShort,  Module },
     };
 
     tree_checker::check_tree_structure(exp, input);
