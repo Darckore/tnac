@@ -814,9 +814,7 @@ namespace tnac::tests
     *   +
     *     a
     *     1
-    *   -
-    *     a
-    *     2
+    *   {}
     */
 
     std::array exp{
@@ -841,9 +839,7 @@ namespace tnac::tests
     *   >
     *     a
     *     0
-    *   +
-    *     a
-    *     1
+    *   {}
     *   -
     *     a
     *     2
