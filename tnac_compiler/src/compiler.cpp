@@ -317,17 +317,7 @@ namespace tnac
 
     auto rhs = extract();
     auto lhs = extract();
-    if (lhs.is_value() && rhs.is_value())
-    {
-      const auto op = eval::detail::conv_binary(opType);
-      m_eval.visit_binary(lhs.get_value(), rhs.get_value(), op);
-      carry_val(&binary);
-      return;
-    }
-
-    const auto opcode = detail::to_binary_opcode(opType);
-    UTILS_ASSERT(opcode != ir::op_code::None);
-    emit_binary(opcode, lhs, rhs);
+    compile_binary(&binary, lhs, rhs, opType);
   }
 
   void compiler::visit(ast::array_expr& arr) noexcept
@@ -865,6 +855,21 @@ namespace tnac
     emit_unary(opcode, val);
   }
 
+  void compiler::compile_binary(entity_id expr, const ir::operand& lhs, const ir::operand& rhs, tok_kind opType) noexcept
+  {
+    if (lhs.is_value() && rhs.is_value())
+    {
+      const auto op = eval::detail::conv_binary(opType);
+      m_eval.visit_binary(lhs.get_value(), rhs.get_value(), op);
+      carry_val(expr);
+      return;
+    }
+
+    const auto opcode = detail::to_binary_opcode(opType);
+    UTILS_ASSERT(opcode != ir::op_code::None);
+    emit_binary(opcode, lhs, rhs);
+  }
+
   bool compiler::compile(ast::pattern& pattern, const ir::operand& checked) noexcept
   {
     auto&& matcher = utils::cast<ast::matcher>(pattern.matcher());
@@ -874,10 +879,16 @@ namespace tnac
       return true;
     }
 
+    const auto op = matcher.has_implicit_op() ? tok_kind::Eq : matcher.pos().what();
     if (matcher.is_unary())
     {
-      const auto op = matcher.pos().what();
       compile_unary(&matcher, checked, op);
+    }
+    else
+    {
+      compile(matcher.checked());
+      auto rhs = extract();
+      compile_binary(&matcher, checked, rhs, op);
     }
 
     bool matchFound{};

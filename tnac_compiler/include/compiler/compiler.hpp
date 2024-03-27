@@ -235,6 +235,11 @@ namespace tnac
     void compile_unary(entity_id expr, const ir::operand& val, tok_kind opType) noexcept;
 
     //
+    // Compiles a binary expression
+    //
+    void compile_binary(entity_id expr, const ir::operand& lhs, const ir::operand& rhs, tok_kind opType) noexcept;
+
+    //
     // Compiles a pattern
     // Returns true if the pattern is known to match (when we have exact values)
     //
