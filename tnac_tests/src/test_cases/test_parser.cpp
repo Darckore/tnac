@@ -108,7 +108,7 @@ namespace tnac::tests
     public:
       void visit(const ast::scope& scope) noexcept
       {
-        check_node(scope, "");
+        check_node(scope, {});
       }
 
       void visit(const ast::assign_expr& expr) noexcept
@@ -118,7 +118,7 @@ namespace tnac::tests
 
       void visit(const ast::decl_expr& expr) noexcept
       {
-        check_node(expr, "");
+        check_node(expr, {});
       }
 
       void visit(const ast::var_decl& decl) noexcept
@@ -148,12 +148,12 @@ namespace tnac::tests
 
       void visit(const ast::paren_expr& expr) noexcept
       {
-        check_node(expr, "");
+        check_node(expr, {});
       }
 
       void visit(const ast::abs_expr& expr) noexcept
       {
-        check_node(expr, "");
+        check_node(expr, {});
       }
 
       void visit(const ast::typed_expr& expr) noexcept
@@ -163,7 +163,7 @@ namespace tnac::tests
 
       void visit(const ast::call_expr& expr) noexcept
       {
-        check_node(expr, "");
+        check_node(expr, {});
       }
 
       void visit(const ast::lit_expr& expr) noexcept
@@ -178,7 +178,7 @@ namespace tnac::tests
 
       void visit(const ast::ret_expr& expr) noexcept
       {
-        check_node(expr, "");
+        check_node(expr, {});
       }
 
       void visit(const ast::result_expr& expr) noexcept
@@ -285,7 +285,7 @@ namespace tnac::tests
       expected_node{ "42", Literal, Binary },
       expected_node{ "69", Literal, Binary },
       expected_node{  "+", Binary,  Paren },
-      expected_node{   "", Paren,   Unary },
+      expected_node{   {}, Paren,   Unary},
       expected_node{  "-", Unary,   Module },
     };
 
@@ -307,7 +307,7 @@ namespace tnac::tests
       expected_node{ "42", Literal, Binary },
       expected_node{ "69", Literal, Binary },
       expected_node{ "+",  Binary,  Abs },
-      expected_node{ "",   Abs,     Module },
+      expected_node{ {},   Abs,     Module },
     };
 
     tree_checker::check_tree_structure(exp, input);
@@ -470,7 +470,7 @@ namespace tnac::tests
       expected_node{ "1", Literal,    Binary },
       expected_node{ "2", Literal,    Binary },
       expected_node{ "+", Binary,     Call },
-      expected_node{ "",  Call,       Module },
+      expected_node{ {},  Call,       Module },
     };
 
     tree_checker::check_tree_structure(exp, input);
@@ -548,7 +548,7 @@ namespace tnac::tests
       expected_node{  "1", Literal, Binary },
       expected_node{  "2", Literal, Binary },
       expected_node{  "+", Binary,  Paren },
-      expected_node{   "", Paren,   Binary },
+      expected_node{   {}, Paren,   Binary },
       expected_node{  "*", Binary,  Binary },
       expected_node{  "2", Literal, Binary },
       expected_node{ "69", Literal, Binary },
@@ -618,7 +618,7 @@ namespace tnac::tests
       expected_node{  "1", Literal, Binary },
       expected_node{  "+", Binary,  VarDecl },
       expected_node{  "a", VarDecl, Decl },
-      expected_node{   "", Decl,    Module },
+      expected_node{   {}, Decl,    Module },
     };
 
     tree_checker::check_tree_structure(exp, input);
@@ -645,11 +645,11 @@ namespace tnac::tests
       expected_node{  "1", Literal, Binary },
       expected_node{  "+", Binary,  VarDecl },
       expected_node{  "c", VarDecl, Decl },
-      expected_node{   "", Decl,    VarDecl },
+      expected_node{   {}, Decl,    VarDecl },
       expected_node{  "b", VarDecl, Decl },
-      expected_node{   "", Decl,    VarDecl },
+      expected_node{   {}, Decl,    VarDecl },
       expected_node{  "a", VarDecl, Decl },
-      expected_node{   "", Decl,    Module },
+      expected_node{   {}, Decl,    Module },
     };
 
     tree_checker::check_tree_structure(exp, input);
@@ -667,9 +667,9 @@ namespace tnac::tests
     */
 
     std::array exp{
-      expected_node{   "", Scope,    FuncDecl },
+      expected_node{   {}, Scope,    FuncDecl },
       expected_node{  "f", FuncDecl, Decl },
-      expected_node{   "", Decl,     Module },
+      expected_node{   {}, Decl,     Module },
     };
 
     tree_checker::check_tree_structure(exp, input);
@@ -690,9 +690,9 @@ namespace tnac::tests
       expected_node{ "p1", ParamDecl,  FuncDecl },
       expected_node{ "p2", ParamDecl,  FuncDecl },
       expected_node{ "p3", ParamDecl,  FuncDecl },
-      expected_node{   "", Scope,      FuncDecl },
+      expected_node{   {}, Scope,      FuncDecl },
       expected_node{  "f", FuncDecl,   Decl },
-      expected_node{   "", Decl,       Module },
+      expected_node{   {}, Decl,       Module },
     };
 
     tree_checker::check_tree_structure(exp, input);
@@ -718,9 +718,47 @@ namespace tnac::tests
       expected_node{  "p", Identifier, Binary },
       expected_node{  "1", Literal,    Binary },
       expected_node{  "+", Binary,     Scope },
-      expected_node{   "", Scope,      FuncDecl },
+      expected_node{   {}, Scope,      FuncDecl },
       expected_node{  "f", FuncDecl,   Decl },
-      expected_node{   "", Decl,       Module },
+      expected_node{   {}, Decl,       Module },
+    };
+
+    tree_checker::check_tree_structure(exp, input);
+  }
+
+  TEST(parser, t_struct_ret)
+  {
+    constexpr auto input = "f() _ret fn(p) p+1;;"sv;
+
+    /*
+    * decl
+    *   f
+    *   ()
+    *   {
+    *     _ret
+    *       decl
+    *         _fn
+    *         (p)
+    *         {
+    *           +
+    *             p
+    *             1
+    *         }
+    *   }
+    */
+
+    std::array exp{
+      expected_node{   "p", ParamDecl,  FuncDecl },
+      expected_node{   "p", Identifier, Binary },
+      expected_node{   "1", Literal,    Binary },
+      expected_node{   "+", Binary,     Scope },
+      expected_node{    {}, Scope,      FuncDecl },
+      expected_node{  "fn", FuncDecl,   Decl },
+      expected_node{    {}, Decl,       Ret },
+      expected_node{    {}, Ret,        Scope},
+      expected_node{    {}, Scope,      FuncDecl },
+      expected_node{   "f", FuncDecl,   Decl },
+      expected_node{    {}, Decl,       Module },
     };
 
     tree_checker::check_tree_structure(exp, input);
