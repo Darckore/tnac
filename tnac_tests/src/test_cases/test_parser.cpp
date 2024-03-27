@@ -26,8 +26,8 @@ namespace tnac::tests
       {
         feedback fb;
         auto core = get_tnac(fb);
-        auto ast = core.parse(input);
-        tree_checker{ exp }(ast);
+        auto tree = core.parse(input);
+        tree_checker{ exp }(tree);
       }
 
       template <ast::node_kind kind, std::size_t N>
@@ -37,16 +37,16 @@ namespace tnac::tests
         auto core = get_tnac(fb);
         for (auto input : inputs)
         {
-          auto ast = core.parse(input);
-          EXPECT_NE(ast, nullptr) << "Null AST for input: " << input;
+          auto tree = core.parse(input);
+          EXPECT_NE(tree, nullptr) << "Null AST for input: " << input;
 
-          if (ast)
+          if (tree)
           {
-            const auto nodeKind = ast->what();
+            const auto nodeKind = tree->what();
             EXPECT_EQ(nodeKind, kind) << "Bad kind for input: " << input;
             if (nodeKind == kind)
             {
-              auto&& tok = static_cast<ast::expr&>(*ast).pos();
+              auto&& tok = static_cast<ast::expr&>(*tree).pos();
               EXPECT_TRUE(input.starts_with(tok.value()));
             }
           }
