@@ -636,7 +636,8 @@ namespace tnac
     for (auto child : cond.patterns().children())
     {
       auto&& pattern = utils::cast<ast::pattern>(*child);
-      compile(pattern, checkedVal);
+      if (compile(pattern, checkedVal))
+        break;
     }
     return false;
   }
