@@ -381,7 +381,11 @@ namespace tnac
 
   bool compiler::exit_child(ast::node& node) noexcept
   {
-    return !node.is(ast::node_kind::Ret);
+    const auto isRet = node.is(ast::node_kind::Ret);
+    if(isRet)
+      m_context.ret_status(true);
+
+    return !isRet;
   }
 
   void compiler::post_exit(ast::node& node) noexcept

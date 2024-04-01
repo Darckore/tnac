@@ -32,7 +32,8 @@ namespace tnac::detail // func data
     reg_idx m_regIdx{};
     symbol* m_lastStore{};
     var_store m_vars;
-    std::unordered_set<string_t> m_varNames;
+    known_var_names m_varNames;
+    bool m_explicitRet{};
   };
 }
 
@@ -242,13 +243,28 @@ namespace tnac::detail
     return cur_data().m_varNames.emplace(name).second;
   }
 
+  void context::ret_status(bool val) noexcept
+  {
+    cur_data().m_explicitRet = val;
+  }
+
+  bool context::has_explicit_ret() const noexcept
+  {
+    return cur_data().m_explicitRet;
+  }
+
 
   // Private members
 
-  context::func_data& context::cur_data() noexcept
+  const context::func_data& context::cur_data() const noexcept
   {
     UTILS_ASSERT(!m_funcs.empty());
     return m_funcs.back();
+  }
+
+  context::func_data& context::cur_data() noexcept
+  {
+    return FROM_CONST(cur_data);
   }
 
   context::var_data* context::locate_var(symbol& sym) noexcept

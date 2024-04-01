@@ -45,7 +45,8 @@ namespace tnac::detail
 
   private:
     struct var_data;
-    using var_store = std::unordered_map<symbol*, var_data>;
+    using var_store       = std::unordered_map<symbol*, var_data>;
+    using known_var_names = std::unordered_set<string_t>;
     struct func_data;
     using data_stack = std::vector<func_data>;
 
@@ -209,7 +210,22 @@ namespace tnac::detail
     //
     bool new_var_name(string_t name) noexcept;
 
+    //
+    // Sets the explicit ret flag
+    //
+    void ret_status(bool val) noexcept;
+
+    //
+    // Checks whether the explicit ret flag is set
+    //
+    bool has_explicit_ret() const noexcept;
+
   private:
+    //
+    // Returns function data from the top of the data stack
+    //
+    const func_data& cur_data() const noexcept;
+
     //
     // Returns function data from the top of the data stack
     //
