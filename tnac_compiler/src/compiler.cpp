@@ -633,17 +633,31 @@ namespace tnac
   {
     compile(cond.cond());
     auto checkedVal = extract();
-    auto&& endBlock = m_context.create_block(m_names.make_block_name("cond"sv, "exit"sv));
+    constexpr auto namePref = "cond"sv;
+    auto&& endBlock = m_context.create_block(m_names.make_block_name(namePref, "exit"sv));
     auto&& patterns = cond.patterns().children();
+    ast::pattern* defaultPat{};
     for (auto counter = patterns.size(); auto child : patterns)
     {
-      m_context.terminate_at(endBlock);
       auto&& pattern = utils::cast<ast::pattern>(*child);
-      if (const auto last = !(--counter); compile(pattern, checkedVal, last))
+      if (auto&& matcher = utils::cast<ast::matcher>(pattern.matcher()); matcher.is_default())
+      {
+        defaultPat = &pattern;
+        continue;
+      }
+      --counter;
+
+      m_context.terminate_at(endBlock);
+      if (compile(pattern, checkedVal, !counter))
         break;
     }
 
-    m_context.enter_block(endBlock);
+    if (defaultPat)
+    {
+      m_context.terminate_at(endBlock);
+      compile(*defaultPat, checkedVal, true);
+    }
+
     converge();
     return false;
   }
@@ -884,22 +898,31 @@ namespace tnac
     auto term = m_context.terminal_block();
     UTILS_ASSERT(term);
     const auto op = matcher.has_implicit_op() ? tok_kind::Eq : matcher.pos().what();
+    const auto isDefault = matcher.is_default();
     if (matcher.is_unary())
     {
       compile_unary(&matcher, checked, op);
     }
-    else
+    else if(!isDefault)
     {
       compile(matcher.checked());
       auto rhs = extract();
       compile_binary(&matcher, checked, rhs, op);
+    }
+    else
+    {
+      compile(pattern.body());
+      emit_jump(extract(), *term);
+      m_context.enter_block(*term);
+      m_context.terminate_at(*term);
+      return false;
     }
 
     bool matchFound{};
     auto checkRes = extract();
     if (checkRes.is_value())
     {
-      matchFound = eval::to_bool(checkRes.get_value());
+      matchFound = isDefault || eval::to_bool(checkRes.get_value());
       if (!matchFound)
         return false;
     }
