@@ -74,4 +74,10 @@ namespace tnac::detail
     return m_prefNames.next_indexed(name);
   }
 
+  string_t name_repo::var_name(string_t base) noexcept
+  {
+    auto name = m_plainNames.format("{}."sv, base);
+    return m_prefNames.next_indexed(name);
+  }
+
 }

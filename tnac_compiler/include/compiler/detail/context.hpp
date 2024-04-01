@@ -203,6 +203,12 @@ namespace tnac::detail
     //
     instr_iter override_last(instr_iter newPos) noexcept;
 
+    //
+    // Remembers an existing var name for the current function
+    // Returns false if the name already exists
+    //
+    bool new_var_name(string_t name) noexcept;
+
   private:
     //
     // Returns function data from the top of the data stack

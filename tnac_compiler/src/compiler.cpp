@@ -740,6 +740,11 @@ namespace tnac
     auto&& entry = curFn.entry();
     auto&& builder = m_cfg->get_builder();
     auto&& var = builder.add_var(entry, m_context.funct_start());
+    if (!m_context.new_var_name(varName))
+    {
+      varName = m_names.var_name(varName);
+    }
+
     auto&& reg = builder.make_register(varName);
     var.add(&reg);
     m_context.store(sym, reg);

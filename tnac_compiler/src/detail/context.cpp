@@ -20,7 +20,7 @@ namespace tnac::detail // func data
 {
   struct context::func_data
   {
-    CLASS_SPECIALS_ALL(func_data);
+    CLASS_SPECIALS_NOCOPY(func_data);
 
     ~func_data() noexcept = default;
 
@@ -32,6 +32,7 @@ namespace tnac::detail // func data
     reg_idx m_regIdx{};
     symbol* m_lastStore{};
     var_store m_vars;
+    std::unordered_set<string_t> m_varNames;
   };
 }
 
@@ -234,6 +235,11 @@ namespace tnac::detail
     auto prev = fd.m_funcLast;
     fd.m_funcLast = newPos;
     return prev;
+  }
+
+  bool context::new_var_name(string_t name) noexcept
+  {
+    return cur_data().m_varNames.emplace(name).second;
   }
 
 

@@ -89,6 +89,11 @@ namespace tnac::detail
     //
     string_t op_name(ir::op_code oc) noexcept;
 
+    //
+    // Creates an indexed variable name
+    //
+    string_t var_name(string_t base) noexcept;
+
   private:
     utils::string_pool m_plainNames;
     utils::prefixed_pool m_prefNames;
