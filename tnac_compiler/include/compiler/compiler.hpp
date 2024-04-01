@@ -243,7 +243,7 @@ namespace tnac
     // Compiles a pattern
     // Returns true if the pattern is known to match (when we have exact values)
     //
-    bool compile(ast::pattern& pattern, const ir::operand& checked) noexcept;
+    bool compile(ast::pattern& pattern, const ir::operand& checked, bool last) noexcept;
 
     //
     // Compiles the implementation of a function or module

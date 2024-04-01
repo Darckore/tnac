@@ -633,12 +633,18 @@ namespace tnac
   {
     compile(cond.cond());
     auto checkedVal = extract();
-    for (auto child : cond.patterns().children())
+    auto&& endBlock = m_context.create_block(m_names.make_block_name("cond"sv, "exit"sv));
+    auto&& patterns = cond.patterns().children();
+    for (auto counter = patterns.size(); auto child : patterns)
     {
+      m_context.terminate_at(endBlock);
       auto&& pattern = utils::cast<ast::pattern>(*child);
-      if (compile(pattern, checkedVal))
+      if (const auto last = !(--counter); compile(pattern, checkedVal, last))
         break;
     }
+
+    m_context.enter_block(endBlock);
+    converge();
     return false;
   }
 
@@ -872,15 +878,11 @@ namespace tnac
     emit_binary(opcode, lhs, rhs);
   }
 
-  bool compiler::compile(ast::pattern& pattern, const ir::operand& checked) noexcept
+  bool compiler::compile(ast::pattern& pattern, const ir::operand& checked, bool last) noexcept
   {
     auto&& matcher = utils::cast<ast::matcher>(pattern.matcher());
-    if (matcher.is_default())
-    {
-      compile(pattern.body());
-      return true;
-    }
-
+    auto term = m_context.terminal_block();
+    UTILS_ASSERT(term);
     const auto op = matcher.has_implicit_op() ? tok_kind::Eq : matcher.pos().what();
     if (matcher.is_unary())
     {
@@ -902,7 +904,18 @@ namespace tnac
         return false;
     }
 
+    constexpr auto namePref = "cond"sv;
+    auto&& condThen = m_context.create_block(m_names.make_block_name(namePref, "then"sv));
+    auto&& condElse = last ?
+      *term :
+      m_context.create_block(m_names.make_block_name(namePref, "else"sv));
+
+    emit_cond_jump(checkRes, condThen, condElse);
+    m_context.enter_block(condThen);
     compile(pattern.body());
+    emit_jump(extract(), *term);
+    m_context.enter_block(condElse);
+    m_context.terminate_at(*term);
     return matchFound;
   }
 
