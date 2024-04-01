@@ -25,6 +25,7 @@ namespace tnac::tests
       static void check_tree_structure(std::span<expected_node> exp, string_t input) noexcept
       {
         feedback fb;
+        fb.on_parse_error(unexpected_err);
         auto core = get_tnac(fb);
         auto tree = core.parse(input);
         tree_checker{ exp }(tree);
@@ -67,12 +68,6 @@ namespace tnac::tests
         expectedErr = {};
         stop = false;
         ASSERT_TRUE(errCount > 0u) << "Got no errors for input: " << input;
-
-        // todo: think of a better way to handle this:
-        //if (errCount > 1u)
-        //{
-        //  FAIL() << "Got " << errCount << " errors for input " << input;
-        //}
       }
 
     private:
@@ -95,6 +90,11 @@ namespace tnac::tests
         {
           ASSERT_EQ(err.message(), expectedErr);
         }
+      }
+
+      static void unexpected_err(const ast::error_expr& err) noexcept
+      {
+        FAIL() << "Unexpected error: '" << err.message() << "'";
       }
 
     public:
@@ -771,7 +771,7 @@ namespace tnac::tests
 
   TEST(parser, t_struct_cond_short)
   {
-    constexpr auto input = "a = 42; { a > 0 }->{ a + 1, a - 2 }"sv;
+    constexpr auto input = "a = 42: { a > 0 }->{ a + 1, a - 2 }"sv;
 
     /*
     * cond-short
@@ -804,7 +804,7 @@ namespace tnac::tests
 
   TEST(parser, t_struct_cond_short_true)
   {
-    constexpr auto input = "a = 42; { a > 0 }->{ a + 1 }"sv;
+    constexpr auto input = "a = 42: { a > 0 }->{ a + 1 }"sv;
 
     /*
     * cond-short
@@ -832,7 +832,7 @@ namespace tnac::tests
 
   TEST(parser, t_struct_cond_short_false)
   {
-    constexpr auto input = "a = 42; { a > 0 }->{ , a - 2 }"sv;
+    constexpr auto input = "a = 42: { a > 0 }->{ , a - 2 }"sv;
 
     /*
     * cond-short
