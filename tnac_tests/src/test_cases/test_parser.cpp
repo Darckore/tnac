@@ -930,12 +930,10 @@ namespace tnac::tests
       expected_node{  "3"sv,  Literal,    Scope },
       expected_node{     {},  Scope,      Pattern },
       expected_node{     {},  Pattern,    Scope },
-
       expected_node{     {},  Matcher,    Pattern},
       expected_node{  "4"sv,  Literal,    Scope },
       expected_node{     {},  Scope,      Pattern },
       expected_node{     {},  Pattern,    Scope },
-
       expected_node{     {},  Scope,      Cond },
       expected_node{     {},  Cond,       Module },
     };
