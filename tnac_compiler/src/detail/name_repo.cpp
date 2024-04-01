@@ -23,7 +23,7 @@ namespace tnac::detail
 
   string_t name_repo::ret_block_name() noexcept
   {
-    return "ret"sv;
+    return "return"sv;
   }
 
   string_t name_repo::make_block_name(string_t prefix, string_t postfix) noexcept

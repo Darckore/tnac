@@ -633,9 +633,10 @@ namespace tnac
   {
     compile(cond.cond());
     auto checkedVal = extract();
-    for (auto pattern : cond.patterns().children())
+    for (auto child : cond.patterns().children())
     {
-      compile(utils::cast<ast::pattern>(*pattern), checkedVal);
+      auto&& pattern = utils::cast<ast::pattern>(*child);
+      compile(pattern, checkedVal);
     }
     return false;
   }
@@ -892,10 +893,10 @@ namespace tnac
     }
 
     bool matchFound{};
-    auto res = extract();
-    if (res.is_value())
+    auto checkRes = extract();
+    if (checkRes.is_value())
     {
-      matchFound = eval::to_bool(res.get_value());
+      matchFound = eval::to_bool(checkRes.get_value());
       if (!matchFound)
         return false;
     }
