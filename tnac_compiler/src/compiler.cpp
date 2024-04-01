@@ -577,7 +577,7 @@ namespace tnac
       return false;
     }
 
-    constexpr auto namePref = "cond";
+    constexpr auto namePref = "shortcnd"sv;
     auto&& lastBlock = m_context.current_block();
     auto lastEnd = m_context.func_end();
 
@@ -782,7 +782,7 @@ namespace tnac
     auto&& instr = m_cfg->get_builder().add_instruction(block, ir::op_code::Jump, m_context.func_end());
     instr.add(cond).add(&ifTrue).add(&ifFalse);
     m_cfg->connect(block, ifTrue, cond);
-    m_cfg->connect(block, ifFalse, cond);
+    m_cfg->connect(block, ifFalse, eval::value{});
     update_func_start(instr);
   }
 
