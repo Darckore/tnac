@@ -648,13 +648,34 @@ namespace tnac
       --counter;
 
       m_context.terminate_at(endBlock);
-      if (compile(pattern, checkedVal, !counter))
-        break;
+      if (!compile(pattern, checkedVal, !counter))
+        continue;
+
+      if (endBlock.preds().empty())
+      {
+        m_context.current_function().delete_block_tree(endBlock);
+        m_context.terminate_at(m_context.current_block());
+      }
+      else
+      {
+        emit_jump(extract(), endBlock);
+        m_context.enter_block(endBlock);
+        converge();
+      }
+      return false;
     }
 
     if (defaultPat)
     {
       m_context.terminate_at(endBlock);
+      if(endBlock.preds().empty())
+      {
+        m_context.current_function().delete_block_tree(endBlock);
+        m_context.terminate_at(m_context.current_block());
+        compile(defaultPat->body());
+        return false;
+      }
+
       compile(*defaultPat, checkedVal, true);
     }
 
@@ -915,16 +936,18 @@ namespace tnac
       emit_jump(extract(), *term);
       m_context.enter_block(*term);
       m_context.terminate_at(*term);
-      return false;
+      return true;
     }
 
-    bool matchFound{};
     auto checkRes = extract();
-    if (checkRes.is_value())
+    if (isDefault || checkRes.is_value())
     {
-      matchFound = isDefault || eval::to_bool(checkRes.get_value());
+      const auto matchFound = isDefault || eval::to_bool(checkRes.get_value());
       if (!matchFound)
         return false;
+
+      compile(pattern.body());
+      return true;
     }
 
     constexpr auto namePref = "cond"sv;
@@ -939,7 +962,7 @@ namespace tnac
     emit_jump(extract(), *term);
     m_context.enter_block(condElse);
     m_context.terminate_at(*term);
-    return matchFound;
+    return false;
   }
 
   void compiler::compile(params_t& params, body_t& body) noexcept
