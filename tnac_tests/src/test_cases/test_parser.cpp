@@ -141,6 +141,29 @@ namespace tnac::tests
         check_node(cond, {});
       }
 
+      void visit(const ast::cond_expr& cond) noexcept
+      {
+        check_node(cond, {});
+      }
+
+      void visit(const ast::pattern& pat) noexcept
+      {
+        check_node(pat, {});
+      }
+
+      void visit(const ast::matcher& mat) noexcept
+      {
+        auto opStr = ""sv;
+        if (mat.is_unary())
+          opStr = mat.pos().value();
+        else if (mat.has_implicit_op())
+          opStr = "=="sv;
+        else if(!mat.is_default())
+          opStr = mat.pos().value();
+
+        check_node(mat, opStr);
+      }
+
       void visit(const ast::binary_expr& expr) noexcept
       {
         check_node(expr, expr.op().value());
@@ -853,6 +876,68 @@ namespace tnac::tests
       expected_node{   "2", Literal,    Binary },
       expected_node{   "-", Binary,     CondShort},
       expected_node{    {}, CondShort,  Module },
+    };
+
+    tree_checker::check_tree_structure(exp, input);
+  }
+
+  TEST(parser, t_struct_cond)
+  {
+    constexpr auto input = "a = 42: { a } { ! }->1; { 42 }->2; { <69 }->3; {}->4; ;"sv;
+
+    /*
+    * cond
+    *   a
+    *   {
+    *     pattern
+    *       matcher !
+    *         {
+    *           1
+    *         }
+    *     pattern
+    *       matcher ==
+    *         1
+    *         {
+    *           2
+    *         }
+    *     pattern
+    *       matcher <
+    *         1
+    *         {
+    *           3
+    *         }
+    *     pattern
+    *       matcher {}
+    *         {
+    *           4
+    *         }
+    *   }
+    */
+
+    std::array exp{
+      expected_node{ "a"sv,   Identifier, Cond },
+      expected_node{ "!"sv,   Matcher,    Pattern},
+      expected_node{ "1"sv,   Literal,    Scope },
+      expected_node{    {},   Scope,      Pattern },
+      expected_node{    {},   Pattern,    Scope },
+      expected_node{ "42"sv,  Literal,    Matcher },
+      expected_node{ "=="sv,  Matcher,    Pattern },
+      expected_node{  "2"sv,  Literal,    Scope },
+      expected_node{     {},  Scope,      Pattern },
+      expected_node{     {},  Pattern,    Scope },
+      expected_node{ "69"sv,  Literal,    Matcher },
+      expected_node{  "<"sv,  Matcher,    Pattern },
+      expected_node{  "3"sv,  Literal,    Scope },
+      expected_node{     {},  Scope,      Pattern },
+      expected_node{     {},  Pattern,    Scope },
+
+      expected_node{     {},  Matcher,    Pattern},
+      expected_node{  "4"sv,  Literal,    Scope },
+      expected_node{     {},  Scope,      Pattern },
+      expected_node{     {},  Pattern,    Scope },
+
+      expected_node{     {},  Scope,      Cond },
+      expected_node{     {},  Cond,       Module },
     };
 
     tree_checker::check_tree_structure(exp, input);

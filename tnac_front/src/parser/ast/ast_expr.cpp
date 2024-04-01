@@ -444,7 +444,7 @@ namespace tnac::ast // Matcher
   bool matcher::has_implicit_op() const noexcept
   {
     using enum tok_kind;
-    return !is_unary() && !pos().is_any(Eq, NotEq, Less, LessEq, Greater, GreaterEq);
+    return m_checked && !pos().is_any(Eq, NotEq, Less, LessEq, Greater, GreaterEq);
   }
 
   const expr& matcher::checked() const noexcept
