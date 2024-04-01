@@ -787,15 +787,15 @@ namespace tnac::tests
     */
 
     std::array exp{
-      expected_node{   "a", Identifier, Binary},
-      expected_node{   "0", Literal,    Binary},
-      expected_node{   ">", Binary,     CondShort},
-      expected_node{   "a", Identifier, Binary},
-      expected_node{   "1", Literal,    Binary},
-      expected_node{   "+", Binary,     CondShort},
-      expected_node{   "a", Identifier, Binary},
-      expected_node{   "2", Literal,    Binary},
-      expected_node{   "-", Binary,     CondShort},
+      expected_node{   "a", Identifier, Binary },
+      expected_node{   "0", Literal,    Binary },
+      expected_node{   ">", Binary,     CondShort },
+      expected_node{   "a", Identifier, Binary },
+      expected_node{   "1", Literal,    Binary },
+      expected_node{   "+", Binary,     CondShort },
+      expected_node{   "a", Identifier, Binary },
+      expected_node{   "2", Literal,    Binary },
+      expected_node{   "-", Binary,     CondShort },
       expected_node{    {}, CondShort,  Module },
     };
 
@@ -818,12 +818,12 @@ namespace tnac::tests
     */
 
     std::array exp{
-      expected_node{   "a", Identifier, Binary},
-      expected_node{   "0", Literal,    Binary},
-      expected_node{   ">", Binary,     CondShort},
-      expected_node{   "a", Identifier, Binary},
-      expected_node{   "1", Literal,    Binary},
-      expected_node{   "+", Binary,     CondShort},
+      expected_node{   "a", Identifier, Binary },
+      expected_node{   "0", Literal,    Binary },
+      expected_node{   ">", Binary,     CondShort },
+      expected_node{   "a", Identifier, Binary },
+      expected_node{   "1", Literal,    Binary },
+      expected_node{   "+", Binary,     CondShort },
       expected_node{    {}, CondShort,  Module },
     };
 
@@ -846,11 +846,11 @@ namespace tnac::tests
     */
 
     std::array exp{
-      expected_node{   "a", Identifier, Binary},
-      expected_node{   "0", Literal,    Binary},
-      expected_node{   ">", Binary,     CondShort},
-      expected_node{   "a", Identifier, Binary},
-      expected_node{   "2", Literal,    Binary},
+      expected_node{   "a", Identifier, Binary },
+      expected_node{   "0", Literal,    Binary },
+      expected_node{   ">", Binary,     CondShort },
+      expected_node{   "a", Identifier, Binary },
+      expected_node{   "2", Literal,    Binary },
       expected_node{   "-", Binary,     CondShort},
       expected_node{    {}, CondShort,  Module },
     };
