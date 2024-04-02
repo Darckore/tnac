@@ -383,7 +383,7 @@ namespace tnac
   {
     const auto isRet = node.is(ast::node_kind::Ret);
     if(isRet)
-      m_context.ret_status(true);
+      m_context.attach_ret(utils::cast<ast::node_kind::Ret>(node));
 
     return !isRet;
   }

@@ -33,7 +33,7 @@ namespace tnac::detail // func data
     symbol* m_lastStore{};
     var_store m_vars;
     known_var_names m_varNames;
-    bool m_explicitRet{};
+    ast::ret_expr* m_explicitRet{};
   };
 }
 
@@ -243,12 +243,17 @@ namespace tnac::detail
     return cur_data().m_varNames.emplace(name).second;
   }
 
-  void context::ret_status(bool val) noexcept
+  void context::attach_ret(ast::ret_expr& expr) noexcept
   {
-    cur_data().m_explicitRet = val;
+    cur_data().m_explicitRet = &expr;
   }
 
-  bool context::has_explicit_ret() const noexcept
+  void context::detach_ret() noexcept
+  {
+    cur_data().m_explicitRet = {};
+  }
+
+  ast::ret_expr* context::explicit_ret() const noexcept
   {
     return cur_data().m_explicitRet;
   }

@@ -9,6 +9,7 @@ namespace tnac
   namespace ast
   {
     class module_def;
+    class ret_expr;
   }
 
   namespace semantics
@@ -211,14 +212,19 @@ namespace tnac::detail
     bool new_var_name(string_t name) noexcept;
 
     //
-    // Sets the explicit ret flag
+    // Sets the explicit ret expression
     //
-    void ret_status(bool val) noexcept;
+    void attach_ret(ast::ret_expr& expr) noexcept;
 
     //
-    // Checks whether the explicit ret flag is set
+    // Resets the explicit ret expression
     //
-    bool has_explicit_ret() const noexcept;
+    void detach_ret() noexcept;
+
+    //
+    // Returns the set explicit ret expression
+    //
+    ast::ret_expr* explicit_ret() const noexcept;
 
   private:
     //
