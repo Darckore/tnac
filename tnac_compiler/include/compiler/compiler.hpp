@@ -178,9 +178,20 @@ namespace tnac
     void emit_store(semantics::symbol& var) noexcept;
 
     //
+    // Creates a store instruction for the specified vreg and value
+    //
+    void emit_store(ir::vreg& target, ir::operand val) noexcept;
+
+    //
     // Creates a load instruction for the specified variable
     //
     void emit_load(semantics::symbol& var) noexcept;
+
+    //
+    // Creates a load instruction for the specified vreg
+    // Returns a reference to the register read into
+    //
+    ir::vreg& emit_load(ir::vreg& target) noexcept;
 
     //
     // Creates a binary instruction

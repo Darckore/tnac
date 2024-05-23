@@ -284,6 +284,8 @@ namespace tnac
       m_context.set_return(*retBlock, rv);
     }
 
+    auto rv = m_context.ret_val();
+    emit_store(*rv, extract());
     emit_jump(m_context.ret_val(), *retBlock);
   }
 
@@ -774,9 +776,6 @@ namespace tnac
 
   void compiler::emit_ret(ir::basic_block& block) noexcept
   {
-    if (auto last = m_context.last_store())
-      emit_load(*last);
-
     auto op = m_stack.extract();
     auto&& instr = m_cfg->get_builder().add_instruction(block, ir::op_code::Ret, m_context.func_end());
     instr.add(op);
@@ -793,10 +792,15 @@ namespace tnac
     if(!val.is_param())
       m_context.save_store(var);
 
+    emit_store(*target, val);
+    m_context.modify(var);
+  }
+
+  void compiler::emit_store(ir::vreg& target, ir::operand val) noexcept
+  {
     auto&& block = m_context.current_block();
     auto&& instr = m_cfg->get_builder().add_instruction(block, ir::op_code::Store, m_context.func_end());
-    instr.add(val).add(target);
-    m_context.modify(var);
+    instr.add(val).add(&target);
     update_func_start(instr);
   }
 
@@ -812,9 +816,15 @@ namespace tnac
     auto target = m_context.locate(var);
     UTILS_ASSERT(target);
 
-    auto&& instr = make(ir::op_code::Load).add(target);
+    auto&& res = emit_load(*target);
+    m_context.read_into(var, res);
+  }
+
+  ir::vreg& compiler::emit_load(ir::vreg& target) noexcept
+  {
+    auto&& instr = make(ir::op_code::Load).add(&target);
     auto&& res = instr[0];
-    m_context.read_into(var, res.get_reg());
+    return res.get_reg();
   }
 
   void compiler::emit_binary(ir::op_code oc, ir::operand lhs, ir::operand rhs) noexcept
@@ -1026,8 +1036,23 @@ namespace tnac
       m_stack.push_undef(); // Undefined, probably, an empty body
     }
 
-    auto&& block = m_context.terminal_or_entry();
-    emit_ret(block);
+    auto block = &m_context.terminal_or_entry();
+    if (auto last = m_context.last_store())
+      emit_load(*last);
+
+    if (auto retBlock = m_context.return_block())
+    {
+      auto rv = m_context.ret_val();
+      emit_store(*rv, extract());
+      emit_jump(rv, *retBlock);
+      block = retBlock;
+      m_context.enter_block(*block);
+      m_context.terminate_at(*block);
+      auto&& loadRes = emit_load(*rv);
+      m_stack.push(&loadRes);
+    }
+
+    emit_ret(*block);
     UTILS_ASSERT(m_stack.empty());
   }
 
