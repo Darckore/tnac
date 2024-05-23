@@ -829,6 +829,9 @@ namespace tnac
 
   void compiler::emit_jump(ir::operand value, ir::basic_block& dest) noexcept
   {
+    if (has_ret_jump())
+      return;
+
     clear_store();
     auto&& block = m_context.current_block();
     auto&& instr = m_cfg->get_builder().add_instruction(block, ir::op_code::Jump, m_context.func_end());
@@ -879,6 +882,19 @@ namespace tnac
   }
 
   // Private members
+
+  bool compiler::has_ret_jump() noexcept
+  {
+    auto retBlock = m_context.return_block();
+    if (!retBlock)
+      return false;
+
+    auto curOuts = m_context.current_block().outs();
+    return ranges::find_if(curOuts, [&](const ir::edge* cur) noexcept
+      {
+        return &cur->outgoing() == retBlock;
+      }) != curOuts.end();
+  }
 
   ir::operand compiler::extract() noexcept
   {

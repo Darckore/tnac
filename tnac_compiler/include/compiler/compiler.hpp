@@ -219,6 +219,12 @@ namespace tnac
 
   private:
     //
+    // Checks whether the current block has a connection to the return block
+    // Needed to properly handle early returns
+    //
+    bool has_ret_jump() noexcept;
+
+    //
     // Extracts the last values from the stack
     // If the stack is empty, loads the last stored value
     // If there's no last stored value, the result is undef
