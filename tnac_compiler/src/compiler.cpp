@@ -1043,8 +1043,12 @@ namespace tnac
     if (auto retBlock = m_context.return_block())
     {
       auto rv = m_context.ret_val();
-      emit_store(*rv, extract());
-      emit_jump(rv, *retBlock);
+      if (!has_ret_jump())
+      {
+        emit_store(*rv, extract());
+        emit_jump(rv, *retBlock);
+      }
+
       block = retBlock;
       m_context.enter_block(*block);
       m_context.terminate_at(*block);
