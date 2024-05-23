@@ -70,7 +70,7 @@ namespace tnac::detail
 
   string_t name_repo::op_name(ir::op_code oc) noexcept
   {
-    auto name = ir::instruction::opcode_str(oc);
+    auto name = m_plainNames.format(".{}"sv, ir::instruction::opcode_str(oc));
     return m_prefNames.next_indexed(name);
   }
 
