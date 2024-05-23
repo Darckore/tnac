@@ -98,6 +98,11 @@ namespace tnac
     return "The related ret expression is here"sv;
   }
 
+  string_t diag::all_branches_return() noexcept
+  {
+    return "All branches of the conditional expression return"sv;
+  }
+
 
   // Public members(Parsing)
 

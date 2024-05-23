@@ -125,6 +125,17 @@ namespace tnac::detail
     return utils::eq_any(tk, tok_kind::Assign);
   }
 
+  auto try_rhs(ast::node& node) noexcept -> ast::expr*
+  {
+    if (auto assign = utils::try_cast<ast::assign_expr>(&node))
+      return &assign->right();
+
+    if (auto var = utils::try_cast<ast::var_decl>(&node))
+      return &var->initialiser();
+
+    return nullptr;
+  }
+
   template <typename T>
   constexpr auto expected_args() -> std::pair<std::size_t, std::size_t>
   {
@@ -1082,8 +1093,11 @@ namespace tnac
         compile(*child);
       }
 
-      if (!exit_child(*child))
+      if (!reportExit && !exit_child(*child))
       {
+        if (auto rhs = detail::try_rhs(*child))
+          child = rhs;
+
         ret = child;
         reportExit = true;
         compileExprs = false;
@@ -1104,6 +1118,8 @@ namespace tnac
 
         if (ret->is(ast::node_kind::Ret))
           note(std::move(*loc), diag::ret_here());
+        else if (ret->is(ast::node_kind::Cond))
+          note(std::move(*loc), diag::all_branches_return());
       }
     }
   }

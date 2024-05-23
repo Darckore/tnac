@@ -84,6 +84,11 @@ namespace tnac
     //
     static string_t ret_here() noexcept;
 
+    //
+    // Returns a 'cond always returns' message
+    //
+    static string_t all_branches_return() noexcept;
+
   public: // Parsing
     //
     // Returns an 'expected expr' message
