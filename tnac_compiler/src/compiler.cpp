@@ -687,6 +687,12 @@ namespace tnac
     return false;
   }
 
+  bool compiler::preview(ast::scope& scope) noexcept
+  {
+    compile(scope.children());
+    return false;
+  }
+
 
   // Private members (Emitions)
 

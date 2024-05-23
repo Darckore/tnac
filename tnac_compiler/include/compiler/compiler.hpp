@@ -135,6 +135,11 @@ namespace tnac
     //
     bool preview(ast::cond_expr& cond) noexcept;
 
+    //
+    // Hangles scope bodies
+    //
+    bool preview(ast::scope& scope) noexcept;
+
   private: // Emitions
     //
     // Updates the first instruction in the context if needed
