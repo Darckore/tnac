@@ -135,11 +135,6 @@ namespace tnac
     //
     bool preview(ast::cond_expr& cond) noexcept;
 
-    //
-    // Hangles scope bodies
-    //
-    bool preview(ast::scope& scope) noexcept;
-
   private: // Emitions
     //
     // Updates the first instruction in the context if needed
@@ -165,6 +160,12 @@ namespace tnac
     // Creates an alloc instruction for the specified variable
     //
     void emit_alloc(semantics::symbol& sym) noexcept;
+
+    //
+    // Creates an alloc instruction for the specified variable name
+    // Returns a reference to the created virtual register
+    //
+    ir::vreg& emit_alloc(string_t varName) noexcept;
 
     //
     // Creates a ret instruction
@@ -254,6 +255,11 @@ namespace tnac
     // Compiles the implementation of a function or module
     //
     void compile(params_t& params, body_t& body) noexcept;
+
+    //
+    // Compiles a scope
+    //
+    void compile(ast::scope& scope) noexcept;
 
     //
     // Compiles a scope body

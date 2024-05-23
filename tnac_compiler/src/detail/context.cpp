@@ -1,5 +1,6 @@
 #include "compiler/detail/context.hpp"
 #include "cfg/ir/ir.hpp"
+#include "parser/ast/ast.hpp"
 
 namespace tnac::detail // var data
 {
@@ -24,10 +25,14 @@ namespace tnac::detail // func data
 
     ~func_data() noexcept = default;
 
+    ast::scope* m_funcScope{};
+    ast::scope* m_curScope{};
     ir::basic_block* m_curBlock{};
     ir::function* m_curFunction{};
     instr_iter m_funcFirst{};
     instr_iter m_funcLast{};
+    ir::basic_block* m_return{};
+    ir::vreg* m_retVal{};
     ir::basic_block* m_terminal{};
     reg_idx m_regIdx{};
     symbol* m_lastStore{};
@@ -96,7 +101,7 @@ namespace tnac::detail
     return sym;
   }
 
-  void context::enter_function(ir::function& fn) noexcept
+  void context::enter_function(ir::function& fn, ast::scope& fnScope) noexcept
   {
     instr_iter last{};
     if (auto owner = fn.owner_func())
@@ -107,6 +112,8 @@ namespace tnac::detail
     auto&& fd = m_funcs.emplace_back();
     fd.m_curFunction = &fn;
     fd.m_funcLast = last;
+    fd.m_funcScope = &fnScope;
+    fd.m_curScope = &fnScope;
   }
   void context::exit_function() noexcept
   {
@@ -122,6 +129,13 @@ namespace tnac::detail
   ir::basic_block& context::create_block(string_t name) noexcept
   {
     return current_function().create_block(name);
+  }
+
+  void context::set_return(ir::basic_block& retBlock, ir::vreg& retVal) noexcept
+  {
+    auto&& fd = cur_data();
+    fd.m_return = &retBlock;
+    fd.m_retVal = &retVal;
   }
 
   void context::enter_block(ir::basic_block& block) noexcept
@@ -145,6 +159,11 @@ namespace tnac::detail
   ir::basic_block* context::terminal_block() noexcept
   {
     return cur_data().m_terminal;
+  }
+
+  ir::basic_block* context::return_block() noexcept
+  {
+    return cur_data().m_return;
   }
 
   ir::basic_block& context::terminal_or_entry() noexcept
@@ -256,6 +275,20 @@ namespace tnac::detail
   ast::ret_expr* context::explicit_ret() const noexcept
   {
     return cur_data().m_explicitRet;
+  }
+
+  ast::scope& context::enter_scope(ast::scope& scope) noexcept
+  {
+    auto&& fd = cur_data();
+    auto lastScope = fd.m_curScope;
+    fd.m_curScope = &scope;
+    return *lastScope;
+  }
+
+  bool context::is_in_func_scope() const noexcept
+  {
+    auto&& fd = cur_data();
+    return fd.m_funcScope == fd.m_curScope;
   }
 
 

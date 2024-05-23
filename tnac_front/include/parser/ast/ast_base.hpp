@@ -107,7 +107,7 @@ namespace tnac::ast
     auto climb() const noexcept
     {
       using res_type = decltype(utils::try_cast<K>(this));
-      auto top = this;
+      auto top = parent();
       while (top)
       {
         auto res = utils::try_cast<K>(top);

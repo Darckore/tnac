@@ -26,6 +26,11 @@ namespace tnac::detail
     return "return"sv;
   }
 
+  string_t name_repo::ret_var_name() noexcept
+  {
+    return ".rv"sv;
+  }
+
   string_t name_repo::make_block_name(string_t prefix, string_t postfix) noexcept
   {
     auto name = m_plainNames.format("{}.{}."sv, prefix, postfix);

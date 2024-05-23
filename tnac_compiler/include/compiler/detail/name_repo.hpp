@@ -69,6 +69,11 @@ namespace tnac::detail
     string_t ret_block_name() noexcept;
 
     //
+    // Returns a name for the dedicated return variable
+    //
+    string_t ret_var_name() noexcept;
+
+    //
     // Returns a prefixed name for a block
     // prefix.postfix.<idx>
     //

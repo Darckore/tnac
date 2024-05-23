@@ -10,6 +10,7 @@ namespace tnac
   {
     class module_def;
     class ret_expr;
+    class scope;
   }
 
   namespace semantics
@@ -98,7 +99,7 @@ namespace tnac::detail
     //
     // Sets the given function as the current one
     //
-    void enter_function(ir::function& fn) noexcept;
+    void enter_function(ir::function& fn, ast::scope& fnScope) noexcept;
 
     //
     // Resets the current function to its owner
@@ -118,6 +119,12 @@ namespace tnac::detail
     ir::basic_block& create_block(string_t name) noexcept;
 
     //
+    // Sets the given block as the one used for explicit return calls
+    // Also, sets the dedicated return variable
+    //
+    void set_return(ir::basic_block& retBlock, ir::vreg& retVal) noexcept;
+
+    //
     // Sets the given basic block as current
     //
     void enter_block(ir::basic_block& block) noexcept;
@@ -131,6 +138,11 @@ namespace tnac::detail
     // Returns a pointer to the terminal (last) block of the function
     //
     ir::basic_block* terminal_block() noexcept;
+
+    //
+    // Returns a pointer to the dedicated return block
+    //
+    ir::basic_block* return_block() noexcept;
 
     //
     // Returns a reference to the terminal block if available
@@ -225,6 +237,17 @@ namespace tnac::detail
     // Returns the set explicit ret expression
     //
     ast::ret_expr* explicit_ret() const noexcept;
+
+    //
+    // Enters the given scope
+    // Returns a reference to the previous scope
+    //
+    ast::scope& enter_scope(ast::scope& scope) noexcept;
+
+    //
+    // Checks whether the current scope is the same as the function scope
+    //
+    bool is_in_func_scope() const noexcept;
 
   private:
     //

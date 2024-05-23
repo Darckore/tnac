@@ -270,9 +270,20 @@ namespace tnac
       m_stack.push(m_stack.top());
   }
 
-  void compiler::visit(ast::ret_expr& ret) noexcept
+  void compiler::visit(ast::ret_expr& ) noexcept
   {
-    utils::unused(ret);
+    auto retBlock = m_context.return_block();
+
+    if (!retBlock)
+    {
+      if (m_context.is_in_func_scope())
+        return;
+
+      retBlock = &m_context.create_block(m_names.ret_block_name());
+    }
+
+    auto&& rv = m_cfg->get_builder().make_register(m_names.ret_var_name());
+    m_context.set_return(*retBlock, rv);
   }
 
   void compiler::visit(ast::lit_expr& lit) noexcept
@@ -449,7 +460,7 @@ namespace tnac
     const auto parCnt = fd.param_count();
     auto funcName = m_names.mangle_func_name(fd.name(), owner, parCnt);
     auto&& func = m_cfg->declare_function(&fd.symbol(), owner, funcName, parCnt);
-    m_context.enter_function(func);
+    m_context.enter_function(func, fd.body());
     compile(fd.params(), fd.body().children());
     m_context.exit_function();
     if(!lastVal.is_undef())
@@ -687,12 +698,6 @@ namespace tnac
     return false;
   }
 
-  bool compiler::preview(ast::scope& scope) noexcept
-  {
-    compile(scope.children());
-    return false;
-  }
-
 
   // Private members (Emitions)
 
@@ -746,6 +751,12 @@ namespace tnac
   void compiler::emit_alloc(semantics::symbol& sym) noexcept
   {
     auto varName = sym.name();
+    auto&& reg = emit_alloc(varName);
+    m_context.store(sym, reg);
+  }
+
+  ir::vreg& compiler::emit_alloc(string_t varName) noexcept
+  {
     auto&& curFn = m_context.current_function();
     auto&& entry = curFn.entry();
     auto&& builder = m_cfg->get_builder();
@@ -757,7 +768,7 @@ namespace tnac
 
     auto&& reg = builder.make_register(varName);
     var.add(&reg);
-    m_context.store(sym, reg);
+    return reg;
   }
 
   void compiler::emit_ret(ir::basic_block& block) noexcept
@@ -1003,6 +1014,13 @@ namespace tnac
     UTILS_ASSERT(m_stack.empty());
   }
 
+  void compiler::compile(ast::scope& scope) noexcept
+  {
+    auto&& lastScope = m_context.enter_scope(scope);
+    compile(scope.children());
+    m_context.enter_scope(lastScope);
+  }
+
   void compiler::compile(body_t& body) noexcept
   {
     bool compileExprs = true;
@@ -1064,7 +1082,7 @@ namespace tnac
     const auto parCnt = mod.param_count();
     auto modName = m_names.mangle_module_name(mod, parCnt);
     auto&& irMod = m_cfg->declare_module(&mod, modName, parCnt);
-    m_context.enter_function(irMod);
+    m_context.enter_function(irMod, *def);
     compile(def->params(), def->children());
     m_context.exit_function();
   }
