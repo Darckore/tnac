@@ -103,24 +103,39 @@ namespace tnac::ir
     }
 
     //
+    // Previews and visits a basic block
+    //
+    void visit_block(dest<basic_block> block) noexcept
+    {
+      if (preview(block))
+      {
+        for (auto&& instr : *block)
+          visit_root(&instr);
+      }
+
+      visit_root(block);
+    }
+
+    //
     // Walks basic blocks
     //
     void walk_blocks(dest<basic_block> start) noexcept
     {
-      if (preview(start))
+      std::queue<decltype(start)> blocks;
+      blocks.push(start);
+
+      while (!blocks.empty())
       {
-        for (auto&& instr : *start)
-          visit_root(&instr);
-      }
+        auto cur = blocks.front();
+        visit_block(cur);
+        blocks.pop();
 
-      visit_root(start);
-
-      for (auto conn : start->outs())
-      {
-        auto&& out = conn->outgoing();
-
-        if(out.is_last_pred(*conn))
-          walk_blocks(&out);
+        for (auto conn : cur->outs())
+        {
+          auto&& out = conn->outgoing();
+          if (out.is_last_pred(*conn))
+            blocks.push(&out);
+        }
       }
     }
 
