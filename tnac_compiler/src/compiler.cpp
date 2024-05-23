@@ -270,7 +270,7 @@ namespace tnac
       m_stack.push(m_stack.top());
   }
 
-  void compiler::visit(ast::ret_expr& ) noexcept
+  void compiler::visit(ast::ret_expr&) noexcept
   {
     auto retBlock = m_context.return_block();
 
@@ -280,10 +280,11 @@ namespace tnac
         return;
 
       retBlock = &m_context.create_block(m_names.ret_block_name());
+      auto&& rv = emit_alloc(m_names.ret_var_name());
+      m_context.set_return(*retBlock, rv);
     }
 
-    auto&& rv = m_cfg->get_builder().make_register(m_names.ret_var_name());
-    m_context.set_return(*retBlock, rv);
+    emit_jump(m_context.ret_val(), *retBlock);
   }
 
   void compiler::visit(ast::lit_expr& lit) noexcept

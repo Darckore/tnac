@@ -249,6 +249,11 @@ namespace tnac::detail
     return vd->m_lastRead;
   }
 
+  ir::vreg* context::ret_val() noexcept
+  {
+    return cur_data().m_retVal;
+  }
+
   context::instr_iter context::override_last(instr_iter newPos) noexcept
   {
     auto&& fd = cur_data();

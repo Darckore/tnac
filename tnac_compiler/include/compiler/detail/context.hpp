@@ -212,6 +212,11 @@ namespace tnac::detail
     ir::vreg* last_read(symbol& var) noexcept;
 
     //
+    // Returns a pointer to the dedicated return variable
+    //
+    ir::vreg* ret_val() noexcept;
+
+    //
     // Allows overriding the position used to add instruction (func last)
     // Returns the old one
     //
