@@ -126,6 +126,14 @@ namespace tnac::ir // basic block
   {
     return m_last ? std::next(m_last) : m_last;
   }
+  basic_block::instruction_iter basic_block::last() noexcept
+  {
+    return m_last;
+  }
+  basic_block::const_instruction_iter basic_block::last() const noexcept
+  {
+    return m_last;
+  }
 
   bool basic_block::is_last_pred(const edge& e) const noexcept
   {

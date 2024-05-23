@@ -135,6 +135,16 @@ namespace tnac::ir
     const_instruction_iter end() const noexcept;
 
     //
+    // Returns an iterator to the last instruction
+    //
+    instruction_iter last() noexcept;
+
+    //
+    // Returns an iterator to the last instruction
+    //
+    const_instruction_iter last() const noexcept;
+
+    //
     // Checks whether the given edge is the last pred
     //
     bool is_last_pred(const edge& e) const noexcept;
