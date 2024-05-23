@@ -38,7 +38,6 @@ namespace tnac::detail // func data
     symbol* m_lastStore{};
     var_store m_vars;
     known_var_names m_varNames;
-    ast::ret_expr* m_explicitRet{};
   };
 }
 
@@ -265,21 +264,6 @@ namespace tnac::detail
   bool context::new_var_name(string_t name) noexcept
   {
     return cur_data().m_varNames.emplace(name).second;
-  }
-
-  void context::attach_ret(ast::ret_expr& expr) noexcept
-  {
-    cur_data().m_explicitRet = &expr;
-  }
-
-  void context::detach_ret() noexcept
-  {
-    cur_data().m_explicitRet = {};
-  }
-
-  ast::ret_expr* context::explicit_ret() const noexcept
-  {
-    return cur_data().m_explicitRet;
   }
 
   ast::scope& context::enter_scope(ast::scope& scope) noexcept

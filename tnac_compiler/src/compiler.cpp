@@ -395,11 +395,7 @@ namespace tnac
 
   bool compiler::exit_child(ast::node& node) noexcept
   {
-    const auto isRet = node.is(ast::node_kind::Ret);
-    if(isRet)
-      m_context.attach_ret(utils::cast<ast::node_kind::Ret>(node));
-
-    return !isRet;
+    return !(node.is(ast::node_kind::Ret) || has_ret_jump());
   }
 
   void compiler::post_exit(ast::node& node) noexcept
@@ -788,6 +784,13 @@ namespace tnac
   {
     auto target = m_context.locate(var);
     UTILS_ASSERT(target);
+
+    // Most likely, unreachable code
+    // like trying to get result from a condition whose
+    // branches all explicitly return (including default)
+    if (m_stack.empty())
+      return;
+
     auto val = m_stack.extract();
     if(!val.is_param())
       m_context.save_store(var);
@@ -1095,9 +1098,11 @@ namespace tnac
       {
         reportExit = false;
         post_exit(*child);
-        if (!ret->is(ast::node_kind::Ret))
+        auto loc = try_get_location(*ret);
+        if (!loc)
           continue;
-        if (auto loc = try_get_location(*ret))
+
+        if (ret->is(ast::node_kind::Ret))
           note(std::move(*loc), diag::ret_here());
       }
     }

@@ -228,20 +228,6 @@ namespace tnac::detail
     //
     bool new_var_name(string_t name) noexcept;
 
-    //
-    // Sets the explicit ret expression
-    //
-    void attach_ret(ast::ret_expr& expr) noexcept;
-
-    //
-    // Resets the explicit ret expression
-    //
-    void detach_ret() noexcept;
-
-    //
-    // Returns the set explicit ret expression
-    //
-    ast::ret_expr* explicit_ret() const noexcept;
 
     //
     // Enters the given scope
