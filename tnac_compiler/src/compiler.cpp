@@ -854,7 +854,10 @@ namespace tnac
   void compiler::emit_jump(ir::operand value, ir::basic_block& dest) noexcept
   {
     if (has_ret_jump())
+    {
+      m_stack.push(value);
       return;
+    }
 
     clear_store();
     auto&& block = m_context.current_block();
