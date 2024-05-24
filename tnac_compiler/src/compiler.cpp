@@ -541,7 +541,7 @@ namespace tnac
     compile(binary.right());
 
     auto rightOp = extract();
-    if (rightOp.is_value())
+    if (rightOp.is_value() && !has_ret_jump(rhsBlock))
     {
       m_context.enter_block(lastBlock);
       m_context.override_last(lastBlock.end());
@@ -552,7 +552,7 @@ namespace tnac
       }
 
       m_context.override_last(lastEnd);
-      delete_block_tree(rhsBlock);
+      m_context.current_function().delete_block_tree(rhsBlock);
       return false;
     }
 
