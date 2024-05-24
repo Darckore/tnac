@@ -230,10 +230,22 @@ namespace tnac
 
   private:
     //
+    // Deletes a basic block and all of the blocks it is connected to
+    // Returns true on success
+    //
+    bool delete_block_tree(ir::basic_block& root) noexcept;
+
+    //
     // Checks whether the current block has a connection to the return block
     // Needed to properly handle early returns
     //
     bool has_ret_jump() noexcept;
+
+    //
+    // Checks whether the given block has a connection to the return block
+    // Needed to properly handle early returns
+    //
+    bool has_ret_jump(ir::basic_block& block) noexcept;
 
     //
     // Extracts the last values from the stack

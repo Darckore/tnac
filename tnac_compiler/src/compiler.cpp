@@ -552,7 +552,7 @@ namespace tnac
       }
 
       m_context.override_last(lastEnd);
-      m_context.current_function().delete_block_tree(rhsBlock);
+      delete_block_tree(rhsBlock);
       return false;
     }
 
@@ -634,7 +634,9 @@ namespace tnac
 
     lastEnd = m_context.override_last(lastBlock.end());
     m_context.enter_block(lastBlock);
-    if (trueRes.is_value() && falseRes.is_value())
+    bool knownBranchValues = trueRes.is_value() && falseRes.is_value();
+    knownBranchValues = knownBranchValues && !has_ret_jump(onTrue) && !has_ret_jump(onFalse);
+    if (knownBranchValues)
     {
       emit_select(checkedVal, trueRes, falseRes);
       auto&& curFn = m_context.current_function();
@@ -676,9 +678,8 @@ namespace tnac
       if (!compile(pattern, checkedVal, !counter))
         continue;
 
-      if (endBlock.preds().empty())
+      if (endBlock.preds().empty() && delete_block_tree(endBlock))
       {
-        m_context.current_function().delete_block_tree(endBlock);
         m_context.terminate_at(m_context.current_block());
       }
       else
@@ -693,9 +694,8 @@ namespace tnac
     if (defaultPat)
     {
       m_context.terminate_at(endBlock);
-      if(endBlock.preds().empty())
+      if(endBlock.preds().empty() && delete_block_tree(endBlock))
       {
-        m_context.current_function().delete_block_tree(endBlock);
         m_context.terminate_at(m_context.current_block());
         compile(defaultPat->body());
         return false;
@@ -909,12 +909,26 @@ namespace tnac
 
   bool compiler::has_ret_jump() noexcept
   {
+    return has_ret_jump(m_context.current_block());
+  }
+
+  bool compiler::has_ret_jump(ir::basic_block& block) noexcept
+  {
     auto retBlock = m_context.return_block();
     if (!retBlock)
       return false;
 
-    auto&& cur = m_context.current_block();
-    return cur.is_connected_to(*retBlock);
+    return block.is_connected_to(*retBlock);
+  }
+
+  bool compiler::delete_block_tree(ir::basic_block& root) noexcept
+  {
+    auto retBlock = m_context.return_block();
+    if (retBlock && root.is_connected_to(*retBlock))
+      return false;
+
+    m_context.current_function().delete_block_tree(root);
+    return true;
   }
 
   ir::operand compiler::extract() noexcept
