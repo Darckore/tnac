@@ -155,6 +155,11 @@ namespace tnac::ir
     bool is_last_connection(const basic_block& bb) const noexcept;
 
     //
+    // Checks whether there's a path to the specified basic block
+    //
+    bool is_connected_to(const basic_block& other) const noexcept;
+
+    //
     // Returns a view into preds
     //
     const_edge_view preds() const noexcept;

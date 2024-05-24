@@ -149,6 +149,20 @@ namespace tnac::ir // basic block
     return &m_in.back()->incoming() == &bb;
   }
 
+  bool basic_block::is_connected_to(const basic_block& other) const noexcept
+  {
+    for (auto e : m_out)
+    {
+      auto&& outConn = e->outgoing();
+      if (&outConn == &other)
+        return true;
+
+      if (outConn.is_connected_to(other))
+        return true;
+    }
+    return false;
+  }
+
   basic_block::const_edge_view basic_block::preds() const noexcept
   {
     return m_in;

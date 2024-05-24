@@ -913,11 +913,8 @@ namespace tnac
     if (!retBlock)
       return false;
 
-    auto curOuts = m_context.current_block().outs();
-    return ranges::find_if(curOuts, [&](const ir::edge* cur) noexcept
-      {
-        return &cur->outgoing() == retBlock;
-      }) != curOuts.end();
+    auto&& cur = m_context.current_block();
+    return cur.is_connected_to(*retBlock);
   }
 
   ir::operand compiler::extract() noexcept
