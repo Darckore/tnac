@@ -521,6 +521,7 @@ namespace tnac
       };
 
     compile(binary.left());
+    compile_unary(&binary.left(), extract(), tok_kind::Question);
     auto leftOp = extract();
     if (leftOp.is_value())
     {
@@ -540,6 +541,7 @@ namespace tnac
     m_context.terminate_at(rhsBlock);
     compile(binary.right());
 
+    compile_unary(&binary.right(), extract(), tok_kind::Question);
     auto rightOp = extract();
     if (rightOp.is_value() && !has_ret_jump(rhsBlock))
     {
@@ -580,6 +582,7 @@ namespace tnac
   bool compiler::preview(ast::cond_short& cond) noexcept
   {
     compile(cond.cond());
+    compile_unary(&cond.cond(), extract(), tok_kind::Question);
     auto checkedVal = extract();
     if (checkedVal.is_value())
     {
