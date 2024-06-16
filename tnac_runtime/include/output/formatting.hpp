@@ -59,8 +59,9 @@ namespace tnac::rt::fmt
   template <detail::printable P>
   void print(std::ostream& out, clr c, P&& msg) noexcept
   {
+    constexpr auto max_precision{ std::numeric_limits<tnac::eval::float_type>::digits10 + 1 };
     add_clr(out, c);
-    out << msg;
+    out << std::setprecision(max_precision) << msg;
     clear_clr(out);
   }
 
