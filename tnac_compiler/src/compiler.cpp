@@ -347,7 +347,9 @@ namespace tnac
 
   void compiler::visit(ast::array_expr& arr) noexcept
   {
-    utils::unused(arr);
+    auto&& elems = arr.elements();
+    const auto elemSz = elems.size();
+    emit_arr(elemSz);
   }
 
   void compiler::visit(ast::abs_expr& abs) noexcept
@@ -781,6 +783,19 @@ namespace tnac
 
     auto&& reg = builder.make_register(varName);
     var.add(&reg);
+    return reg;
+  }
+
+  ir::vreg& compiler::emit_arr(ir::operand::idx_type size) noexcept
+  {
+    auto&& curFn = m_context.current_function();
+    auto&& entry = curFn.entry();
+    auto&& builder = m_cfg->get_builder();
+    auto&& arr = builder.add_array(entry, m_context.funct_start());
+    auto varName = m_names.op_name(ir::op_code::Arr);
+    auto&& reg = builder.make_register(varName);
+    arr.add(&reg);
+    arr.add(size);
     return reg;
   }
 

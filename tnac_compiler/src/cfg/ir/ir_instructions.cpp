@@ -122,6 +122,16 @@ namespace tnac::ir // operand
     UTILS_ASSERT(is_edge());
     return *std::get<edge*>(m_value);
   }
+
+  bool operand::is_index() const noexcept
+  {
+    return std::holds_alternative<idx_type>(m_value);
+  }
+  operand::idx_type operand::get_index() const noexcept
+  {
+    UTILS_ASSERT(is_index());
+    return std::get<idx_type>(m_value);
+  }
 }
 
 
@@ -181,6 +191,7 @@ namespace tnac::ir // instruction
     case CmpIs:  return "is"sv;
 
     case Alloc:  return "alloc"sv;
+    case Arr:    return "arr"sv;
     case Store:  return "store"sv;
     case Load:   return "load"sv;
 
@@ -265,6 +276,7 @@ namespace tnac::ir // instruction
     case Store:  count = 2; break;
     case Load:   count = 2; break;
     case Alloc:  count = 1; break;
+    case Arr:    count = 2; break;
 
     case Select: count = 4; break;
     case Call:   count = 2; break;

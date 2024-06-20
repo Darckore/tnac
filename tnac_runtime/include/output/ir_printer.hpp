@@ -83,6 +83,8 @@ namespace tnac::rt::out
 
     void value(eval::value val) noexcept;
 
+    void idx(ir::operand::idx_type i) noexcept;
+
     void vreg(const ir::vreg& reg) noexcept;
 
     void param(ir::func_param par) noexcept;

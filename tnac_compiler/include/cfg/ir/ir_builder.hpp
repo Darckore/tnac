@@ -63,6 +63,11 @@ namespace tnac::ir
     instruction& add_var(basic_block& owner, instruction_list::iterator pos) noexcept;
 
     //
+    // Adds an array allocation to the specified block before the given iterator
+    //
+    instruction& add_array(basic_block& owner, instruction_list::iterator pos) noexcept;
+
+    //
     // Creates a new named virtual register
     //
     vreg& make_register(string_t name) noexcept;
@@ -92,6 +97,11 @@ namespace tnac::ir
     // Creates a generic function
     //
     function& make_function(entity_id id, function* owner, fname_t name, par_size_t paramCount) noexcept;
+
+    //
+    // Creates a generic allocation
+    //
+    instruction& add_alloc(basic_block& owner, op_code oc, instruction_list::iterator pos) noexcept;
 
   private:
     func_store m_functions;

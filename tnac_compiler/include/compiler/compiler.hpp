@@ -168,6 +168,12 @@ namespace tnac
     ir::vreg& emit_alloc(string_t varName) noexcept;
 
     //
+    // Creates an alloc instruction for an array of the given size
+    // Returns a reference to the created virtual register
+    //
+    ir::vreg& emit_arr(ir::operand::idx_type size) noexcept;
+
+    //
     // Creates a ret instruction
     //
     void emit_ret(ir::basic_block& block) noexcept;

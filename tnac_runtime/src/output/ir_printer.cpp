@@ -87,6 +87,7 @@ namespace tnac::rt::out
       break;
 
     case Select: print_select(instr); break;
+    case Arr:    print_alloc(instr); break;
     case Alloc:  print_alloc(instr); break;
     case Store:  print_store(instr); break;
     case Load:   print_load(instr);  break;
@@ -146,6 +147,8 @@ namespace tnac::rt::out
       block(op.get_block());
     else if (op.is_edge())
       edge(op.get_edge());
+    else if (op.is_index())
+      idx(op.get_index());
   }
 
   void ir_printer::print_assign(const ir::operand& op) noexcept
@@ -158,6 +161,8 @@ namespace tnac::rt::out
   {
     print_assign(alloc[0]);
     keyword(alloc.opcode_str());
+    if (alloc.opcode() == ir::op_code::Arr)
+      print_operand(alloc[1]);
   }
 
   void ir_printer::print_store(const ir::instruction& store) noexcept
@@ -329,6 +334,12 @@ namespace tnac::rt::out
     };
 
     eval::on_value(val, visitor);
+  }
+
+  void ir_printer::idx(ir::operand::idx_type i) noexcept
+  {
+    keyword("idx"sv);
+    fmt::print(out(), fmt::clr::Yellow, i);
   }
 
   void ir_printer::vreg(const ir::vreg& reg) noexcept

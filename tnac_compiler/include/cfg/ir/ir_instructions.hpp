@@ -11,7 +11,8 @@
 basic_block*,\
 vreg*,\
 edge*,\
-func_param
+func_param,\
+std::uint64_t
 
 
 namespace tnac::ir
@@ -112,6 +113,7 @@ namespace tnac::ir
   {
   public:
     using data_type = std::variant<TNAC_OPERANDS>;
+    using idx_type  = std::uint64_t;
 
   public:
     CLASS_SPECIALS_NODEFAULT(operand);
@@ -154,6 +156,11 @@ namespace tnac::ir
     bool is_edge() const noexcept;
 
     //
+    // Checks whether the operand holds a 64-bit index
+    //
+    bool is_index() const noexcept;
+
+    //
     // Returns the stored value
     // Callers must check is_value before using this
     //
@@ -182,6 +189,12 @@ namespace tnac::ir
     // Callers must check is_edge before using this
     //
     edge& get_edge() const noexcept;
+
+    //
+    // Returns the stored index
+    // Callers must check is_index before using this
+    //
+    idx_type get_index() const noexcept;
 
   private:
     data_type m_value;
@@ -225,6 +238,7 @@ namespace tnac::ir
     Store,
     Load,
     Alloc,
+    Arr,
 
     Select,
     Call,
