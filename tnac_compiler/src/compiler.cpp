@@ -351,6 +351,7 @@ namespace tnac
     const auto size = elems.size();
     auto&& target = emit_arr(size);
     emit_append(target, size);
+    emit_load(target);
   }
 
   void compiler::visit(ast::abs_expr& abs) noexcept
