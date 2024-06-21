@@ -348,8 +348,9 @@ namespace tnac
   void compiler::visit(ast::array_expr& arr) noexcept
   {
     auto&& elems = arr.elements();
-    const auto elemSz = elems.size();
-    emit_arr(elemSz);
+    const auto size = elems.size();
+    auto&& target = emit_arr(size);
+    emit_append(target, size);
   }
 
   void compiler::visit(ast::abs_expr& abs) noexcept
@@ -924,6 +925,23 @@ namespace tnac
       ++factCount;
     }
     m_stack.push(res);
+  }
+
+  void compiler::emit_append(ir::vreg& arr, size_type size) noexcept
+  {
+    UTILS_ASSERT(m_stack.has_at_least(size));
+    auto&& block = m_context.current_block();
+    auto&& builder = m_cfg->get_builder();
+    auto before = m_context.func_end();
+
+    for (auto cur = size; cur; --cur)
+    {
+      auto&& instr = builder.add_instruction(block, ir::op_code::Append, before);
+      auto val = extract();
+      instr.add(val).add(&arr);
+      update_func_start(instr);
+      before = instr.to_iterator();
+    }
   }
 
   // Private members

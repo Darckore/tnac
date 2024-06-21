@@ -239,6 +239,7 @@ namespace tnac::ir
     Load,
     Alloc,
     Arr,
+    Append,
 
     Select,
     Call,

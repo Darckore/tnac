@@ -81,6 +81,11 @@ namespace tnac::detail
     return true;
   }
 
+  bool compiler_stack::has_at_least(size_type count) const noexcept
+  {
+    return m_data.size() >= count;
+  }
+
   void compiler_stack::fill(ir::instruction& instr, size_type count) noexcept
   {
     if (!count)

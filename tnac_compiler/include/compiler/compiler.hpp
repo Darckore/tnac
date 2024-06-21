@@ -234,6 +234,11 @@ namespace tnac
     //
     void emit_inst(ir::op_code oc, size_type opCount, size_type factCount) noexcept;
 
+    //
+    // Creates a series of append instructions to fill an array
+    //
+    void emit_append(ir::vreg& arr, size_type size) noexcept;
+
   private:
     //
     // Deletes a basic block and all of the blocks it is connected to

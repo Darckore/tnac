@@ -73,6 +73,11 @@ namespace tnac::detail
     bool has_values(size_type count) const noexcept;
 
     //
+    // Checks whether the stack has at least the given number of items
+    //
+    bool has_at_least(size_type count) const noexcept;
+
+    //
     // Fills operands to the instruction
     // Operands are read in reverse order (offset to top)
     //

@@ -52,6 +52,8 @@ namespace tnac::rt::out
 
     void print_store(const ir::instruction& store) noexcept;
 
+    void print_append(const ir::instruction& append) noexcept;
+
     void print_load(const ir::instruction& load) noexcept;
 
     void print_binary(const ir::instruction& bin) noexcept;
