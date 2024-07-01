@@ -58,6 +58,23 @@ namespace tnac::ir
     return FROM_CONST(edges);
   }
 
+  cfg::const_view cfg::interned_vals() const noexcept
+  {
+    return m_constants;
+  }
+
+  void cfg::intern(eval::stored_value val) noexcept
+  {
+    m_constants.emplace_back(std::move(val));
+  }
+
+  void cfg::intern(eval::value val) noexcept
+  {
+    eval::on_value(val, [&](auto v) noexcept
+      {
+        intern(eval::stored_value{ std::move(v) });
+      });
+  }
 
   // Private members
 
