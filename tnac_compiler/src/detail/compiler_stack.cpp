@@ -88,13 +88,24 @@ namespace tnac::detail
 
   void compiler_stack::fill(ir::instruction& instr, size_type count) noexcept
   {
+    walk_back(count, [&instr](auto op) noexcept
+      {
+        instr.add(op);
+      });
+  }
+
+
+  // Private members
+
+  void compiler_stack::walk_back(size_type count, op_processor auto&& proc) noexcept
+  {
     if (!count)
       return;
 
     UTILS_ASSERT(m_data.size() >= count);
     auto beg = std::next(m_data.begin(), m_data.size() - count);
     for (auto it = beg; it < m_data.end(); ++it)
-      instr.add(*it);
+      proc(*it);
 
     while (count--)
       pop();

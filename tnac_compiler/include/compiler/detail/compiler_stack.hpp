@@ -7,6 +7,9 @@
 
 namespace tnac::detail
 {
+  template <typename F>
+  concept op_processor = std::is_nothrow_invocable_r_v<void, F, ir::operand>;
+
   //
   // Operates on values used in compilation
   //
@@ -82,6 +85,13 @@ namespace tnac::detail
     // Operands are read in reverse order (offset to top)
     //
     void fill(ir::instruction& instr, size_type count) noexcept;
+
+  private:
+    //
+    // Walks the specified values on the stack in reverse order
+    // and applies the given function to each
+    //
+    void walk_back(size_type count, op_processor auto&& proc) noexcept;
 
   private:
     data_type m_data;
