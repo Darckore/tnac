@@ -347,8 +347,7 @@ namespace tnac
 
   void compiler::visit(ast::array_expr& arr) noexcept
   {
-    auto&& elems = arr.elements();
-    const auto size = elems.size();
+    const auto size = arr.elements().size();
     auto&& target = emit_arr(size);
     emit_append(target, size);
     emit_load(target);
