@@ -554,6 +554,7 @@
     <DisplayString Condition="m_id._Which == 1">register</DisplayString>
     <Expand>
       <Item Name="[id]">m_id</Item>
+      <Item Name="[scope]">m_scope,en</Item>
     </Expand>
   </Type>
 

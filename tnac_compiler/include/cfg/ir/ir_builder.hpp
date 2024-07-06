@@ -78,6 +78,16 @@ namespace tnac::ir
     vreg& make_register(vreg::idx_type idx) noexcept;
 
     //
+    // Creates a new named global register
+    //
+    vreg& make_global_register(string_t name) noexcept;
+
+    //
+    // Creates a new nameless global register
+    //
+    vreg& make_global_register(vreg::idx_type idx) noexcept;
+
+    //
     // Creates an edge between basic blocks
     //
     edge& make_edge(basic_block& from, basic_block& to, operand val) noexcept;

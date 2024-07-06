@@ -26,18 +26,25 @@ namespace tnac::ir
     using idx_type = std::uint64_t;
     using id_type  = std::variant<string_t, idx_type>;
 
+    enum class reg_scope : std::uint8_t
+    {
+      Local,
+      Global
+    };
+    using enum reg_scope;
+
   public:
     CLASS_SPECIALS_NONE(vreg);
 
     ~vreg() noexcept;
 
-    explicit vreg(string_t name) noexcept;
-    
-    explicit vreg(idx_type idx) noexcept;
+    vreg(string_t name, reg_scope scope) noexcept;
+
+    vreg(idx_type idx, reg_scope scope) noexcept;
 
   private:
     struct from_id {};
-    vreg(from_id, id_type id) noexcept;
+    vreg(from_id, id_type id, reg_scope scope) noexcept;
 
   public:
     //
@@ -57,8 +64,14 @@ namespace tnac::ir
     //
     idx_type index() const noexcept;
 
+    //
+    // Checks whether the register is global
+    //
+    bool is_global() const noexcept;
+
   private:
     id_type m_id;
+    reg_scope m_scope;
   };
 }
 

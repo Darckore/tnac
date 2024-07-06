@@ -6,17 +6,18 @@ namespace tnac::ir // virtual register
 
   vreg::~vreg() noexcept = default;
 
-  vreg::vreg(from_id, id_type id) noexcept :
+  vreg::vreg(from_id, id_type id, reg_scope scope) noexcept :
     node{ kind::Register },
-    m_id{ id }
+    m_id{ id },
+    m_scope{ scope }
   {}
 
-  vreg::vreg(string_t name) noexcept :
-    vreg{ from_id{}, name }
+  vreg::vreg(string_t name, reg_scope scope) noexcept :
+    vreg{ from_id{}, name, scope }
   {}
 
-  vreg::vreg(idx_type idx) noexcept :
-    vreg{ from_id{}, idx }
+  vreg::vreg(idx_type idx, reg_scope scope) noexcept :
+    vreg{ from_id{}, idx, scope }
   {}
 
 
@@ -39,6 +40,10 @@ namespace tnac::ir // virtual register
     return std::get<idx_type>(m_id);
   }
 
+  bool vreg::is_global() const noexcept
+  {
+    return m_scope == Global;
+  }
 }
 
 

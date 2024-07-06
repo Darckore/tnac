@@ -353,7 +353,11 @@ namespace tnac::rt::out
 
   void ir_printer::vreg(const ir::vreg& reg) noexcept
   {
-    out() << '%';
+    if (reg.is_global())
+      out() << '@';
+    else
+      out() << '%';
+
     if (reg.is_named())
       out() << reg.name();
     else

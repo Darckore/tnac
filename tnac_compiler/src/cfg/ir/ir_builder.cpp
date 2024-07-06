@@ -53,11 +53,20 @@ namespace tnac::ir
 
   vreg& builder::make_register(string_t name) noexcept
   {
-    return m_regs.emplace_front(name);
+    return m_regs.emplace_front(name, vreg::Local);
   }
   vreg& builder::make_register(vreg::idx_type idx) noexcept
   {
-    return m_regs.emplace_front(idx);
+    return m_regs.emplace_front(idx, vreg::Local);
+  }
+
+  vreg& builder::make_global_register(string_t name) noexcept
+  {
+    return m_regs.emplace_front(name, vreg::Global);
+  }
+  vreg& builder::make_global_register(vreg::idx_type idx) noexcept
+  {
+    return m_regs.emplace_front(idx, vreg::Global);
   }
 
   edge& builder::make_edge(basic_block& from, basic_block& to, operand val) noexcept
