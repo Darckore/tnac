@@ -806,7 +806,6 @@ namespace tnac
     auto&& instr = m_cfg->get_builder().add_instruction(block, ir::op_code::Ret, m_context.func_end());
     instr.add(op);
     update_func_start(instr);
-    empty_stack();
     m_context.exit_block();
   }
 
@@ -1121,7 +1120,6 @@ namespace tnac
     }
 
     emit_ret(*block);
-    UTILS_ASSERT(m_stack.empty());
   }
 
   void compiler::compile(ast::scope& scope) noexcept
@@ -1214,6 +1212,7 @@ namespace tnac
     while (auto mod = m_context.pop())
     {
       compile(*mod);
+      empty_stack();
     }
   }
 
