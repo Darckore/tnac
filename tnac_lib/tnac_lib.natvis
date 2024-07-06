@@ -574,7 +574,6 @@
     <Expand>
       <Item Name="[IR builder]">*m_builder</Item>
       <Item Name="[modules]">m_modules</Item>
-      <Item Name="[constants]">m_constants</Item>
     </Expand>
   </Type>
   

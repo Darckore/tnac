@@ -16,8 +16,6 @@ namespace tnac::ir
   public:
     using name_t      = function::name_t;
     using module_list = std::vector<function*>;
-    using const_store = std::vector<eval::stored_value>;
-    using const_view  = std::span<const eval::stored_value>;
     using size_type   = module_list::size_type;
     using instr_list  = builder::instruction_list;
     using edge_list   = builder::edge_list;
@@ -75,21 +73,6 @@ namespace tnac::ir
     //
     edge_list& edges() noexcept;
 
-    //
-    // Returns a view into the list of interned static constants
-    //
-    const_view interned_vals() const noexcept;
-
-    //
-    // Interns a value in the static const storage
-    //
-    void intern(eval::stored_value val) noexcept;
-
-    //
-    // Interns a value in the static const storage
-    //
-    void intern(eval::value val) noexcept;
-
   public:
     //
     // Returns a const begin iterator to the module collection
@@ -132,6 +115,5 @@ namespace tnac::ir
   private:
     builder* m_builder;
     module_list m_modules;
-    const_store m_constants;
   };
 }
