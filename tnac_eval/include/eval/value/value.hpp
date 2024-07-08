@@ -243,7 +243,7 @@ namespace tnac::eval
   class stored_value final
   {
   public:
-    CLASS_SPECIALS_NOCOPY_CUSTOM(stored_value);
+    CLASS_SPECIALS_ALL_CUSTOM(stored_value);
 
     explicit stored_value(expr_result auto raw) noexcept :
       m_raw{ std::move(raw) }
