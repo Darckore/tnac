@@ -18,7 +18,7 @@ namespace tnac::detail
 
   void compiler_stack::push_undef() noexcept
   {
-    push(eval::value{});
+    push(eval::stored_value{});
   }
 
   compiler_stack::value_type compiler_stack::top() noexcept
@@ -54,7 +54,7 @@ namespace tnac::detail
   compiler_stack::value_type compiler_stack::try_extract() noexcept
   {
     if (empty())
-      return eval::value{};
+      return eval::stored_value{};
     return extract();
   }
 

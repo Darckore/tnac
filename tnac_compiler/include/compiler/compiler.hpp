@@ -268,7 +268,7 @@ namespace tnac
     //
     // Transfers a calculated value to the internal stack
     //
-    void carry_val(entity_id id) noexcept;
+    void carry_val() noexcept;
 
     //
     // Empties the stack on the next instruction
@@ -278,12 +278,12 @@ namespace tnac
     //
     // Compiles a unary expression
     //
-    void compile_unary(entity_id expr, const ir::operand& val, tok_kind opType) noexcept;
+    void compile_unary(const ir::operand& val, tok_kind opType) noexcept;
 
     //
     // Compiles a binary expression
     //
-    void compile_binary(entity_id expr, const ir::operand& lhs, const ir::operand& rhs, tok_kind opType) noexcept;
+    void compile_binary(const ir::operand& lhs, const ir::operand& rhs, tok_kind opType) noexcept;
 
     //
     // Compiles a pattern

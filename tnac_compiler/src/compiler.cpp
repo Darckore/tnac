@@ -319,7 +319,7 @@ namespace tnac
     default: return;
     }
 
-    carry_val(&lit);
+    carry_val();
   }
 
   void compiler::visit(ast::id_expr& id) noexcept
@@ -331,7 +331,7 @@ namespace tnac
   {
     auto val = extract();
     const auto opType = unary.op().what();
-    compile_unary(&unary, val, opType);
+    compile_unary(val, opType);
   }
 
   void compiler::visit(ast::binary_expr& binary) noexcept
@@ -342,7 +342,7 @@ namespace tnac
 
     auto rhs = extract();
     auto lhs = extract();
-    compile_binary(&binary, lhs, rhs, opType);
+    compile_binary(lhs, rhs, opType);
   }
 
   void compiler::visit(ast::array_expr& arr) noexcept
@@ -353,13 +353,14 @@ namespace tnac
     emit_load(target);
   }
 
-  void compiler::visit(ast::abs_expr& abs) noexcept
+  void compiler::visit(ast::abs_expr&) noexcept
   {
     auto val = extract();
     if (val.is_value())
     {
-      m_eval.visit_unary(val.get_value(), eval::val_ops::AbsoluteValue);
-      carry_val(&abs);
+      auto sv = val.get_value();
+      m_eval.visit_unary(*sv, eval::val_ops::AbsoluteValue);
+      carry_val();
       return;
     }
 
@@ -387,10 +388,11 @@ namespace tnac
       while (count--)
       {
         auto val = m_stack.extract();
-        m_eval.push_value(val.get_value());
+        auto sv = val.get_value();
+        m_eval.push_value(*sv);
       }
       m_eval.instantiate(typeId, argSz);
-      carry_val(&typed);
+      carry_val();
       return;
     }
 
@@ -434,7 +436,7 @@ namespace tnac
     auto func = m_cfg->find_entity(&sym);
     UTILS_ASSERT(func);
     auto funcVal = m_eval.make_function(&fd, eval::function_type{ *func });
-    m_stack.push(funcVal);
+    m_stack.push(eval::stored_value{ funcVal.get<eval::function_type>() });
   }
 
   // Previews
@@ -506,9 +508,9 @@ namespace tnac
     if (!detail::is_logical(opType))
       return true;
 
-    auto alwaysSame = [&](eval::value val, bool isLhs) noexcept
+    auto alwaysSame = [&](const eval::stored_value& val, bool isLhs) noexcept
       {
-        const auto boolVal = eval::to_bool(val);
+        const auto boolVal = eval::to_bool(*val);
         const auto knownVal = ( boolVal && detail::is_lor(opType)) || // always true
                               (!boolVal && detail::is_land(opType));  // always false
 
@@ -517,14 +519,14 @@ namespace tnac
           auto binOp = binary.op();
           warning(binOp.at(), diag::logical_same(binOp.value(), isLhs, boolVal));
           m_eval.visit_bool_literal(boolVal);
-          carry_val(&binary);
+          carry_val();
           return true;
         }
         return false;
       };
 
     compile(binary.left());
-    compile_unary(&binary.left(), extract(), tok_kind::Question);
+    compile_unary(extract(), tok_kind::Question);
     auto leftOp = extract();
     if (leftOp.is_value())
     {
@@ -544,7 +546,7 @@ namespace tnac
     m_context.terminate_at(rhsBlock);
     compile(binary.right());
 
-    compile_unary(&binary.right(), extract(), tok_kind::Question);
+    compile_unary(extract(), tok_kind::Question);
     auto rightOp = extract();
     if (rightOp.is_value() && !has_ret_jump(rhsBlock))
     {
@@ -585,11 +587,12 @@ namespace tnac
   bool compiler::preview(ast::cond_short& cond) noexcept
   {
     compile(cond.cond());
-    compile_unary(&cond.cond(), extract(), tok_kind::Question);
+    compile_unary(extract(), tok_kind::Question);
     auto checkedVal = extract();
     if (checkedVal.is_value())
     {
-      auto boolVal = eval::to_bool(checkedVal.get_value());
+      auto sv = checkedVal.get_value();
+      auto boolVal = eval::to_bool(*sv);
       warning(cond.cond().pos().at(), diag::condition_same(boolVal));
       if (boolVal && !cond.has_true())
       {
@@ -892,7 +895,7 @@ namespace tnac
     auto&& instr = m_cfg->get_builder().add_instruction(block, ir::op_code::Jump, m_context.func_end());
     instr.add(cond).add(&ifTrue).add(&ifFalse);
     m_cfg->connect(block, ifTrue, cond);
-    m_cfg->connect(block, ifFalse, eval::value{});
+    m_cfg->connect(block, ifFalse, eval::stored_value{});
     update_func_start(instr);
   }
 
@@ -920,7 +923,7 @@ namespace tnac
     m_stack.fill(instr, factCount);
     while (factCount < opCount)
     {
-      instr.add(eval::value::zero());
+      instr.add(eval::stored_value{ eval::int_type{} });
       ++factCount;
     }
     m_stack.push(res);
@@ -980,14 +983,12 @@ namespace tnac
       return m_stack.extract();
     }
 
-    return eval::value{};
+    return eval::stored_value{};
   }
 
-  void compiler::carry_val(entity_id id) noexcept
+  void compiler::carry_val() noexcept
   {
-    auto stored = m_eval.fetch_next();
-    auto val = m_eval.visit_assign(id, *stored);
-    m_stack.push(val);
+    m_stack.push(m_eval.fetch_next());
   }
 
   void compiler::empty_stack() noexcept
@@ -999,13 +1000,14 @@ namespace tnac
     }
   }
 
-  void compiler::compile_unary(entity_id expr, const ir::operand& val, tok_kind opType) noexcept
+  void compiler::compile_unary(const ir::operand& val, tok_kind opType) noexcept
   {
     if (val.is_value())
     {
       const auto op = eval::detail::conv_unary(opType);
-      m_eval.visit_unary(val.get_value(), op);
-      carry_val(expr);
+      auto sv = val.get_value();
+      m_eval.visit_unary(*sv, op);
+      carry_val();
       return;
     }
 
@@ -1014,13 +1016,15 @@ namespace tnac
     emit_unary(opcode, val);
   }
 
-  void compiler::compile_binary(entity_id expr, const ir::operand& lhs, const ir::operand& rhs, tok_kind opType) noexcept
+  void compiler::compile_binary(const ir::operand& lhs, const ir::operand& rhs, tok_kind opType) noexcept
   {
     if (lhs.is_value() && rhs.is_value())
     {
       const auto op = eval::detail::conv_binary(opType);
-      m_eval.visit_binary(lhs.get_value(), rhs.get_value(), op);
-      carry_val(expr);
+      auto lv = lhs.get_value();
+      auto rv = rhs.get_value();
+      m_eval.visit_binary(*lv, *rv, op);
+      carry_val();
       return;
     }
 
@@ -1038,13 +1042,13 @@ namespace tnac
     const auto isDefault = matcher.is_default();
     if (matcher.is_unary())
     {
-      compile_unary(&matcher, checked, op);
+      compile_unary(checked, op);
     }
     else if(!isDefault)
     {
       compile(matcher.checked());
       auto rhs = extract();
-      compile_binary(&matcher, checked, rhs, op);
+      compile_binary(checked, rhs, op);
     }
     else
     {
@@ -1058,7 +1062,8 @@ namespace tnac
     auto checkRes = extract();
     if (isDefault || checkRes.is_value())
     {
-      const auto matchFound = isDefault || eval::to_bool(checkRes.get_value());
+      auto sv = checkRes.get_value();
+      const auto matchFound = isDefault || eval::to_bool(*sv);
       if (!matchFound)
         return false;
 

@@ -297,8 +297,9 @@ namespace tnac::rt::out
     fmt::print(out(), fmt::clr::DarkYellow, i);
   }
 
-  void ir_printer::value(eval::value val) noexcept
+  void ir_printer::value(eval::stored_value sv) noexcept
   {
+    auto val = *sv;
     if(val)
       keyword(val.id_str());
 

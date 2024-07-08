@@ -83,7 +83,7 @@ namespace tnac::rt::out
 
     void id(entity_id i) noexcept;
 
-    void value(eval::value val) noexcept;
+    void value(eval::stored_value val) noexcept;
 
     void idx(ir::operand::idx_type i) noexcept;
 
