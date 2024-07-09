@@ -531,9 +531,9 @@ namespace tnac::eval
 
 
   template <typename T>
-  concept value_container = requires (T & t)
+  concept value_container = requires (T& t, std::size_t i)
   {
-    { t.operator[](0) } -> std::same_as<stored_value&>;
+    { t[i] } -> std::same_as<stored_value&>;
   };
 
 
