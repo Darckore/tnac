@@ -362,8 +362,9 @@ namespace tnac
     m_stack.fill(arrData, size);
     auto&& builder = m_cfg->get_builder();
     auto&& reg = builder.make_global_register(m_names.array_name());
-    builder.intern(reg, std::move(arrData));
-    emit_load(reg);
+    auto&& cval = builder.intern(reg, std::move(arrData));
+    m_stack.push(cval.value());
+    //emit_load(reg);
   }
 
   void compiler::visit(ast::abs_expr&) noexcept
