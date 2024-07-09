@@ -1,4 +1,5 @@
 #include "compiler/detail/compiler_stack.hpp"
+#include "eval/value/evaluator.hpp"
 
 namespace tnac::detail
 {
@@ -100,6 +101,16 @@ namespace tnac::detail
       {
         UTILS_ASSERT(op.is_value());
         arr.emplace_back(op.get_value());
+      });
+  }
+
+  void compiler_stack::push_to_eval(eval::evaluator& ev, size_type count) noexcept
+  {
+    walk_back(count, [&ev](auto op) noexcept
+      {
+        UTILS_ASSERT(op.is_value());
+        auto val = op.get_value();
+        ev.push_value(*val);
       });
   }
 

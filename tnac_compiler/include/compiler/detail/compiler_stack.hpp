@@ -5,6 +5,11 @@
 #pragma once
 #include "cfg/ir/ir_instructions.hpp"
 
+namespace tnac::eval
+{
+  class evaluator;
+}
+
 namespace tnac::detail
 {
   template <typename F>
@@ -92,6 +97,12 @@ namespace tnac::detail
     // Operands are read in reverse order (offset to top)
     //
     void fill(arr_type& arr, size_type count) noexcept;
+
+    //
+    // Moves a series of values to the evaluator's stack
+    // Preserves the order
+    //
+    void push_to_eval(eval::evaluator& ev, size_type count) noexcept;
 
   private:
     //

@@ -329,10 +329,9 @@ namespace tnac::rt::out
             vreg(intr->target_reg());
             return;
           }
-
-          keyword(val.id_str());
         }
 
+        keyword(val.id_str());
         plain("[ "sv);
         for (auto&& last = arr->back(); auto&& item : *arr)
         {

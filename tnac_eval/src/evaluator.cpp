@@ -62,9 +62,9 @@ namespace tnac::eval // Internals
 
   void evaluator::fill_args(value_container auto& args, size_type count) noexcept
   {
-    for (auto idx = size_type{}; idx < count; ++idx)
+    for (auto idx = count; idx > size_type{}; --idx)
     {
-      args[idx] = fetch_next();
+      args[idx - 1] = fetch_next();
     }
   }
 

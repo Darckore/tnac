@@ -398,13 +398,7 @@ namespace tnac
     const auto typeId = detail::to_type_id(typed.type_name());
     if (m_stack.has_values(argSz))
     {
-      auto count = argSz;
-      while (count--)
-      {
-        auto val = m_stack.extract();
-        auto sv = val.get_value();
-        m_eval.push_value(*sv);
-      }
+      m_stack.push_to_eval(m_eval, argSz);
       m_eval.instantiate(typeId, argSz);
       carry_val();
       return;
