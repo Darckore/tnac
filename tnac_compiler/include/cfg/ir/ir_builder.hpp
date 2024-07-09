@@ -21,6 +21,8 @@ namespace tnac::ir
     using instruction_list = instruction::list_type;
     using register_store   = std::forward_list<vreg>;
     using edge_list        = edge::list_type;
+    using const_list       = constant::list_type;
+    using const_val        = constant::value_type;
     using size_type        = instruction::size_type;
 
   public:
@@ -93,6 +95,11 @@ namespace tnac::ir
     edge& make_edge(basic_block& from, basic_block& to, operand val) noexcept;
 
     //
+    // Interns a value
+    //
+    constant& intern(vreg& reg, const_val value) noexcept;
+
+    //
     // Returns a reference to the instruction list
     //
     instruction_list& instructions() noexcept;
@@ -101,6 +108,11 @@ namespace tnac::ir
     // Returns a reference to the edge list
     //
     edge_list& edges() noexcept;
+
+    //
+    // Returns a reference to the list of interned values
+    //
+    const_list& interned() noexcept;
 
   private:
     //
@@ -118,6 +130,7 @@ namespace tnac::ir
     block_store m_blocks;
     instruction_list m_instructions;
     edge_list m_edges;
+    const_list m_consts;
     register_store m_regs;
   };
 }

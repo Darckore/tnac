@@ -573,6 +573,7 @@
       <Item Name="[basic blocks]">m_blocks</Item>
       <Item Name="[instructions]">m_instructions</Item>
       <Item Name="[edges]">m_edges</Item>
+      <Item Name="[constants]">m_consts</Item>
       <Item Name="[registers]">m_regs</Item>
     </Expand>
   </Type>

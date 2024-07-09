@@ -74,6 +74,11 @@ namespace tnac::ir
     return m_edges.emplace_back(from, to, val);
   }
 
+  constant& builder::intern(vreg& reg, const_val value) noexcept
+  {
+    return m_consts.emplace_back(reg, std::move(value));
+  }
+
   builder::instruction_list& builder::instructions() noexcept
   {
     return m_instructions;
@@ -82,6 +87,11 @@ namespace tnac::ir
   builder::edge_list& builder::edges() noexcept
   {
     return m_edges;
+  }
+
+  builder::const_list& builder::interned() noexcept
+  {
+    return m_consts;
   }
 
 

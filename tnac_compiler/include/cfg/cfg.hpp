@@ -19,6 +19,7 @@ namespace tnac::ir
     using size_type   = module_list::size_type;
     using instr_list  = builder::instruction_list;
     using edge_list   = builder::edge_list;
+    using const_list  = builder::const_list;
 
   public:
     CLASS_SPECIALS_NONE(cfg);
@@ -72,6 +73,16 @@ namespace tnac::ir
     // Returns a reference to the edge list
     //
     edge_list& edges() noexcept;
+
+    //
+    // Returns a reference to the list of interned values
+    //
+    const const_list& interned() const noexcept;
+
+    //
+    // Returns a reference to the list of interned values
+    //
+    const_list& interned() noexcept;
 
   public:
     //

@@ -58,6 +58,15 @@ namespace tnac::ir
     return FROM_CONST(edges);
   }
 
+  const cfg::const_list& cfg::interned() const noexcept
+  {
+    return m_builder->interned();
+  }
+  cfg::const_list& cfg::interned() noexcept
+  {
+    return FROM_CONST(interned);
+  }
+
 
   // Private members
 
