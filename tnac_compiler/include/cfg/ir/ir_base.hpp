@@ -20,7 +20,8 @@ namespace tnac::ir
     Block,
     Edge,
     Instruction,
-    Register
+    Register,
+    Constant
   };
 
   //

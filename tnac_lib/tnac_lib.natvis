@@ -558,6 +558,14 @@
     </Expand>
   </Type>
 
+  <Type Name="tnac::ir::constant">
+    <DisplayString>ir const</DisplayString>
+    <Expand>
+      <Item Name="[reg]">*m_reg</Item>
+      <Item Name="[value]">m_value</Item>
+    </Expand>
+  </Type>
+
   <Type Name="tnac::ir::builder">
     <DisplayString>IR builder</DisplayString>
     <Expand>
