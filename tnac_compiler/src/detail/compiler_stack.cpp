@@ -90,7 +90,16 @@ namespace tnac::detail
   {
     walk_back(count, [&instr](auto op) noexcept
       {
-        instr.add(op);
+        instr.add(std::move(op));
+      });
+  }
+
+  void compiler_stack::fill(arr_type& arr, size_type count) noexcept
+  {
+    walk_back(count, [&arr](auto op) noexcept
+      {
+        UTILS_ASSERT(op.is_value());
+        arr.emplace_back(op.get_value());
       });
   }
 

@@ -19,6 +19,7 @@ namespace tnac::detail
     using value_type = ir::operand;
     using data_type  = std::vector<value_type>;
     using size_type  = data_type::size_type;
+    using arr_type   = eval::array_type::value_type;
 
   public:
     CLASS_SPECIALS_NONE_CUSTOM(compiler_stack);
@@ -85,6 +86,12 @@ namespace tnac::detail
     // Operands are read in reverse order (offset to top)
     //
     void fill(ir::instruction& instr, size_type count) noexcept;
+
+    //
+    // Fills values to the given array
+    // Operands are read in reverse order (offset to top)
+    //
+    void fill(arr_type& arr, size_type count) noexcept;
 
   private:
     //

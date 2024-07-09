@@ -348,6 +348,17 @@ namespace tnac
   void compiler::visit(ast::array_expr& arr) noexcept
   {
     const auto size = arr.elements().size();
+    if (m_stack.has_values(size))
+    {
+      using arr_t = eval::array_type::value_type;
+      const auto arrIdx = m_cfg->interned().size(); utils::unused(arrIdx);
+      arr_t arrData;
+      arrData.reserve(size);
+      m_stack.fill(arrData, size);
+      
+      return;
+    }
+
     auto&& target = emit_arr(size);
     emit_append(target, size);
     emit_load(target);
