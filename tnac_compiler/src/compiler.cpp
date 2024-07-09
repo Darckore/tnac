@@ -348,22 +348,22 @@ namespace tnac
   void compiler::visit(ast::array_expr& arr) noexcept
   {
     const auto size = arr.elements().size();
-    if (m_stack.has_values(size))
+    if (!m_stack.has_values(size))
     {
-      using arr_t = eval::array_type::value_type;
-      arr_t arrData;
-      arrData.reserve(size);
-      m_stack.fill(arrData, size);
-      auto&& builder = m_cfg->get_builder();
-      auto&& reg = builder.make_global_register(m_names.array_name());
-      builder.intern(reg, std::move(arrData));
-      emit_load(reg);
+      auto&& target = emit_arr(size);
+      emit_append(target, size);
+      emit_load(target);
       return;
     }
 
-    auto&& target = emit_arr(size);
-    emit_append(target, size);
-    emit_load(target);
+    using arr_t = eval::array_type::value_type;
+    arr_t arrData;
+    arrData.reserve(size);
+    m_stack.fill(arrData, size);
+    auto&& builder = m_cfg->get_builder();
+    auto&& reg = builder.make_global_register(m_names.array_name());
+    builder.intern(reg, std::move(arrData));
+    emit_load(reg);
   }
 
   void compiler::visit(ast::abs_expr&) noexcept
