@@ -12,6 +12,9 @@ namespace tnac::ir
   //
   class builder final
   {
+  private:
+    struct arr_descr;
+
   public:
     using fname_t          = function::name_t;
     using par_size_t       = function::size_type;
@@ -25,7 +28,7 @@ namespace tnac::ir
     using const_val        = constant::value_type;
     using size_type        = instruction::size_type;
     using arr_data         = eval::array_type::value_type;
-    using arr_store        = std::unordered_map<size_type, arr_data>;
+    using arr_store        = std::unordered_map<size_type, arr_descr>;
 
   public:
     CLASS_SPECIALS_NONE_CUSTOM(builder);
@@ -115,6 +118,11 @@ namespace tnac::ir
     // Returns a reference to the list of interned values
     //
     const_list& interned() noexcept;
+
+    //
+    // Returns an interned constant by array instance
+    //
+    constant* interned(const eval::array_type& arr) noexcept;
 
   private:
     //

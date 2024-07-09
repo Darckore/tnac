@@ -67,6 +67,14 @@ namespace tnac::ir
     return FROM_CONST(interned);
   }
 
+  const ir::constant* cfg::find_array(const eval::array_type& arr) const noexcept
+  {
+    return m_builder->interned(arr);
+  }
+  ir::constant* cfg::find_array(const eval::array_type& arr) noexcept
+  {
+    return FROM_CONST(find_array, arr);
+  }
 
   // Private members
 

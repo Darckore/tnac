@@ -84,6 +84,16 @@ namespace tnac::ir
     //
     const_list& interned() noexcept;
 
+    //
+    // Searches for the interned constant by array instance
+    //
+    const ir::constant* find_array(const eval::array_type& arr) const noexcept;
+
+    //
+    // Searches for the interned constant by array instance
+    //
+    ir::constant* find_array(const eval::array_type& arr) noexcept;
+
   public:
     //
     // Returns a const begin iterator to the module collection
