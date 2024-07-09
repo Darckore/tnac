@@ -74,6 +74,11 @@ namespace tnac::detail
     string_t ret_var_name() noexcept;
 
     //
+    // Returns a name base for a global array
+    //
+    string_t array_name() noexcept;
+
+    //
     // Returns a prefixed name for a block
     // prefix.postfix.<idx>
     //

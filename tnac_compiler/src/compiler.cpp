@@ -351,11 +351,13 @@ namespace tnac
     if (m_stack.has_values(size))
     {
       using arr_t = eval::array_type::value_type;
-      const auto arrIdx = m_cfg->interned().size(); utils::unused(arrIdx);
       arr_t arrData;
       arrData.reserve(size);
       m_stack.fill(arrData, size);
-      
+      auto&& builder = m_cfg->get_builder();
+      auto&& reg = builder.make_global_register(m_names.array_name());
+      builder.intern(reg, std::move(arrData));
+      emit_load(reg);
       return;
     }
 

@@ -74,9 +74,12 @@ namespace tnac::ir
     return m_edges.emplace_back(from, to, val);
   }
 
-  constant& builder::intern(vreg& reg, const_val value) noexcept
+  constant& builder::intern(vreg& reg, arr_data arr) noexcept
   {
-    return m_consts.emplace_back(reg, std::move(value));
+    const auto idx = m_arrays.size();
+    auto newItem = m_arrays.try_emplace(idx, std::move(arr));
+    UTILS_ASSERT(newItem.second);
+    return m_consts.emplace_back(reg, const_val{ eval::array_type{ newItem.first->second, idx } });
   }
 
   builder::instruction_list& builder::instructions() noexcept

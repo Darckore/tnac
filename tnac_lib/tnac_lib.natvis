@@ -575,6 +575,7 @@
       <Item Name="[edges]">m_edges</Item>
       <Item Name="[constants]">m_consts</Item>
       <Item Name="[registers]">m_regs</Item>
+      <Item Name="[arrays]">m_arrays</Item>
     </Expand>
   </Type>
   
