@@ -33,7 +33,7 @@ namespace tnac::detail
 
   string_t name_repo::array_name() noexcept
   {
-    return var_name(".global_array"sv);
+    return var_name(".array"sv);
   }
 
   string_t name_repo::make_block_name(string_t prefix, string_t postfix) noexcept

@@ -54,7 +54,7 @@ namespace tnac::rt::out
 
   void ir_printer::visit(const ir::instruction& instr) noexcept
   {
-    out() << "  ";
+    plain("  "sv);
     using enum ir::op_code;
     switch (instr.opcode())
     {
@@ -108,6 +108,16 @@ namespace tnac::rt::out
     endl();
   }
 
+  void ir_printer::visit(const ir::constant& val) noexcept
+  {
+    keyword("global_alloc"sv);
+    vreg(val.target_reg());
+    plain(" = "sv);
+    value(val.value());
+    endl();
+    endl();
+  }
+
 
   // Private members
 
@@ -121,16 +131,16 @@ namespace tnac::rt::out
     constexpr auto offset = st{ 50 };
     const auto actualOffset = offset - (target.name().length() + 1);
     for (auto off = actualOffset; off; --off)
-      out() << ' ';
+      plain(" "sv);
     const auto predCount = preds.size();
     fmt::add_clr(out(), fmt::clr::White);
-    out() << "; preds = ";
+    plain("; preds = "sv);
     for (auto idx = st{}; auto pred : preds)
     {
       auto&& predBlock = pred->incoming();
       out() << '%' << predBlock.name();
       if (idx < predCount - 1)
-        out() << ", ";
+        plain(", "sv);
       ++idx;
     }
     fmt::clear_clr(out());
@@ -155,7 +165,7 @@ namespace tnac::rt::out
   void ir_printer::print_assign(const ir::operand& op) noexcept
   {
     print_operand(op);
-    out() << " = ";
+    plain(" = "sv);
   }
 
   void ir_printer::print_alloc(const ir::instruction& alloc) noexcept
@@ -170,7 +180,7 @@ namespace tnac::rt::out
   {
     keyword(store.opcode_str());
     print_operand(store[0]);
-    out() << ", ";
+    plain(", "sv);
     print_operand(store[1]);
   }
 
@@ -178,7 +188,7 @@ namespace tnac::rt::out
   {
     keyword(append.opcode_str());
     print_operand(append[0]);
-    out() << ", ";
+    plain(", "sv);
     print_operand(append[1]);
   }
 
@@ -194,7 +204,7 @@ namespace tnac::rt::out
     print_assign(bin[0]);
     keyword(bin.opcode_str());
     print_operand(bin[1]);
-    out() << ", ";
+    plain(", "sv);
     print_operand(bin[2]);
   }
 
@@ -210,9 +220,9 @@ namespace tnac::rt::out
     print_assign(sel[0]);
     keyword(sel.opcode_str());
     print_operand(sel[1]);
-    out() << ", ";
+    plain(", "sv);
     print_operand(sel[2]);
-    out() << ", ";
+    plain(", "sv);
     print_operand(sel[3]);
   }
 
@@ -230,9 +240,9 @@ namespace tnac::rt::out
     if (jmp.operand_count() < 3)
       return;
 
-    out() << ", ";
+    plain(", "sv);
     print_operand(jmp[1]);
-    out() << ", ";
+    plain(", "sv);
     print_operand(jmp[2]);
   }
 
@@ -247,7 +257,7 @@ namespace tnac::rt::out
     {
       print_operand(phi[count]);
       if (count < ops - 1)
-        out() << ", ";
+        plain(", "sv);
     }
   }
 
@@ -262,7 +272,7 @@ namespace tnac::rt::out
     {
       print_operand(inst[count]);
       if (count < ops - 1)
-        out() << ", ";
+        plain(", "sv);
     }
   }
 
@@ -284,7 +294,7 @@ namespace tnac::rt::out
   void ir_printer::keyword(string_t kw) noexcept
   {
     kw_string(kw);
-    out() << ' ';
+    plain(" "sv);
   }
 
   void ir_printer::name(string_t n) noexcept
@@ -297,7 +307,7 @@ namespace tnac::rt::out
     fmt::print(out(), fmt::clr::DarkYellow, i);
   }
 
-  void ir_printer::value(eval::stored_value sv) noexcept
+  void ir_printer::value(const eval::stored_value& sv) noexcept
   {
     auto val = *sv;
     if(val)
@@ -309,33 +319,40 @@ namespace tnac::rt::out
       {
         kw_string(val.id_str());
       },
-      [&](eval::array_type) noexcept
+      [&](eval::array_type arr) noexcept
       {
-        // todo: arrays
+        plain("[ "sv);
+        for (auto&& last = arr->back(); auto&& val : *arr)
+        {
+          value(val);
+          if(&val != &last)
+            plain(", "sv);
+        }
+        plain(" ]"sv);
       },
       [&](eval::complex_type c) noexcept
       {
-        out() << "[ ";
+        plain("[ "sv);
         fmt::print(out(), fmt::clr::Yellow, c.real());
-        out() << ", ";
+        plain(", "sv);
         fmt::print(out(), fmt::clr::Yellow, c.imag());
-        out() << " ]";
+        plain(" ]"sv);
       },
       [&](eval::fraction_type f) noexcept
       {
-        out() << "[ ";
+        plain("[ "sv);
         fmt::print(out(), fmt::clr::Yellow, f.num() * f.sign());
-        out() << ", ";
+        plain(", "sv);
         fmt::print(out(), fmt::clr::Yellow, f.denom());
-        out() << " ]";
+        plain(" ]"sv);
       },
       [&](eval::function_type f) noexcept
       {
         auto&& func = *f;
         id(func.id());
-        out() << " [ ";
+        plain(" [ "sv);
         name(func.name());
-        out() << " ]";
+        plain(" ]"sv);
       },
       [&](auto v) noexcept
       {
@@ -355,12 +372,12 @@ namespace tnac::rt::out
   void ir_printer::vreg(const ir::vreg& reg) noexcept
   {
     if (reg.is_global())
-      out() << '@';
+      plain("@"sv);
     else
-      out() << '%';
+      plain("%"sv);
 
     if (reg.is_named())
-      out() << reg.name();
+      plain(reg.name());
     else
       out() << reg.index();
   }
@@ -374,11 +391,11 @@ namespace tnac::rt::out
 
   void ir_printer::edge(const ir::edge& edge) noexcept
   {
-    out() << "[ ";
+    plain("[ "sv);
     print_operand(edge.value());
-    out() << ", ";
+    plain(", "sv);
     block(edge.incoming());
-    out() << " ]";
+    plain(" ]"sv);
   }
 
   void ir_printer::param(ir::func_param par) noexcept

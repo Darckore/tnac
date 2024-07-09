@@ -52,6 +52,9 @@ namespace tnac::ir
     //
     void operator()(graph_ref gr) noexcept
     {
+      for (auto&& val : gr.interned())
+        visit_root(&val);
+
       for (auto mod : gr)
         visit_root(mod);
     }
@@ -176,6 +179,14 @@ namespace tnac::ir
     }
 
     //
+    // Visits an interned constant
+    //
+    void visit_impl(dest<constant> val) noexcept
+    {
+      visit(val);
+    }
+
+    //
     // Dispatches visit calls according to the node type
     //
     void visit_root(node_ptr n) noexcept
@@ -193,6 +204,7 @@ namespace tnac::ir
       case Function:    visit_impl(&cast<function>(cur));    break;
       case Block:       visit_impl(&cast<basic_block>(cur)); break;
       case Instruction: visit_impl(&cast<instruction>(cur)); break;
+      case Constant:    visit_impl(&cast<constant>(cur)); break;
       }
     }
   };

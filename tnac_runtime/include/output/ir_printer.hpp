@@ -41,6 +41,8 @@ namespace tnac::rt::out
 
     void visit(const ir::instruction& instr) noexcept;
 
+    void visit(const ir::constant& val) noexcept;
+
   private:
     void print_preds(const ir::basic_block& target) noexcept;
 
@@ -83,7 +85,7 @@ namespace tnac::rt::out
 
     void id(entity_id i) noexcept;
 
-    void value(eval::stored_value val) noexcept;
+    void value(const eval::stored_value& val) noexcept;
 
     void idx(ir::operand::idx_type i) noexcept;
 
