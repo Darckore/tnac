@@ -85,7 +85,7 @@ namespace tnac::rt::out
 
     void id(entity_id i) noexcept;
 
-    void value(const eval::stored_value& val) noexcept;
+    void value(const eval::stored_value& val, bool refInterned = true) noexcept;
 
     void idx(ir::operand::idx_type i) noexcept;
 
@@ -99,13 +99,14 @@ namespace tnac::rt::out
 
     void plain(string_t str) noexcept;
 
-    void declare_funcs(const ir::cfg& gr) noexcept;
+    void declare_funcs() noexcept;
 
     void declare(const ir::function& fn) noexcept;
 
     void func_intro(const ir::function& fn) noexcept;
 
   private:
+    const ir::cfg* m_cfg{};
     out_stream* m_out{ &std::cout };
   };
 }

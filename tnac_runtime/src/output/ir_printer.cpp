@@ -15,7 +15,8 @@ namespace tnac::rt::out
   void ir_printer::operator()(const ir::cfg& gr, out_stream& os) noexcept
   {
     m_out = &os;
-    declare_funcs(gr);
+    m_cfg = &gr;
+    declare_funcs();
     base::operator()(gr);
   }
 
@@ -113,7 +114,7 @@ namespace tnac::rt::out
     keyword("global_alloc"sv);
     vreg(val.target_reg());
     plain(" = "sv);
-    value(val.value());
+    value(val.value(), false);
     endl();
     endl();
   }
@@ -307,10 +308,10 @@ namespace tnac::rt::out
     fmt::print(out(), fmt::clr::DarkYellow, i);
   }
 
-  void ir_printer::value(const eval::stored_value& sv) noexcept
+  void ir_printer::value(const eval::stored_value& sv, bool refInterned /*= true*/) noexcept
   {
     auto val = *sv;
-    if(val)
+    if(val && utils::eq_none(val.id(), eval::value::Array))
       keyword(val.id_str());
 
     auto visitor = utils::visitor
@@ -321,11 +322,22 @@ namespace tnac::rt::out
       },
       [&](eval::array_type arr) noexcept
       {
-        plain("[ "sv);
-        for (auto&& last = arr->back(); auto&& val : *arr)
+        if (refInterned)
         {
-          value(val);
-          if(&val != &last)
+          if (auto intr = m_cfg->find_array(arr))
+          {
+            vreg(intr->target_reg());
+            return;
+          }
+
+          keyword(val.id_str());
+        }
+
+        plain("[ "sv);
+        for (auto&& last = arr->back(); auto&& item : *arr)
+        {
+          value(item);
+          if(&item != &last)
             plain(", "sv);
         }
         plain(" ]"sv);
@@ -409,10 +421,10 @@ namespace tnac::rt::out
     out() << str;
   }
 
-  void ir_printer::declare_funcs(const ir::cfg& gr) noexcept
+  void ir_printer::declare_funcs() noexcept
   {
     std::queue<ir::function*> fnq;
-    for (auto mod : gr | views::reverse)
+    for (auto mod : *m_cfg | views::reverse)
     {
       fnq.push(mod);
     }
