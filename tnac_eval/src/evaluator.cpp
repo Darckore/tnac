@@ -864,12 +864,4 @@ namespace tnac::eval
     m_registry.push_array(arr);
   }
 
-  evaluator::arr_t evaluator::collect_args_locally(size_type count) noexcept
-  {
-    arr_t arr;
-    arr.resize(count);
-    fill_args(arr, count);
-    return arr;
-  }
-
 }

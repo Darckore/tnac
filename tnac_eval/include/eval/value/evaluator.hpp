@@ -280,13 +280,6 @@ namespace tnac::eval
     //
     void make_array(size_type count) noexcept;
 
-    //
-    // Creates a temporary local array and returns it without pushing it into
-    // the registry. The result is pre-filled with args from the current stack
-    // This is required for call expressions
-    //
-    arr_t collect_args_locally(size_type count) noexcept;
-
   private:
     entity_id m_curEntity{};
     registry& m_registry;
