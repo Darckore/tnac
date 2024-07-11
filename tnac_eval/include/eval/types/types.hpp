@@ -9,11 +9,6 @@ namespace tnac::ir
   class function;
 }
 
-namespace tnac::eval::detail
-{
-
-}
-
 namespace tnac::eval
 {
   class value;
