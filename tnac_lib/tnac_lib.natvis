@@ -40,7 +40,6 @@
   <Type Name="tnac::eval::registry">
     <DisplayString>value registry</DisplayString>
     <Expand>
-      <Item Name="[arrays]">m_arrays</Item>
       <Item Name="[entity values]">m_entityValues</Item>
       <Item Name="[active]">m_inFlight</Item>
       <Item Name="[last result]">m_result</Item>

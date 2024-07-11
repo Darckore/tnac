@@ -575,19 +575,20 @@ namespace tnac::eval // Operations main
   template <>
   void evaluator::visit_unary(array_type operand, val_ops op) noexcept
   {
-    if (utils::eq_any(op, val_ops::LogicalIs, val_ops::LogicalNot))
-    {
-      auto toBool = get_caster<bool_type>()(std::move(operand));
-      return visit_unary(toBool.value_or(false), op);
-    }
+    utils::unused(operand, op);
+    //if (utils::eq_any(op, val_ops::LogicalIs, val_ops::LogicalNot))
+    //{
+    //  auto toBool = get_caster<bool_type>()(std::move(operand));
+    //  return visit_unary(toBool.value_or(false), op);
+    //}
 
-    value_lock _{ operand, m_registry };
-    for (auto&& el : *operand)
-    {
-      visit_unary(*el, op);
-    }
+    //value_lock _{ operand, m_registry };
+    //for (auto&& el : *operand)
+    //{
+    //  visit_unary(*el, op);
+    //}
 
-    make_array(operand->size());
+    //make_array(operand->size());
   }
 
 
@@ -640,40 +641,41 @@ namespace tnac::eval // Operations main
   template <>
   void evaluator::visit_binary(array_type l, array_type r, val_ops op) noexcept
   {
-    if (detail::is_comparison(op))
-    {
-      using enum val_ops;
-      switch (op)
-      {
-      case RelLess:   less(std::move(l), std::move(r));         break;
-      case RelLessEq: less_eq(std::move(l), std::move(r));      break;
-      case RelGr:     greater(std::move(l), std::move(r));      break;
-      case RelGrEq:   greater_eq(std::move(l), std::move(r));   break;
-      case Equal:     equal(std::move(l), std::move(r), true);  break;
-      case NEqual:    equal(std::move(l), std::move(r), false); break;
-      }
-      return;
-    }
+    utils::unused(l, r, op);
+    //if (detail::is_comparison(op))
+    //{
+    //  using enum val_ops;
+    //  switch (op)
+    //  {
+    //  case RelLess:   less(std::move(l), std::move(r));         break;
+    //  case RelLessEq: less_eq(std::move(l), std::move(r));      break;
+    //  case RelGr:     greater(std::move(l), std::move(r));      break;
+    //  case RelGrEq:   greater_eq(std::move(l), std::move(r));   break;
+    //  case Equal:     equal(std::move(l), std::move(r), true);  break;
+    //  case NEqual:    equal(std::move(l), std::move(r), false); break;
+    //  }
+    //  return;
+    //}
 
-    static auto unitArr = []() noexcept { arr_t ret; ret.emplace_back(int_type{}); return ret; }();
-    const auto lsz = l->size();
-    if (!lsz) l = array_type{ unitArr };
-    const auto rsz = r->size();
-    if (!rsz) r = array_type{ unitArr };
-    const auto newSz = (lsz && rsz) ? lsz * rsz : std::max(lsz, rsz);
+    //static auto unitArr = []() noexcept { arr_t ret; ret.emplace_back(int_type{}); return ret; }();
+    //const auto lsz = l->size();
+    //if (!lsz) l = array_type{ unitArr };
+    //const auto rsz = r->size();
+    //if (!rsz) r = array_type{ unitArr };
+    //const auto newSz = (lsz && rsz) ? lsz * rsz : std::max(lsz, rsz);
 
-    value_lock _l{ l, m_registry };
-    value_lock _r{ r, m_registry };
+    //value_lock _l{ l, m_registry };
+    //value_lock _r{ r, m_registry };
 
-    for (auto&& el : *l)
-    {
-      for (auto&& er : *r)
-      {
-        visit_binary(*el, *er, op);
-      }
-    }
+    //for (auto&& el : *l)
+    //{
+    //  for (auto&& er : *r)
+    //  {
+    //    visit_binary(*el, *er, op);
+    //  }
+    //}
 
-    make_array(newSz);
+    //make_array(newSz);
   }
 
   template <expr_result T> requires (!utils::same_noquals<T, array_type>)
@@ -854,14 +856,6 @@ namespace tnac::eval
   void evaluator::clear_result() noexcept
   {
     reg_value(eval::invalid_val_t{});
-  }
-
-  void evaluator::make_array(size_type count) noexcept
-  {
-    auto arr = m_registry.make_array(count);
-    arr->resize(count);
-    fill_args(*arr, count);
-    m_registry.push_array(arr);
   }
 
 }

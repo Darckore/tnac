@@ -188,14 +188,6 @@ namespace tnac::eval
 
   public:
     //
-    // Locks the given ref counted value
-    //
-    auto lock(const lockable auto& val) noexcept
-    {
-      return value_lock{ val, m_registry };
-    }
-
-    //
     // Instantiates an object using the specified number of args
     //
     void instantiate(type_id type, size_type argSz) noexcept;
@@ -274,11 +266,6 @@ namespace tnac::eval
     // Resets the last evaluation result and returns an empty value
     //
     void clear_result() noexcept;
-
-    //
-    // Creates and registers an array
-    //
-    void make_array(size_type count) noexcept;
 
   private:
     entity_id m_curEntity{};
