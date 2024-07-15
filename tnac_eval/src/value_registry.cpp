@@ -36,14 +36,7 @@ namespace tnac::eval
 
   registry::tmp_val registry::fetch() noexcept
   {
-    tmp_val res;
-    if (!m_inFlight.empty())
-    {
-      res = std::move(m_inFlight.top());
-      m_inFlight.pop();
-    }
-
-    return res;
+    return m_inFlight.extract();
   }
 
 }

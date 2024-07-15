@@ -19,7 +19,7 @@ namespace tnac::eval
     using val_array    = array_type::value_type;
     using size_type    = val_array::size_type;
     using tmp_val      = stored_value;
-    using tmp_store    = std::stack<tmp_val>;
+    using tmp_store    = utils::stack<tmp_val>;
 
   public:
     CLASS_SPECIALS_NONE_CUSTOM(registry);
