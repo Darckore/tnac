@@ -144,9 +144,6 @@ namespace tnac
     commands::store m_cmdStore;
     cmd m_cmdInterpreter;
 
-    // eval
-    eval::registry m_reg;
-
     // compilation
     ir::builder m_irBuilder;
     ir::cfg m_cfg;

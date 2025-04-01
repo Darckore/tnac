@@ -4,7 +4,6 @@
 
 #pragma once
 #include "parser/ast/ast_visitor.hpp"
-#include "eval/value/evaluator.hpp"
 #include "compiler/detail/context.hpp"
 #include "compiler/detail/name_repo.hpp"
 #include "compiler/detail/compiler_stack.hpp"
@@ -18,11 +17,6 @@ namespace tnac
   {
     class cfg;
     class edge;
-  }
-
-  namespace eval
-  {
-    class registry;
   }
 
   namespace semantics
@@ -58,7 +52,7 @@ namespace tnac
 
     ~compiler() noexcept;
 
-    compiler(sema& sema, ir::cfg& gr, eval::registry& reg, feedback* fb) noexcept;
+    compiler(sema& sema, ir::cfg& gr, feedback* fb) noexcept;
 
   public:
     //
@@ -363,7 +357,6 @@ namespace tnac
     sema* m_sema{};
     feedback* m_feedback{};
     ir::cfg* m_cfg{};
-    eval::evaluator m_eval;
     detail::context m_context;
     detail::name_repo m_names;
     detail::compiler_stack m_stack;

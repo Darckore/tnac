@@ -29,23 +29,6 @@
     </Expand>
   </Type>
 
-  <Type Name="tnac::eval::evaluator">
-    <DisplayString>evaluator</DisplayString>
-    <Expand>
-      <Item Name="[registy]">m_registry</Item>
-      <Item Name="[entity]">m_curEntity,Xb</Item>
-    </Expand>
-  </Type>
-
-  <Type Name="tnac::eval::registry">
-    <DisplayString>value registry</DisplayString>
-    <Expand>
-      <Item Name="[entity values]">m_entityValues</Item>
-      <Item Name="[active]">m_inFlight</Item>
-      <Item Name="[last result]">m_result</Item>
-    </Expand>
-  </Type>
-
 
   <Type Name="tnac::src::location">
     <DisplayString>location</DisplayString>
@@ -454,7 +437,6 @@
     <Expand>
       <Item Name="[sema]">m_sema</Item>
       <Item Name="[cfg]">m_cfg</Item>
-      <Item Name="[evaluator]">m_eval</Item>
       <Item Name="[context]">m_context</Item>
       <Item Name="[name repo]">m_names</Item>
       <Item Name="[stack]">m_stack</Item>

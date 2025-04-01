@@ -3,7 +3,6 @@
 #include "common/diag.hpp"
 #include "sema/sema.hpp"
 #include "cfg/cfg.hpp"
-#include "eval/value/value_registry.hpp"
 
 namespace tnac::eval::detail
 {
@@ -231,11 +230,10 @@ namespace tnac
 
   compiler::~compiler() noexcept = default;
 
-  compiler::compiler(sema& sema, ir::cfg& gr, eval::registry& reg, feedback* fb) noexcept :
+  compiler::compiler(sema& sema, ir::cfg& gr, feedback* fb) noexcept :
     m_sema{ &sema },
     m_feedback{ fb },
-    m_cfg{ &gr },
-    m_eval{ reg }
+    m_cfg{ &gr }
   {}
 
 
@@ -302,24 +300,25 @@ namespace tnac
 
   void compiler::visit(ast::lit_expr& lit) noexcept
   {
-    auto&& litValue = lit.pos();
-    switch (litValue.what())
-    {
-    case token::KwTrue:  m_eval.visit_bool_literal(true);                break;
-    case token::KwFalse: m_eval.visit_bool_literal(false);               break;
-    case token::KwI:     m_eval.visit_i();                               break;
-    case token::KwPi:    m_eval.visit_pi();                              break;
-    case token::KwE:     m_eval.visit_e();                               break;
-    case token::IntDec:  m_eval.visit_int_literal(litValue.value(), 10); break;
-    case token::IntBin:  m_eval.visit_int_literal(litValue.value(), 2);  break;
-    case token::IntOct:  m_eval.visit_int_literal(litValue.value(), 8);  break;
-    case token::IntHex:  m_eval.visit_int_literal(litValue.value(), 16); break;
-    case token::Float:   m_eval.visit_float_literal(litValue.value());   break;
+    utils::unused(lit);
+    //auto&& litValue = lit.pos();
+    //switch (litValue.what())
+    //{
+    //case token::KwTrue:  m_eval.visit_bool_literal(true);                break;
+    //case token::KwFalse: m_eval.visit_bool_literal(false);               break;
+    //case token::KwI:     m_eval.visit_i();                               break;
+    //case token::KwPi:    m_eval.visit_pi();                              break;
+    //case token::KwE:     m_eval.visit_e();                               break;
+    //case token::IntDec:  m_eval.visit_int_literal(litValue.value(), 10); break;
+    //case token::IntBin:  m_eval.visit_int_literal(litValue.value(), 2);  break;
+    //case token::IntOct:  m_eval.visit_int_literal(litValue.value(), 8);  break;
+    //case token::IntHex:  m_eval.visit_int_literal(litValue.value(), 16); break;
+    //case token::Float:   m_eval.visit_float_literal(litValue.value());   break;
 
-    default: return;
-    }
+    //default: return;
+    //}
 
-    carry_val();
+    //carry_val();
   }
 
   void compiler::visit(ast::id_expr& id) noexcept
@@ -373,7 +372,7 @@ namespace tnac
     if (val.is_value())
     {
       auto sv = val.get_value();
-      m_eval.visit_unary(*sv, eval::val_ops::AbsoluteValue);
+      //m_eval.visit_unary(*sv, eval::val_ops::AbsoluteValue);
       carry_val();
       return;
     }
@@ -398,8 +397,8 @@ namespace tnac
     const auto typeId = detail::to_type_id(typed.type_name());
     if (m_stack.has_values(argSz))
     {
-      m_stack.push_to_eval(m_eval, argSz);
-      m_eval.instantiate(typeId, argSz);
+      //m_stack.push_to_eval(m_eval, argSz);
+      //m_eval.instantiate(typeId, argSz);
       carry_val();
       return;
     }
@@ -443,8 +442,8 @@ namespace tnac
     auto&& sym = fd.symbol();
     auto func = m_cfg->find_entity(&sym);
     UTILS_ASSERT(func);
-    auto funcVal = m_eval.make_function(&fd, eval::function_type{ *func });
-    m_stack.push(eval::stored_value{ funcVal.get<eval::function_type>() });
+    //auto funcVal = m_eval.make_function(&fd, eval::function_type{ *func });
+    //m_stack.push(eval::stored_value{ funcVal.get<eval::function_type>() });
   }
 
   // Previews
@@ -526,7 +525,7 @@ namespace tnac
         {
           auto binOp = binary.op();
           warning(binOp.at(), diag::logical_same(binOp.value(), isLhs, boolVal));
-          m_eval.visit_bool_literal(boolVal);
+          //m_eval.visit_bool_literal(boolVal);
           carry_val();
           return true;
         }
@@ -996,7 +995,7 @@ namespace tnac
 
   void compiler::carry_val() noexcept
   {
-    m_stack.push(m_eval.fetch_next());
+    //m_stack.push(m_eval.fetch_next());
   }
 
   void compiler::empty_stack() noexcept
@@ -1013,8 +1012,9 @@ namespace tnac
     if (val.is_value())
     {
       const auto op = eval::detail::conv_unary(opType);
+      utils::unused(op);
       auto sv = val.get_value();
-      m_eval.visit_unary(*sv, op);
+      //m_eval.visit_unary(*sv, op);
       carry_val();
       return;
     }
@@ -1029,9 +1029,10 @@ namespace tnac
     if (lhs.is_value() && rhs.is_value())
     {
       const auto op = eval::detail::conv_binary(opType);
+      utils::unused(op);
       auto lv = lhs.get_value();
       auto rv = rhs.get_value();
-      m_eval.visit_binary(*lv, *rv, op);
+      //m_eval.visit_binary(*lv, *rv, op);
       carry_val();
       return;
     }

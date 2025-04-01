@@ -1,3 +1,4 @@
+#if 0
 #include "eval/value/value_registry.hpp"
 
 namespace tnac::eval
@@ -40,3 +41,4 @@ namespace tnac::eval
   }
 
 }
+#endif

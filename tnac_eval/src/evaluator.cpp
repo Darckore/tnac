@@ -1,3 +1,4 @@
+#if 0
 #include "eval/value/evaluator.hpp"
 
 namespace tnac::eval::detail
@@ -859,3 +860,4 @@ namespace tnac::eval
   }
 
 }
+#endif

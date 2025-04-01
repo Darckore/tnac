@@ -3,6 +3,7 @@
 //
 
 #pragma once
+#if 0
 #include "eval/value/value.hpp"
 #include "eval/types/traits.hpp"
 
@@ -84,3 +85,4 @@ namespace tnac::eval
     size_type m_arrayId{};
   };
 }
+#endif
