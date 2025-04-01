@@ -84,13 +84,13 @@ namespace tnac::rt::out
         else if constexpr (utils::same_noquals<vt, array_type>)
         {
           out() << "[ ";
-          for (auto arrSz = val->size(); auto&& elem : *val)
-          {
-            --arrSz;
-            print_value(*elem);
-            if (arrSz)
-              out() << ", ";
-          }
+          //for (auto arrSz = val->size(); auto&& elem : *val)
+          //{
+          //  --arrSz;
+          //  print_value(*elem);
+          //  if (arrSz)
+          //    out() << ", ";
+          //}
           out() << " ]";
         }
         else

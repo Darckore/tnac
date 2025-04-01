@@ -333,12 +333,12 @@ namespace tnac::rt::out
 
         keyword(val.id_str());
         plain("[ "sv);
-        for (auto&& last = arr->back(); auto&& item : *arr)
-        {
-          value(item);
-          if(&item != &last)
-            plain(", "sv);
-        }
+        //for (auto&& last = arr->back(); auto&& item : *arr)
+        //{
+        //  value(item);
+        //  if(&item != &last)
+        //    plain(", "sv);
+        //}
         plain(" ]"sv);
       },
       [&](eval::complex_type c) noexcept
