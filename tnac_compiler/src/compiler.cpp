@@ -441,6 +441,7 @@ namespace tnac
   {
     auto&& sym = fd.symbol();
     auto func = m_cfg->find_entity(&sym);
+    utils::unused(func);
     UTILS_ASSERT(func);
     //auto funcVal = m_eval.make_function(&fd, eval::function_type{ *func });
     //m_stack.push(eval::stored_value{ funcVal.get<eval::function_type>() });
