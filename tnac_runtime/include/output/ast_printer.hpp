@@ -124,7 +124,7 @@ namespace tnac::rt::out
 
     void print_token(const token& tok) noexcept;
 
-    void print_value(eval::value v) noexcept;
+    void print_value(eval::old_crap_value v) noexcept;
 
     void print_module_name(const ast::module_def& moduleDef) noexcept;
 

@@ -9,7 +9,7 @@ namespace tnac::eval
   {
     struct val_maker
     {
-      using val_t = value::value_type;
+      using val_t = old_crap_value::value_type;
       using id_t  = std::uint8_t;
 
       static constexpr auto bitsInByte = std::size_t{ 8 };
@@ -47,7 +47,7 @@ namespace tnac::eval
     };
   }
 
-  value::value_type value::make(input_ptr ptr, type_id id) noexcept
+  old_crap_value::value_type old_crap_value::make(input_ptr ptr, type_id id) noexcept
   {
     auto res_val = reinterpret_cast<value_type>(ptr);
     const auto conv_id = static_cast<std::underlying_type_t<type_id>>(id);
@@ -55,7 +55,7 @@ namespace tnac::eval
     return detail::val_maker::add_id(res_val, conv_id);
   }
 
-  value::id_val_pair value::split(value_type val) noexcept
+  old_crap_value::id_val_pair old_crap_value::split(value_type val) noexcept
   {
     return { 
       .val{ detail::val_maker::get_val(val) },
@@ -63,16 +63,16 @@ namespace tnac::eval
     };
   }
 
-  value value::zero() noexcept
+  old_crap_value old_crap_value::zero() noexcept
   {
     static const auto i0 = int_type{};
-    return value{ &i0 };
+    return old_crap_value{ &i0 };
   }
 
 
   // Special members
 
-  value::operator bool() const noexcept
+  old_crap_value::operator bool() const noexcept
   {
     return id() != type_id::Invalid;
   }
@@ -80,22 +80,22 @@ namespace tnac::eval
 
   // Public members
 
-  type_id value::id() const noexcept
+  type_id old_crap_value::id() const noexcept
   {
     return split(m_val).id;
   }
 
-  value::value_type value::raw() const noexcept
+  old_crap_value::value_type old_crap_value::raw() const noexcept
   {
     return split(m_val).val;
   }
 
-  value::size_type value::size() const noexcept
+  old_crap_value::size_type old_crap_value::size() const noexcept
   {
     return size_of(id());
   }
 
-  string_t value::id_str() const noexcept
+  string_t old_crap_value::id_str() const noexcept
   {
     switch (id())
     {

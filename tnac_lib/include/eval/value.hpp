@@ -22,7 +22,7 @@ namespace tnac::eval
   // |  id  ||   address in memory     |
   // -------- --------------------------
   //
-  class value final
+  class old_crap_value final
   {
   public:
     using enum type_id;
@@ -56,14 +56,14 @@ namespace tnac::eval
     static id_val_pair split(value_type val) noexcept;
 
   public:
-    CLASS_SPECIALS_ALL(value);
+    CLASS_SPECIALS_ALL(old_crap_value);
 
     template <expr_result T>
-    value(valptr<T> val) noexcept :
+    old_crap_value(valptr<T> val) noexcept :
       m_val{ make(val, utils::type_to_id_v<T>) }
     {}
 
-    value(const invalid_val_t*) noexcept :
+    old_crap_value(const invalid_val_t*) noexcept :
       m_val{}
     {}
 
@@ -76,7 +76,7 @@ namespace tnac::eval
     //
     // Returns an integer zero
     //
-    static value zero() noexcept;
+    static old_crap_value zero() noexcept;
 
   public:
     //
@@ -155,7 +155,7 @@ namespace tnac::eval
     value_type m_val{};
   };
 
-  inline auto get_id(const value& val) noexcept
+  inline auto get_id(const old_crap_value& val) noexcept
   {
     return val.id();
   }
@@ -166,7 +166,7 @@ namespace tnac::eval
   // value token passed as the first parameter
   //
   template <typename F>
-  auto on_value(value val, F&& func) noexcept
+  auto on_value(old_crap_value val, F&& func) noexcept
   {
     using enum type_id;
     switch (val.id())
@@ -214,9 +214,9 @@ namespace tnac::eval
       return *this;
     }
 
-    value operator*() const noexcept
+    old_crap_value operator*() const noexcept
     {
-      return std::visit([](auto&& val) { return value{ &val }; }, m_raw);
+      return std::visit([](auto&& val) { return old_crap_value{ &val }; }, m_raw);
     }
 
   private:

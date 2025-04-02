@@ -58,7 +58,7 @@ namespace tnac::eval
 
 namespace tnac::eval
 {
-  class value;
+  class stored_value;
 
   //
   // Function wrapper
@@ -115,7 +115,7 @@ namespace tnac::eval
   class array_type final
   {
   public:
-    using value_type      = std::vector<value>;
+    using value_type      = std::vector<stored_value>;
     using pointer         = value_type*;
     using const_pointer   = const value_type*;
     using reference       = value_type&;
