@@ -1,5 +1,4 @@
 #include "compiler/detail/compiler_stack.hpp"
-#include "eval/value.hpp"
 
 namespace tnac::detail
 {
@@ -105,6 +104,51 @@ namespace tnac::detail
     //  });
   }
 
+  template <eval::expr_result Obj, typename Int, Int... Seq>
+  void compiler_stack::instantiate(cval_array<sizeof...(Seq)>& args, utils::idx_seq<Int, Seq...>) noexcept
+  {
+    using type_info = eval::type_info<Obj>;
+    using type_gen  = eval::type_wrapper<Obj>;
+    auto instance = type_gen{}(
+      eval::cast_value<utils::id_to_type_t<type_info::params[Seq]>>(args[Seq])...);
+
+    eval::value res{};
+    if (instance)
+      res = *instance;
+    
+    push(res);
+  }
+
+  template <eval::expr_result Obj>
+  void compiler_stack::instantiate(size_type argSz) noexcept
+  {
+    static constexpr auto max = eval::type_info<Obj>::maxArgs;
+    val_array<max> args{};
+    size_type idx{};
+    walk_back(argSz, [&args, &idx](auto op) noexcept
+      {
+        UTILS_ASSERT(op.is_value());
+        args[idx++] = op.get_value();
+      });
+    
+    instantiate<Obj>(args, utils::idx_gen<max>{});
+  }
+
+  void compiler_stack::instantiate(eval::type_id type, size_type argSz) noexcept
+  {
+    using enum eval::type_id;
+    switch (type)
+    {
+    case Bool:     instantiate<eval::bool_type>(argSz); break;
+    case Int:      instantiate<eval::int_type>(argSz); break;
+    case Float:    instantiate<eval::float_type>(argSz); break;
+    case Complex:  instantiate<eval::complex_type>(argSz); break;
+    case Fraction: instantiate<eval::fraction_type>(argSz); break;
+
+    default: break;
+    }
+  }
+
   // Private members
 
   void compiler_stack::walk_back(size_type count, op_processor auto&& proc) noexcept
@@ -120,5 +164,4 @@ namespace tnac::detail
     while (count--)
       pop();
   }
-
 }

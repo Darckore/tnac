@@ -388,7 +388,7 @@ namespace tnac
     if (!utils::in_range(argSz, argLimits.first, argLimits.second))
     {
       const auto threshold = argSz < argLimits.first ? argLimits.first : argLimits.second;
-      error(diag::wrong_arg_num(threshold, argSz));
+      error(typed.pos().at(), diag::wrong_arg_num(threshold, argSz));
       m_stack.drop(argSz);
       m_stack.push_undef();
       return;
@@ -397,8 +397,7 @@ namespace tnac
     const auto typeId = detail::to_type_id(typed.type_name());
     if (m_stack.has_values(argSz))
     {
-      //m_stack.push_to_eval(m_eval, argSz);
-      //m_eval.instantiate(typeId, argSz);
+      m_stack.instantiate(typeId, argSz);
       return;
     }
 

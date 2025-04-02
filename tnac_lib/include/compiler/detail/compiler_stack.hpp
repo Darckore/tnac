@@ -21,6 +21,12 @@ namespace tnac::detail
     using size_type  = data_type::size_type;
     using arr_type   = eval::array_type::value_type;
 
+    template <size_type N>
+    using val_array = std::array<eval::value, N>;
+
+    template <size_type N>
+    using cval_array = const val_array<N>;
+
   public:
     CLASS_SPECIALS_NONE_CUSTOM(compiler_stack);
 
@@ -93,12 +99,31 @@ namespace tnac::detail
     //
     void fill(arr_type& arr, size_type count) noexcept;
 
+    //
+    // Constructs a typed value from the current stack contents
+    // and pushes it back on the stack
+    //
+    void instantiate(eval::type_id type, size_type argSz) noexcept;
+
   private:
     //
     // Walks the specified values on the stack in reverse order
     // and applies the given function to each
     //
     void walk_back(size_type count, op_processor auto&& proc) noexcept;
+
+    //
+    // Extracts the specified number of values and constructs a value of the given type
+    // using the extracted ones as its arguments
+    //
+    template <eval::expr_result Obj>
+    void instantiate(size_type argSz) noexcept;
+
+    //
+    // Instantiation helper for types
+    //
+    template <eval::expr_result Obj, typename Int, Int... Seq>
+    void instantiate(cval_array<sizeof...(Seq)>& args, utils::idx_seq<Int, Seq...>) noexcept;
 
   private:
     data_type m_data;
