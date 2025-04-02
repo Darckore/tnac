@@ -399,7 +399,6 @@ namespace tnac
     {
       //m_stack.push_to_eval(m_eval, argSz);
       //m_eval.instantiate(typeId, argSz);
-      carry_val();
       return;
     }
 
@@ -527,7 +526,6 @@ namespace tnac
           auto binOp = binary.op();
           warning(binOp.at(), diag::logical_same(binOp.value(), isLhs, boolVal));
           //m_eval.visit_bool_literal(boolVal);
-          carry_val();
           return true;
         }
         return false;
@@ -992,11 +990,6 @@ namespace tnac
     }
 
     return eval::value{};
-  }
-
-  void compiler::carry_val() noexcept
-  {
-    //m_stack.push(m_eval.fetch_next());
   }
 
   void compiler::empty_stack() noexcept

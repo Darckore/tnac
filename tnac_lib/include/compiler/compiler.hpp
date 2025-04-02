@@ -260,11 +260,6 @@ namespace tnac
     ir::operand extract() noexcept;
 
     //
-    // Transfers a calculated value to the internal stack
-    //
-    void carry_val() noexcept;
-
-    //
     // Empties the stack on the next instruction
     //
     void empty_stack() noexcept;
