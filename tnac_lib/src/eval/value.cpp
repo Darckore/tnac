@@ -301,6 +301,96 @@ namespace tnac::eval
     {
       return value{};
     }
+
+
+    auto eq(const eq_comparable auto& lhs, const eq_comparable auto& rhs, bool compareForEquality) noexcept
+    {
+      const auto cmp = eval::eq(lhs, rhs);
+      return value{ compareForEquality ? cmp : !cmp };
+    }
+    auto eq(const expr_result auto&, const expr_result auto&, bool) noexcept
+    {
+      return value{};
+    }
+
+    auto lt(const rel_comparable auto& lhs, const rel_comparable auto& rhs) noexcept
+    {
+      return value{ eval::less(lhs, rhs) };
+    }
+    auto lt(const expr_result auto&, const expr_result auto&) noexcept
+    {
+      return value{};
+    }
+
+    auto lte(const fully_comparable auto& lhs, const fully_comparable auto& rhs) noexcept
+    {
+      return value{ eval::eq(lhs, rhs) || eval::less(lhs, rhs) };
+    }
+    auto lte(const expr_result auto&, const expr_result auto&) noexcept
+    {
+      return value{};
+    }
+
+    auto gt(const fully_comparable auto& lhs, const fully_comparable auto& rhs) noexcept
+    {
+      return value{ !eval::eq(lhs, rhs) && !eval::less(lhs, rhs) };
+    }
+    auto gt(const expr_result auto&, const expr_result auto&) noexcept
+    {
+      return value{};
+    }
+
+    auto gte(const rel_comparable auto& lhs, const rel_comparable auto& rhs) noexcept
+    {
+      return value{ !eval::less(lhs, rhs) };
+    }
+    auto gte(const expr_result auto&, const expr_result auto&) noexcept
+    {
+      return value{};
+    }
+
+
+    auto bit_and(const expr_result auto& lhs, const expr_result auto& rhs) noexcept
+    {
+      auto caster = get_caster<int_type>();
+      auto intL = caster(lhs);
+      auto intR = caster(rhs);
+      value res{};
+      if (intL && intR)
+      {
+        res = value{ *intL & *intR };
+      }
+
+      return res;
+    }
+
+    auto bit_xor(const expr_result auto& lhs, const expr_result auto& rhs) noexcept
+    {
+      auto caster = get_caster<int_type>();
+      auto intL = caster(lhs);
+      auto intR = caster(rhs);
+      value res{};
+      if (intL && intR)
+      {
+        res = value{ *intL ^ *intR };
+      }
+
+      return res;
+    }
+
+    auto bit_or(const expr_result auto& lhs, const expr_result auto& rhs) noexcept
+    {
+      auto caster = get_caster<int_type>();
+      auto intL = caster(lhs);
+      auto intR = caster(rhs);
+      value res{};
+      if (intL && intR)
+      {
+        res = value{ *intL | *intR };
+      }
+
+      return res;
+    }
   }
 
   value value::binary(val_ops op, const value& rhs) const noexcept
@@ -330,16 +420,16 @@ namespace tnac::eval
           case Division:       return div(*lhs, *rhs);
           case Modulo:         return mod(*lhs, *rhs);
 
-          //case RelLess:   less(std::move(*lhs), std::move(*rhs));         break;
-          //case RelLessEq: less_eq(std::move(*lhs), std::move(*rhs));      break;
-          //case RelGr:     greater(std::move(*lhs), std::move(*rhs));      break;
-          //case RelGrEq:   greater_eq(std::move(*lhs), std::move(*rhs));   break;
-          //case Equal:     equal(std::move(*lhs), std::move(*rhs), true);  break;
-          //case NEqual:    equal(std::move(*lhs), std::move(*rhs), false); break;
+          case RelLess:        return lt(*lhs, *rhs);
+          case RelLessEq:      return lte(*lhs, *rhs);
+          case RelGr:          return gt(*lhs, *rhs);
+          case RelGrEq:        return gte(*lhs, *rhs);
+          case Equal:          return eq(*lhs, *rhs, true);
+          case NEqual:         return eq(*lhs, *rhs, false);
 
-          //case BitwiseAnd: bitwise_and(std::move(*lhs), std::move(*rhs)); break;
-          //case BitwiseXor: bitwise_xor(std::move(*lhs), std::move(*rhs)); break;
-          //case BitwiseOr:  bitwise_or(std::move(*lhs), std::move(*rhs));  break;
+          case BitwiseAnd:     return bit_and(*lhs, *rhs);
+          case BitwiseXor:     return bit_xor(*lhs, *rhs);
+          case BitwiseOr:      return bit_or(*lhs, *rhs);
 
           //case BinaryPow:  power(std::move(*lhs), std::move(*rhs)); break;
           //case BinaryRoot: root(std::move(*lhs), std::move(*rhs));  break;
