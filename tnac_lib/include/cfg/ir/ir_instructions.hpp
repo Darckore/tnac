@@ -7,7 +7,7 @@
 #include "eval/value.hpp"
 #include "eval/traits.hpp"
 
-#define TNAC_OPERANDS eval::stored_value,\
+#define TNAC_OPERANDS eval::value,\
 basic_block*,\
 vreg*,\
 edge*,\
@@ -177,7 +177,7 @@ namespace tnac::ir
     // Returns the stored value
     // Callers must check is_value before using this
     //
-    eval::stored_value get_value() const noexcept;
+    const eval::value& get_value() const noexcept;
 
     //
     // Returns the stored register

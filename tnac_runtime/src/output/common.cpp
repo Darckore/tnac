@@ -13,7 +13,7 @@ namespace tnac::rt::out
 
   // Public members
 
-  void value_printer::operator()(eval::old_crap_value val, int base, out_stream& os) noexcept
+  void value_printer::operator()(const eval::value& val, int base, out_stream& os) noexcept
   {
     m_out = &os;
 
@@ -21,7 +21,7 @@ namespace tnac::rt::out
     print_value(val);
   }
 
-  void value_printer::operator()(eval::old_crap_value val, int base) noexcept
+  void value_printer::operator()(const eval::value& val, int base) noexcept
   {
     this->operator()(val, base, out());
   }
@@ -33,7 +33,7 @@ namespace tnac::rt::out
     return *m_out;
   }
 
-  void value_printer::print_value(eval::old_crap_value val) noexcept
+  void value_printer::print_value(const eval::value& val) noexcept
   {
     eval::on_value(val, [this](auto val)
       {

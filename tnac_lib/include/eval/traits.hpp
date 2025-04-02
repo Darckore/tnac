@@ -241,9 +241,9 @@ namespace tnac::eval
   }
 
   template <expr_result T>
-  auto cast_value(old_crap_value val) noexcept { return on_value(val, get_caster<T>()); };
+  auto cast_value(const value& val) noexcept { return on_value(val, get_caster<T>()); };
 
-  inline auto to_bool(old_crap_value val) noexcept
+  inline auto to_bool(const value& val) noexcept
   {
     auto resVal = cast_value<bool_type>(val);
     UTILS_ASSERT(resVal.has_value());
@@ -533,7 +533,7 @@ namespace tnac::eval
   template <typename T>
   concept value_container = requires (T& t, std::size_t i)
   {
-    { t[i] } -> std::same_as<stored_value&>;
+    { t[i] } -> std::same_as<value&>;
   };
 
 

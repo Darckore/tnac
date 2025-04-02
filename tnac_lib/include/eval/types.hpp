@@ -13,6 +13,24 @@ fraction_type,\
 function_type,\
 array_type
 
+namespace tnac::eval
+{
+  //
+  // Type ids for every supported type
+  //
+  enum class type_id : std::uint8_t
+  {
+    Invalid,
+    Bool,
+    Int,
+    Float,
+    Complex,
+    Fraction,
+    Function,
+    Array
+  };
+}
+
 namespace tnac::ir
 {
   class function;
@@ -39,26 +57,11 @@ namespace tnac::eval
   //
   template <typename T>
   concept expr_result = utils::any_same_as<T, TNAC_TYPES>;
-
-  //
-  // Type ids for every supported type
-  //
-  enum class type_id : std::uint8_t
-  {
-    Invalid,
-    Bool,
-    Int,
-    Float,
-    Complex,
-    Fraction,
-    Function,
-    Array
-  };
 }
 
 namespace tnac::eval
 {
-  class stored_value;
+  class value;
 
   //
   // Function wrapper
@@ -115,7 +118,7 @@ namespace tnac::eval
   class array_type final
   {
   public:
-    using value_type      = std::vector<stored_value>;
+    using value_type      = std::vector<value>;
     using pointer         = value_type*;
     using const_pointer   = const value_type*;
     using reference       = value_type&;

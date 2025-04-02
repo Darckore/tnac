@@ -75,17 +75,17 @@ namespace tnac::ir // operand
   {
     if (!is_value())
       return false;
-    return !*get_value();
+    return !get_value();
   }
 
   bool operand::is_value() const noexcept
   {
-    return std::holds_alternative<eval::stored_value>(m_value);
+    return std::holds_alternative<eval::value>(m_value);
   }
-  eval::stored_value operand::get_value() const noexcept
+  const eval::value& operand::get_value() const noexcept
   {
     UTILS_ASSERT(is_value());
-    return std::get<eval::stored_value>(m_value);
+    return std::get<eval::value>(m_value);
   }
 
   bool operand::is_register() const noexcept

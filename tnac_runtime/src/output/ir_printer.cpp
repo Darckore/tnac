@@ -308,10 +308,9 @@ namespace tnac::rt::out
     fmt::print(out(), fmt::clr::DarkYellow, i);
   }
 
-  void ir_printer::value(const eval::stored_value& sv, bool refInterned /*= true*/) noexcept
+  void ir_printer::value(const eval::value& val, bool refInterned /*= true*/) noexcept
   {
-    auto val = *sv;
-    if(val && utils::eq_none(val.id(), eval::old_crap_value::Array))
+    if(val && utils::eq_none(val.id(), eval::value::Array))
       keyword(val.id_str());
 
     auto visitor = utils::visitor

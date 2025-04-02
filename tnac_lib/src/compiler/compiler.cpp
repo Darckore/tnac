@@ -444,7 +444,7 @@ namespace tnac
     utils::unused(func);
     UTILS_ASSERT(func);
     //auto funcVal = m_eval.make_function(&fd, eval::function_type{ *func });
-    //m_stack.push(eval::stored_value{ funcVal.get<eval::function_type>() });
+    //m_stack.push(eval::value{ funcVal.get<eval::function_type>() });
   }
 
   // Previews
@@ -516,9 +516,9 @@ namespace tnac
     if (!detail::is_logical(opType))
       return true;
 
-    auto alwaysSame = [&](const eval::stored_value& val, bool isLhs) noexcept
+    auto alwaysSame = [&](const eval::value& val, bool isLhs) noexcept
       {
-        const auto boolVal = eval::to_bool(*val);
+        const auto boolVal = eval::to_bool(val);
         const auto knownVal = ( boolVal && detail::is_lor(opType)) || // always true
                               (!boolVal && detail::is_land(opType));  // always false
 
@@ -600,7 +600,7 @@ namespace tnac
     if (checkedVal.is_value())
     {
       auto sv = checkedVal.get_value();
-      auto boolVal = eval::to_bool(*sv);
+      auto boolVal = eval::to_bool(sv);
       warning(cond.cond().pos().at(), diag::condition_same(boolVal));
       if (boolVal && !cond.has_true())
       {
@@ -903,7 +903,7 @@ namespace tnac
     auto&& instr = m_cfg->get_builder().add_instruction(block, ir::op_code::Jump, m_context.func_end());
     instr.add(cond).add(&ifTrue).add(&ifFalse);
     m_cfg->connect(block, ifTrue, cond);
-    m_cfg->connect(block, ifFalse, eval::stored_value{});
+    m_cfg->connect(block, ifFalse, eval::value{});
     update_func_start(instr);
   }
 
@@ -931,7 +931,7 @@ namespace tnac
     m_stack.fill(instr, factCount);
     while (factCount < opCount)
     {
-      instr.add(eval::stored_value{ eval::int_type{} });
+      instr.add(eval::value{ eval::int_type{} });
       ++factCount;
     }
     m_stack.push(res);
@@ -991,7 +991,7 @@ namespace tnac
       return m_stack.extract();
     }
 
-    return eval::stored_value{};
+    return eval::value{};
   }
 
   void compiler::carry_val() noexcept
@@ -1073,7 +1073,7 @@ namespace tnac
     if (isDefault || checkRes.is_value())
     {
       auto sv = checkRes.get_value();
-      const auto matchFound = isDefault || eval::to_bool(*sv);
+      const auto matchFound = isDefault || eval::to_bool(sv);
       if (!matchFound)
         return false;
 

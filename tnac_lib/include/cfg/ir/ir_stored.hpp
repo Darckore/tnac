@@ -21,7 +21,7 @@ namespace tnac::ir
     public node
   {
   public:
-    using value_type = eval::stored_value;
+    using value_type = eval::value;
 
   public:
     CLASS_SPECIALS_NONE(constant);

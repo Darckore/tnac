@@ -506,7 +506,7 @@ namespace tnac::rt::out
     out() << "' ";
   }
 
-  void ast_printer::print_value(eval::old_crap_value v) noexcept
+  void ast_printer::print_value(const eval::value& v) noexcept
   {
     out() << "<value: ";
     value_printer{}(v, 10, out());

@@ -8,64 +8,34 @@
 namespace tnac::eval
 {
   //
-  // Represents a value used for evaluation
-  // 
-  // This is basically an opaque token corresponding to a value stored elsewhere
-  // The identifier is converted from a pointer to the target value and combined
-  // with the appropriate type id
-  // 
-  // Since user mode doesn't use the most significant byte of the address, we can
-  // use it to store any information we can jam into 8 bits
-  // 
-  // So, the token structure is like this:
-  // -------- --------------------------
-  // |  id  ||   address in memory     |
-  // -------- --------------------------
+  // Stores a value
   //
-  class old_crap_value final
+  class value final
   {
   public:
     using enum type_id;
-    using value_type = std::uintptr_t;
-    using input_ptr = const void*;
-    using size_type = decltype(sizeof(0));
-
-  private:
-    template <expr_result T>
-    using valptr = const T*;
-
-  private:
-    //
-    // Makes the value token from a pointer to the actual stored value
-    // and type id
-    //
-    static value_type make(input_ptr ptr, type_id id) noexcept;
-
-    //
-    // Used to extract value token parts
-    //
-    struct id_val_pair
-    {
-      value_type val{};
-      type_id id{};
-    };
-
-    //
-    // Splits the token into a type id and an address
-    //
-    static id_val_pair split(value_type val) noexcept;
+    using underlying_val = std::variant<TNAC_TYPES>;
+    using size_type      = decltype(sizeof(0));
 
   public:
-    CLASS_SPECIALS_ALL(old_crap_value);
+    CLASS_SPECIALS_ALL_CUSTOM(value);
 
-    template <expr_result T>
-    old_crap_value(valptr<T> val) noexcept :
-      m_val{ make(val, utils::type_to_id_v<T>) }
-    {}
+    ~value() noexcept;
 
-    old_crap_value(const invalid_val_t*) noexcept :
-      m_val{}
-    {}
+    explicit value(expr_result auto raw) noexcept :
+      m_raw{ std::move(raw) }
+    {
+    }
+
+    value() noexcept;
+
+    value& operator=(expr_result auto raw) noexcept
+    {
+      m_raw = std::move(raw);
+      return *this;
+    }
+
+    value& operator=(invalid_val_t inv) noexcept;
 
     //
     // Checks whether the value is valid (type id != Invalid)
@@ -74,25 +44,9 @@ namespace tnac::eval
 
   public:
     //
-    // Returns an integer zero
-    //
-    static old_crap_value zero() noexcept;
-
-  public:
-    //
     // Returns the value's type id
     //
     type_id id() const noexcept;
-
-    //
-    // Returns the token with its type id stripped
-    //
-    value_type raw() const noexcept;
-
-    //
-    // Returns the underlying value's size in bytes
-    //
-    size_type size() const noexcept;
 
     //
     // Returns the value id as string
@@ -100,24 +54,22 @@ namespace tnac::eval
     string_t id_str() const noexcept;
 
     //
-    // Unconditionally casts data at the value address to the specified type
-    // The caller must ensure that the T type is correct by checking the type id
-    // 
-    // E.g.
-    //  if(val.id() == utils::type_to_id_v<cast_to_type>)
-    //  {
-    //    auto v = val.get<cast_to_type>();
-    //  }
+    // Returns the underlying value's size in bytes
+    //
+    size_type size() const noexcept;
+
+    //
+    // Extracts the underlying value as the specified type
+    // Use with care. Will break if the underlying value is of a wrong type
     //
     template <expr_result T>
     decltype(auto) get() const noexcept
     {
-      return *reinterpret_cast<T*>(raw());
+      return std::get<T>(m_raw);
     }
 
     //
-    // Unconditionally casts data at the value address to the type
-    // which corresponds to the specified type id
+    // Extracts the underlying value as the type which corresponds to the specified type id
     // The caller must ensure that the actual type id is the same as the one specified
     //
     template <type_id TI>
@@ -127,23 +79,19 @@ namespace tnac::eval
     }
 
     //
-    // Attempts to cast data at the value address to the specified type
-    // Returns an empty std::optional<T> on failure
+    // Attempts to extract the underlying value as the specified type
+    // Returns a nullptr on failure
     //
     template <expr_result T>
     auto try_get() const noexcept -> decltype(&get<T>())
     {
-      auto tv = split(m_val);
-      if (!tv.val || tv.id != utils::type_to_id_v<T>)
-        return {};
-
-      return &get<T>();
+      return &std::get_if<T>(&m_raw);
     }
 
     //
-    // Attempts to cast data at the value address to the type
-    // which corresponds to the specified type id
-    // Returns an empty std::optional<T> on failure
+    // Attempts to extract the underlying value
+    // as the type which corresponds to the specified type id
+    // Returns a nullptr on failure
     //
     template <type_id TI>
     auto try_get() const noexcept
@@ -152,21 +100,19 @@ namespace tnac::eval
     }
 
   private:
-    value_type m_val{};
+    underlying_val m_raw{};
   };
 
-  inline auto get_id(const old_crap_value& val) noexcept
+  inline auto get_id(const value& val) noexcept
   {
     return val.id();
   }
 
   //
-  // Executes the provided callable object and passes it the value converted
-  // to the type actually stored at the memory location referred to by the
-  // value token passed as the first parameter
+  // Dispatches the provided callable object depending on the stored type
   //
   template <typename F>
-  auto on_value(old_crap_value val, F&& func) noexcept
+  auto on_value(const value& val, F&& func) noexcept
   {
     using enum type_id;
     switch (val.id())
@@ -181,45 +127,4 @@ namespace tnac::eval
     default:       return func(invalid_val_t{});
     }
   }
-
-
-  //
-  // Stores a value
-  //
-  class stored_value final
-  {
-  public:
-    using underlying_val = std::variant<TNAC_TYPES>;
-
-  public:
-    CLASS_SPECIALS_ALL_CUSTOM(stored_value);
-
-    explicit stored_value(expr_result auto raw) noexcept :
-      m_raw{ std::move(raw) }
-    {}
-
-    stored_value() noexcept :
-      stored_value{ invalid_val_t{} }
-    {}
-
-    stored_value& operator=(expr_result auto raw) noexcept
-    {
-      m_raw = std::move(raw);
-      return *this;
-    }
-
-    stored_value& operator=(invalid_val_t inv) noexcept
-    {
-      m_raw = inv;
-      return *this;
-    }
-
-    old_crap_value operator*() const noexcept
-    {
-      return std::visit([](auto&& val) { return old_crap_value{ &val }; }, m_raw);
-    }
-
-  private:
-    underlying_val m_raw{};
-  };
 }
