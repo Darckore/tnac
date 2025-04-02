@@ -3,7 +3,7 @@
 //
 
 #pragma once
-#include "eval/types/types.hpp"
+#include "eval/types.hpp"
 
 #define TNAC_TYPES invalid_val_t,\
 bool_type,\

@@ -1,5 +1,5 @@
-#include "eval/value/value.hpp"
-#include "eval/types/traits.hpp"
+#include "eval/value.hpp"
+#include "eval/traits.hpp"
 
 namespace tnac::eval
 {

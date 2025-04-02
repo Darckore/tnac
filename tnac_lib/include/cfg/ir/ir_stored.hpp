@@ -4,7 +4,7 @@
 
 #pragma once
 #include "cfg/ir/ir_base.hpp"
-#include "eval/value/value.hpp"
+#include "eval/value.hpp"
 
 namespace tnac::ir
 {

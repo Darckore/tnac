@@ -4,8 +4,8 @@
 
 #pragma once
 #include "cfg/ir/ir_base.hpp"
-#include "eval/value/value.hpp"
-#include "eval/types/traits.hpp"
+#include "eval/value.hpp"
+#include "eval/traits.hpp"
 
 #define TNAC_OPERANDS eval::stored_value,\
 basic_block*,\

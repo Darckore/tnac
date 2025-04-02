@@ -4,7 +4,7 @@
 
 #pragma once
 #include "output/common.hpp"
-#include "eval/types/types.hpp"
+#include "eval/types.hpp"
 
 namespace tnac::rt::fmt::detail
 {

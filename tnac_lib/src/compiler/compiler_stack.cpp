@@ -1,5 +1,5 @@
 #include "compiler/detail/compiler_stack.hpp"
-#include "eval/value/value.hpp"
+#include "eval/value.hpp"
 
 namespace tnac::detail
 {

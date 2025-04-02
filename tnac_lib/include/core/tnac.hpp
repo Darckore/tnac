@@ -8,7 +8,6 @@
 #include "src_mgr/source_manager.hpp"
 #include "sema/sema.hpp"
 #include "parser/commands/cmd_interpreter.hpp"
-#include "eval/value/value_registry.hpp"
 #include "compiler/compiler.hpp"
 #include "cfg/cfg.hpp"
 
