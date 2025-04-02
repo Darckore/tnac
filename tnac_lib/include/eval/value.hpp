@@ -138,6 +138,11 @@ namespace tnac::eval
     static value false_val() noexcept;
 
     //
+    // Returns a value for a function
+    //
+    static value function(ir::function& func) noexcept;
+
+    //
     // Applies a unary operation to the current value and returns a new resulting one
     //
     value unary(val_ops op) const noexcept;

@@ -153,6 +153,11 @@ namespace tnac::eval
     return value{ false };
   }
 
+  value value::function(ir::function& func) noexcept
+  {
+    return value{ function_type{ func } };
+  }
+
 
   // Unary ops
   namespace
