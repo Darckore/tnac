@@ -1028,11 +1028,9 @@ namespace tnac
     if (lhs.is_value() && rhs.is_value())
     {
       const auto op = eval::detail::conv_binary(opType);
-      utils::unused(op);
-      //auto&& lv = lhs.get_value();
-      //auto&& rv = rhs.get_value();
-      //m_eval.visit_binary(*lv, *rv, op);
-      carry_val();
+      auto&& lv = lhs.get_value();
+      auto&& rv = rhs.get_value();
+      m_stack.push(lv.binary(op, rv));
       return;
     }
 

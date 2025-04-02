@@ -153,6 +153,7 @@ namespace tnac::eval
     return value{ false };
   }
 
+
   // Unary ops
   namespace
   {
@@ -207,7 +208,7 @@ namespace tnac::eval
     value res{};
     if (detail::is_unary(op))
     {
-      res = std::visit([this, op](const auto& v) noexcept
+      res = std::visit([op](const auto& v) noexcept
         {
           using arg_t = std::remove_cvref_t<decltype(v)>;
           using op_type = common_type_t<arg_t, arg_t>;
@@ -234,4 +235,121 @@ namespace tnac::eval
     return res;
   }
 
+
+  // Binary ops
+  namespace
+  {
+    auto add(const addable auto& lhs, const addable auto& rhs) noexcept
+    {
+      return value{ lhs + rhs };
+    }
+    auto add(const expr_result auto&, const expr_result auto&) noexcept
+    {
+      return value{};
+    }
+
+    auto sub(const subtractable auto& lhs, const subtractable auto& rhs) noexcept
+    {
+      return value{ lhs - rhs };
+    }
+    auto sub(const expr_result auto&, const expr_result auto&) noexcept
+    {
+      return value{};
+    }
+
+    auto mul(const multipliable auto& lhs, const multipliable auto& rhs) noexcept
+    {
+      return value{ lhs * rhs };
+    }
+    auto mul(const expr_result auto&, const expr_result auto&) noexcept
+    {
+      return value{};
+    }
+
+    auto div(const divisible auto& lhs, const divisible auto& rhs) noexcept
+    {
+      if constexpr (utils::same_noquals<decltype(lhs), int_type>)
+      {
+        return div(static_cast<float_type>(lhs), static_cast<float_type>(rhs));
+      }
+      else
+      {
+        return value{ lhs / rhs };
+      }
+    }
+    auto div(const expr_result auto&, const expr_result auto&) noexcept
+    {
+      return value{};
+    }
+
+    auto mod(const fmod_divisible auto& lhs, const fmod_divisible auto& rhs) noexcept
+    {
+      return value{ std::fmod(lhs, rhs) };
+    }
+    auto mod(const modulo_divisible auto& lhs, const modulo_divisible auto& rhs) noexcept
+    {
+      if constexpr (utils::same_noquals<decltype(lhs), int_type>)
+      {
+        return mod(static_cast<float_type>(lhs), static_cast<float_type>(rhs));
+      }
+      else
+      {
+        return value{ lhs % rhs };
+      }
+    }
+    auto mod(const expr_result auto&, const expr_result auto&) noexcept
+    {
+      return value{};
+    }
+  }
+
+  value value::binary(val_ops op, const value& rhs) const noexcept
+  {
+    value res{};
+    if (detail::is_binary(op))
+    {
+      res = std::visit([op](const auto& l, const auto& r) noexcept
+        {
+          using lhs_t = std::remove_cvref_t<decltype(l)>;
+          using rhs_t = std::remove_cvref_t<decltype(r)>;
+          using common_t = common_type_t<lhs_t, rhs_t>;
+          auto caster = get_caster<common_t>();
+          auto lhs = caster(l);
+          auto rhs = caster(r);
+          if (!lhs || !rhs)
+          {
+            return value{};
+          }
+
+          using enum val_ops;
+          switch (op)
+          {
+          case Addition:       return add(*lhs, *rhs);
+          case Subtraction:    return sub(*lhs, *rhs);
+          case Multiplication: return mul(*lhs, *rhs);
+          case Division:       return div(*lhs, *rhs);
+          case Modulo:         return mod(*lhs, *rhs);
+
+          //case RelLess:   less(std::move(*lhs), std::move(*rhs));         break;
+          //case RelLessEq: less_eq(std::move(*lhs), std::move(*rhs));      break;
+          //case RelGr:     greater(std::move(*lhs), std::move(*rhs));      break;
+          //case RelGrEq:   greater_eq(std::move(*lhs), std::move(*rhs));   break;
+          //case Equal:     equal(std::move(*lhs), std::move(*rhs), true);  break;
+          //case NEqual:    equal(std::move(*lhs), std::move(*rhs), false); break;
+
+          //case BitwiseAnd: bitwise_and(std::move(*lhs), std::move(*rhs)); break;
+          //case BitwiseXor: bitwise_xor(std::move(*lhs), std::move(*rhs)); break;
+          //case BitwiseOr:  bitwise_or(std::move(*lhs), std::move(*rhs));  break;
+
+          //case BinaryPow:  power(std::move(*lhs), std::move(*rhs)); break;
+          //case BinaryRoot: root(std::move(*lhs), std::move(*rhs));  break;
+
+          default: return value{};
+          }
+        },
+        m_raw, rhs.m_raw);
+    }
+
+    return res;
+  }
 }

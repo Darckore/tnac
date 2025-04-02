@@ -142,6 +142,12 @@ namespace tnac::eval
     //
     value unary(val_ops op) const noexcept;
 
+    //
+    // Applies a binary operation to the current value and the provided value,
+    // and returns a new resulting one
+    //
+    value binary(val_ops op, const value& rhs) const noexcept;
+
   private:
     underlying_val m_raw{};
   };
