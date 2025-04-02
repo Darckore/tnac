@@ -391,6 +391,92 @@ namespace tnac::eval
 
       return res;
     }
+
+
+    template <expr_result T> requires (std::is_arithmetic_v<T>)
+    auto enforce_complex(const T& l, const T& r) noexcept -> typed_value<complex_type>
+    {
+      auto base = static_cast<float_type>(l);
+      if (base > 0.0 || utils::eq(base, 0.0))
+        return {};
+
+      auto exp = static_cast<float_type>(r);
+      const auto root = utils::inv(exp);
+      const auto square = 2.0;
+      if (const auto mod2 = std::fmod(root, square); !utils::eq(mod2, 0.0))
+        return {};
+
+      const auto remainder = utils::inv(root / square);
+      const auto res = complex_type{ 0.0, std::pow(utils::abs(base), utils::inv(square)) };
+      const auto intrm = utils::eq(utils::abs(remainder), 1.0) ? res : std::pow(res, remainder);
+      return (remainder > 0.0) ? intrm : eval::inv(intrm);
+    }
+    auto enforce_complex(const expr_result auto&, const expr_result auto&) noexcept
+    {
+      return typed_value<complex_type>{};
+    }
+
+    template <expr_result T> requires (std::is_arithmetic_v<T>)
+    auto neg_root(const T& l, const T& r) noexcept -> typed_value<float_type>
+    {
+      auto base = static_cast<float_type>(l);
+      if (base > 0.0 || utils::eq(base, 0.0))
+        return {};
+
+      auto exp = static_cast<float_type>(r);
+      if (const auto mod2 = std::fmod(utils::inv(exp), 2.0); utils::eq(mod2, 0.0))
+        return {};
+
+      return -std::pow(utils::abs(base), exp);
+    }
+    auto neg_root(const expr_result auto&, const expr_result auto&) noexcept
+    {
+      return typed_value<float_type>{};
+    }
+
+    auto power(const pow_raisable auto& base, const pow_raisable auto& exp) noexcept
+    {
+      value res{};
+      if (auto cpl = enforce_complex(base, exp))
+      {
+        res = *cpl;
+      }
+      else if (auto neg = neg_root(base, exp))
+      {
+        res = *neg;
+      }
+      else
+      {
+        res = std::pow(base, exp);
+      }
+
+      return res;
+    }
+    auto power(const expr_result auto& base, const expr_result auto& exp) noexcept
+    {
+      auto caster = get_caster<float_type>();
+      auto floatL = caster(base);
+      auto floatR = caster(exp);
+      value res{};
+      if (floatL && floatR)
+      {
+        res = power(*floatL, *floatR);
+      }
+
+      return res;
+    }
+
+    auto root(const invertible auto& base, const invertible auto& exp) noexcept
+    {
+      if constexpr (utils::same_noquals<decltype(base), int_type>)
+        return root(static_cast<float_type>(base), static_cast<float_type>(exp));
+      else
+        return power(base, eval::inv(exp));
+    }
+    auto root(const expr_result auto&, const expr_result auto&) noexcept
+    {
+      return value{};
+    }
   }
 
   value value::binary(val_ops op, const value& rhs) const noexcept
@@ -431,8 +517,8 @@ namespace tnac::eval
           case BitwiseXor:     return bit_xor(*lhs, *rhs);
           case BitwiseOr:      return bit_or(*lhs, *rhs);
 
-          //case BinaryPow:  power(std::move(*lhs), std::move(*rhs)); break;
-          //case BinaryRoot: root(std::move(*lhs), std::move(*rhs));  break;
+          case BinaryPow:      return power(*lhs, *rhs);
+          case BinaryRoot:     return root(*lhs, *rhs);
 
           default: return value{};
           }
