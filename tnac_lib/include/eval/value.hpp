@@ -7,6 +7,8 @@
 
 namespace tnac::eval
 {
+  enum class val_ops : std::uint8_t;
+
   //
   // Stores a value
   //
@@ -99,9 +101,6 @@ namespace tnac::eval
       return try_get<utils::id_to_type_t<TI>>();
     }
 
-  private: // Evaluation
-
-
   public: // Evaluation
     //
     // Parses an integer literal value from string
@@ -137,6 +136,11 @@ namespace tnac::eval
     // Returns the value for false
     //
     static value false_val() noexcept;
+
+    //
+    // Applies a unary operation to the current value and returns a new resulting one
+    //
+    value unary(val_ops op) const noexcept;
 
   private:
     underlying_val m_raw{};

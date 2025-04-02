@@ -14,18 +14,10 @@
 
 
   <Type Name="tnac::eval::value">
-    <DisplayString>{(tnac::eval::type_id)((m_val &amp; 0xFF00000000000000) &gt;&gt; 56),en}</DisplayString>
+    <DisplayString>{(tnac::eval::type_id)(m_raw._Which),en}</DisplayString>
     <Expand>
-      <Item Name="[kind]">(tnac::eval::type_id)((m_val &amp; 0xFF00000000000000) &gt;&gt; 56),en</Item>
-      <Item Name="[value]" Condition="((m_val &amp; 0xFF00000000000000) &gt;&gt; 56) == 0">"&lt;undef&gt;",sb</Item>
-      <Item Name="[value]" Condition="((m_val &amp; 0xFF00000000000000) &gt;&gt; 56) == 1">*((bool*)(m_val &amp; 0x00ffffffffffffff))</Item>
-      <Item Name="[value]" Condition="((m_val &amp; 0xFF00000000000000) &gt;&gt; 56) == 2">*((long long*)(m_val &amp; 0x00ffffffffffffff))</Item>
-      <Item Name="[value]" Condition="((m_val &amp; 0xFF00000000000000) &gt;&gt; 56) == 3">*((double*)(m_val &amp; 0x00ffffffffffffff))</Item>
-      <Item Name="[value]" Condition="((m_val &amp; 0xFF00000000000000) &gt;&gt; 56) == 4">*((tnac::eval::complex_type*)(m_val &amp; 0x00ffffffffffffff))</Item>
-      <Item Name="[value]" Condition="((m_val &amp; 0xFF00000000000000) &gt;&gt; 56) == 5">*((tnac::eval::fraction_type*)(m_val &amp; 0x00ffffffffffffff))</Item>
-      <Item Name="[value]" Condition="((m_val &amp; 0xFF00000000000000) &gt;&gt; 56) == 6">*((tnac::eval::function_type*)(m_val &amp; 0x00ffffffffffffff))</Item>
-      <Item Name="[value]" Condition="((m_val &amp; 0xFF00000000000000) &gt;&gt; 56) == 7">*((tnac::eval::array_type*)(m_val &amp; 0x00ffffffffffffff))</Item>
-      <Item Name="[raw]">m_val,Xb</Item>
+      <Item Name="[kind]">(tnac::eval::type_id)(m_raw._Which),en</Item>
+      <Item Name="[raw]">m_raw</Item>
     </Expand>
   </Type>
 

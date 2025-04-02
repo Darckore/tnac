@@ -372,9 +372,8 @@ namespace tnac
     auto val = extract();
     if (val.is_value())
     {
-      //auto&& sv = val.get_value();
-      //m_eval.visit_unary(*sv, eval::val_ops::AbsoluteValue);
-      carry_val();
+      auto&& sv = val.get_value();
+      m_stack.push(sv.unary(eval::val_ops::AbsoluteValue));
       return;
     }
 
@@ -1014,10 +1013,8 @@ namespace tnac
     if (val.is_value())
     {
       const auto op = eval::detail::conv_unary(opType);
-      utils::unused(op);
-      //auto&& sv = val.get_value();
-      //m_eval.visit_unary(*sv, op);
-      carry_val();
+      auto&& sv = val.get_value();
+      m_stack.push(sv.unary(op));
       return;
     }
 
