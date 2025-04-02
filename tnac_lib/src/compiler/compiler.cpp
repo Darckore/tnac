@@ -371,7 +371,7 @@ namespace tnac
     auto val = extract();
     if (val.is_value())
     {
-      auto sv = val.get_value();
+      //auto&& sv = val.get_value();
       //m_eval.visit_unary(*sv, eval::val_ops::AbsoluteValue);
       carry_val();
       return;
@@ -599,7 +599,7 @@ namespace tnac
     auto checkedVal = extract();
     if (checkedVal.is_value())
     {
-      auto sv = checkedVal.get_value();
+      auto&& sv = checkedVal.get_value();
       auto boolVal = eval::to_bool(sv);
       warning(cond.cond().pos().at(), diag::condition_same(boolVal));
       if (boolVal && !cond.has_true())
@@ -1014,7 +1014,7 @@ namespace tnac
     {
       const auto op = eval::detail::conv_unary(opType);
       utils::unused(op);
-      auto sv = val.get_value();
+      //auto&& sv = val.get_value();
       //m_eval.visit_unary(*sv, op);
       carry_val();
       return;
@@ -1031,8 +1031,8 @@ namespace tnac
     {
       const auto op = eval::detail::conv_binary(opType);
       utils::unused(op);
-      auto lv = lhs.get_value();
-      auto rv = rhs.get_value();
+      //auto&& lv = lhs.get_value();
+      //auto&& rv = rhs.get_value();
       //m_eval.visit_binary(*lv, *rv, op);
       carry_val();
       return;
@@ -1072,7 +1072,7 @@ namespace tnac
     auto checkRes = extract();
     if (isDefault || checkRes.is_value())
     {
-      auto sv = checkRes.get_value();
+      auto&& sv = checkRes.get_value();
       const auto matchFound = isDefault || eval::to_bool(sv);
       if (!matchFound)
         return false;
