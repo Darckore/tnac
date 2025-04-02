@@ -300,25 +300,26 @@ namespace tnac
 
   void compiler::visit(ast::lit_expr& lit) noexcept
   {
-    utils::unused(lit);
-    //auto&& litValue = lit.pos();
-    //switch (litValue.what())
-    //{
-    //case token::KwTrue:  m_eval.visit_bool_literal(true);                break;
-    //case token::KwFalse: m_eval.visit_bool_literal(false);               break;
-    //case token::KwI:     m_eval.visit_i();                               break;
-    //case token::KwPi:    m_eval.visit_pi();                              break;
-    //case token::KwE:     m_eval.visit_e();                               break;
-    //case token::IntDec:  m_eval.visit_int_literal(litValue.value(), 10); break;
-    //case token::IntBin:  m_eval.visit_int_literal(litValue.value(), 2);  break;
-    //case token::IntOct:  m_eval.visit_int_literal(litValue.value(), 8);  break;
-    //case token::IntHex:  m_eval.visit_int_literal(litValue.value(), 16); break;
-    //case token::Float:   m_eval.visit_float_literal(litValue.value());   break;
+    using eval::value;
+    auto&& litValue = lit.pos();
+    value val{};
+    switch (litValue.what())
+    {
+    case token::KwTrue:  val = value::true_val();                      break;
+    case token::KwFalse: val = value::false_val();                     break;
+    case token::KwI:     val = value::i();                             break;
+    case token::KwPi:    val = value::pi();                            break;
+    case token::KwE:     val = value::e();                             break;
+    case token::IntDec:  val = value::parse_int(litValue.value(), 10); break;
+    case token::IntBin:  val = value::parse_int(litValue.value(), 2);  break;
+    case token::IntOct:  val = value::parse_int(litValue.value(), 8);  break;
+    case token::IntHex:  val = value::parse_int(litValue.value(), 16); break;
+    case token::Float:   val = value::parse_float(litValue.value());   break;
 
-    //default: return;
-    //}
+    default: return;
+    }
 
-    //carry_val();
+    m_stack.push(val);
   }
 
   void compiler::visit(ast::id_expr& id) noexcept

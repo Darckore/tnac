@@ -99,6 +99,45 @@ namespace tnac::eval
       return try_get<utils::id_to_type_t<TI>>();
     }
 
+  private: // Evaluation
+
+
+  public: // Evaluation
+    //
+    // Parses an integer literal value from string
+    //
+    static value parse_int(string_t src, int base) noexcept;
+
+    //
+    // Parses a floating point literal value from string
+    //
+    static value parse_float(string_t src) noexcept;
+
+    //
+    // Returns the value for pi
+    //
+    static value pi() noexcept;
+
+    //
+    // Returns the value for e
+    //
+    static value e() noexcept;
+
+    //
+    // Returns the value for i
+    //
+    static value i() noexcept;
+
+    //
+    // Returns the value for true
+    //
+    static value true_val() noexcept;
+
+    //
+    // Returns the value for false
+    //
+    static value false_val() noexcept;
+
   private:
     underlying_val m_raw{};
   };

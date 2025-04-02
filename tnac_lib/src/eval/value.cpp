@@ -59,4 +59,70 @@ namespace tnac::eval
 
   // Private members
 
+
+  // Public members (evaluation)
+
+  value value::parse_int(string_t src, int base) noexcept
+  {
+    auto prefix = string_t::size_type{};
+    if (utils::eq_any(base, 2, 16))
+      prefix = 2u;
+    else if (base == 8)
+      prefix = 1u;
+
+    auto begin = src.data() + prefix;
+    auto end = begin + src.length();
+
+    value ret{};
+    int_type result{};
+    auto convRes = std::from_chars(begin, end, result, base);
+    if (convRes.ec == std::errc{ 0 })
+    {
+      ret = result;
+    }
+
+    return ret;
+  }
+
+  value value::parse_float(string_t src) noexcept
+  {
+    auto begin = src.data();
+    auto end = begin + src.length();
+
+    value ret{};
+    float_type result{};
+    auto convRes = std::from_chars(begin, end, result);
+    if (convRes.ec == std::errc{ 0 })
+    {
+      ret = result;
+    }
+
+    return ret;
+  }
+
+  value value::pi() noexcept
+  {
+    return value{ std::numbers::pi_v<float_type> };
+  }
+
+  value value::e() noexcept
+  {
+    return value{ std::numbers::e_v<float_type> };
+  }
+
+  value value::i() noexcept
+  {
+    return value{ complex_type{ 0, 1 } };
+  }
+
+  value value::true_val() noexcept
+  {
+    return value{ true };
+  }
+
+  value value::false_val() noexcept
+  {
+    return value{ false };
+  }
+
 }
