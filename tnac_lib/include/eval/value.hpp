@@ -5,60 +5,6 @@
 #pragma once
 #include "eval/types.hpp"
 
-#define TNAC_TYPES invalid_val_t,\
-bool_type,\
-int_type,\
-float_type,\
-complex_type,\
-fraction_type,\
-function_type,\
-array_type
-
-namespace tnac::semantics
-{
-  class function;
-}
-
-namespace tnac::eval
-{
-  //
-  // A dummy value which doesn't correspond to any of the supported data types
-  //
-  struct invalid_val_t {};
-
-  //
-  // Defines a valid result of expression evaluation
-  //
-  template <typename T>
-  concept expr_result = utils::any_same_as<T, TNAC_TYPES>;
-
-  //
-  // Type ids for every supported type
-  //
-  enum class type_id : std::uint8_t
-  {
-    Invalid,
-    Bool,
-    Int,
-    Float,
-    Complex,
-    Fraction,
-    Function,
-    Array
-  };
-
-  using underlying_val = std::variant<TNAC_TYPES>;
-}
-
-TYPE_TO_ID_ASSOCIATION(tnac::eval::invalid_val_t,  tnac::eval::type_id::Invalid);
-TYPE_TO_ID_ASSOCIATION(tnac::eval::bool_type,      tnac::eval::type_id::Bool);
-TYPE_TO_ID_ASSOCIATION(tnac::eval::int_type,       tnac::eval::type_id::Int);
-TYPE_TO_ID_ASSOCIATION(tnac::eval::float_type,     tnac::eval::type_id::Float);
-TYPE_TO_ID_ASSOCIATION(tnac::eval::complex_type,   tnac::eval::type_id::Complex);
-TYPE_TO_ID_ASSOCIATION(tnac::eval::fraction_type,  tnac::eval::type_id::Fraction);
-TYPE_TO_ID_ASSOCIATION(tnac::eval::function_type,  tnac::eval::type_id::Function);
-TYPE_TO_ID_ASSOCIATION(tnac::eval::array_type,     tnac::eval::type_id::Array);
-
 namespace tnac::eval
 {
   //
@@ -242,6 +188,9 @@ namespace tnac::eval
   //
   class stored_value final
   {
+  public:
+    using underlying_val = std::variant<TNAC_TYPES>;
+
   public:
     CLASS_SPECIALS_ALL_CUSTOM(stored_value);
 
