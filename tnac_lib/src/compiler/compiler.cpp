@@ -534,7 +534,7 @@ namespace tnac
         {
           auto binOp = binary.op();
           warning(binOp.at(), diag::logical_same(binOp.value(), isLhs, boolVal));
-          //m_eval.visit_bool_literal(boolVal);
+          m_stack.push(eval::value{ boolVal });
           return true;
         }
         return false;
