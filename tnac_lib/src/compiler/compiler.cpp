@@ -303,6 +303,7 @@ namespace tnac
     using eval::value;
     auto&& litValue = lit.pos();
     value val{};
+    clear_store();
     switch (litValue.what())
     {
     case token::KwTrue:  val = value::true_val();                      break;
@@ -350,6 +351,7 @@ namespace tnac
     const auto size = arr.elements().size();
     if (!m_stack.has_values(size))
     {
+      clear_store();
       auto&& target = emit_arr(size);
       emit_append(target, size);
       emit_load(target);
@@ -372,6 +374,7 @@ namespace tnac
     auto val = extract();
     if (val.is_value())
     {
+      clear_store();
       auto&& sv = val.get_value();
       m_stack.push(sv.unary(eval::val_ops::AbsoluteValue));
       return;
@@ -440,6 +443,7 @@ namespace tnac
     auto&& sym = fd.symbol();
     auto func = m_cfg->find_entity(&sym);
     UTILS_ASSERT(func);
+    clear_store();
     m_stack.push(eval::value::function(*func));
   }
 
@@ -937,6 +941,7 @@ namespace tnac
 
   void compiler::emit_append(ir::vreg& arr, size_type size) noexcept
   {
+    clear_store();
     UTILS_ASSERT(m_stack.has_at_least(size));
     auto&& block = m_context.current_block();
     auto&& builder = m_cfg->get_builder();
@@ -1005,6 +1010,7 @@ namespace tnac
   {
     if (val.is_value())
     {
+      clear_store();
       const auto op = eval::detail::conv_unary(opType);
       auto&& sv = val.get_value();
       m_stack.push(sv.unary(op));
@@ -1020,6 +1026,7 @@ namespace tnac
   {
     if (lhs.is_value() && rhs.is_value())
     {
+      clear_store();
       const auto op = eval::detail::conv_binary(opType);
       auto&& lv = lhs.get_value();
       auto&& rv = rhs.get_value();
@@ -1153,6 +1160,7 @@ namespace tnac
       else
       {
         compile_funcs(*child);
+        continue;
       }
 
       if (!reportExit && !exit_child(*child))
