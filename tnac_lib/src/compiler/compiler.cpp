@@ -1135,6 +1135,12 @@ namespace tnac
 
   void compiler::compile(body_t& body) noexcept
   {
+    if (body.empty())
+    {
+      m_stack.push_undef();
+      return;
+    }
+
     bool compileExprs = true;
     bool reportExit = false;
     ast::node* ret{};
