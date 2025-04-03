@@ -270,9 +270,14 @@ namespace tnac
     void empty_stack() noexcept;
 
     //
+    // Compiles an initialiser (rhs of var decls and assigns)
+    //
+    void compile_init(semantics::symbol& var, ast::expr& init) noexcept;
+
+    //
     // Compiles a unary expression
     //
-    void compile_unary(const ir::operand& val, tok_kind opType) noexcept;
+    void compile_unary(const ir::operand& sym, tok_kind opType) noexcept;
 
     //
     // Compiles a binary expression

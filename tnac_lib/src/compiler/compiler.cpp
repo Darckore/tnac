@@ -495,11 +495,7 @@ namespace tnac
   {
     auto&& sym = var.symbol();
     emit_alloc(sym);
-    const auto stackSz = m_stack.size();
-    compile(var.initialiser());
-    transfer_last_load(stackSz);
-    if(!check_post_jmp())
-      emit_store(sym);
+    compile_init(sym, var.initialiser());
     return false;
   }
 
@@ -507,11 +503,7 @@ namespace tnac
   {
     auto target = utils::try_cast<ast::id_expr>(&assign.left());
     UTILS_ASSERT(target);
-    const auto stackSz = m_stack.size();
-    compile(assign.right());
-    transfer_last_load(stackSz);
-    if (!check_post_jmp())
-      emit_store(target->symbol());
+    compile_init(target->symbol(), assign.right());
     return false;
   }
 
@@ -1014,6 +1006,15 @@ namespace tnac
       // todo: warning - dead code
       m_stack.pop();
     }
+  }
+
+  void compiler::compile_init(semantics::symbol& sym, ast::expr& init) noexcept
+  {
+    const auto stackSz = m_stack.size();
+    compile(init);
+    transfer_last_load(stackSz);
+    if (!check_post_jmp())
+      emit_store(sym);
   }
 
   void compiler::compile_unary(const ir::operand& val, tok_kind opType) noexcept
