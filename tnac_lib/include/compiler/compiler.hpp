@@ -329,6 +329,16 @@ namespace tnac
     bool walk_imports(ast::module_def& mod) noexcept;
 
     //
+    // Transfers last stored value in case there are multiple vars are assigned or declared
+    // inside a single expression
+    // The previous value that was on the stack is consumed at this point for a store operation
+    //
+    // The parameter holds a stack size value before the previous operation,
+    // the transfer occurs if it is equal to the current stack size
+    //
+    void transfer_last_load(size_type prevSz) noexcept;
+
+    //
     // Reports a generic error
     //
     void error(string_t msg) noexcept;

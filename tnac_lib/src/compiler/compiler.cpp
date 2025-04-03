@@ -493,17 +493,7 @@ namespace tnac
     emit_alloc(sym);
     const auto stackSz = m_stack.size();
     compile(var.initialiser());
-
-    // Probably, multiple variables are declared here
-    // The previous value that was on the stack is consumed for a store operation
-    if (m_stack.size() == stackSz)
-    {
-      if (auto last = m_context.last_store())
-      {
-        emit_load(*last);
-      }
-    }
-
+    transfer_last_load(stackSz);
     emit_store(sym);
     return false;
   }
@@ -512,8 +502,9 @@ namespace tnac
   {
     auto target = utils::try_cast<ast::id_expr>(&assign.left());
     UTILS_ASSERT(target);
-
+    const auto stackSz = m_stack.size();
     compile(assign.right());
+    transfer_last_load(stackSz);
     emit_store(target->symbol());
     return false;
   }
@@ -1257,6 +1248,17 @@ namespace tnac
     }
 
     return true;
+  }
+
+  void compiler::transfer_last_load(size_type prevSz) noexcept
+  {
+    if (prevSz != m_stack.size())
+      return;
+
+    if (auto last = m_context.last_store())
+    {
+      emit_load(*last);
+    }
   }
 
   void compiler::error(string_t msg) noexcept
