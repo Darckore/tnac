@@ -294,7 +294,8 @@ namespace tnac
     }
 
     auto rv = m_context.ret_val();
-    emit_store(*rv, extract());
+    if(!check_post_jmp())
+      emit_store(*rv, extract());
     emit_jump(m_context.ret_val(), *retBlock);
   }
 
@@ -881,7 +882,6 @@ namespace tnac
   {
     if (has_ret_jump())
     {
-      m_stack.push(value);
       return;
     }
 
