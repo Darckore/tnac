@@ -253,6 +253,11 @@ namespace tnac
     bool has_ret_jump(ir::basic_block& block) noexcept;
 
     //
+    // Checks whether the previous instruction has been a jump, and we're in the same block
+    //
+    bool check_post_jmp() noexcept;
+
+    //
     // Extracts the last values from the stack
     // If the stack is empty, loads the last stored value
     // If there's no last stored value, the result is undef

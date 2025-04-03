@@ -498,7 +498,8 @@ namespace tnac
     const auto stackSz = m_stack.size();
     compile(var.initialiser());
     transfer_last_load(stackSz);
-    emit_store(sym);
+    if(!check_post_jmp())
+      emit_store(sym);
     return false;
   }
 
@@ -509,7 +510,8 @@ namespace tnac
     const auto stackSz = m_stack.size();
     compile(assign.right());
     transfer_last_load(stackSz);
-    emit_store(target->symbol());
+    if (!check_post_jmp())
+      emit_store(target->symbol());
     return false;
   }
 
@@ -832,7 +834,7 @@ namespace tnac
     // branches all explicitly return (including default)
     if (m_stack.empty())
       return;
-
+    
     auto val = m_stack.extract();
     if(!val.is_param())
       m_context.save_store(var);
@@ -971,6 +973,14 @@ namespace tnac
       return false;
 
     return block.is_connected_to(*retBlock);
+  }
+
+  bool compiler::check_post_jmp() noexcept
+  {
+    auto&& block = m_context.current_block();
+    auto lastInstr = block.last();
+    using enum ir::op_code;
+    return lastInstr && utils::eq_any(lastInstr->opcode(), Jump, Ret);
   }
 
   bool compiler::delete_block_tree(ir::basic_block& root) noexcept
