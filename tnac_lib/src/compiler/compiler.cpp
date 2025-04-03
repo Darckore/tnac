@@ -1150,6 +1150,10 @@ namespace tnac
       {
         compile(*child);
       }
+      else
+      {
+        compile_funcs(*child);
+      }
 
       if (!reportExit && !exit_child(*child))
       {
