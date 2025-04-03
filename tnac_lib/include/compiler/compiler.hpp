@@ -211,7 +211,7 @@ namespace tnac
     //
     // Creates a conditional jump instruction
     //
-    void emit_cond_jump(ir::operand cond, ir::basic_block& ifTrue, ir::basic_block& ifFalse) noexcept;
+    void emit_cond_jump(ir::operand cond, ir::basic_block& ifTrue, ir::basic_block& ifFalse, eval::value falseV = {}) noexcept;
 
     //
     // Creates a phi node
