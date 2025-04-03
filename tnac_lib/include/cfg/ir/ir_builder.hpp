@@ -27,7 +27,6 @@ namespace tnac::ir
     using const_list       = constant::list_type;
     using const_val        = constant::value_type;
     using size_type        = instruction::size_type;
-    using arr_data         = eval::array_type::value_type;
     using arr_store        = std::unordered_map<size_type, arr_descr>;
 
   public:
@@ -102,7 +101,7 @@ namespace tnac::ir
     //
     // Interns an array
     //
-    constant& intern(vreg& reg, arr_data arr) noexcept;
+    //constant& intern(vreg& reg, arr_data arr) noexcept;
 
     //
     // Returns a reference to the instruction list
@@ -122,7 +121,7 @@ namespace tnac::ir
     //
     // Returns an interned constant by array instance
     //
-    constant* interned(const eval::array_type& arr) noexcept;
+    //constant* interned(const eval::array_type& arr) noexcept;
 
   private:
     //

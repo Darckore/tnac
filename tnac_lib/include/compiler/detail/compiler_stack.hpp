@@ -19,7 +19,6 @@ namespace tnac::detail
     using value_type = ir::operand;
     using data_type  = std::vector<value_type>;
     using size_type  = data_type::size_type;
-    using arr_type   = eval::array_type::value_type;
 
     template <size_type N>
     using val_array = std::array<eval::value, N>;
@@ -102,7 +101,7 @@ namespace tnac::detail
     // Fills values to the given array
     // Operands are read in reverse order (offset to top)
     //
-    void fill(arr_type& arr, size_type count) noexcept;
+    //void fill(arr_type& arr, size_type count) noexcept;
 
     //
     // Constructs a typed value from the current stack contents
