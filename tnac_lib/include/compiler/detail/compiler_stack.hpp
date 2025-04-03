@@ -78,6 +78,11 @@ namespace tnac::detail
     bool empty() const noexcept;
 
     //
+    // Returns the current stack size
+    //
+    size_type size() const noexcept;
+
+    //
     // Checks whether the stack has the given number of known values at the top
     //
     bool has_values(size_type count) const noexcept;

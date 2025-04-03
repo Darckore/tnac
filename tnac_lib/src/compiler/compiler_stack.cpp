@@ -63,6 +63,11 @@ namespace tnac::detail
     return m_data.empty();
   }
 
+  compiler_stack::size_type compiler_stack::size() const noexcept
+  {
+    return m_data.size();
+  }
+
   bool compiler_stack::has_values(size_type count) const noexcept
   {
     if (m_data.size() < count)
