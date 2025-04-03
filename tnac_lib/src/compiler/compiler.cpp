@@ -1153,14 +1153,14 @@ namespace tnac
     ast::node* ret{};
     for (auto child : body)
     {
+      bool hasFunc{};
       if (compileExprs)
       {
         compile(*child);
       }
       else
       {
-        compile_funcs(*child);
-        continue;
+        hasFunc = compile_funcs(*child);
       }
 
       if (!reportExit && !exit_child(*child))
@@ -1177,7 +1177,7 @@ namespace tnac
       if (compileExprs)
         continue;
 
-      const auto hasFunc = compile_funcs(*child);
+      hasFunc = hasFunc || compile_funcs(*child);
       if (!hasFunc && reportExit)
       {
         reportExit = false;
