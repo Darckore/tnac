@@ -73,37 +73,45 @@ namespace tnac::tests
       .with(frac{ 1, 2 }).act(frac{ 1, 3 }).verify(frac{ 1, 6 })       //_frac(1,2) - _frac(1,3)
       ;
   }
+
+  TEST(evaluation, t_basic_mul)
+  {
+    value_checker{ val_ops::Multiplication }
+    
+      // Int
+
+      .with(1).act(2).verify(2)                        // 1 * 2
+      .with(1).act(2.0).verify(2.0)                    // 1 * 2.0
+      .with(1).act(cplx{ 1, 2 }).verify(cplx{ 1, 2 })  // 1 * _cplx(1, 2)
+      .with(cplx{ 1, 2 }).act(2).verify(cplx{ 2, 4 })  // _cplx(1, 2) * 2
+      .with(2).act(frac{ 1, 2 }).verify(frac{ 1, 1 })  // 2 * _frac(1, 2)
+      .with(frac{ 1, 2 }).act(2).verify(frac{ 1, 1 })  // _frac(1, 2) * 2
+
+      // Float
+
+      .with(4.0).act(5.0).verify(20.0)                     // 4.0 * 5.0
+      .with(6.0).act(5).verify(30.0)                       // 6.0 * 5
+      .with(4.0).act(cplx{ 1, 6 }).verify(cplx{ 4, 24 })   // 4.0 * _cplx(1.0, 6)
+      .with(cplx{ 2, 6 }).act(5.0).verify(cplx{ 10, 30 })  // _cplx(2.0, 6) * 5.0
+      .with(4.0).act(frac{ 1, 2 }).verify(2.0)             // 4.0 * _frac(1, 2)
+      .with(frac{ 3, 6 }).act(5.0).verify(2.5)             // _frac(3, 6) * 5.0
+
+       // Complex
+       
+      .with(cplx{ 7, 11 }).act(cplx{ 10, 11 }).verify(cplx{ -51, 187 })  // _cplx(7, 11) * _cplx(10, 11)
+      .with(cplx{ 7, 10 }).act(frac{ 5, 10 }).verify(cplx{ 3.5, 5 })     // _cplx(7, 10) * _frac(5, 10)
+
+      // Fraction
+      
+      .with(frac{ 1, 2 }).act(frac{ 1, 3 }).verify(frac{ 1, 6 })   // _frac(1,2) * _frac(1,3)
+    ;
+  }
 }
 
 #if 0
 
 namespace tnac::tests
 {
-  TEST(evaluation, t_basic_mul)
-  {
-    // Int
-    vc::check("1 * 2"sv, 2ll);
-    vc::check("1 * 2.0"sv, 2.0);
-    vc::check("1 * _cplx(1, 2)"sv, cplx{ 1.0, 2.0 });
-    vc::check("_cplx(1, 2) * 2"sv, cplx{ 2.0, 4.0 });
-    vc::check("2 * _frac(1, 2)"sv, frac{ 1, 1 });
-    vc::check("_frac(1, 2) * 2"sv, frac{ 1, 1 });
-
-    // Float
-    vc::check("4.0 * 5.0"sv, 20.0);
-    vc::check("6.0 * 5"sv, 30.0);
-    vc::check("4.0 * _cplx(1.0, 6)"sv, cplx{ 4.0, 24.0 });
-    vc::check("_cplx(2.0, 6) * 5.0"sv, cplx{ 10.0, 30.0 });
-    vc::check("4.0 * _frac(1, 2)"sv, 2.0);
-    vc::check("_frac(3, 6) * 5.0"sv, 2.5);
-
-    // Complex
-    vc::check("_cplx(7, 11) * _cplx(10, 11)"sv, cplx{ -51.0, 187.0 });
-    vc::check("_cplx(7, 10) * _frac(5, 10)"sv, cplx{ 3.5, 5.0 });
-
-    // Fraction
-    vc::check("_frac(1,2) * _frac(1,3)"sv, frac{ 1, 6 });
-  }
 
   TEST(evaluation, t_basic_div)
   {
