@@ -173,6 +173,17 @@ namespace tnac::tests
     stored_op m_op{};
   };
 
+
+  constexpr auto infinity() noexcept
+  {
+    return std::numeric_limits<eval::float_type>::infinity();
+  }
+
+  constexpr auto nan() noexcept
+  {
+    return std::numeric_limits<eval::float_type>::quiet_NaN();
+  }
+
 #if 0
   //
   // Evaluator

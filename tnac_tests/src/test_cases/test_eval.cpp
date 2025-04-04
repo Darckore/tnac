@@ -37,7 +37,7 @@ namespace tnac::tests
       // Fraction
 
       .with(frac{ 1, 2 }).act(frac{ 1, 3 }).verify(frac{ 5, 6 })  //_frac(1,2) + _frac(1,3)
-      ;
+    ;
   }
 
   TEST(evaluation, t_basic_sub)
@@ -71,7 +71,7 @@ namespace tnac::tests
 
       // Fraction
       .with(frac{ 1, 2 }).act(frac{ 1, 3 }).verify(frac{ 1, 6 })       //_frac(1,2) - _frac(1,3)
-      ;
+    ;
   }
 
   TEST(evaluation, t_basic_mul)
@@ -106,84 +106,101 @@ namespace tnac::tests
       .with(frac{ 1, 2 }).act(frac{ 1, 3 }).verify(frac{ 1, 6 })   // _frac(1,2) * _frac(1,3)
     ;
   }
+
+  TEST(evaluation, t_basic_div)
+  {
+    value_checker{ val_ops::Division }
+
+      // Int
+      
+      .with(2).act(2).verify(1.0)                           // 2 / 2
+      .with(1).act(0).verify(infinity())                    // 1 / 0
+      .with(1).act(cplx{ 1, 2 }).verify(cplx{ 0.2, -0.4 })  // 1 / _cplx(1, 2)
+      .with(cplx{ 1, 2 }).act(2).verify(cplx{ 0.5, 1 })     // _cplx(1, 2) / 2
+      .with(2).act(frac{ 1, 2 }).verify(frac{ 4, 1 })       // 2 / _frac(1, 2)
+      .with(frac{ 1, 2 }).act(2).verify(frac{ 1, 4 })       // _frac(1, 2) / 2
+
+      // Float
+
+      .with(4.0).act(5.0).verify(0.8)                         // 4.0 / 5.0
+      .with(6.0).act(5).verify(1.2)                           // 6.0 / 5
+      .with(4.0).act(cplx{ 2, 4 }).verify(cplx{ 0.4, -0.8 })  // 4.0 / _cplx(2.0, 4)
+      .with(cplx{ 2, 6 }).act(5.0).verify(cplx{ 0.4, 1.2 })   // _cplx(2.0, 6) / 5.0
+      .with(4.0).act(frac{ 1, 2 }).verify(8.0)                // 4.0 / _frac(1, 2)
+      .with(frac{ 3, 6 }).act(5.0).verify(0.1)                // _frac(3, 6) / 5.0
+
+      // Complex
+      
+      .with(cplx{ -51, 187 }).act(cplx{ 10, 11 }).verify(cplx{ 7, 11 })  // _cplx(-51, 187) / _cplx(10, 11)
+      .with(cplx{ 7, 10 }).act(frac{ 5, 10 }).verify(cplx{ 14, 20 })     // _cplx(7, 10) / _frac(5, 10)
+
+      // Fraction
+      
+      .with(frac{ 1, 2 }).act(frac{ 1, 3 }).verify(frac{ 3, 2 })  // _frac(1,2) / _frac(1,3)
+    ;
+  }
+
+  TEST(evaluation, t_basic_mod)
+  {
+    value_checker{ val_ops::Modulo }
+
+      // Int
+
+      .with(2).act(2).verify(0.0)                                 // 2 % 2
+      .with(1).act(0).verify(nan())                               // 1 % 0"sv
+      .with(1).act(cplx{ 1, 2 }).verify(cplx{ 1, 0 })             // 1 % _cplx(1, 2)
+      .with(cplx{ 1, 2 }).act(2).verify(cplx{ -1, 0 })            // _cplx(1, 2) % 2
+      .with(frac{ 1, 1 }).act(cplx{ 1, 2 }).verify(cplx{ 1, 0 })  // _frac(1, 1) % _cplx(1, 2)
+      .with(cplx{ 1, 2 }).act(frac{ 2, 1 }).verify(cplx{ -1, 0 }) // _cplx(1, 2) % _frac(2, 1)
+
+      // Float
+
+      .with(4.0).act(5.0).verify(4.0)                             // 4.0 % 5.0
+      .with(6.0).act(5).verify(1.0)                               // 6.0 % 5
+      .with(4.0).act(cplx{ 2, 4 }).verify(cplx{ 0, 2 })           // 4.0 % _cplx(2.0, 4)
+      .with(cplx{ 2, 6 }).act(5.0).verify(cplx{ 2, 1 })           // _cplx(2.0, 6) % 5.0
+      .with(frac{ 4, 1 }).act(cplx{ 2, 4 }).verify(cplx{ 0, 2 })  // _frac(4, 1) % _cplx(2.0, 4)
+      .with(cplx{ 2, 6 }).act(frac{ 5, 1 }).verify(cplx{ 2, 1 })  // _cplx(2.0, 6) % _frac(5, 1)
+
+      // Complex
+
+      .with(cplx{ 26, 120 }).act(cplx{ 37, 226 }).verify(cplx{ -11, -106 })  // _cplx(26, 120) % _cplx(37, 226)
+
+      // Fraction
+
+      .with(frac{ 5, 1 }).act(frac{ 3, 1 }).verify(2.0);  // _frac(5, 1) % _frac(3, 1)
+    ;
+  }
+
+  TEST(evaluation, t_basic_pow)
+  {
+    value_checker{ val_ops::BinaryPow }
+
+      .with(2).act(2).verify(4.0)                                 // 2 ** 2
+      .with(1).act(0).verify(1.0)                                 // 1 ** 0
+      .with(1).act(cplx{ 1, 2 }).verify(cplx{ 1, 0 })             // 1 ** _cplx(1, 2)
+      .with(frac{ 1, 1 }).act(cplx{ 1, 2 }).verify(cplx{ 1, 0 })  // _frac(1, 1) ** _cplx(1, 2)
+      .with(4.0).act(5.0).verify(1024.0)                          // 4.0 ** 5.0
+      .with(6.0).act(5).verify(7776.0)                            // 6.0 ** 5
+      .with(frac{ 8, 2 }).act(frac{ 1, 2 }).verify(2.0)           // _frac(8, 2) ** _frac(1, 2)
+      .with(-1).act(0.5).verify(cplx{ 0, 1 })                     // -1 ** 0.5
+      .with(-1).act(frac{ 1, 3 }).verify(-1.0)                    // -1 ** (1/3)
+      .with(-8).act(frac{ 1, 3 }).verify(-2.0)                    // -8 ** (1/3)
+
+      .with_op(val_ops::BinaryRoot)
+
+      .with(-4).act(2).verify(cplx{ 0, 2 })                       // -4 // 2
+      .with(-4).act(-2).verify(cplx{ 0, -0.5 })                   // -4 // -2
+      .with(-8).act(3).verify(-2.0)                               // -8 // 3
+      .with(-8).act(-3).verify(-0.5)                              // -8 // -3
+    ;
+  }
 }
 
 #if 0
 
 namespace tnac::tests
 {
-
-  TEST(evaluation, t_basic_div)
-  {
-    // Int
-    vc::check("2 / 2"sv, 1.0);
-    vc::check("1 / 0"sv, vc::infinity());
-    vc::check("1 / _cplx(1, 2)"sv, cplx{ 0.2, -0.4 });
-    vc::check("_cplx(1, 2) / 2"sv, cplx{ 0.5, 1.0 });
-    vc::check("2 / _frac(1, 2)"sv, frac{ 4, 1 });
-    vc::check("_frac(1, 2) / 2"sv, frac{ 1, 4 });
-
-    // Float
-    vc::check("4.0 / 5.0"sv, 0.8);
-    vc::check("6.0 / 5"sv, 1.2);
-    vc::check("4.0 / _cplx(2.0, 4)"sv, cplx{ 0.4, -0.8 });
-    vc::check("_cplx(2.0, 6) / 5.0"sv, cplx{ 0.4, 1.2 });
-    vc::check("4.0 / _frac(1, 2)"sv, 8.0);
-    vc::check("_frac(3, 6) / 5.0"sv, 0.1);
-
-    // Complex
-    vc::check("_cplx(-51, 187) / _cplx(10, 11)"sv, cplx{ 7.0, 11.0 });
-    vc::check("_cplx(7, 10) / _frac(5, 10)"sv, cplx{ 14.0, 20.0 });
-
-    // Fraction
-    vc::check("_frac(1,2) / _frac(1,3)"sv, frac{ 3, 2 });
-  }
-
-  TEST(evaluation, t_basic_mod)
-  {
-    // Int
-    vc::check("2 % 2"sv, 0.0);
-    vc::check("1 % 0"sv, vc::nan());
-    vc::check("1 % _cplx(1, 2)"sv, cplx{ 1.0, 0.0 });
-    vc::check("_cplx(1, 2) % 2"sv, cplx{ -1.0, 0.0 });
-    vc::check("_frac(1, 1) % _cplx(1, 2)"sv, cplx{ 1.0, 0.0 });
-    vc::check("_cplx(1, 2) % _frac(2, 1)"sv, cplx{ -1.0, 0.0 });
-
-    // Float
-    vc::check("4.0 % 5.0"sv, 4.0);
-    vc::check("6.0 % 5"sv, 1.0);
-    vc::check("4.0 % _cplx(2.0, 4)"sv, cplx{ 0.0, 2.0 });
-    vc::check("_cplx(2.0, 6) % 5.0"sv, cplx{ 2.0, 1.0 });
-    vc::check("_frac(4, 1) % _cplx(2.0, 4)"sv, cplx{ 0.0, 2.0 });
-    vc::check("_cplx(2.0, 6) % _frac(5, 1)"sv, cplx{ 2.0, 1.0 });
-
-    // Complex
-    vc::check("_cplx(26, 120) % _cplx(37, 226)"sv, cplx{ -11.0, -106.0 });
-
-    // Fraction
-    vc::check("_frac(5, 1) % _frac(3, 1)"sv, 2.0);
-  }
-
-  TEST(evaluation, t_basic_pow)
-  {
-    vc::check("2 ** 2"sv, 4.0);
-    vc::check("1 ** 0"sv, 1.0);
-    vc::check("1 ** _cplx(1, 2)"sv, cplx{ 1.0, 0.0 });
-    vc::check("_frac(1, 1) ** _cplx(1, 2)"sv, cplx{ 1.0, 0.0 });
-    vc::check("4.0 ** 5.0"sv, 1024.0);
-    vc::check("6.0 ** 5"sv, 7776.0);
-    vc::check("_frac(8, 2) ** _frac(1, 2)"sv, 2.0);
-
-    vc::check("-1 ** 0.5"sv, cplx{ 0.0, 1.0 });
-    vc::check("-4 // 2"sv,   cplx{ 0.0, 2.0 });
-    vc::check("-4 // -2"sv,  cplx{ 0.0, -0.5 });
-
-    vc::check("-1 ** (1/3)"sv, -1.0);
-    vc::check("-8 ** (1/3)"sv, -2.0);
-    vc::check("-8 // 3"sv, -2.0);
-    vc::check("-8 // -3"sv, -0.5);
-  }
-
   TEST(evaluation, t_literal)
   {
     vc::check("2"sv, 2ll);
