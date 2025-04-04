@@ -6,11 +6,11 @@ namespace tnac::tests
 
   TEST(evaluation, t_basic_add)
   {
-    value_checker{ true }.with_op(val_ops::Addition)
+    value_checker{ val_ops::Addition }
 
       // Int
 
-      .act(1).verify(2)                                   // _true + 1
+      .with(true).act(1).verify(2)                        // _true + 1
       .with(1).act(2).verify(3)                           // 1 + 2
       .with(1).act(2.0).verify(3.0)                       // 1 + 2.0
       .with(1).act(cplx{ 1, 2 }).verify(cplx{ 2, 2 })     // 1 + _cplx(1, 2)
@@ -39,42 +39,46 @@ namespace tnac::tests
       .with(frac{ 1, 2 }).act(frac{ 1, 3 }).verify(frac{ 5, 6 })  //_frac(1,2) + _frac(1,3)
       ;
   }
+
+  TEST(evaluation, t_basic_sub)
+  {
+    value_checker{ val_ops::Subtraction }
+
+      // Int
+
+      .with(false).act(1).verify(-1)                      // _false - 1
+      .with(1).act(2).verify(-1)                          // 1 - 2
+      .with(1).act(2.0).verify(-1.0)                      // 1 - 2.0
+      .with(1).act(cplx{ 1, 2 }).verify(cplx{ 0, -2 })    // 1 - _cplx(1, 2)
+      .with(cplx{ 1, 2 }).act(2).verify(cplx{ -1, 2 })    // _cplx(1, 2) - 2
+      .with(2).act(frac{ 1, 2 }).verify(frac{ 3, 2 })     // 2 - _frac(1, 2)
+      .with(frac{ 1, 2 }).act(2).verify(frac{ 3, 2, -1 }) // _frac(1, 2) - 2
+
+      // Float
+
+      .with(42.0).act(true).verify(41.0)                  // 42.0 - _true
+      .with(4.0).act(5.0).verify(-1.0)                    // 4.0 - 5.0
+      .with(6.0).act(5).verify(1.0)                       // 6.0 - 5
+      .with(4.0).act(cplx{ 1, 6 }).verify(cplx{ 3, -6 })  // 4.0 - _cplx(1.0, 6)
+      .with(cplx{ 2, 6 }).act(5.0).verify(cplx{ -3, 6 })  // _cplx(2.0, 6) - 5.0
+      .with(4.0).act(frac{ 1, 2 }).verify(3.5)            // 4.0 - _frac(1, 2)
+      .with(frac{ 3, 6 }).act(5.0).verify(-4.5)           // _frac(3, 6) - 5.0
+
+      // Complex
+      .with(cplx{ 7, 10 }).act(true).verify(cplx{ 6, 10 })             // _cplx(7, 10) - _true
+      .with(cplx{ 7, 11 }).act(cplx{ 10, 11 }).verify(cplx{ -3, 0 })   // _cplx(7, 11) - _cplx(10, 11)
+      .with(cplx{ 7, 10 }).act(frac{ 5, 10 }).verify(cplx{ 6.5, 10 })  // _cplx(7, 10) - _frac(5, 10)
+
+      // Fraction
+      .with(frac{ 1, 2 }).act(frac{ 1, 3 }).verify(frac{ 1, 6 })       //_frac(1,2) - _frac(1,3)
+      ;
+  }
 }
 
 #if 0
 
 namespace tnac::tests
 {
-
-  TEST(evaluation, t_basic_sub)
-  {
-    // Int
-    vc::check("_false - 1"sv, -1ll);
-    vc::check("1 - 2"sv, -1ll);
-    vc::check("1 - 2.0"sv, -1.0);
-    vc::check("1 - _cplx(1, 2)"sv, cplx{ 0.0, -2.0 });
-    vc::check("_cplx(1, 2) - 2"sv, cplx{ -1.0, 2.0 });
-    vc::check("2 - _frac(1, 2)"sv, frac{ 3, 2 });
-    vc::check("_frac(1, 2) - 2"sv, frac{ 3, 2, -1 });
-
-    // Float
-    vc::check("42.0 - _true"sv, 41.0);
-    vc::check("4.0 - 5.0"sv, -1.0);
-    vc::check("6.0 - 5"sv, 1.0);
-    vc::check("4.0 - _cplx(1.0, 6)"sv, cplx{ 3.0, -6.0 });
-    vc::check("_cplx(2.0, 6) - 5.0"sv, cplx{ -3.0, 6.0 });
-    vc::check("4.0 - _frac(1, 2)"sv, 3.5);
-    vc::check("_frac(3, 6) - 5.0"sv, -4.5);
-
-    // Complex
-    vc::check("_cplx(7, 10) - _true"sv, cplx{ 6.0, 10.0 });
-    vc::check("_cplx(7, 11) - _cplx(10, 11)"sv, cplx{ -3.0, 0.0 });
-    vc::check("_cplx(7, 10) - _frac(5, 10)"sv, cplx{ 6.5, 10.0 });
-
-    // Fraction
-    vc::check("_frac(1,2) - _frac(1,3)"sv, frac{ 1, 6 });
-  }
-
   TEST(evaluation, t_basic_mul)
   {
     // Int

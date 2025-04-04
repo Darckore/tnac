@@ -74,7 +74,14 @@ namespace tnac::tests
     }
 
   public:
-    CLASS_SPECIALS_NONE(value_checker);
+    CLASS_SPECIALS_NONE_CUSTOM(value_checker);
+
+    value_checker() noexcept = default;
+
+    explicit value_checker(eval::val_ops op) noexcept :
+      m_op{ op }
+    {
+    }
 
     explicit value_checker(value val) noexcept :
       m_value{ val }
