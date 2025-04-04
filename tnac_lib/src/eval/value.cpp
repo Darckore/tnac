@@ -1,5 +1,6 @@
 #include "eval/value.hpp"
 #include "eval/traits.hpp"
+#include "eval/type_impl.hpp"
 
 namespace tnac::eval::detail
 {

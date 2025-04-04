@@ -125,14 +125,26 @@
     </Expand>
   </Type>
 
-  <Type Name="tnac::eval::array_type">
+  <Type Name="tnac::eval::array_data">
     <DisplayString>array data</DisplayString>
     <Expand>
-      <Item Name="[array]">*m_underlying</Item>
-      <Item Name="[id]">m_id</Item>
+      <Item Name="[array]">m_data</Item>
+      <Item Name="[refcount]">m_refs</Item>
+      <Item Name="[list]">m_list</Item>
     </Expand>
   </Type>
 
+  <Type Name="tnac::eval::array_wrapper">
+    <DisplayString>array wrapper</DisplayString>
+    <Expand>
+      <Item Name="[array]" Condition="m_obj">*m_obj</Item>
+      <Item Name="[array]" Condition="!m_obj">"&lt;null&gt;",sb</Item>
+      <Item Name="[offset]">m_offset</Item>
+      <Item Name="[count]">m_count</Item>
+      <Item Name="[refcount]">m_refs</Item>
+      <Item Name="[list]">m_list</Item>
+    </Expand>
+  </Type>
   
   <Type Name="tnac::ast::decl">
     <DisplayString>{m_kind,en} ({m_id.m_value,sb})</DisplayString>

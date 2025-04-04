@@ -61,8 +61,6 @@ namespace tnac::eval
 
 namespace tnac::eval
 {
-  class value;
-
   //
   // Function wrapper
   // Represents the function value type
@@ -70,10 +68,10 @@ namespace tnac::eval
   class function_type final
   {
   public:
-    using value_type      = ir::function;
-    using pointer         = value_type*;
-    using const_pointer   = const value_type*;
-    using reference       = value_type&;
+    using value_type = ir::function;
+    using pointer = value_type*;
+    using const_pointer = const value_type*;
+    using reference = value_type&;
     using const_reference = const value_type&;
 
   public:
@@ -83,7 +81,8 @@ namespace tnac::eval
 
     function_type(reference func) noexcept :
       m_func{ &func }
-    {}
+    {
+    }
 
     bool operator==(const function_type& other) const noexcept = default;
 
@@ -109,8 +108,10 @@ namespace tnac::eval
   private:
     pointer m_func{};
   };
+}
 
-
+namespace tnac::eval
+{
   //
   // Array type
   // Represents an arbitrary-sized array of values
