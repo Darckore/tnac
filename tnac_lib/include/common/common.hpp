@@ -94,3 +94,176 @@ struct std::hash<tnac::entity_id>
     return *id;
   }
 };
+
+
+namespace tnac
+{
+  //
+  // Defines a counter type
+  //
+  template <typename T>
+  concept counter =
+    utils::integer<T> &&
+    std::unsigned_integral<T>;
+
+  //
+  // Base for ref-counter types
+  //
+  template <typename Derived, counter C = std::size_t>
+  class ref_counted
+  {
+  public:
+    using counted_base = ref_counted<Derived, C>;
+    using object_type  = Derived;
+    using counter_type = C;
+
+  public:
+    CLASS_SPECIALS_NONE_CUSTOM(ref_counted);
+
+    ~ref_counted() noexcept = default;
+
+    ref_counted() noexcept = default;
+
+  public:
+    //
+    // Adds a reference to the current object
+    //
+    void addref() noexcept
+    {
+      ++m_refs;
+    }
+
+    //
+    // Removes a reference for the current object
+    //
+    void release() noexcept
+    {
+      if(m_refs)
+        --m_refs;
+    }
+
+    //
+    // Checks whether the object has any live reference
+    //
+    bool hasref() const noexcept
+    {
+      return static_cast<bool>(m_refs);
+    }
+
+  private:
+    counter_type m_refs{};
+  };
+
+  //
+  // Defines a type derived from ref_counted
+  //
+  template <typename T>
+  concept ref_object = std::derived_from<T, ref_counted<T>>;
+
+  //
+  // A wrapper for a ref-counted type
+  // Holds a pointer to the actual object and manages its ref counter
+  //
+  template <ref_object Object>
+  class rc_wrapper
+  {
+  public:
+    using object_type  = Object;
+    using rc_type      = object_type::counted_base;
+
+    using pointer         = object_type*;
+    using const_pointer   = const object_type*;
+    using reference       = object_type&;
+    using const_reference = const object_type&;
+
+  private:
+    static void ref(pointer obj) noexcept
+    {
+      if (obj)
+        obj->addref();
+    }
+    static void unref(pointer obj) noexcept
+    {
+      if (obj)
+        obj->release();
+    }
+
+  public:
+    rc_wrapper() noexcept = delete;
+
+    explicit rc_wrapper(reference obj) noexcept :
+      m_obj{ &obj }
+    {
+      obj.addref();
+    }
+
+    ~rc_wrapper() noexcept
+    {
+      unref(m_obj);
+    }
+
+    rc_wrapper(const rc_wrapper& other) noexcept :
+      m_obj{ other.m_obj }
+    {
+      ref(m_obj);
+    }
+
+    rc_wrapper& operator=(const rc_wrapper& other) noexcept
+    {
+      if (this == &other)
+        return *this;
+
+      unref(m_obj);
+      m_obj = other.m_obj;
+      ref(m_obj);
+      return *this;
+    }
+
+    rc_wrapper(rc_wrapper&& other) noexcept :
+      m_obj{ other.m_obj }
+    {
+      other.m_obj = {};
+    }
+
+    rc_wrapper& operator=(rc_wrapper&& other) noexcept
+    {
+      if (this == &other)
+        return *this;
+
+      unref(m_obj);
+      m_obj = other.m_obj;
+      other.m_obj = {};
+      return *this;
+    }
+
+  public:
+    //
+    // Checks whether this wrapper references an object
+    //
+    explicit operator bool() const noexcept
+    {
+      return static_cast<bool>(m_obj);
+    }
+
+    //
+    // Provides access to the underlying object
+    // Must check whether is valid first
+    //
+    const_pointer operator->() const noexcept
+    {
+      return m_obj;
+    }
+
+    //
+    // Provides access to the underlying object
+    // Must check whether is valid first
+    //
+    pointer operator->() noexcept
+    {
+      return FROM_CONST(operator->);
+    }
+
+  private:
+    pointer m_obj{};
+  };
+}
