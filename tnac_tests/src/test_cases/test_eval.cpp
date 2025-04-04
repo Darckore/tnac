@@ -195,6 +195,33 @@ namespace tnac::tests
       .with(-8).act(-3).verify(-0.5)                              // -8 // -3
     ;
   }
+
+  TEST(evaluation, t_unary)
+  {
+    value_checker{ val_ops::UnaryNegation }
+
+      .with(2).act().verify(-2)                              // -2
+      .with(2).act(val_ops::Addition, 3).act().verify(-5)    // -(2 + 3)
+      .with(2).act(val_ops::Division, 4).act().verify(-0.5)  // -(2/4)
+      .with(42.69).act(val_ops::UnaryPlus).verify(42.69)     // +42.69
+    ;
+  }
+
+  TEST(evaluation, t_absolute)
+  {
+    value_checker{ val_ops::AbsoluteValue }
+
+      .with(true).act().verify(1)                      // | _true |
+      .with(false).act().verify(0)                     // | _false |
+      .with(2).act().verify(2)                         // | 2 |
+      .with(-2).act().verify(2)                        // | -2 |
+      .with(2.0).act().verify(2.0)                     // | 2.0 |
+      .with(-2.0).act().verify(2.0)                    // | -2.0 |
+      .with(frac{ 1, 2 }).act().verify(frac{ 1, 2 })   // | _frac(1, 2) |
+      .with(frac{ -1, 2 }).act().verify(frac{ 1, 2 })  // | _frac(-1, 2) |
+      .with(cplx{ 3, 4 }).act().verify(5.0)            // | _cplx(3, 4) |
+    ;
+  }
 }
 
 #if 0
@@ -208,31 +235,6 @@ namespace tnac::tests
     vc::check("010"sv, 8ll);
     vc::check("0xff"sv, 255ll);
     vc::check("42.69"sv, 42.69);
-  }
-
-  TEST(evaluation, t_unary)
-  {
-    vc::check("-2"sv, -2ll);
-    vc::check("+42.69"sv, 42.69);
-    vc::check("-(2 + 3)"sv, -5ll);
-    vc::check("-(2/4)"sv, -0.5);
-    vc::check("a = 10 : -a"sv, -10ll);
-  }
-
-  TEST(evaluation, t_absolute)
-  {
-    vc::check("| _true |"sv, 1ll);
-    vc::check("| _false |"sv, 0ll);
-    vc::check("| 2 |"sv, 2ll);
-    vc::check("| -2 |"sv, 2ll);
-    vc::check("| 2.0 |"sv, 2.0);
-    vc::check("| -2.0 |"sv, 2.0);
-    vc::check("| -2.0 |"sv, 2.0);
-    vc::check("| _frac(1, 2) |"sv, frac{1, 2});
-    vc::check("| _frac(-1, 2) |"sv, frac{1, 2});
-    vc::check("| _cplx(3, 4) |"sv, 5.0);
-    
-    vc::check("| _fn(); + 1 |"sv);
   }
 
   TEST(evaluation, t_log_not)
