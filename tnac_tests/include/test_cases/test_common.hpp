@@ -123,6 +123,12 @@ namespace tnac::tests
       return *this;
     }
 
+    value_checker& verify() noexcept
+    {
+      EXPECT_TRUE(!m_value) << "expected and invalid value, got " << m_value.id_str();
+      return *this;
+    }
+
     value_checker& verify(arr expected) noexcept
     {
       utils::unused(expected);

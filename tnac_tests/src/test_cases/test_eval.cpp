@@ -222,6 +222,22 @@ namespace tnac::tests
       .with(cplx{ 3, 4 }).act().verify(5.0)            // | _cplx(3, 4) |
     ;
   }
+
+  TEST(evaluation, t_bitwise)
+  {
+    value_checker{ val_ops::UnaryBitwiseNot }
+
+      .with(2).act().verify(~2ll)                             // ~2
+      .with(2.0).act().verify(~2ll)                           // ~2.0
+      .with(4).act(val_ops::Division, 2).act().verify(~2ll)   // ~(4/2)
+      .with(2.02).act().verify()                              // ~2.02
+      .with(3).act(val_ops::Division, 2).act().verify()       // ~(3/2)
+
+      .with(2).act(val_ops::BitwiseAnd, 3).verify(2ll & 3ll)  // 2 & 3
+      .with(2).act(val_ops::BitwiseXor, 3).verify(2ll ^ 3ll)  // 2 ^ 3
+      .with(2).act(val_ops::BitwiseOr, 3).verify(2ll | 3ll)   // 2 | 3
+    ;
+  }
 }
 
 #if 0
@@ -267,23 +283,6 @@ namespace tnac::tests
     vc::check("?_cplx(0, 1)"sv, true);
     vc::check("?_cplx(1, 0)"sv, true);
     vc::check("f() ; ?f"sv, true);
-  }
-
-  TEST(evaluation, t_bitwise)
-  {
-    vc::check("~2"sv, (~2ll));
-    vc::check("~2.0"sv, (~2ll));
-    vc::check("~(4/2)"sv, (~2ll));
-    vc::check("~2.02"sv);
-    vc::check("~(3/2)"sv);
-
-    vc::check("2 & 3"sv, 2ll & 3ll);
-    vc::check("2 ^ 3"sv, 2ll ^ 3ll);
-    vc::check("2 | 3"sv, 2ll | 3ll);
-
-    vc::check("42 - 40 & 3"sv, 2ll & 3ll);
-    vc::check("120 / 60 ^ 3"sv, 2ll ^ 3ll);
-    vc::check("2 | 9 / 3"sv, 2ll | 3ll);
   }
 
   TEST(evaluation, t_comparisons)
