@@ -9,12 +9,15 @@ namespace tnac::tests
   // Stuff
   //
 
-  using cplx = eval::complex_type;
-  using frac = eval::fraction_type;
-  using arr  = eval::array_type;
-  using func = eval::function_type;
+  using cplx  = eval::complex_type;
+  using frac  = eval::fraction_type;
+  using arr   = eval::array_type;
+  using func  = eval::function_type;
+  using dummy = eval::invalid_val_t;
 
-  inline ::testing::Message& operator<<(::testing::Message & msg, const frac& f) noexcept
+  using value = eval::value;
+
+  inline ::testing::Message& operator<<(::testing::Message& msg, const frac& f) noexcept
   {
     if (f.sign() < 0) msg << '-';
     msg << f.num() << ',' << f.denom();
@@ -30,6 +33,138 @@ namespace tnac::tests
   {
     return core{ fb };
   }
+
+  template <typename T>
+  concept testable =
+    utils::any_same_as<T, cplx, frac, arr, func, dummy, bool> ||
+    utils::integer<T> ||
+    utils::real<T>;
+
+  class value_checker final
+  {
+  public:
+    using enum eval::val_ops;
+    using stored_op = std::optional<eval::val_ops>;
+
+  private:
+    template <typename T>
+    static auto cast(T value) noexcept
+    {
+      return value;
+    }
+
+    static auto cast(utils::integer auto value) noexcept
+    {
+      return static_cast<eval::int_type>(value);
+    }
+
+    static auto cast(utils::real auto value) noexcept
+    {
+      return static_cast<eval::float_type>(value);
+    }
+
+    static auto to_value(testable auto val) noexcept
+    {
+      return value{ cast(val) };
+    }
+
+    static bool eq(dummy, dummy) noexcept
+    {
+      return true;
+    }
+
+  public:
+    CLASS_SPECIALS_NONE(value_checker);
+
+    explicit value_checker(value val) noexcept :
+      m_value{ val }
+    {
+    }
+
+    template <testable T>
+    explicit value_checker(T val) noexcept :
+      value_checker{ to_value(val) }
+    {
+    }
+
+  public:
+    template <testable T>
+    value_checker& verify(T expected) noexcept
+    {
+      const auto target = cast(expected);
+      using target_t = std::remove_cvref_t<decltype(target)>;
+      constexpr auto targetId = utils::type_to_id_v<target_t>;
+      const auto curId = m_value.id();
+      EXPECT_TRUE(curId == targetId)
+        << "Wrong type. Expected "
+        << value::id_str(targetId)
+        << ", actual " << value::id_str(curId);
+
+      if (curId == targetId)
+      {
+        eval::on_value(m_value, utils::visitor{
+          [](auto) noexcept {},
+          [](arr) noexcept {},
+          [](dummy) noexcept {},
+          [&](target_t val) noexcept
+          {
+            using eval::eq;
+            EXPECT_TRUE(eq(target, val)) << "expected: " << expected << " got: " << val;
+          } });
+      }
+
+      return *this;
+    }
+
+    value_checker& verify(arr expected) noexcept
+    {
+      utils::unused(expected);
+      return *this;
+    }
+
+    value_checker& with_op(eval::val_ops op) noexcept
+    {
+      m_op = op;
+      return *this;
+    }
+
+    value_checker& with(testable auto val) noexcept
+    {
+      m_value = to_value(val);
+      return *this;
+    }
+
+  public:
+    value_checker& act(eval::val_ops op, testable auto val) noexcept
+    {
+      m_value = m_value.binary(op, to_value(val));
+      return *this;
+    }
+
+    value_checker& act(testable auto val) noexcept
+    {
+      if (m_op)
+        return act(*m_op, val);
+      return *this;
+    }
+
+    value_checker& act(eval::val_ops op) noexcept
+    {
+      m_value = m_value.unary(op);
+      return *this;
+    }
+
+    value_checker& act() noexcept
+    {
+      if (m_op)
+        return act(*m_op);
+      return *this;
+    }
+
+  private:
+    value m_value{};
+    stored_op m_op{};
+  };
 
 #if 0
   //

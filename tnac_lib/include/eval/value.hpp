@@ -51,7 +51,12 @@ namespace tnac::eval
     type_id id() const noexcept;
 
     //
-    // Returns the value id as string
+    // Converts an id to string
+    //
+    static string_t id_str(type_id id) noexcept;
+
+    //
+    // Returns the current value id as string
     //
     string_t id_str() const noexcept;
 

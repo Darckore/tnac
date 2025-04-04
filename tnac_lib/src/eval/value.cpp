@@ -31,9 +31,6 @@ namespace tnac::eval::detail
 
 namespace tnac::eval
 {
-  // Statics
-
-
   // Special members
 
   value::~value() noexcept = default;
@@ -62,9 +59,9 @@ namespace tnac::eval
     return static_cast<type_id>(m_raw.index());
   }
 
-  string_t value::id_str() const noexcept
+  string_t value::id_str(type_id id) noexcept
   {
-    switch (id())
+    switch (id)
     {
     case Bool:     return "bool"sv;
     case Int:      return "int"sv;
@@ -78,6 +75,11 @@ namespace tnac::eval
     }
 
     return "undef"sv;
+  }
+  
+  string_t value::id_str() const noexcept
+  {
+    return id_str(id());
   }
 
   value::size_type value::size() const noexcept
