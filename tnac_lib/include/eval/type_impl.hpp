@@ -132,11 +132,11 @@ namespace tnac::eval
   public:
     auto begin() const noexcept
     {
-      return data().begin() + m_offset;
+      return std::next(data().begin(), calc_begin());
     }
     auto cbegin() const noexcept
     {
-      return data().cbegin() + m_offset;
+      return std::next(data().cbegin(), calc_begin());
     }
     //auto rbegin() const noexcept
     //{
@@ -149,11 +149,11 @@ namespace tnac::eval
 
     auto end() const noexcept
     {
-      return begin() + m_count;
+      return std::next(data().begin(), calc_end());
     }
     auto cend() const noexcept
     {
-      return cbegin() + m_count;
+      return std::next(data().cbegin(), calc_end());
     }
     //auto rend() const noexcept
     //{
@@ -166,6 +166,11 @@ namespace tnac::eval
 
   private:
     wrapper_base::const_reference data() const noexcept;
+
+    size_type calc_begin() const noexcept;
+    size_type calc_end() const noexcept;
+    size_type calc_rbegin() const noexcept;
+    size_type calc_rend() const noexcept;
 
   private:
     size_type m_offset{};

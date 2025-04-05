@@ -80,4 +80,21 @@ namespace tnac::eval
   {
     return *operator->();
   }
+
+  array_wrapper::size_type array_wrapper::calc_begin() const noexcept
+  {
+    return m_offset;
+  }
+  array_wrapper::size_type array_wrapper::calc_end() const noexcept
+  {
+    return m_offset + m_count;
+  }
+  array_wrapper::size_type array_wrapper::calc_rbegin() const noexcept
+  {
+    return {};
+  }
+  array_wrapper::size_type array_wrapper::calc_rend() const noexcept
+  {
+    return {};
+  }
 }
