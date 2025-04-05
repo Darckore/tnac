@@ -35,7 +35,7 @@ namespace tnac::eval
   array_wrapper::~array_wrapper() noexcept
   {
     auto&& arr = data();
-    if (arr.hasref())
+    if (!arr.is_last())
       return;
 
     auto&& list = arr.list();

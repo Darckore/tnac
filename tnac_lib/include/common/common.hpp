@@ -150,6 +150,16 @@ namespace tnac
       return static_cast<bool>(m_refs);
     }
 
+    //
+    // Special case
+    // Checks that the last referenced instance of the object remains
+    // Need this in destructors of users to manage the last ref
+    //
+    bool is_last() const noexcept
+    {
+      return m_refs == counter_type{ 1 };
+    }
+
   private:
     counter_type m_refs{};
   };
