@@ -16,7 +16,7 @@ namespace tnac::tests
     };
   }
 
-  TEST(arrays, t_ref_counter)
+  TEST(arrays, t_arr_wrappers)
   {
     arr_store as;
 

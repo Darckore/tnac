@@ -22,7 +22,7 @@ namespace tnac::eval
 
   void array_data::add(value item) noexcept
   {
-    m_data.push_back(item);
+    m_data.push_back(std::move(item));
   }
 }
 
