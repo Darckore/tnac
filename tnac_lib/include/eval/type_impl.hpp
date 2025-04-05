@@ -138,14 +138,14 @@ namespace tnac::eval
     {
       return std::next(data().cbegin(), calc_begin());
     }
-    //auto rbegin() const noexcept
-    //{
-    //  return data().rbegin();
-    //}
-    //auto crbegin() const noexcept
-    //{
-    //  return data().crbegin();
-    //}
+    auto rbegin() const noexcept
+    {
+      return std::next(data().rbegin(), calc_rbegin());
+    }
+    auto crbegin() const noexcept
+    {
+      return std::next(data().crbegin(), calc_rbegin());
+    }
 
     auto end() const noexcept
     {
@@ -155,14 +155,14 @@ namespace tnac::eval
     {
       return std::next(data().cbegin(), calc_end());
     }
-    //auto rend() const noexcept
-    //{
-    //  return data().rend();
-    //}
-    //auto crend() const noexcept
-    //{
-    //  return data().crend();
-    //}
+    auto rend() const noexcept
+    {
+      return std::next(data().rbegin(), calc_rend());
+    }
+    auto crend() const noexcept
+    {
+      return std::next(data().crbegin(), calc_rend());
+    }
 
   private:
     wrapper_base::const_reference data() const noexcept;

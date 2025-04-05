@@ -83,18 +83,21 @@ namespace tnac::eval
 
   array_wrapper::size_type array_wrapper::calc_begin() const noexcept
   {
+    UTILS_ASSERT(m_offset <= data().size());
     return m_offset;
   }
   array_wrapper::size_type array_wrapper::calc_end() const noexcept
   {
-    return m_offset + m_count;
+    const auto res = m_offset + m_count;
+    UTILS_ASSERT(res <= data().size());
+    return res;
   }
   array_wrapper::size_type array_wrapper::calc_rbegin() const noexcept
   {
-    return {};
+    return data().size() - calc_end();
   }
   array_wrapper::size_type array_wrapper::calc_rend() const noexcept
   {
-    return {};
+    return data().size() - calc_begin();
   }
 }
