@@ -68,42 +68,27 @@ namespace tnac::eval
   class function_type final
   {
   public:
-    using value_type = ir::function;
-    using pointer = value_type*;
-    using const_pointer = const value_type*;
-    using reference = value_type&;
+    using value_type      = ir::function;
+    using pointer         = value_type*;
+    using const_pointer   = const value_type*;
+    using reference       = value_type&;
     using const_reference = const value_type&;
 
   public:
     CLASS_SPECIALS_NODEFAULT(function_type);
 
-    ~function_type() noexcept = default;
+    ~function_type() noexcept;
 
-    function_type(reference func) noexcept :
-      m_func{ &func }
-    {
-    }
+    function_type(reference func) noexcept;
 
     bool operator==(const function_type& other) const noexcept = default;
 
   public:
-    const_pointer operator->() const noexcept
-    {
-      return m_func;
-    }
-    pointer operator->() noexcept
-    {
-      return FROM_CONST(operator->);
-    }
+    const_pointer operator->() const noexcept;
+    pointer operator->() noexcept;
 
-    const_reference operator*() const noexcept
-    {
-      return *m_func;
-    }
-    reference operator*() noexcept
-    {
-      return FROM_CONST(operator*);
-    }
+    const_reference operator*() const noexcept;
+    reference operator*() noexcept;
 
   private:
     pointer m_func{};
@@ -112,6 +97,8 @@ namespace tnac::eval
 
 namespace tnac::eval
 {
+  class array_wrapper;
+
   //
   // Array type
   // Represents an arbitrary-sized array of values
@@ -119,11 +106,21 @@ namespace tnac::eval
   class array_type final
   {
   public:
+    using value_type      = array_wrapper;
+    using pointer         = value_type*;
+    using const_pointer   = const value_type*;
+    using reference       = value_type&;
+    using const_reference = const value_type&;
 
   public:
-    CLASS_SPECIALS_ALL(array_type);
+    CLASS_SPECIALS_NODEFAULT(array_type);
 
-    ~array_type() noexcept = default;
+    ~array_type() noexcept;
+
+    explicit array_type(reference aw) noexcept;
+
+  private:
+    pointer m_obj{};
   };
 }
 

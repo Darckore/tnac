@@ -132,37 +132,37 @@ namespace tnac::eval
   public:
     auto begin() const noexcept
     {
-      return data().begin();
+      return data().begin() + m_offset;
     }
     auto cbegin() const noexcept
     {
-      return data().cbegin();
+      return data().cbegin() + m_offset;
     }
-    auto rbegin() const noexcept
-    {
-      return data().rbegin();
-    }
-    auto crbegin() const noexcept
-    {
-      return data().crbegin();
-    }
+    //auto rbegin() const noexcept
+    //{
+    //  return data().rbegin();
+    //}
+    //auto crbegin() const noexcept
+    //{
+    //  return data().crbegin();
+    //}
 
     auto end() const noexcept
     {
-      return data().end();
+      return begin() + m_count;
     }
     auto cend() const noexcept
     {
-      return data().cend();
+      return cbegin() + m_count;
     }
-    auto rend() const noexcept
-    {
-      return data().rend();
-    }
-    auto crend() const noexcept
-    {
-      return data().crend();
-    }
+    //auto rend() const noexcept
+    //{
+    //  return data().rend();
+    //}
+    //auto crend() const noexcept
+    //{
+    //  return data().crend();
+    //}
 
   private:
     wrapper_base::const_reference data() const noexcept;

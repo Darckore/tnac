@@ -146,6 +146,14 @@
     </Expand>
   </Type>
   
+  <Type Name="tnac::eval::array_type">
+    <DisplayString>array</DisplayString>
+    <Expand>
+      <Item Name="[array]" Condition="m_obj">*m_obj</Item>
+      <Item Name="[array]" Condition="!m_obj">"&lt;null&gt;",sb</Item>
+    </Expand>
+  </Type>
+  
   <Type Name="tnac::ast::decl">
     <DisplayString>{m_kind,en} ({m_id.m_value,sb})</DisplayString>
     <Expand>
