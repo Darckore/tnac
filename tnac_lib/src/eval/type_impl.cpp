@@ -34,9 +34,6 @@ namespace tnac::eval
 
   array_wrapper::~array_wrapper() noexcept
   {
-    if (hasref())
-      return;
-
     auto&& arr = data();
     if (arr.hasref())
       return;
