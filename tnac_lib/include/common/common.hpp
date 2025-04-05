@@ -174,13 +174,11 @@ namespace tnac
   // A wrapper for a ref-counted type
   // Holds a pointer to the actual object and manages its ref counter
   //
-  template <ref_object Object>
+  template <typename Object>
   class rc_wrapper
   {
   public:
-    using object_type  = Object;
-    using rc_type      = object_type::counted_base;
-
+    using object_type     = Object;
     using pointer         = object_type*;
     using const_pointer   = const object_type*;
     using reference       = object_type&;
@@ -204,6 +202,7 @@ namespace tnac
     explicit rc_wrapper(reference obj) noexcept :
       m_obj{ &obj }
     {
+      static_assert(ref_object<Object>);
       obj.addref();
     }
 

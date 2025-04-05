@@ -43,12 +43,24 @@ namespace tnac::eval
 
   array_type::~array_type() noexcept
   {
+    auto obj = operator->();
+    if (!obj || !obj->is_last())
+      return;
+
+    auto&& list = obj->list();
+    list.remove(*obj);
   }
 
   array_type::array_type(reference aw) noexcept :
-    m_obj{ &aw }
+    rc_base{ aw }
   {
   }
+
+  array_type::array_type(const array_type&) noexcept = default;
+  array_type& array_type::operator=(const array_type&) noexcept = default;
+  array_type::array_type(array_type&&) noexcept = default;
+  array_type& array_type::operator=(array_type&&) noexcept = default;
+
 
   // Public members
 

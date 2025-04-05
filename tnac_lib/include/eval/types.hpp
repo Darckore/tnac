@@ -103,24 +103,23 @@ namespace tnac::eval
   // Array type
   // Represents an arbitrary-sized array of values
   //
-  class array_type final
+  class array_type final :
+    public rc_wrapper<array_wrapper>
   {
   public:
-    using value_type      = array_wrapper;
-    using pointer         = value_type*;
-    using const_pointer   = const value_type*;
-    using reference       = value_type&;
-    using const_reference = const value_type&;
+    using rc_base = rc_wrapper<array_wrapper>;
 
   public:
-    CLASS_SPECIALS_NODEFAULT(array_type);
+    array_type() noexcept = delete;
 
     ~array_type() noexcept;
 
-    explicit array_type(reference aw) noexcept;
+    array_type(const array_type&) noexcept;
+    array_type& operator=(const array_type&) noexcept;
+    array_type(array_type&&) noexcept;
+    array_type& operator=(array_type&&) noexcept;
 
-  private:
-    pointer m_obj{};
+    explicit array_type(reference aw) noexcept;
   };
 }
 
