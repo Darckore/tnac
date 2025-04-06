@@ -120,6 +120,9 @@ namespace tnac::eval
     array_type& operator=(array_type&&) noexcept;
 
     explicit array_type(reference aw) noexcept;
+
+  public:
+    const array_wrapper& wrapper() const noexcept;
   };
 }
 

@@ -66,6 +66,8 @@ namespace tnac::eval
   // Value casters
   //
 
+  class store;
+
   template <expr_result T> using typed_value = std::optional<T>;
 
   template <expr_result T> struct type_wrapper
@@ -102,10 +104,12 @@ namespace tnac::eval
 
       return to_int(val.real());
     }
+
+    array_type to_array(store& vs, value val) noexcept;
   }
 
-  template <typename To> auto get_caster() noexcept;
-  template <> inline auto get_caster<bool_type>() noexcept
+  template <typename To> auto get_caster(store* = nullptr) noexcept;
+  template <> inline auto get_caster<bool_type>(store*) noexcept
   {
     using res_type = typed_value<bool_type>;
     return utils::visitor
@@ -124,7 +128,7 @@ namespace tnac::eval
       [](invalid_val_t) noexcept   -> res_type { return false; }
     };
   }
-  template <> inline auto get_caster<int_type>() noexcept
+  template <> inline auto get_caster<int_type>(store*) noexcept
   {
     using res_type = typed_value<int_type>;
     return utils::visitor
@@ -139,7 +143,7 @@ namespace tnac::eval
       [](invalid_val_t) noexcept   -> res_type { return int_type{}; }
     };
   }
-  template <> inline auto get_caster<float_type>() noexcept
+  template <> inline auto get_caster<float_type>(store*) noexcept
   {
     using res_type = typed_value<float_type>;
     return utils::visitor
@@ -160,7 +164,7 @@ namespace tnac::eval
       [](invalid_val_t) noexcept   -> res_type { return float_type{}; }
     };
   }
-  template <> inline auto get_caster<complex_type>() noexcept
+  template <> inline auto get_caster<complex_type>(store*) noexcept
   {
     using res_type = typed_value<complex_type>;
     return utils::visitor
@@ -175,7 +179,7 @@ namespace tnac::eval
       [](invalid_val_t) noexcept   -> res_type { return complex_type{}; }
     };
   }
-  template <> inline auto get_caster<fraction_type>() noexcept
+  template <> inline auto get_caster<fraction_type>(store*) noexcept
   {
     using res_type = typed_value<fraction_type>;
     return utils::visitor
@@ -213,7 +217,7 @@ namespace tnac::eval
       [](invalid_val_t) noexcept   -> res_type { return fraction_type{ 0 }; }
     };
   }
-  template <> inline auto get_caster<function_type>() noexcept
+  template <> inline auto get_caster<function_type>(store*) noexcept
   {
     using res_type = typed_value<function_type>;
     return utils::visitor
@@ -222,16 +226,19 @@ namespace tnac::eval
       [](function_type v) noexcept -> res_type { return v; }
     };
   }
-  template <> inline auto get_caster<array_type>() noexcept
+  template <> inline auto get_caster<array_type>(store* vs) noexcept
   {
     using res_type = typed_value<array_type>;
     return utils::visitor
     {
-      [](auto) noexcept         -> res_type { return {}; },
+      [vs](auto v) noexcept     -> res_type
+      { 
+        return vs ? detail::to_array(*vs, value{ v }) : res_type{};
+      },
       [](array_type v) noexcept -> res_type { return v; }
     };
   }
-  template <> inline auto get_caster<invalid_val_t>() noexcept
+  template <> inline auto get_caster<invalid_val_t>(store*) noexcept
   {
     using res_type = typed_value<invalid_val_t>;
     return utils::visitor
@@ -383,7 +390,6 @@ namespace tnac::eval
   {
     return std::fmod(l.to<float_type>(), r.to<float_type>());
   }
-
 
   //
   // Utility functions

@@ -64,4 +64,8 @@ namespace tnac::eval
 
   // Public members
 
+  const array_wrapper& array_type::wrapper() const noexcept
+  {
+    return *operator->();
+  }
 }

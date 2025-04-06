@@ -228,9 +228,9 @@ namespace tnac::eval
 
     auto&& store = arr->val_store();
     auto&& resData = store.allocate_array(arr->size());
-    for (auto it = arr->begin(); it != arr->end(); ++it)
+    for (auto&& it : arr.wrapper())
     {
-      resData.add(it->unary(op));
+      resData.add(it.unary(op));
     }
 
     auto&& aw = store.wrap(resData);
@@ -239,7 +239,7 @@ namespace tnac::eval
 
   value value::unary(val_ops op) const noexcept
   {
-    if (id() == type_id::Array)
+    if (is_array())
       return unary_as_array(op);
 
     value res{};
@@ -349,6 +349,28 @@ namespace tnac::eval
     {
       return value{};
     }
+    auto eq(array_type lhs, array_type rhs, bool compareForEquality) noexcept
+    {
+      if (lhs->id() == rhs->id())
+      {
+        const auto res = lhs->offset() == rhs->offset() &&
+                         lhs->size() == rhs->size();
+        return value{ compareForEquality && res };
+      }
+
+      if (lhs->size() != rhs->size())
+        return value{ !compareForEquality };
+
+      for (auto&& [le, re] : utils::make_iterators(lhs.wrapper(), rhs.wrapper()))
+      {
+        if (!to_bool(le.binary(val_ops::Equal, re)))
+        {
+          return value{ !compareForEquality };
+        }
+      }
+
+      return value{ compareForEquality };
+    }
 
     auto lt(const rel_comparable auto& lhs, const rel_comparable auto& rhs) noexcept
     {
@@ -357,6 +379,25 @@ namespace tnac::eval
     auto lt(const expr_result auto&, const expr_result auto&) noexcept
     {
       return value{};
+    }
+    auto lt(array_type lhs, array_type rhs) noexcept
+    {
+      if (lhs->id() == rhs->id() &&
+          lhs->offset() == rhs->offset() &&
+          lhs->size() == rhs->size())
+      {
+        return value::false_val();
+      }
+
+      for (auto&& [lv, rv] : utils::make_iterators(lhs.wrapper(), rhs.wrapper()))
+      {
+        if (to_bool(lv.binary(val_ops::RelLess, rv)))
+        {
+          return value::true_val();
+        }
+      }
+
+      return value{ lhs->size() < rhs->size() };
     }
 
     auto lte(const fully_comparable auto& lhs, const fully_comparable auto& rhs) noexcept
@@ -367,6 +408,14 @@ namespace tnac::eval
     {
       return value{};
     }
+    auto lte(array_type lhs, array_type rhs) noexcept
+    {
+      if (to_bool(lt(lhs, rhs)))
+      {
+        return value::true_val();
+      }
+      return eq(std::move(lhs), std::move(rhs), true);
+    }
 
     auto gt(const fully_comparable auto& lhs, const fully_comparable auto& rhs) noexcept
     {
@@ -376,6 +425,25 @@ namespace tnac::eval
     {
       return value{};
     }
+    auto gt(array_type lhs, array_type rhs) noexcept
+    {
+      if (lhs->id() == rhs->id() &&
+          lhs->offset() == rhs->offset() &&
+          lhs->size() == rhs->size())
+      {
+        return value::false_val();
+      }
+
+      for (auto&& [lv, rv] : utils::make_iterators(lhs.wrapper(), rhs.wrapper()))
+      {
+        if (to_bool(lv.binary(val_ops::RelGr, rv)))
+        {
+          return value::true_val();
+        }
+      }
+
+      return value{ lhs->size() > rhs->size() };
+    }
 
     auto gte(const rel_comparable auto& lhs, const rel_comparable auto& rhs) noexcept
     {
@@ -384,6 +452,14 @@ namespace tnac::eval
     auto gte(const expr_result auto&, const expr_result auto&) noexcept
     {
       return value{};
+    }
+    auto gte(array_type lhs, array_type rhs) noexcept
+    {
+      if (to_bool(gt(lhs, rhs)))
+      {
+        return value::true_val();
+      }
+      return eq(std::move(lhs), std::move(rhs), true);
     }
 
 
@@ -516,8 +592,57 @@ namespace tnac::eval
     }
   }
 
+  value value::binary_as_array(val_ops op, const value& r) const noexcept
+  {
+    auto vs = extract_store();
+    if (!vs)
+      vs = r.extract_store();
+
+    auto caster = get_caster<array_type>(vs);
+    auto lhs = caster(*this);
+    auto rhs = caster(r);
+    if (!lhs || !rhs)
+      return {};
+
+    auto larr = std::move(*lhs);
+    auto rarr = std::move(*rhs);
+    if (detail::is_comparison(op))
+    {
+      using enum val_ops;
+      switch (op)
+      {
+        case RelLess:   return lt(std::move(larr), std::move(rarr));
+        case RelLessEq: return lte(std::move(larr), std::move(rarr));
+        case RelGr:     return gt(std::move(larr), std::move(rarr));
+        case RelGrEq:   return gte(std::move(larr), std::move(rarr));
+        case Equal:     return eq(std::move(larr), std::move(rarr), true);
+        case NEqual:    return eq(std::move(larr), std::move(rarr), false);
+      }
+    }
+
+    const auto lsz = larr->size();
+    const auto rsz = rarr->size();
+    if (!lsz || !rsz)
+      return {};
+
+    UTILS_ASSERT(vs);
+    auto&& resArr = vs->allocate_array(lsz * rsz);
+    for (auto&& li : larr.wrapper())
+    {
+      for (auto&& ri : rarr.wrapper())
+      {
+        resArr.add(li.binary(op, ri));
+      }
+    }
+
+    return value{ array_type{ vs->wrap(resArr) } };
+  }
+
   value value::binary(val_ops op, const value& rhs) const noexcept
   {
+    if (is_array() || rhs.is_array())
+      return binary_as_array(op, rhs);
+
     value res{};
     if (detail::is_binary(op))
     {
@@ -564,5 +689,21 @@ namespace tnac::eval
     }
 
     return res;
+  }
+
+
+  // Private members
+
+  bool value::is_array() const noexcept
+  {
+    return id() == type_id::Array;
+  }
+
+  store* value::extract_store() const noexcept
+  {
+    if (auto arr = try_get<array_type>())
+      return &(*arr)->val_store();
+
+    return {};
   }
 }

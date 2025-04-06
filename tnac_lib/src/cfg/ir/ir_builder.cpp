@@ -79,7 +79,7 @@ namespace tnac::ir
   {
     const auto id = val->id();
     auto&& res = m_consts.emplace_back(reg, const_val{ std::move(val) });
-    const auto emplaceOk = m_arrays.try_emplace(id, &res).second;
+    [[maybe_unused]] const auto emplaceOk = m_arrays.try_emplace(id, &res).second;
     UTILS_ASSERT(emplaceOk);
     return res;
   }

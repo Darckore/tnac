@@ -297,8 +297,12 @@ namespace tnac
     }
 
     auto rv = m_context.ret_val();
-    if(!check_post_jmp())
-      emit_store(*rv, extract());
+    if (!check_post_jmp())
+    {
+      auto op = extract();
+      intern_array(op);
+      emit_store(*rv, op);
+    }
     emit_jump(m_context.ret_val(), *retBlock);
   }
 
@@ -888,6 +892,7 @@ namespace tnac
     auto&& block = m_context.current_block();
     auto&& instr = m_cfg->get_builder().add_instruction(block, ir::op_code::Jump, m_context.func_end());
     instr.add(&dest);
+    intern_array(value);
     m_cfg->connect(block, dest, value);
     update_func_start(instr);
   }
@@ -945,6 +950,7 @@ namespace tnac
     {
       auto&& instr = builder.add_instruction(block, ir::op_code::Append, before);
       auto val = extract();
+      intern_array(val);
       instr.add(val).add(&arr);
       update_func_start(instr);
       before = instr.to_iterator();
@@ -1130,7 +1136,9 @@ namespace tnac
       auto rv = m_context.ret_val();
       if (!has_ret_jump())
       {
-        emit_store(*rv, extract());
+        auto op = extract();
+        intern_array(op);
+        emit_store(*rv, op);
         emit_jump(rv, *retBlock);
       }
 

@@ -9,6 +9,7 @@ namespace tnac::eval
 {
   enum class val_ops : std::uint8_t;
   class array_wrapper;
+  class store;
 
   //
   // Stores a value
@@ -165,7 +166,13 @@ namespace tnac::eval
     value binary(val_ops op, const value& rhs) const noexcept;
 
   private:
+    bool is_array() const noexcept;
+
     value unary_as_array(val_ops op) const noexcept;
+
+    value binary_as_array(val_ops op, const value& rhs) const noexcept;
+
+    store* extract_store() const noexcept;
 
   private:
     underlying_val m_raw{};
