@@ -24,6 +24,11 @@ namespace tnac
     class symbol;
     class module_sym;
   }
+
+  namespace eval
+  {
+    class store;
+  }
 }
 
 namespace tnac
@@ -52,7 +57,7 @@ namespace tnac
 
     ~compiler() noexcept;
 
-    compiler(sema& sema, ir::cfg& gr, feedback* fb) noexcept;
+    compiler(sema& sema, eval::store& valStore, ir::cfg& gr, feedback* fb) noexcept;
 
   public:
     //
@@ -372,6 +377,7 @@ namespace tnac
     sema* m_sema{};
     feedback* m_feedback{};
     ir::cfg* m_cfg{};
+    eval::store* m_vals{};
     detail::context m_context;
     detail::name_repo m_names;
     detail::compiler_stack m_stack;

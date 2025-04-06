@@ -129,6 +129,11 @@ namespace tnac::eval
     //
     size_type size() const noexcept;
 
+    //
+    // Returns an id, which is basically the underlying array address
+    //
+    entity_id id() const noexcept;
+
   public:
     auto begin() const noexcept
     {

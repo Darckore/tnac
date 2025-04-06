@@ -1,10 +1,11 @@
 #include "cfg/ir/ir_builder.hpp"
+#include "eval/type_impl.hpp"
 
 namespace tnac::ir
 {
   struct builder::arr_descr
   {
-    //arr_data m_data;
+    eval::array_type m_data;
     constant* m_val{};
   };
 }
@@ -83,16 +84,15 @@ namespace tnac::ir
     return m_edges.emplace_back(from, to, val);
   }
 
-  //constant& builder::intern(vreg& reg, arr_data arr) noexcept
-  //{
-  //  const auto idx = m_arrays.size();
-  //  auto newItem = m_arrays.try_emplace(idx, std::move(arr));
-  //  UTILS_ASSERT(newItem.second);
-  //  auto&& descr = newItem.first->second;
-  //  auto&& res = m_consts.emplace_back(reg, const_val{ eval::array_type{ descr.m_data, idx } });
-  //  descr.m_val = &res;
-  //  return res;
-  //}
+  constant& builder::intern(vreg& reg, eval::array_type val) noexcept
+  {
+    auto newItem = m_arrays.try_emplace(val->id(), val);
+    UTILS_ASSERT(newItem.second);
+    auto&& descr = newItem.first->second;
+    auto&& res = m_consts.emplace_back(reg, const_val{ std::move(val) });
+    descr.m_val = &res;
+    return res;
+  }
 
   builder::instruction_list& builder::instructions() noexcept
   {
@@ -109,16 +109,17 @@ namespace tnac::ir
     return m_consts;
   }
 
-  //constant* builder::interned(const eval::array_type& arr) noexcept
-  //{
-  //  auto item = m_arrays.find(arr.id());
-  //  if (item == m_arrays.end())
-  //  {
-  //    UTILS_ASSERT(false);
-  //    return {};
-  //  }
-  //  return item->second.m_val;
-  //}
+  constant* builder::interned(const eval::array_type& val) noexcept
+  {
+    auto item = m_arrays.find(val->id());
+    if (item == m_arrays.end())
+    {
+      UTILS_ASSERT(false);
+      return {};
+    }
+    return item->second.m_val;
+  }
+
 
   // Private members
 

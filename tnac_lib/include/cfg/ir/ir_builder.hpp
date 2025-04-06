@@ -27,7 +27,7 @@ namespace tnac::ir
     using const_list       = constant::list_type;
     using const_val        = constant::value_type;
     using size_type        = instruction::size_type;
-    using arr_store        = std::unordered_map<size_type, arr_descr>;
+    using arr_store        = std::unordered_map<entity_id, arr_descr>;
 
   public:
     CLASS_SPECIALS_NONE_CUSTOM(builder);
@@ -99,9 +99,9 @@ namespace tnac::ir
     edge& make_edge(basic_block& from, basic_block& to, operand val) noexcept;
 
     //
-    // Interns an array
+    // Interns a global array
     //
-    //constant& intern(vreg& reg, arr_data arr) noexcept;
+    constant& intern(vreg& reg, eval::array_type val) noexcept;
 
     //
     // Returns a reference to the instruction list
@@ -121,7 +121,7 @@ namespace tnac::ir
     //
     // Returns an interned constant by array instance
     //
-    //constant* interned(const eval::array_type& arr) noexcept;
+    constant* interned(const eval::array_type& val) noexcept;
 
   private:
     //

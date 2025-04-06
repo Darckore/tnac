@@ -3,6 +3,7 @@
 #include "common/diag.hpp"
 #include "sema/sema.hpp"
 #include "cfg/cfg.hpp"
+#include "eval/value_store.hpp"
 
 namespace tnac::eval::detail
 {
@@ -230,10 +231,11 @@ namespace tnac
 
   compiler::~compiler() noexcept = default;
 
-  compiler::compiler(sema& sema, ir::cfg& gr, feedback* fb) noexcept :
+  compiler::compiler(sema& sema, eval::store& valStore, ir::cfg& gr, feedback* fb) noexcept :
     m_sema{ &sema },
     m_feedback{ fb },
-    m_cfg{ &gr }
+    m_cfg{ &gr },
+    m_vals{ &valStore }
   {}
 
 
@@ -349,26 +351,24 @@ namespace tnac
 
   void compiler::visit(ast::array_expr& arr) noexcept
   {
-    utils::unused(arr);
-    //const auto size = arr.elements().size();
-    //if (!m_stack.has_values(size))
-    //{
-    //  clear_store();
-    //  auto&& target = emit_arr(size);
-    //  emit_append(target, size);
-    //  emit_load(target);
-    //  return;
-    //}
+    const auto size = arr.elements().size();
+    if (!m_stack.has_values(size))
+    {
+      clear_store();
+      auto&& target = emit_arr(size);
+      emit_append(target, size);
+      emit_load(target);
+      return;
+    }
 
-    //using arr_t = eval::array_type::value_type;
-    //arr_t arrData;
-    //arrData.reserve(size);
-    //m_stack.fill(arrData, size);
-    //auto&& builder = m_cfg->get_builder();
-    //auto&& reg = builder.make_global_register(m_names.array_name());
-    //auto&& cval = builder.intern(reg, std::move(arrData));
-    //m_stack.push(cval.value());
-    //emit_load(reg);
+    auto&& arrData = m_vals->allocate_array(size);
+    m_stack.fill(arrData, size);
+    auto&& arrWrapper = m_vals->wrap(arrData);
+    auto&& builder = m_cfg->get_builder();
+    auto&& reg = builder.make_global_register(m_names.array_name());
+
+    auto&& cval = builder.intern(reg, eval::array_type{ arrWrapper });
+    m_stack.push(cval.value());
   }
 
   void compiler::visit(ast::abs_expr&) noexcept

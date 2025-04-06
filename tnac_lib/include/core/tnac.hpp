@@ -10,6 +10,7 @@
 #include "parser/commands/cmd_interpreter.hpp"
 #include "compiler/compiler.hpp"
 #include "cfg/cfg.hpp"
+#include "eval/value_store.hpp"
 
 namespace tnac
 {
@@ -142,6 +143,9 @@ namespace tnac
     source_manager m_srcMgr;
     commands::store m_cmdStore;
     cmd m_cmdInterpreter;
+
+    // eval
+    eval::store m_valStore;
 
     // compilation
     ir::builder m_irBuilder;

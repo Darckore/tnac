@@ -1,4 +1,6 @@
 #include "compiler/detail/compiler_stack.hpp"
+#include "eval/value_store.hpp"
+#include "eval/type_impl.hpp"
 
 namespace tnac::detail
 {
@@ -99,15 +101,14 @@ namespace tnac::detail
       });
   }
 
-  //void compiler_stack::fill(arr_type& arr, size_type count) noexcept
-  //{
-  //  utils::unused(arr, count);
-  //  //walk_back(count, [&arr](auto op) noexcept
-  //  //  {
-  //  //    UTILS_ASSERT(op.is_value());
-  //  //    arr.emplace_back(op.get_value());
-  //  //  });
-  //}
+  void compiler_stack::fill(eval::array_data& arr, size_type count) noexcept
+  {
+    walk_back(count, [&arr](auto op) noexcept
+      {
+        UTILS_ASSERT(op.is_value());
+        arr.add(op.get_value());
+      });
+  }
 
   template <eval::expr_result Obj, typename Int, Int... Seq>
   void compiler_stack::instantiate(cval_array<sizeof...(Seq)>& args, utils::idx_seq<Int, Seq...>) noexcept

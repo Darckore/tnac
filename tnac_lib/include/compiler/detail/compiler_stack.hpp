@@ -5,6 +5,11 @@
 #pragma once
 #include "cfg/ir/ir_instructions.hpp"
 
+namespace tnac::eval
+{
+  class array_data;
+}
+
 namespace tnac::detail
 {
   template <typename F>
@@ -101,7 +106,7 @@ namespace tnac::detail
     // Fills values to the given array
     // Operands are read in reverse order (offset to top)
     //
-    //void fill(arr_type& arr, size_type count) noexcept;
+    void fill(eval::array_data& arr, size_type count) noexcept;
 
     //
     // Constructs a typed value from the current stack contents

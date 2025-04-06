@@ -73,6 +73,11 @@ namespace tnac::eval
     return m_count;
   }
 
+  entity_id array_wrapper::id() const noexcept
+  {
+    return &data();
+  }
+
 
   // Private members
 
