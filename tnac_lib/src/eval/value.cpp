@@ -1,6 +1,7 @@
 #include "eval/value.hpp"
 #include "eval/traits.hpp"
 #include "eval/type_impl.hpp"
+#include "eval/value_store.hpp"
 
 namespace tnac::eval::detail
 {
@@ -216,8 +217,31 @@ namespace tnac::eval
     }
   }
 
+  value value::unary_as_array(val_ops op) const noexcept
+  {
+    auto arr = std::get<array_type>(m_raw);
+    if (utils::eq_any(op, val_ops::LogicalIs, val_ops::LogicalNot))
+    {
+      auto toBool = get_caster<bool_type>()(std::move(arr));
+      return value{ toBool.value_or(false) }.unary(op);
+    }
+
+    auto&& store = arr->val_store();
+    auto&& resData = store.allocate_array(arr->size());
+    for (auto it = arr->begin(); it != arr->end(); ++it)
+    {
+      resData.add(it->unary(op));
+    }
+
+    auto&& aw = store.wrap(resData);
+    return value{ array_type{ aw } };
+  }
+
   value value::unary(val_ops op) const noexcept
   {
+    if (id() == type_id::Array)
+      return unary_as_array(op);
+
     value res{};
     if (detail::is_unary(op))
     {

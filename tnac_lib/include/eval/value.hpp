@@ -165,6 +165,9 @@ namespace tnac::eval
     value binary(val_ops op, const value& rhs) const noexcept;
 
   private:
+    value unary_as_array(val_ops op) const noexcept;
+
+  private:
     underlying_val m_raw{};
   };
 
