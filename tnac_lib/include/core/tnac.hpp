@@ -8,9 +8,9 @@
 #include "src_mgr/source_manager.hpp"
 #include "sema/sema.hpp"
 #include "parser/commands/cmd_interpreter.hpp"
-#include "eval/value/value_registry.hpp"
 #include "compiler/compiler.hpp"
 #include "cfg/cfg.hpp"
+#include "eval/value_store.hpp"
 
 namespace tnac
 {
@@ -145,7 +145,7 @@ namespace tnac
     cmd m_cmdInterpreter;
 
     // eval
-    eval::registry m_reg;
+    eval::store m_valStore;
 
     // compilation
     ir::builder m_irBuilder;

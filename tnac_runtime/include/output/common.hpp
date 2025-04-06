@@ -30,14 +30,14 @@ namespace tnac::rt::out
     value_printer() noexcept;
 
   public:
-    void operator()(eval::value val, int base, out_stream& os) noexcept;
+    void operator()(const eval::value& val, int base, out_stream& os) noexcept;
 
-    void operator()(eval::value val, int base) noexcept;
+    void operator()(const eval::value& val, int base) noexcept;
 
   private:
     out_stream& out() noexcept;
 
-    void print_value(eval::value val) noexcept;
+    void print_value(const eval::value& val) noexcept;
 
   private:
     out_stream* m_out{ &std::cout };

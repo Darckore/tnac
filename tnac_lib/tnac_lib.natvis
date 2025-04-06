@@ -14,36 +14,10 @@
 
 
   <Type Name="tnac::eval::value">
-    <DisplayString>{(tnac::eval::type_id)((m_val &amp; 0xFF00000000000000) &gt;&gt; 56),en}</DisplayString>
+    <DisplayString>{(tnac::eval::type_id)(m_raw._Which),en}</DisplayString>
     <Expand>
-      <Item Name="[kind]">(tnac::eval::type_id)((m_val &amp; 0xFF00000000000000) &gt;&gt; 56),en</Item>
-      <Item Name="[value]" Condition="((m_val &amp; 0xFF00000000000000) &gt;&gt; 56) == 0">"&lt;undef&gt;",sb</Item>
-      <Item Name="[value]" Condition="((m_val &amp; 0xFF00000000000000) &gt;&gt; 56) == 1">*((bool*)(m_val &amp; 0x00ffffffffffffff))</Item>
-      <Item Name="[value]" Condition="((m_val &amp; 0xFF00000000000000) &gt;&gt; 56) == 2">*((long long*)(m_val &amp; 0x00ffffffffffffff))</Item>
-      <Item Name="[value]" Condition="((m_val &amp; 0xFF00000000000000) &gt;&gt; 56) == 3">*((double*)(m_val &amp; 0x00ffffffffffffff))</Item>
-      <Item Name="[value]" Condition="((m_val &amp; 0xFF00000000000000) &gt;&gt; 56) == 4">*((tnac::eval::complex_type*)(m_val &amp; 0x00ffffffffffffff))</Item>
-      <Item Name="[value]" Condition="((m_val &amp; 0xFF00000000000000) &gt;&gt; 56) == 5">*((tnac::eval::fraction_type*)(m_val &amp; 0x00ffffffffffffff))</Item>
-      <Item Name="[value]" Condition="((m_val &amp; 0xFF00000000000000) &gt;&gt; 56) == 6">*((tnac::eval::function_type*)(m_val &amp; 0x00ffffffffffffff))</Item>
-      <Item Name="[value]" Condition="((m_val &amp; 0xFF00000000000000) &gt;&gt; 56) == 7">*((tnac::eval::array_type*)(m_val &amp; 0x00ffffffffffffff))</Item>
-      <Item Name="[raw]">m_val,Xb</Item>
-    </Expand>
-  </Type>
-
-  <Type Name="tnac::eval::evaluator">
-    <DisplayString>evaluator</DisplayString>
-    <Expand>
-      <Item Name="[registy]">m_registry</Item>
-      <Item Name="[entity]">m_curEntity,Xb</Item>
-    </Expand>
-  </Type>
-
-  <Type Name="tnac::eval::registry">
-    <DisplayString>value registry</DisplayString>
-    <Expand>
-      <Item Name="[arrays]">m_arrays</Item>
-      <Item Name="[entity values]">m_entityValues</Item>
-      <Item Name="[active]">m_inFlight</Item>
-      <Item Name="[last result]">m_result</Item>
+      <Item Name="[kind]">(tnac::eval::type_id)(m_raw._Which),en</Item>
+      <Item Name="[raw]">m_raw</Item>
     </Expand>
   </Type>
 
@@ -151,14 +125,35 @@
     </Expand>
   </Type>
 
-  <Type Name="tnac::eval::array_type">
+  <Type Name="tnac::eval::array_data">
     <DisplayString>array data</DisplayString>
     <Expand>
-      <Item Name="[array]">*m_underlying</Item>
-      <Item Name="[id]">m_id</Item>
+      <Item Name="[array]">m_data</Item>
+      <Item Name="[refcount]">m_refs</Item>
+      <Item Name="[list]">m_list</Item>
+      <Item Name="[store]">*m_store</Item>
     </Expand>
   </Type>
 
+  <Type Name="tnac::eval::array_wrapper">
+    <DisplayString>array wrapper</DisplayString>
+    <Expand>
+      <Item Name="[array]" Condition="m_obj">*m_obj</Item>
+      <Item Name="[array]" Condition="!m_obj">"&lt;null&gt;",sb</Item>
+      <Item Name="[offset]">m_offset</Item>
+      <Item Name="[count]">m_count</Item>
+      <Item Name="[refcount]">m_refs</Item>
+      <Item Name="[list]">m_list</Item>
+    </Expand>
+  </Type>
+  
+  <Type Name="tnac::eval::array_type">
+    <DisplayString>array</DisplayString>
+    <Expand>
+      <Item Name="[array]" Condition="m_obj">*m_obj</Item>
+      <Item Name="[array]" Condition="!m_obj">"&lt;null&gt;",sb</Item>
+    </Expand>
+  </Type>
   
   <Type Name="tnac::ast::decl">
     <DisplayString>{m_kind,en} ({m_id.m_value,sb})</DisplayString>
@@ -170,6 +165,15 @@
     </Expand>
   </Type>
 
+  <Type Name="tnac::eval::store">
+    <DisplayString>value store</DisplayString>
+    <Expand>
+      <Item Name="[array data]">m_arrData</Item>
+      <Item Name="[array wrappers]">m_arrWrappers</Item>
+    </Expand>
+  </Type>
+  
+  
   <Type Name="tnac::ast::func_decl">
     <DisplayString>{m_kind,en} ({m_id.m_value,sb})</DisplayString>
     <Expand>
@@ -425,7 +429,7 @@
       <Item Name="[sema]">m_sema</Item>
       <Item Name="[parser]">m_parser</Item>
       <Item Name="[compiler]">m_compiler</Item>
-      <Item Name="[registry]">m_reg</Item>
+      <Item Name="[value store]">m_valStore</Item>
       <Item Name="[cfg]">m_cfg</Item>
       <Item Name="[source manager]">m_srcMgr</Item>
       <Item Name="[cmd interpreter]">m_cmdInterpreter</Item>
@@ -453,9 +457,9 @@
     <DisplayString Condition="m_feedback">compiler (handlers attached)</DisplayString>
     <DisplayString Condition="!m_feedback">compiler</DisplayString>
     <Expand>
-      <Item Name="[sema]">m_sema</Item>
-      <Item Name="[cfg]">m_cfg</Item>
-      <Item Name="[evaluator]">m_eval</Item>
+      <Item Name="[sema]">*m_sema</Item>
+      <Item Name="[cfg]">*m_cfg</Item>
+      <Item Name="[value store]">*m_vals</Item>
       <Item Name="[context]">m_context</Item>
       <Item Name="[name repo]">m_names</Item>
       <Item Name="[stack]">m_stack</Item>

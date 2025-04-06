@@ -85,7 +85,7 @@ namespace tnac::rt::out
 
     void id(entity_id i) noexcept;
 
-    void value(const eval::stored_value& val, bool refInterned = true) noexcept;
+    void value(const eval::value& val, bool refInterned = true) noexcept;
 
     void idx(ir::operand::idx_type i) noexcept;
 

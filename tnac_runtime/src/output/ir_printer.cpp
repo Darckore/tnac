@@ -1,5 +1,6 @@
 #include "output/ir_printer.hpp"
 #include "output/formatting.hpp"
+#include "eval/type_impl.hpp"
 
 namespace tnac::rt::out
 {
@@ -308,9 +309,8 @@ namespace tnac::rt::out
     fmt::print(out(), fmt::clr::DarkYellow, i);
   }
 
-  void ir_printer::value(const eval::stored_value& sv, bool refInterned /*= true*/) noexcept
+  void ir_printer::value(const eval::value& val, bool refInterned /*= true*/) noexcept
   {
-    auto val = *sv;
     if(val && utils::eq_none(val.id(), eval::value::Array))
       keyword(val.id_str());
 
@@ -333,10 +333,11 @@ namespace tnac::rt::out
 
         keyword(val.id_str());
         plain("[ "sv);
-        for (auto&& last = arr->back(); auto&& item : *arr)
+        const auto end = arr->end();
+        for (auto it = arr->begin(); it != arr->end(); ++it)
         {
-          value(item);
-          if(&item != &last)
+          value(*it);
+          if (std::next(it) != end)
             plain(", "sv);
         }
         plain(" ]"sv);

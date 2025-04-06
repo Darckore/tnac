@@ -1,6 +1,7 @@
 #include "output/common.hpp"
 #include "output/formatting.hpp"
-#include "eval/value/value.hpp"
+#include "eval/value.hpp"
+#include "eval/type_impl.hpp"
 #include "sema/sym/symbols.hpp"
 
 namespace tnac::rt::out
@@ -13,7 +14,7 @@ namespace tnac::rt::out
 
   // Public members
 
-  void value_printer::operator()(eval::value val, int base, out_stream& os) noexcept
+  void value_printer::operator()(const eval::value& val, int base, out_stream& os) noexcept
   {
     m_out = &os;
 
@@ -21,7 +22,7 @@ namespace tnac::rt::out
     print_value(val);
   }
 
-  void value_printer::operator()(eval::value val, int base) noexcept
+  void value_printer::operator()(const eval::value& val, int base) noexcept
   {
     this->operator()(val, base, out());
   }
@@ -33,7 +34,7 @@ namespace tnac::rt::out
     return *m_out;
   }
 
-  void value_printer::print_value(eval::value val) noexcept
+  void value_printer::print_value(const eval::value& val) noexcept
   {
     eval::on_value(val, [this](auto val)
       {
@@ -84,11 +85,11 @@ namespace tnac::rt::out
         else if constexpr (utils::same_noquals<vt, array_type>)
         {
           out() << "[ ";
-          for (auto arrSz = val->size(); auto&& elem : *val)
+          const auto end = val->end();
+          for (auto it = val->begin(); it != val->end(); ++it)
           {
-            --arrSz;
-            print_value(*elem);
-            if (arrSz)
+            print_value(*it);
+            if (std::next(it) != end)
               out() << ", ";
           }
           out() << " ]";

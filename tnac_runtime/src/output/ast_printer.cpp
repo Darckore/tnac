@@ -1,7 +1,7 @@
 #include "output/ast_printer.hpp"
 #include "sema/sym/symbols.hpp"
 #include "output/formatting.hpp"
-#include "eval/value/value.hpp"
+#include "eval/value.hpp"
 
 namespace tnac::rt::out
 {
@@ -506,7 +506,7 @@ namespace tnac::rt::out
     out() << "' ";
   }
 
-  void ast_printer::print_value(eval::value v) noexcept
+  void ast_printer::print_value(const eval::value& v) noexcept
   {
     out() << "<value: ";
     value_printer{}(v, 10, out());
