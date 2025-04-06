@@ -8,6 +8,11 @@
 
 namespace tnac::eval
 {
+  class store;
+}
+
+namespace tnac::eval
+{
   //
   // Array underlying data
   //
@@ -24,7 +29,7 @@ namespace tnac::eval
 
     ~array_data() noexcept;
 
-    explicit array_data(size_type prealloc) noexcept;
+    array_data(store& valStore, size_type prealloc) noexcept;
 
   public:
     //
@@ -36,6 +41,11 @@ namespace tnac::eval
     // Appends a value to the stored data
     //
     void add(value item) noexcept;
+
+    //
+    // Returns a reference to the underlying data store
+    //
+    store& val_store() const noexcept;
 
   public:
     auto begin() const noexcept
@@ -90,6 +100,7 @@ namespace tnac::eval
 
   private:
     data_type m_data;
+    store* m_store{};
   };
 
 
@@ -125,6 +136,11 @@ namespace tnac::eval
     wrapper_base::reference data() noexcept;
 
     //
+    // Returns the offset
+    //
+    size_type offset() const noexcept;
+
+    //
     // Returns the size of data available to the wrapper
     //
     size_type size() const noexcept;
@@ -133,6 +149,11 @@ namespace tnac::eval
     // Returns an id, which is basically the underlying array address
     //
     entity_id id() const noexcept;
+
+    //
+    // Returns a reference the value store of the underlying array
+    //
+    store& val_store() const noexcept;
 
   public:
     auto begin() const noexcept

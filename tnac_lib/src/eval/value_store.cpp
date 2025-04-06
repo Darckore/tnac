@@ -15,7 +15,7 @@ namespace tnac::eval
 
   array_data& store::allocate_array(size_type size) noexcept
   {
-    return m_arrData.emplace_back(size);
+    return m_arrData.emplace_back(*this, size);
   }
 
   array_wrapper& store::wrap(array_data& arr, size_type offset, size_type size) noexcept
@@ -31,5 +31,15 @@ namespace tnac::eval
   array_wrapper& store::wrap(array_data& arr) noexcept
   {
     return m_arrWrappers.emplace_back(arr);
+  }
+
+  array_wrapper& store::wrap(array_wrapper& aw, size_type offset, size_type size) noexcept
+  {
+    const auto origSize = aw.size();
+    const auto origOff = aw.offset();
+    if (origSize == size && origOff == offset)
+      return aw;
+
+    return wrap(aw.data(), offset, size);
   }
 }

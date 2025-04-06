@@ -2,39 +2,27 @@
 
 namespace tnac::tests
 {
-  namespace
+  TEST(refcounted, t_arr_wrappers)
   {
-    using arr_data = eval::array_data;
-    using arr_wrap = eval::array_wrapper;
-    using arr_list = utils::ilist<arr_data>;
-    using wrp_list = utils::ilist<arr_wrap>;
-
-    struct arr_store
-    {
-      arr_list arrays;
-      wrp_list wrappers;
-    };
-  }
-
-  TEST(arrays, t_arr_wrappers)
-  {
-    arr_store as;
-
-    auto&& arr = as.arrays.emplace_back(10ull);
+    eval::store store;
+    auto&& arr = store.allocate_array(10ull);
     for (eval::int_type i = 0; i < 10; ++i)
       arr.add(eval::value{ i });
 
-    auto&& wrap1 = as.wrappers.emplace_back(arr);
-    auto&& wrap2 = as.wrappers.emplace_back(arr, 2ull);
-    auto&& wrap3 = as.wrappers.emplace_back(arr, 3ull, 2ull);
+    auto&& wrap1 = store.wrap(arr);
+    auto&& wrap2 = store.wrap(arr, 2ull);
+    auto&& wrap3 = store.wrap(arr, 3ull, 2ull);
 
-    as.wrappers.remove(wrap1);
-    ASSERT_FALSE(as.arrays.empty());
+    auto&& arrlist = arr.list();
+    auto&& wrplist = wrap1.list();
 
-    as.wrappers.remove(wrap2);
+    wrplist.remove(wrap1);
+    ASSERT_FALSE(arrlist.empty());
+
+    wrplist.remove(wrap2);
     ASSERT_TRUE(arr.is_last());
 
-    as.wrappers.remove(wrap3);
-    ASSERT_TRUE(as.arrays.empty());
+    wrplist.remove(wrap3);
+    ASSERT_TRUE(arrlist.empty());
   }
 }

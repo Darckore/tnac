@@ -131,6 +131,7 @@
       <Item Name="[array]">m_data</Item>
       <Item Name="[refcount]">m_refs</Item>
       <Item Name="[list]">m_list</Item>
+      <Item Name="[store]">*m_store</Item>
     </Expand>
   </Type>
 

@@ -50,6 +50,11 @@ namespace tnac::eval
     //
     array_wrapper& wrap(array_data& arr) noexcept;
 
+    //
+    // Creates a wrapper from an existing one, but with a different offset and size
+    //
+    array_wrapper& wrap(array_wrapper& aw, size_type offset, size_type size) noexcept;
+
   private:
     array_list  m_arrData{};
     array_wraps m_arrWrappers{};

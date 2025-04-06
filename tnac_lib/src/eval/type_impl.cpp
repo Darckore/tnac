@@ -7,7 +7,8 @@ namespace tnac::eval
 
   array_data::~array_data() noexcept = default;
 
-  array_data::array_data(size_type prealloc) noexcept
+  array_data::array_data(store& valStore, size_type prealloc) noexcept :
+    m_store{ &valStore }
   {
     m_data.reserve(prealloc);
   }
@@ -23,6 +24,11 @@ namespace tnac::eval
   void array_data::add(value item) noexcept
   {
     m_data.push_back(std::move(item));
+  }
+
+  store& array_data::val_store() const noexcept
+  {
+    return *m_store;
   }
 }
 
@@ -68,6 +74,11 @@ namespace tnac::eval
     return FROM_CONST(data);
   }
 
+  array_wrapper::size_type array_wrapper::offset() const noexcept
+  {
+    return m_offset;
+  }
+
   array_wrapper::size_type array_wrapper::size() const noexcept
   {
     return m_count;
@@ -76,6 +87,11 @@ namespace tnac::eval
   entity_id array_wrapper::id() const noexcept
   {
     return &data();
+  }
+
+  store& array_wrapper::val_store() const noexcept
+  {
+    return data().val_store();
   }
 
 
