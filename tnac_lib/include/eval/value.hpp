@@ -8,6 +8,7 @@
 namespace tnac::eval
 {
   enum class val_ops : std::uint8_t;
+  class array_wrapper;
 
   //
   // Stores a value
@@ -92,7 +93,7 @@ namespace tnac::eval
     template <expr_result T>
     auto try_get() const noexcept -> decltype(&get<T>())
     {
-      return &std::get_if<T>(&m_raw);
+      return std::get_if<T>(&m_raw);
     }
 
     //
@@ -146,6 +147,11 @@ namespace tnac::eval
     // Returns a value for a function
     //
     static value function(ir::function& func) noexcept;
+
+    //
+    // Returns a value for an array
+    //
+    static value array(array_wrapper& aw) noexcept;
 
     //
     // Applies a unary operation to the current value and returns a new resulting one

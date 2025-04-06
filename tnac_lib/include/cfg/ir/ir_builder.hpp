@@ -12,9 +12,6 @@ namespace tnac::ir
   //
   class builder final
   {
-  private:
-    struct arr_descr;
-
   public:
     using fname_t          = function::name_t;
     using par_size_t       = function::size_type;
@@ -27,7 +24,7 @@ namespace tnac::ir
     using const_list       = constant::list_type;
     using const_val        = constant::value_type;
     using size_type        = instruction::size_type;
-    using arr_store        = std::unordered_map<entity_id, arr_descr>;
+    using arr_store        = std::unordered_map<entity_id, constant*>;
 
   public:
     CLASS_SPECIALS_NONE_CUSTOM(builder);

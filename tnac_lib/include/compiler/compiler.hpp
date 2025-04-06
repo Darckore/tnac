@@ -354,6 +354,17 @@ namespace tnac
     void transfer_last_load(size_type prevSz) noexcept;
 
     //
+    // Interns an array
+    // This is needed in order to store compile-time arrays in a special data section
+    //
+    void intern_array(const ir::operand& op) noexcept;
+
+    //
+    // Recursively interns all subarrays of an array
+    //
+    void intern_array(eval::value val) noexcept;
+
+    //
     // Reports a generic error
     //
     void error(string_t msg) noexcept;

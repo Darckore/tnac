@@ -3,15 +3,6 @@
 
 namespace tnac::ir
 {
-  struct builder::arr_descr
-  {
-    eval::array_type m_data;
-    constant* m_val{};
-  };
-}
-
-namespace tnac::ir
-{
   // Special members
 
   builder::~builder() noexcept = default;
@@ -86,11 +77,10 @@ namespace tnac::ir
 
   constant& builder::intern(vreg& reg, eval::array_type val) noexcept
   {
-    auto newItem = m_arrays.try_emplace(val->id(), val);
-    UTILS_ASSERT(newItem.second);
-    auto&& descr = newItem.first->second;
+    const auto id = val->id();
     auto&& res = m_consts.emplace_back(reg, const_val{ std::move(val) });
-    descr.m_val = &res;
+    const auto emplaceOk = m_arrays.try_emplace(id, &res).second;
+    UTILS_ASSERT(emplaceOk);
     return res;
   }
 
@@ -117,7 +107,7 @@ namespace tnac::ir
       UTILS_ASSERT(false);
       return {};
     }
-    return item->second.m_val;
+    return item->second;
   }
 
 

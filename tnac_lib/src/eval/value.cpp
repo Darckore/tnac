@@ -161,6 +161,11 @@ namespace tnac::eval
     return value{ function_type{ func } };
   }
 
+  value value::array(array_wrapper& aw) noexcept
+  {
+    return value{ array_type{ aw } };
+  }
+
 
   // Unary ops
   namespace

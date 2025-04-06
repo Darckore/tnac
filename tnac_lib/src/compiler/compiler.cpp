@@ -4,6 +4,7 @@
 #include "sema/sema.hpp"
 #include "cfg/cfg.hpp"
 #include "eval/value_store.hpp"
+#include "eval/type_impl.hpp"
 
 namespace tnac::eval::detail
 {
@@ -364,11 +365,7 @@ namespace tnac
     auto&& arrData = m_vals->allocate_array(size);
     m_stack.fill(arrData, size);
     auto&& arrWrapper = m_vals->wrap(arrData);
-    auto&& builder = m_cfg->get_builder();
-    auto&& reg = builder.make_global_register(m_names.array_name());
-
-    auto&& cval = builder.intern(reg, eval::array_type{ arrWrapper });
-    m_stack.push(cval.value());
+    m_stack.push(eval::value::array(arrWrapper));
   }
 
   void compiler::visit(ast::abs_expr&) noexcept
@@ -812,8 +809,9 @@ namespace tnac
   void compiler::emit_ret(ir::basic_block& block) noexcept
   {
     auto op = m_stack.extract();
+    intern_array(op);
     auto&& instr = m_cfg->get_builder().add_instruction(block, ir::op_code::Ret, m_context.func_end());
-    instr.add(op);
+    instr.add(std::move(op));
     update_func_start(instr);
     m_context.exit_block();
   }
@@ -830,6 +828,7 @@ namespace tnac
       return;
     
     auto val = m_stack.extract();
+    intern_array(val);
     if(!val.is_param())
       m_context.save_store(var);
 
@@ -1289,6 +1288,31 @@ namespace tnac
     {
       emit_load(*last);
     }
+  }
+
+  void compiler::intern_array(const ir::operand& op) noexcept
+  {
+    if (!op.is_value())
+      return;
+
+    intern_array(op.get_value());
+  }
+
+  void compiler::intern_array(eval::value val) noexcept
+  {
+    auto arrPtr = val.try_get<eval::array_type>();
+    if (!arrPtr)
+      return;
+
+    auto arr = *arrPtr;
+    for (auto it = arr->begin(); it != arr->end(); ++it)
+    {
+      intern_array(*it);
+    }
+
+    auto&& builder = m_cfg->get_builder();
+    auto&& reg = builder.make_global_register(m_names.array_name());
+    builder.intern(reg, std::move(arr));
   }
 
   void compiler::error(string_t msg) noexcept
