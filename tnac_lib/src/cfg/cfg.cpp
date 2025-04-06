@@ -69,9 +69,7 @@ namespace tnac::ir
 
   const ir::constant* cfg::find_array(const eval::array_type& arr) const noexcept
   {
-    utils::unused(arr);
-    return {};
-    //return m_builder->interned(arr);
+    return m_builder->interned(arr);
   }
   ir::constant* cfg::find_array(const eval::array_type& arr) noexcept
   {

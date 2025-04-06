@@ -1,6 +1,7 @@
 #include "output/common.hpp"
 #include "output/formatting.hpp"
 #include "eval/value.hpp"
+#include "eval/type_impl.hpp"
 #include "sema/sym/symbols.hpp"
 
 namespace tnac::rt::out
@@ -84,13 +85,13 @@ namespace tnac::rt::out
         else if constexpr (utils::same_noquals<vt, array_type>)
         {
           out() << "[ ";
-          //for (auto arrSz = val->size(); auto&& elem : *val)
-          //{
-          //  --arrSz;
-          //  print_value(*elem);
-          //  if (arrSz)
-          //    out() << ", ";
-          //}
+          const auto end = val->end();
+          for (auto it = val->begin(); it != val->end(); ++it)
+          {
+            print_value(*it);
+            if (std::next(it) != end)
+              out() << ", ";
+          }
           out() << " ]";
         }
         else
