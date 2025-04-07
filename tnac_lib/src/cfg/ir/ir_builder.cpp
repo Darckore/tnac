@@ -5,7 +5,11 @@ namespace tnac::ir
 {
   // Special members
 
-  builder::~builder() noexcept = default;
+  builder::~builder() noexcept
+  {
+    m_instructions.clear();
+    m_synthPhiNodes.clear();
+  }
 
   builder::builder() noexcept = default;
 
@@ -72,7 +76,17 @@ namespace tnac::ir
 
   edge& builder::make_edge(basic_block& from, basic_block& to, operand val) noexcept
   {
-    return m_edges.emplace_back(from, to, val);
+    return m_edges.emplace_back(from, to, std::move(val));
+  }
+
+  edge& builder::make_loose(basic_block& from, basic_block& to, operand val) noexcept
+  {
+    return m_looseEdges.emplace_back(edge::loose, from, to, std::move(val));
+  }
+
+  instruction& builder::synth_phi(basic_block& owner) noexcept
+  {
+    return m_synthPhiNodes.emplace_back(owner, op_code::Phi);
   }
 
   constant& builder::intern(vreg& reg, eval::array_type val) noexcept

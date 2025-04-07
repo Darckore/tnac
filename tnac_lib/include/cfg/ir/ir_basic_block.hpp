@@ -22,11 +22,17 @@ namespace tnac::ir
     public node
   {
   public:
+    struct loose_t {};
+    static constexpr loose_t loose;
+
+  public:
     CLASS_SPECIALS_NONE(edge);
 
     ~edge() noexcept;
 
     edge(basic_block& in, basic_block& out, operand val) noexcept;
+
+    edge(loose_t, basic_block& in, basic_block& out, operand val) noexcept;
 
   public:
     //

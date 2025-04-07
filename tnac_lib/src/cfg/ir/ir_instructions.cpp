@@ -68,6 +68,12 @@ namespace tnac::ir // virtual register
     UTILS_ASSERT(!has_src());
     m_source = &src;
   }
+
+  void vreg::drop_source_if(const instruction* instr) noexcept
+  {
+    if (m_source == instr)
+      m_source = {};
+  }
 }
 
 
@@ -168,7 +174,15 @@ namespace tnac::ir // instruction
 {
   // Special members
 
-  instruction::~instruction() noexcept = default;
+  instruction::~instruction() noexcept
+  {
+    if (m_operands.empty())
+      return;
+
+    auto&& op0 = m_operands.front();
+    if (op0.is_register())
+      op0.get_reg().drop_source_if(this);
+  }
 
   instruction::instruction(basic_block& owner, op_code code, size_type count) noexcept :
     node{ kind::Instruction },

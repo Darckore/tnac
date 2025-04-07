@@ -96,6 +96,17 @@ namespace tnac::ir
     edge& make_edge(basic_block& from, basic_block& to, operand val) noexcept;
 
     //
+    // Creates a loose edge, which doesn't add itself to the graph
+    // Used for synthetic phi nodes
+    //
+    edge& make_loose(basic_block& from, basic_block& to, operand val) noexcept;
+
+    //
+    // Creates a synthetic phi node
+    //
+    instruction& synth_phi(basic_block& owner) noexcept;
+
+    //
     // Interns a global array
     //
     constant& intern(vreg& reg, eval::array_type val) noexcept;
@@ -136,6 +147,10 @@ namespace tnac::ir
     block_store m_blocks;
     instruction_list m_instructions;
     edge_list m_edges;
+
+    instruction_list m_synthPhiNodes;
+    edge_list m_looseEdges;
+
     const_list m_consts;
     register_store m_regs;
     arr_store m_arrays;

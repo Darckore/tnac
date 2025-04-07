@@ -95,6 +95,8 @@ namespace tnac::ir
   protected:
     void make_result_of(instruction& src) noexcept;
 
+    void drop_source_if(const instruction* instr) noexcept;
+
   private:
     id_type m_id;
     instruction* m_source{};

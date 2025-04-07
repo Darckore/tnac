@@ -6,11 +6,15 @@ namespace tnac::ir // edge
 
   edge::~edge() noexcept = default;
 
-  edge::edge(basic_block& in, basic_block& out, operand val) noexcept :
+  edge::edge(loose_t, basic_block& in, basic_block& out, operand val) noexcept:
     node{ kind::Edge },
     m_in{ &in },
     m_out{ &out },
-    m_value{ val }
+    m_value{ std::move(val) }
+  { }
+
+  edge::edge(basic_block& in, basic_block& out, operand val) noexcept :
+    edge{ loose, in, out, std::move(val) }
   {
     m_in->add_out(this);
     m_out->add_pred(this);
