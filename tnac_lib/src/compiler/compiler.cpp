@@ -224,6 +224,47 @@ namespace tnac::detail
   private:
     Func m_callback;
   };
+
+  class func_extractor final : public ast::bottom_up_visitor<func_extractor>
+  {
+  public:
+    using sym_type = semantics::function;
+
+  public:
+    CLASS_SPECIALS_NONE(func_extractor);
+
+    func_extractor(ast::expr& expr) noexcept
+    {
+      operator()(&expr);
+    }
+
+    auto operator*() noexcept
+    {
+      return m_sym;
+    }
+
+    bool preview(ast::array_expr&) noexcept
+    {
+      return false;
+    }
+
+    bool preview(ast::dot_expr& dot) noexcept
+    {
+      operator()(&dot.accessed());
+      return false;
+    }
+
+    void visit(ast::id_expr& id) noexcept
+    {
+      using enum semantics::sym_kind;
+      auto&& sym = id.symbol();
+      if (sym.is_any(Function, Module))
+        m_sym = &utils::cast<Function>(sym);
+    }
+
+  private:
+    sym_type* m_sym{};
+  };
 }
 
 namespace tnac
@@ -333,7 +374,13 @@ namespace tnac
 
   void compiler::visit(ast::id_expr& id) noexcept
   {
-    emit_load(id.symbol());
+    auto&& sym = id.symbol();
+    if (auto func = m_cfg->find_entity(&sym))
+    {
+      m_stack.push(eval::value::function(*func));
+      return;
+    }
+    emit_load(sym);
   }
 
   void compiler::visit(ast::unary_expr& unary) noexcept
@@ -412,7 +459,8 @@ namespace tnac
 
   void compiler::visit(ast::call_expr& call) noexcept
   {
-    utils::unused(call);
+    const auto argSz = call.args().size();
+    emit_call(argSz);
   }
 
   void compiler::visit(ast::dot_expr& dot) noexcept
@@ -724,6 +772,24 @@ namespace tnac
     return false;
   }
 
+  bool compiler::preview(ast::call_expr& call) noexcept
+  {
+    auto sym = *detail::func_extractor{ call.callable() };
+    if (!sym)
+      return true;
+
+    const auto argSz = call.args().size();
+    const auto expSz = sym->param_count();
+    if (argSz != expSz)
+    {
+      error(call.pos().at(), diag::wrong_arg_num(expSz, argSz));
+      m_stack.push_undef();
+      return false;
+    }
+
+    return true;
+  }
+
 
   // Private members (Emitions)
 
@@ -955,6 +1021,18 @@ namespace tnac
       update_func_start(instr);
       before = instr.to_iterator();
     }
+  }
+
+  void compiler::emit_call(size_type argCount) noexcept
+  {
+    // Args + the callable itself
+    const auto size = argCount + 1;
+    UTILS_ASSERT(m_stack.has_at_least(size));
+
+    auto&& instr = make(ir::op_code::Call, size + 1);
+    auto res = extract();
+    m_stack.fill(instr, size);
+    m_stack.push(std::move(res));
   }
 
   // Private members

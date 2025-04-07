@@ -134,6 +134,12 @@ namespace tnac
     //
     bool preview(ast::cond_expr& cond) noexcept;
 
+    //
+    // Used to report an error if a known function is provided with a wrong
+    // number of arguments
+    //
+    bool preview(ast::call_expr& call) noexcept;
+
   private: // Emitions
     //
     // Updates the first instruction in the context if needed
@@ -237,6 +243,11 @@ namespace tnac
     // Creates a series of append instructions to fill an array
     //
     void emit_append(ir::vreg& arr, size_type size) noexcept;
+
+    //
+    // Creates a call instruction
+    //
+    void emit_call(size_type argCount) noexcept;
 
   private:
     //

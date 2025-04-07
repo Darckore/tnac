@@ -49,9 +49,12 @@ namespace tnac::rt::out
     endl();
   }
 
-  void ir_printer::visit(const ir::basic_block&) noexcept
+  void ir_printer::visit(const ir::basic_block& bb) noexcept
   {
-    endl();
+    auto last = bb.last();
+    UTILS_ASSERT(last);
+    if(last->opcode() != ir::op_code::Ret)
+      endl();
   }
 
   void ir_printer::visit(const ir::instruction& instr) noexcept
@@ -94,7 +97,7 @@ namespace tnac::rt::out
     case Store:  print_store(instr);  break;
     case Append: print_append(instr); break;
     case Load:   print_load(instr);   break;
-    case Call:   break;
+    case Call:   print_call(instr);   break;
     case Jump:   print_jump(instr);   break;
     case Ret:    print_ret(instr);    break;
     case Phi:    print_phi(instr);    break;
@@ -117,7 +120,9 @@ namespace tnac::rt::out
     plain(" = "sv);
     value(val.value(), false);
     endl();
-    endl();
+
+    if(!val.next())
+      endl();
   }
 
 
@@ -199,6 +204,24 @@ namespace tnac::rt::out
     print_assign(load[0]);
     keyword(load.opcode_str());
     print_operand(load[1]);
+  }
+
+  void ir_printer::print_call(const ir::instruction& call) noexcept
+  {
+    print_assign(call[0]);
+    keyword(call.opcode_str());
+    print_operand(call[1]);
+
+    const auto ops = call.operand_count();
+    using st = decltype(call.operand_count());
+    plain("( "sv);
+    for (auto count = st{ 2 }; count < ops; ++count)
+    {
+      print_operand(call[count]);
+      if (count < ops - 1)
+        plain(", "sv);
+    }
+    plain(" )"sv);
   }
 
   void ir_printer::print_binary(const ir::instruction& bin) noexcept
