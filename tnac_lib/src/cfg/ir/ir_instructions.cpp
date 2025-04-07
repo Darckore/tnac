@@ -44,6 +44,30 @@ namespace tnac::ir // virtual register
   {
     return m_scope == Global;
   }
+
+  bool vreg::has_src() const noexcept
+  {
+    return static_cast<bool>(m_source);
+  }
+
+  const instruction& vreg::source() const noexcept
+  {
+    UTILS_ASSERT(has_src());
+    return *m_source;
+  }
+  instruction& vreg::source() noexcept
+  {
+    return FROM_CONST(source);
+  }
+
+
+  // Protected members
+
+  void vreg::make_result_of(instruction& src) noexcept
+  {
+    UTILS_ASSERT(!has_src());
+    m_source = &src;
+  }
 }
 
 
@@ -235,6 +259,7 @@ namespace tnac::ir // instruction
 
   instruction& instruction::add(operand op) noexcept
   {
+    attach_as_source(op);
     m_operands.push_back(std::move(op));
     return *this;
   }
@@ -303,9 +328,26 @@ namespace tnac::ir // instruction
     return count;
   }
 
+  bool instruction::needs_result(op_code code) noexcept
+  {
+    return utils::eq_none(code, Store, Append, Jump, Ret);
+  }
+
   void instruction::prealloc(size_type size) noexcept
   {
     m_operands.reserve(size);
+  }
+
+  void instruction::attach_as_source(operand& op) noexcept
+  {
+    if (!needs_result(opcode()) || !op.is_register())
+      return;
+
+    if (!m_operands.empty())
+      return;
+
+    auto&& reg = op.get_reg();
+    reg.make_result_of(*this);
   }
 
 }

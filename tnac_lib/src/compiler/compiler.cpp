@@ -792,14 +792,12 @@ namespace tnac
 
   bool compiler::preview(ast::dot_expr& dot) noexcept
   {
-    // todo: do this correctly
+    UTILS_ASSERT(dot.accessor().is(ast::node_kind::Identifier));
+    auto&& accr = utils::cast<ast::id_expr>(dot.accessor());
+    if (auto&& sym = accr.symbol(); sym.is(semantics::sym_kind::Deferred))
     {
-      auto id = utils::try_cast<ast::id_expr>(&dot.accessor());
-      if (!id || id->symbol().is(semantics::sym_kind::Deferred))
-      {
-        m_stack.push_undef();
-        return false;
-      }
+      m_stack.push_undef(); // temporary
+      return false; // temporary
     }
 
     return true;

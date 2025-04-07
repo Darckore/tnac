@@ -17,6 +17,8 @@ std::uint64_t
 
 namespace tnac::ir
 {
+  class instruction;
+
   //
   // Virtual register to be used in operands
   //
@@ -32,6 +34,8 @@ namespace tnac::ir
       Global
     };
     using enum reg_scope;
+
+    friend class instruction;
 
   public:
     CLASS_SPECIALS_NONE(vreg);
@@ -69,8 +73,31 @@ namespace tnac::ir
     //
     bool is_global() const noexcept;
 
+    //
+    // Checks whether a source instruction is attached to the register
+    //
+    bool has_src() const noexcept;
+
+    //
+    // Returns the register's source instruction
+    // Only applicable to local registers
+    // Must check has_src before using
+    //
+    const instruction& source() const noexcept;
+
+    //
+    // Returns the register's source instruction
+    // Only applicable to local registers
+    // Must check has_src before using
+    //
+    instruction& source() noexcept;
+
+  protected:
+    void make_result_of(instruction& src) noexcept;
+
   private:
     id_type m_id;
+    instruction* m_source{};
     reg_scope m_scope;
   };
 }
@@ -339,9 +366,20 @@ namespace tnac::ir
     static size_type estimate_op_count(op_code code) noexcept;
 
     //
+    // Checks whether the opcode implies a return value
+    //
+    static bool needs_result(op_code code) noexcept;
+
+    //
     // Reserves memory for operands
     //
     void prealloc(size_type size) noexcept;
+
+    //
+    // Sets the current instruction as the source to the given operand,
+    // if applicable
+    //
+    void attach_as_source(operand& op) noexcept;
 
   private:
     basic_block* m_block{};

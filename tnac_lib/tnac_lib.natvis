@@ -559,6 +559,8 @@
     <Expand>
       <Item Name="[id]">m_id</Item>
       <Item Name="[scope]">m_scope,en</Item>
+      <Item Name="[source]" Condition="m_source">*m_source</Item>
+      <Item Name="[source]" Condition="!m_source">"&lt;null&gt;",sb</Item>
     </Expand>
   </Type>
 
