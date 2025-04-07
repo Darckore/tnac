@@ -250,7 +250,7 @@ namespace tnac::detail
 
     bool preview(ast::dot_expr& dot) noexcept
     {
-      operator()(&dot.accessed());
+      operator()(&dot.accessor());
       return false;
     }
 
@@ -374,16 +374,26 @@ namespace tnac
 
   void compiler::visit(ast::id_expr& id) noexcept
   {
-    auto&& sym = id.symbol();
-    if (auto func = m_cfg->find_entity(&sym))
+    auto sym = &id.symbol();
+    if (auto ref = utils::try_cast<semantics::scope_ref>(sym))
+    {
+      auto&& underlying = ref->referenced();
+      if (underlying.is_function())
+        sym = underlying.to_func();
+      else if (underlying.is_module())
+        sym = underlying.to_module();
+    }
+
+    UTILS_ASSERT(sym);
+    if (auto func = m_cfg->find_entity(sym))
     {
       m_stack.push(eval::value::function(*func));
       return;
     }
 
-    if (!sym.is(semantics::sym_kind::Deferred))
+    if (!sym->is(semantics::sym_kind::Deferred))
     {
-      emit_load(sym);
+      emit_load(*sym);
       return;
     }
 
