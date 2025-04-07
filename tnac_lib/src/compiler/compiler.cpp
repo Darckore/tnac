@@ -790,6 +790,20 @@ namespace tnac
     return true;
   }
 
+  bool compiler::preview(ast::dot_expr& dot) noexcept
+  {
+    // todo: do this correctly
+    {
+      auto id = utils::try_cast<ast::id_expr>(&dot.accessor());
+      if (!id || id->symbol().is(semantics::sym_kind::Deferred))
+      {
+        m_stack.push_undef();
+        return false;
+      }
+    }
+
+    return true;
+  }
 
   // Private members (Emitions)
 

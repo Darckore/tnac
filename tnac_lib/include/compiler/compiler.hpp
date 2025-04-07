@@ -140,6 +140,11 @@ namespace tnac
     //
     bool preview(ast::call_expr& call) noexcept;
 
+    //
+    // Handles dot expressions with potentially unknown entities
+    //
+    bool preview(ast::dot_expr& dot) noexcept;
+
   private: // Emitions
     //
     // Updates the first instruction in the context if needed
