@@ -391,11 +391,8 @@ namespace tnac
       return;
     }
 
-    if (!sym->is(semantics::sym_kind::Deferred))
-    {
-      emit_load(*sym);
-      return;
-    }
+    UTILS_ASSERT(!sym->is(semantics::sym_kind::Deferred));
+    emit_load(*sym);
   }
 
   void compiler::visit(ast::unary_expr& unary) noexcept
