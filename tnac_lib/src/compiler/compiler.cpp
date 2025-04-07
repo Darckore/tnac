@@ -380,7 +380,14 @@ namespace tnac
       m_stack.push(eval::value::function(*func));
       return;
     }
-    emit_load(sym);
+
+    if (!sym.is(semantics::sym_kind::Deferred))
+    {
+      emit_load(sym);
+      return;
+    }
+
+    utils::unused(sym); // temporary
   }
 
   void compiler::visit(ast::unary_expr& unary) noexcept
@@ -797,6 +804,7 @@ namespace tnac
     if (auto&& sym = accr.symbol(); !sym.is(semantics::sym_kind::Deferred))
       return true;
 
+    compile(dot.accessed());
     m_stack.push_undef(); // temporary
     return false; // temporary
   }
