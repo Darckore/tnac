@@ -794,13 +794,11 @@ namespace tnac
   {
     UTILS_ASSERT(dot.accessor().is(ast::node_kind::Identifier));
     auto&& accr = utils::cast<ast::id_expr>(dot.accessor());
-    if (auto&& sym = accr.symbol(); sym.is(semantics::sym_kind::Deferred))
-    {
-      m_stack.push_undef(); // temporary
-      return false; // temporary
-    }
+    if (auto&& sym = accr.symbol(); !sym.is(semantics::sym_kind::Deferred))
+      return true;
 
-    return true;
+    m_stack.push_undef(); // temporary
+    return false; // temporary
   }
 
   // Private members (Emitions)
