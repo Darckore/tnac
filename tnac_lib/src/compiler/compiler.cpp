@@ -396,8 +396,6 @@ namespace tnac
       emit_load(*sym);
       return;
     }
-
-    utils::unused(sym); // temporary
   }
 
   void compiler::visit(ast::unary_expr& unary) noexcept
@@ -478,11 +476,6 @@ namespace tnac
   {
     const auto argSz = call.args().size();
     emit_call(argSz);
-  }
-
-  void compiler::visit(ast::dot_expr& dot) noexcept
-  {
-    utils::unused(dot);
   }
 
   bool compiler::exit_child(ast::node& node) noexcept
@@ -815,8 +808,9 @@ namespace tnac
       return true;
 
     compile(dot.accessed());
-    m_stack.push_undef(); // temporary
-    return false; // temporary
+    auto scope = m_stack.extract();
+    emit_dyn(std::move(scope), accr.name());
+    return false;
   }
 
   // Private members (Emitions)
@@ -1004,7 +998,6 @@ namespace tnac
 
   void compiler::emit_phi(edge_view edges) noexcept
   {
-    clear_store();
     auto&& instr = make(ir::op_code::Phi, edges.size() + 1);
     for (auto edge : edges)
     {
@@ -1014,7 +1007,6 @@ namespace tnac
 
   void compiler::emit_select(ir::operand cond, ir::operand onTrue, ir::operand onFalse) noexcept
   {
-    clear_store();
     make(ir::op_code::Select).add(cond).add(onTrue).add(onFalse);
   }
 
@@ -1061,6 +1053,11 @@ namespace tnac
     auto res = extract();
     m_stack.fill(instr, size);
     m_stack.push(std::move(res));
+  }
+
+  void compiler::emit_dyn(ir::operand scope, string_t name) noexcept
+  {
+    make(ir::op_code::DynBind).add(std::move(scope)).add(name);
   }
 
   // Private members

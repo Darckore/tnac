@@ -12,7 +12,8 @@ basic_block*,\
 vreg*,\
 edge*,\
 func_param,\
-std::uint64_t
+std::uint64_t, \
+string_t
 
 
 namespace tnac::ir
@@ -203,6 +204,11 @@ namespace tnac::ir
     bool is_index() const noexcept;
 
     //
+    // Checks whether the operand holds a name
+    //
+    bool is_name() const noexcept;
+
+    //
     // Returns the stored value
     // Callers must check is_value before using this
     //
@@ -237,6 +243,12 @@ namespace tnac::ir
     // Callers must check is_index before using this
     //
     idx_type get_index() const noexcept;
+
+    //
+    // Returns the stored name
+    // Callers must check is_name before using this
+    //
+    string_t get_name() const noexcept;
 
   private:
     data_type m_value;
@@ -289,6 +301,8 @@ namespace tnac::ir
     Ret,
 
     Phi,
+
+    DynBind,
 
     Bool,
     Int,

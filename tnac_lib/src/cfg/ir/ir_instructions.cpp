@@ -167,6 +167,16 @@ namespace tnac::ir // operand
     UTILS_ASSERT(is_index());
     return std::get<idx_type>(m_value);
   }
+
+  bool operand::is_name() const noexcept
+  {
+    return std::holds_alternative<string_t>(m_value);
+  }
+  string_t operand::get_name() const noexcept
+  {
+    UTILS_ASSERT(is_name());
+    return std::get<string_t>(m_value);
+  }
 }
 
 
@@ -209,48 +219,50 @@ namespace tnac::ir // instruction
   {
     switch (oc)
     {
-    case Add:   return "add"sv;
-    case Sub:   return "sub"sv;
-    case Mul:   return "mul"sv;
-    case Div:   return "div"sv;
-    case Mod:   return "mod"sv;
-    case Pow:   return "pow"sv;
-    case Root:  return "root"sv;
-    case And:   return "and"sv;
-    case Or:    return "or"sv;
-    case Xor:   return "xor"sv;
-    case CmpE:  return "cmpe"sv;
-    case CmpL:  return "cmpl"sv;
-    case CmpLE: return "cmple"sv;
-    case CmpNE: return "cmpne"sv;
-    case CmpG:  return "cmpg"sv;
-    case CmpGE: return "cmpge"sv;
+    case Add:     return "add"sv;
+    case Sub:     return "sub"sv;
+    case Mul:     return "mul"sv;
+    case Div:     return "div"sv;
+    case Mod:     return "mod"sv;
+    case Pow:     return "pow"sv;
+    case Root:    return "root"sv;
+    case And:     return "and"sv;
+    case Or:      return "or"sv;
+    case Xor:     return "xor"sv;
+    case CmpE:    return "cmpe"sv;
+    case CmpL:    return "cmpl"sv;
+    case CmpLE:   return "cmple"sv;
+    case CmpNE:   return "cmpne"sv;
+    case CmpG:    return "cmpg"sv;
+    case CmpGE:   return "cmpge"sv;
 
-    case Abs:    return "abs"sv;
-    case Plus:   return "aplus"sv;
-    case Neg:    return "neg"sv;
-    case BNeg:   return "bitneg"sv;
-    case CmpNot: return "not"sv;
-    case CmpIs:  return "is"sv;
+    case Abs:     return "abs"sv;
+    case Plus:    return "aplus"sv;
+    case Neg:     return "neg"sv;
+    case BNeg:    return "bitneg"sv;
+    case CmpNot:  return "not"sv;
+    case CmpIs:   return "is"sv;
 
-    case Alloc:  return "alloc"sv;
-    case Arr:    return "arr"sv;
-    case Store:  return "store"sv;
-    case Load:   return "load"sv;
-    case Append: return "append"sv;
+    case Alloc:   return "alloc"sv;
+    case Arr:     return "arr"sv;
+    case Store:   return "store"sv;
+    case Load:    return "load"sv;
+    case Append:  return "append"sv;
 
-    case Select: return "sel"sv;
-    case Call:   return "call"sv;
-    case Jump:   return "jmp"sv;
-    case Ret:    return "ret"sv;
+    case Select:  return "sel"sv;
+    case Call:    return "call"sv;
+    case Jump:    return "jmp"sv;
+    case Ret:     return "ret"sv;
 
-    case Phi:    return "phi"sv;
+    case Phi:     return "phi"sv;
 
-    case Bool:   return "bool"sv;
-    case Int:    return "int"sv;
-    case Float:  return "float"sv;
-    case Frac:   return "frac"sv;
-    case Cplx:   return "cplx"sv;
+    case DynBind: return "dyn_bind"sv;
+
+    case Bool:    return "bool"sv;
+    case Int:     return "int"sv;
+    case Float:   return "float"sv;
+    case Frac:    return "frac"sv;
+    case Cplx:    return "cplx"sv;
     }
 
     UTILS_ASSERT(false);
@@ -297,46 +309,48 @@ namespace tnac::ir // instruction
     auto count = size_type{};
     switch (code)
     {
-    case Add:    count = 3; break;
-    case Sub:    count = 3; break;
-    case Mul:    count = 3; break;
-    case Div:    count = 3; break;
-    case Mod:    count = 3; break;
-    case Pow:    count = 3; break;
-    case Root:   count = 3; break;
-    case And:    count = 3; break;
-    case Or:     count = 3; break;
-    case Xor:    count = 3; break;
-    case CmpE:   count = 3; break;
-    case CmpL:   count = 3; break;
-    case CmpLE:  count = 3; break;
+    case Add:     count = 3; break;
+    case Sub:     count = 3; break;
+    case Mul:     count = 3; break;
+    case Div:     count = 3; break;
+    case Mod:     count = 3; break;
+    case Pow:     count = 3; break;
+    case Root:    count = 3; break;
+    case And:     count = 3; break;
+    case Or:      count = 3; break;
+    case Xor:     count = 3; break;
+    case CmpE:    count = 3; break;
+    case CmpL:    count = 3; break;
+    case CmpLE:   count = 3; break;
 
-    case Abs:    count = 2; break;
-    case Plus:   count = 2; break;
-    case Neg:    count = 2; break;
-    case BNeg:   count = 2; break;
-    case CmpNot: count = 2; break;
-    case CmpIs:  count = 2; break;
+    case Abs:     count = 2; break;
+    case Plus:    count = 2; break;
+    case Neg:     count = 2; break;
+    case BNeg:    count = 2; break;
+    case CmpNot:  count = 2; break;
+    case CmpIs:   count = 2; break;
 
-    case Store:  count = 2; break;
-    case Load:   count = 2; break;
-    case Alloc:  count = 1; break;
-    case Arr:    count = 2; break;
-    case Append: count = 2; break;
+    case Store:   count = 2; break;
+    case Load:    count = 2; break;
+    case Alloc:   count = 1; break;
+    case Arr:     count = 2; break;
+    case Append:  count = 2; break;
 
-    case Select: count = 4; break;
-    case Call:   count = 2; break;
-    case Jump:   count = 1; break;
+    case Select:  count = 4; break;
+    case Call:    count = 2; break;
+    case Jump:    count = 1; break;
 
-    case Ret:    count = 1; break;
+    case Ret:     count = 1; break;
 
-    case Phi:    count = 3; break; // 2 branches is the most common case (probably)
+    case Phi:     count = 3; break; // 2 branches is the most common case (probably)
 
-    case Bool:   count = type_info<eval::bool_type>::maxArgs + 1;     break;
-    case Int:    count = type_info<eval::int_type>::maxArgs + 1;      break;
-    case Float:  count = type_info<eval::float_type>::maxArgs + 1;    break;
-    case Frac:   count = type_info<eval::fraction_type>::maxArgs + 1; break;
-    case Cplx:   count = type_info<eval::complex_type>::maxArgs + 1;  break;
+    case DynBind: count = 3; break;
+
+    case Bool:    count = type_info<eval::bool_type>::maxArgs + 1;     break;
+    case Int:     count = type_info<eval::int_type>::maxArgs + 1;      break;
+    case Float:   count = type_info<eval::float_type>::maxArgs + 1;    break;
+    case Frac:    count = type_info<eval::fraction_type>::maxArgs + 1; break;
+    case Cplx:    count = type_info<eval::complex_type>::maxArgs + 1;  break;
     }
 
     return count;

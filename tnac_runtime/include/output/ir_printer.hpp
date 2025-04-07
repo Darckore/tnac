@@ -74,6 +74,8 @@ namespace tnac::rt::out
 
     void print_inst(const ir::instruction& inst) noexcept;
 
+    void print_dyn_bind(const ir::instruction& dyn) noexcept;
+
   private:
     out_stream& out() noexcept;
 
@@ -84,6 +86,8 @@ namespace tnac::rt::out
     void keyword(string_t kw) noexcept;
 
     void name(string_t n) noexcept;
+
+    void string_op(string_t str) noexcept;
 
     void id(entity_id i) noexcept;
 

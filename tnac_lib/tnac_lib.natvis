@@ -534,6 +534,8 @@
     <DisplayString Condition="m_value._Which == 2">Operand (vreg)</DisplayString>
     <DisplayString Condition="m_value._Which == 3">Operand (edge)</DisplayString>
     <DisplayString Condition="m_value._Which == 4">Operand (param)</DisplayString>
+    <DisplayString Condition="m_value._Which == 5">Operand (index)</DisplayString>
+    <DisplayString Condition="m_value._Which == 6">Operand (name)</DisplayString>
     <DisplayString>Operand (uninit)</DisplayString>
     <Expand>
       <Item Name="[value]">m_value</Item>

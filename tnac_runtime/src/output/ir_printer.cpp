@@ -101,6 +101,8 @@ namespace tnac::rt::out
     case Jump:   print_jump(instr);   break;
     case Ret:    print_ret(instr);    break;
     case Phi:    print_phi(instr);    break;
+    
+    case DynBind: print_dyn_bind(instr); break;
 
     case Bool:
     case Int:
@@ -167,6 +169,8 @@ namespace tnac::rt::out
       edge(op.get_edge());
     else if (op.is_index())
       idx(op.get_index());
+    else if (op.is_name())
+      string_op(op.get_name());
   }
 
   void ir_printer::print_assign(const ir::operand& op) noexcept
@@ -301,6 +305,15 @@ namespace tnac::rt::out
     }
   }
 
+  void ir_printer::print_dyn_bind(const ir::instruction& dyn) noexcept
+  {
+    print_assign(dyn[0]);
+    keyword(dyn.opcode_str());
+    print_operand(dyn[1]);
+    plain(", "sv);
+    print_operand(dyn[2]);
+  }
+
   out_stream& ir_printer::out() noexcept
   {
     return *m_out;
@@ -325,6 +338,13 @@ namespace tnac::rt::out
   void ir_printer::name(string_t n) noexcept
   {
     fmt::print(out(), fmt::clr::Cyan, n);
+  }
+
+  void ir_printer::string_op(string_t str) noexcept
+  {
+    plain("'"sv);
+    fmt::print(out(), fmt::clr::Magenta, str);
+    plain("'"sv);
   }
 
   void ir_printer::id(entity_id i) noexcept
