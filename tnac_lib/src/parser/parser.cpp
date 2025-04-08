@@ -728,6 +728,29 @@ namespace tnac
   ast::decl* parser::declarator() noexcept
   {
     auto&& next = peek_next();
+    if (next.is(token::KwFunction))
+    {
+      auto kw = next_tok();
+      if (detail::is_open_paren(peek_next()))
+        return func_decl(kw);
+
+      if (auto&& preview = peek_next(); !preview.is_identifier())
+        return {};
+
+      auto name = next_tok();
+      // todo: overloading
+      if (m_sema.find(name, sema::Unscoped))
+      {
+        auto err = error_expr(name, "Function redefinition"sv, err_pos::Current);
+        return m_builder.make_var_decl(name, *err);
+      }
+
+      if (detail::is_open_paren(peek_next()))
+      {
+        return func_decl(name);
+      }
+    }
+
     if (!next.is_identifier())
       return {};
 
@@ -746,10 +769,6 @@ namespace tnac
     {
       next_tok();
       init = expr();
-    }
-    else if (detail::is_open_paren(op))
-    {
-      return func_decl(name);
     }
     else
     {
@@ -1038,6 +1057,9 @@ namespace tnac
   {
     UTILS_ASSERT(peek_next().is(token::KwFunction));
     auto kw = next_tok();
+    if (auto&& next = peek_next(); !detail::is_open_paren(next))
+      return error_expr(next, diag::expected('('), err_pos::Current);
+
     auto funcDecl = func_decl(kw);
     if (!funcDecl->is_valid())
       return error_expr(kw, diag::invalid_lambda(), err_pos::Current);

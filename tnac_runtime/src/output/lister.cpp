@@ -325,6 +325,14 @@ namespace tnac::rt::out
 
   void lister::print(const ast::func_decl& decl) noexcept
   {
+    auto&& pos = decl.pos();
+    if (pos.is_identifier())
+    {
+      kw_style();
+      out() << "_fn ";
+      default_style();
+    }
+
     print_token(decl.pos(), false);
     print_params(decl.params());
 

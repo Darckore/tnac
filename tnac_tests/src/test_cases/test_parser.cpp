@@ -483,7 +483,7 @@ namespace tnac::tests
 
   TEST(parser, t_struct_call)
   {
-    constexpr auto input = "f(a) ; : f(1+2)"sv;
+    constexpr auto input = "_fn f(a) ; : f(1+2)"sv;
 
     /*
     * call
@@ -685,7 +685,7 @@ namespace tnac::tests
 
   TEST(parser, t_struct_func_decl_empty)
   {
-    constexpr auto input = "f() ;"sv;
+    constexpr auto input = "_fn f() ;"sv;
 
     /*
     * decl
@@ -705,7 +705,7 @@ namespace tnac::tests
 
   TEST(parser, t_struct_func_decl_params)
   {
-    constexpr auto input = "f(p1, p2, p3) ;"sv;
+    constexpr auto input = "_fn f(p1, p2, p3) ;"sv;
 
     /*
     * decl
@@ -728,7 +728,7 @@ namespace tnac::tests
 
   TEST(parser, t_struct_func_decl_body)
   {
-    constexpr auto input = "f(p) p+1;"sv;
+    constexpr auto input = "_fn f(p) p+1;"sv;
 
     /*
     * decl
@@ -756,7 +756,7 @@ namespace tnac::tests
 
   TEST(parser, t_struct_ret)
   {
-    constexpr auto input = "f() _ret fn(p) p+1;;"sv;
+    constexpr auto input = "_fn f() _ret _fn fn(p) p+1;;"sv;
 
     /*
     * decl
@@ -945,14 +945,14 @@ namespace tnac::tests
   {
     tree_checker::check_error("2 + "sv, "Expected expression"sv);
     tree_checker::check_error("1 + 1 2"sv, "Expected ':' or EOL"sv);
-    tree_checker::check_error("f() 1 + 1 2;"sv, "Expected ':' or EOL"sv);
+    tree_checker::check_error("_fn f() 1 + 1 2;"sv, "Expected ':' or EOL"sv);
     tree_checker::check_error("a"sv, "Expected initialisation"sv);
     tree_checker::check_error("a + 2"sv, "Expected initialisation"sv);
     tree_checker::check_error("1 + 1 = 2"sv, "Expected a single identifier"sv);
     tree_checker::check_error("1 + a"sv, "Undefined identifier"sv);
     tree_checker::check_error("2*(1 + 2"sv, "Expected ')'"sv);
-    tree_checker::check_error("f() ; f = 10"sv, "Expected an assignable object"sv);
-    tree_checker::check_error("f(a, a) ;"sv, "Function parameter redifinition"sv);
+    tree_checker::check_error("_fn f() ; f = 10"sv, "Expected an assignable object"sv);
+    tree_checker::check_error("_fn f(a, a) ;"sv, "Function parameter redifinition"sv);
   }
   
   TEST(parser, t_cmd_skip)
