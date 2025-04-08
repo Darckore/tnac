@@ -734,7 +734,7 @@ namespace tnac
       if (detail::is_open_paren(peek_next()))
         return func_decl(kw);
 
-      if (auto&& preview = peek_next(); !preview.is_identifier())
+      if (!peek_next().is_identifier())
         return {};
 
       auto name = next_tok();
