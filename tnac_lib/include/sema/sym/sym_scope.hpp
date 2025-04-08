@@ -178,6 +178,16 @@ namespace tnac::semantics
     module_sym& mod() noexcept;
 
     //
+    // Attempts to cast the attached symbol to callable (module or function)
+    //
+    const function* to_callable() const noexcept;
+
+    //
+    // Attempts to cast the attached symbol to callable (module or function)
+    //
+    function* to_callable() noexcept;
+
+    //
     // Attempts to cast the attached symbol to scope reference
     //
     const scope_ref* to_scope_ref() const noexcept;

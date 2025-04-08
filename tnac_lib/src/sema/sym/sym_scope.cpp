@@ -106,6 +106,18 @@ namespace tnac::semantics
     return FROM_CONST(to_func);
   }
 
+  const function* scope::to_callable() const noexcept
+  {
+    if (m_sym && is_any(Module, Function))
+      return &utils::cast<function>(*sym());
+
+    return {};
+  }
+  function* scope::to_callable() noexcept
+  {
+    return FROM_CONST(to_callable);
+  }
+
   const function& scope::func() const noexcept
   {
     auto fsym = to_func();

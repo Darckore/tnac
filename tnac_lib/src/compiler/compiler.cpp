@@ -377,11 +377,7 @@ namespace tnac
     auto sym = &id.symbol();
     if (auto ref = utils::try_cast<semantics::scope_ref>(sym))
     {
-      auto&& underlying = ref->referenced();
-      if (underlying.is_function())
-        sym = underlying.to_func();
-      else if (underlying.is_module())
-        sym = underlying.to_module();
+      sym = ref->referenced().to_callable();
     }
 
     UTILS_ASSERT(sym);
