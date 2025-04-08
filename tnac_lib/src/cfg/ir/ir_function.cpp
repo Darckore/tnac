@@ -72,6 +72,16 @@ namespace tnac::ir
     return FROM_CONST(children);
   }
 
+  const function* function::lookup(string_t fn) const noexcept
+  {
+    auto found = m_childSt.find(fn);
+    return found != m_childSt.end() ? found->second : nullptr;
+  }
+  function* function::lookup(string_t fn) noexcept
+  {
+    return FROM_CONST(lookup, fn);
+  }
+
   const function::block_list& function::blocks() const noexcept
   {
     return m_blocks;
@@ -105,8 +115,16 @@ namespace tnac::ir
 
   // Private members
 
+  string_t function::raw_name() const noexcept
+  {
+    auto parts = utils::split(m_name, ":"sv);
+    return *parts.begin();
+  }
+
   void function::add_child(function& child) noexcept
   {
     m_children.push_back(&child);
+    [[maybe_unused]] auto res = m_childSt.try_emplace(child.raw_name(), &child);
+    UTILS_ASSERT(res.second);
   }
 }

@@ -6,6 +6,11 @@
 #include "cfg/ir/ir_base.hpp"
 #include "cfg/ir/ir_basic_block.hpp"
 
+namespace tnac
+{
+  class compiler;
+}
+
 namespace tnac::ir
 {
   //
@@ -14,10 +19,13 @@ namespace tnac::ir
   class function final : public node
   {
   public:
-    using name_t     = string_t;
-    using size_type  = std::uint16_t;
-    using child_list = std::vector<function*>;
-    using block_list = block_container;
+    using name_t        = string_t;
+    using size_type     = std::uint16_t;
+    using child_list    = std::vector<function*>;
+    using block_list    = block_container;
+    using child_sym_tab = std::unordered_map<string_t, function*>;
+
+    friend tnac::compiler;
 
   public:
     CLASS_SPECIALS_NONE(function);
@@ -82,6 +90,16 @@ namespace tnac::ir
     child_list& children() noexcept;
 
     //
+    // Looks up a child function by its demangled name
+    //
+    const function* lookup(string_t fn) const noexcept;
+
+    //
+    // Looks up a child function by its demangled name
+    //
+    function* lookup(string_t fn) noexcept;
+
+    //
     // Returns a reference to the basic block container
     //
     const block_list& blocks() const noexcept;
@@ -104,6 +122,11 @@ namespace tnac::ir
 
   private:
     //
+    // Demangles the name
+    //
+    string_t raw_name() const noexcept;
+
+    //
     // Adds a nested function
     //
     void add_child(function& child) noexcept;
@@ -115,6 +138,7 @@ namespace tnac::ir
     block_list m_blocks;
     basic_block* m_entry{};
     entity_id m_id;
+    child_sym_tab m_childSt;
     size_type m_paramCount{};
   };
 }
