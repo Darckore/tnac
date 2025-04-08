@@ -325,7 +325,7 @@ namespace tnac
     //
     // Parses an id expr
     //
-    ast::expr* id_expr() noexcept;
+    ast::expr* id_expr(bool dotRhs = false) noexcept;
 
     //
     // Parses a typed expr

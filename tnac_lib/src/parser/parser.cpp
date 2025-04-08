@@ -1036,11 +1036,15 @@ namespace tnac
     return error_expr(err, diag::expected_expr(), err_pos::Current);
   }
 
-  ast::expr* parser::id_expr() noexcept
+  ast::expr* parser::id_expr(bool dotRhs /*= false*/) noexcept
   {
     auto sym = m_sema.find(peek_next(), m_defaultLookupType);
     if (!sym)
       return error_expr(next_tok(), diag::undef_id(), err_pos::Current);
+
+    using semantics::sym_kind;
+    if (dotRhs && utils::eq_any(sym->what(), sym_kind::Variable, sym_kind::Parameter))
+      return error_expr(next_tok(), diag::var_not_allowed(), err_pos::Current);
 
     auto id = next_tok();
     if (auto ref = utils::try_cast<semantics::scope_ref>(sym);
@@ -1157,7 +1161,7 @@ namespace tnac
     if(!next.is_identifier())
       return error_expr(next, diag::expected_id(), err_pos::Current);
 
-    auto accr = id_expr();
+    auto accr = id_expr(true);
     return m_builder.make_dot(accd, *accr);
   }
 

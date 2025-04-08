@@ -166,6 +166,11 @@ namespace tnac
     return "Undefined identifier"sv;
   }
 
+  string_t diag::var_not_allowed() noexcept
+  {
+    return "Referencing a variable is not allowed here"sv;
+  }
+
   string_t diag::scope_ref_nodot() noexcept
   {
     return "References to intermediate scopes can only be used as lhs of a dot expression"sv;

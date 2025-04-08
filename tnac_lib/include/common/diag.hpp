@@ -151,6 +151,11 @@ namespace tnac
     static string_t undef_id() noexcept;
 
     //
+    // Returns a 'internal variables not allowed' message
+    //
+    static string_t var_not_allowed() noexcept;
+
+    //
     // Returns a 'scope ref not in dot expr' message
     //
     static string_t scope_ref_nodot() noexcept;

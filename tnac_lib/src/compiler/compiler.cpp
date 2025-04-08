@@ -1400,9 +1400,16 @@ namespace tnac
         auto&& sym = part->symbol();
         if (&sym != &importedSym)
         {
-          auto&& loose = builder.make_loose(&sym, sym.name());
-          curFn->add_child_name(loose);
-          curFn = &loose;
+          if (auto existing = curFn->lookup(sym.name()))
+          {
+            curFn = existing;
+          }
+          else
+          {
+            auto&& loose = builder.make_loose(&sym, sym.name());
+            curFn->add_child_name(loose);
+            curFn = &loose;
+          }
           continue;
         }
 

@@ -134,8 +134,7 @@ namespace tnac::ir
 
   void function::add_child_name(string_t name, function& child) noexcept
   {
-    [[maybe_unused]] auto res = m_childSt.try_emplace(name, &child);
-    UTILS_ASSERT(res.second);
+    m_childSt.try_emplace(name, &child);
   }
 
   void function::add_child_name(function& child) noexcept
