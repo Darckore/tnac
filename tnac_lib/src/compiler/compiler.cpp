@@ -380,7 +380,9 @@ namespace tnac
       sym = ref->referenced().to_callable();
     }
 
-    UTILS_ASSERT(sym);
+    if(!sym)
+      return;
+
     if (auto func = m_cfg->find_entity(sym))
     {
       m_stack.push(eval::value::function(*func));
