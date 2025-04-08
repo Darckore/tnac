@@ -149,6 +149,11 @@ namespace tnac::ast
     //
     void assume_ancestry(node* child) noexcept;
 
+    //
+    // Invalidates all parent nodes if invalid itself
+    //
+    void invalidate_parents() noexcept;
+
   private:
     node* m_parent{};
     kind m_kind{ Error };

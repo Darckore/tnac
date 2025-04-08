@@ -67,6 +67,19 @@ namespace tnac::ast // Base node
 
     child->make_child_of(this);
   }
+
+  void node::invalidate_parents() noexcept
+  {
+    if (is_valid())
+      return;
+
+    auto p = parent();
+    if (!p || !p->is_valid())
+      return;
+
+    p->make_invalid();
+    p->invalidate_parents();
+  }
 }
 
 
@@ -97,6 +110,8 @@ namespace tnac::ast // Scope
     }
 
     m_children.insert(m_children.end(), children.begin(), children.end());
+
+    invalidate_parents();
   }
 
   const scope::elem_list& scope::children() const noexcept
