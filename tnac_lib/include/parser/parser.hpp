@@ -315,7 +315,7 @@ namespace tnac
     //
     // Parses an anonimous function expression
     //
-    ast::expr* anonimous_function() noexcept;
+    ast::expr* anonymous_function() noexcept;
 
     //
     // Parses a primary expr

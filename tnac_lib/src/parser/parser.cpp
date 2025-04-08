@@ -993,7 +993,7 @@ namespace tnac
       return typed_expr();
 
     if (next.is(token::KwFunction))
-      return anonimous_function();
+      return anonymous_function();
 
     if (next.is(token::KwResult))
       return m_builder.make_result(next_tok());
@@ -1034,7 +1034,7 @@ namespace tnac
     return m_builder.make_id(id, *sym);
   }
 
-  ast::expr* parser::anonimous_function() noexcept
+  ast::expr* parser::anonymous_function() noexcept
   {
     UTILS_ASSERT(peek_next().is(token::KwFunction));
     auto kw = next_tok();
