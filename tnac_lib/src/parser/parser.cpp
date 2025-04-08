@@ -1023,7 +1023,15 @@ namespace tnac
     if (!sym)
       return error_expr(next_tok(), diag::undef_id(), err_pos::Current);
 
-    return m_builder.make_id(next_tok(), *sym);
+    auto id = next_tok();
+    if (auto ref = utils::try_cast<semantics::scope_ref>(sym);
+             ref && ref->referenced().is_internal())
+    {
+      if(!detail::is_dot(peek_next()))
+        return error_expr(id, diag::scope_ref_nodot(), err_pos::Last);
+    }
+
+    return m_builder.make_id(id, *sym);
   }
 
   ast::expr* parser::anonimous_function() noexcept

@@ -151,6 +151,11 @@ namespace tnac
     static string_t undef_id() noexcept;
 
     //
+    // Returns a 'scope ref not in dot expr' message
+    //
+    static string_t scope_ref_nodot() noexcept;
+
+    //
     // Returns an 'invalid decl' message
     //
     static string_t invalid_decl() noexcept;
