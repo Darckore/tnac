@@ -3,6 +3,15 @@
 
 namespace tnac::ir
 {
+  block_container builder::loose_module::dummy_container() noexcept
+  {
+    static block_map dummyBlocks;
+    return block_container{ dummyBlocks };
+  }
+}
+
+namespace tnac::ir
+{
   // Special members
 
   builder::~builder() noexcept
@@ -30,6 +39,13 @@ namespace tnac::ir
   {
     auto fIt = m_functions.find(id);
     return fIt != m_functions.end() ? &fIt->second : nullptr;
+  }
+
+  function& builder::make_loose(entity_id id, fname_t name) noexcept
+  {
+    auto&& newFunc = m_looseModules.emplace_back(id, name);
+    newFunc.m_module.make_loose();
+    return newFunc.m_module;
   }
 
   instruction& builder::add_instruction(basic_block& owner, op_code op, size_type count, instruction_list::iterator pos) noexcept

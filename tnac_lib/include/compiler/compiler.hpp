@@ -364,6 +364,11 @@ namespace tnac
     bool walk_imports(ast::module_def& mod) noexcept;
 
     //
+    // Registers imports as loose submodules
+    //
+    void register_import_scopes(ir::function& mod, ast::module_def& def) noexcept;
+
+    //
     // Transfers last stored value in case there are multiple vars are assigned or declared
     // inside a single expression
     // The previous value that was on the stack is consumed at this point for a store operation

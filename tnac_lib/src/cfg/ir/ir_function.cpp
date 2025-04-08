@@ -39,6 +39,11 @@ namespace tnac::ir
     return m_id;
   }
 
+  bool function::is_loose() const noexcept
+  {
+    return m_loose;
+  }
+
   function::size_type function::param_count() const noexcept
   {
     return m_paramCount;
@@ -124,7 +129,22 @@ namespace tnac::ir
   void function::add_child(function& child) noexcept
   {
     m_children.push_back(&child);
-    [[maybe_unused]] auto res = m_childSt.try_emplace(child.raw_name(), &child);
+    add_child_name(child);
+  }
+
+  void function::add_child_name(string_t name, function& child) noexcept
+  {
+    [[maybe_unused]] auto res = m_childSt.try_emplace(name, &child);
     UTILS_ASSERT(res.second);
+  }
+
+  void function::add_child_name(function& child) noexcept
+  {
+    add_child_name(child.raw_name(), child);
+  }
+
+  void function::make_loose() noexcept
+  {
+    m_loose = true;
   }
 }

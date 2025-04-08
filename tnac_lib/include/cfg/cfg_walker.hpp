@@ -56,7 +56,10 @@ namespace tnac::ir
         visit_root(&val);
 
       for (auto mod : gr)
-        visit_root(mod);
+      {
+        if(!mod->is_loose())
+          visit_root(mod);
+      }
     }
 
   private:

@@ -1336,6 +1336,9 @@ namespace tnac
     const auto parCnt = mod.param_count();
     auto modName = m_names.mangle_module_name(mod, parCnt);
     auto&& irMod = m_cfg->declare_module(&mod, modName, parCnt);
+
+    register_import_scopes(irMod, *def);
+
     m_context.enter_function(irMod, *def);
     compile(def->params(), def->children());
     m_context.exit_function();
@@ -1383,6 +1386,42 @@ namespace tnac
     }
 
     return true;
+  }
+
+  void compiler::register_import_scopes(ir::function& mod, ast::module_def& def) noexcept
+  {
+    auto&& builder = m_cfg->get_builder();
+    for (auto imp : def.imports())
+    {
+      auto curFn = &mod;
+      auto&& importedSym = imp->imported_sym();
+      for (auto part : imp->name())
+      {
+        auto&& sym = part->symbol();
+        if (&sym != &importedSym)
+        {
+          auto&& loose = builder.make_loose(&sym, sym.name());
+          curFn->add_child_name(loose);
+          curFn = &loose;
+          continue;
+        }
+
+        if (curFn == &mod)
+          continue;
+
+        if(auto importedMod = m_cfg->find_entity(&importedSym))
+          curFn->add_child_name(importedSym.name(), *importedMod);
+      }
+
+      auto alias = imp->alias_name();
+      if (!alias)
+        continue;
+
+      auto alSym = utils::try_cast<semantics::scope_ref>(&alias->symbol());
+      UTILS_ASSERT(alSym);
+      if (auto aliasFn = m_cfg->find_entity(alSym->referenced().to_module()))
+        mod.add_child_name(alias->name(), *aliasFn);
+    }
   }
 
   void compiler::transfer_last_load(size_type prevSz) noexcept

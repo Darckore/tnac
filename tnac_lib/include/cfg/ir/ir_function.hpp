@@ -26,6 +26,7 @@ namespace tnac::ir
     using child_sym_tab = std::unordered_map<string_t, function*>;
 
     friend tnac::compiler;
+    friend class builder;
 
   public:
     CLASS_SPECIALS_NONE(function);
@@ -49,6 +50,12 @@ namespace tnac::ir
     // Returns the function's id
     //
     entity_id id() const noexcept;
+
+    //
+    // Checks whether the function is loose
+    // Such functions are artificial, and cannot be called or traversed
+    //
+    bool is_loose() const noexcept;
 
     //
     // Returns the number of function's parameters
@@ -131,6 +138,21 @@ namespace tnac::ir
     //
     void add_child(function& child) noexcept;
 
+    //
+    // Adds a function with an alias name into the internal symbol table
+    //
+    void add_child_name(string_t name, function& child) noexcept;
+
+    //
+    // Adds a function name into the internal symbol table
+    //
+    void add_child_name(function& child) noexcept;
+
+    //
+    // Usable by ir builder
+    //
+    void make_loose() noexcept;
+
   private:
     name_t m_name;
     function* m_owner{};
@@ -140,5 +162,6 @@ namespace tnac::ir
     entity_id m_id;
     child_sym_tab m_childSt;
     size_type m_paramCount{};
+    bool m_loose{};
   };
 }

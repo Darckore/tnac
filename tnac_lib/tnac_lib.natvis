@@ -504,6 +504,7 @@
       <Item Name="[module]" Condition="!m_owner">"yes",sb</Item>
       <Item Name="[nested]">m_children</Item>
       <Item Name="[basic blocks]">m_blocks</Item>
+      <Item Name="[symtab]">m_childSt</Item>
     </Expand>
   </Type>
 
@@ -584,6 +585,8 @@
       <Item Name="[constants]">m_consts</Item>
       <Item Name="[registers]">m_regs</Item>
       <Item Name="[arrays]">m_arrays</Item>
+      <Item Name="[loose edges]">m_looseEdges</Item>
+      <Item Name="[loose modules]">m_looseModules</Item>
     </Expand>
   </Type>
   

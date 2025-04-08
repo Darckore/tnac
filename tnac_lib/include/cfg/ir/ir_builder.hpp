@@ -26,6 +26,22 @@ namespace tnac::ir
     using size_type        = instruction::size_type;
     using arr_store        = std::unordered_map<entity_id, constant*>;
 
+  private:
+    struct loose_module final :
+      public utils::ilist_node<loose_module>
+    {
+      static block_container dummy_container() noexcept;
+
+      loose_module(entity_id id, fname_t name) noexcept :
+        m_module{ name, id, 0u, dummy_container() }
+      { }
+
+      function m_module;
+    };
+
+  public:
+    using loose_store = loose_module::list_type;
+
   public:
     CLASS_SPECIALS_NONE_CUSTOM(builder);
 
@@ -48,6 +64,11 @@ namespace tnac::ir
     // Finds a stored function by id
     //
     function* find_function(entity_id id) noexcept;
+
+    //
+    // Creates a loose module
+    //
+    function& make_loose(entity_id id, fname_t name) noexcept;
 
     //
     // Appends an instruction to the specified basic block before the given iterator
@@ -154,5 +175,7 @@ namespace tnac::ir
     const_list m_consts;
     register_store m_regs;
     arr_store m_arrays;
+
+    loose_store m_looseModules;
   };
 }
