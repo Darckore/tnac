@@ -203,6 +203,13 @@ namespace tnac::detail
     return utils::eq_none(oc, Load, Phi, Bool, Int, Float, Frac, Cplx);
   }
 
+  constexpr auto needs_forced_bool(ir::op_code oc) noexcept
+  {
+    using enum ir::op_code;
+    return utils::eq_none(oc, CmpE,   CmpL,  CmpLE, CmpNE, CmpG, CmpGE,
+                              CmpNot, CmpIs, Bool);
+  }
+
   template <typename F>
   concept fv_callback = std::is_nothrow_invocable_v<F, ast::func_decl&>;
 
@@ -547,7 +554,7 @@ namespace tnac
       };
 
     compile(binary.left());
-    compile_unary(extract(), tok_kind::Question);
+    enforce_bool(extract());
     auto leftOp = extract();
     if (leftOp.is_value())
     {
@@ -567,7 +574,7 @@ namespace tnac
     m_context.terminate_at(rhsBlock);
     compile(binary.right());
 
-    compile_unary(extract(), tok_kind::Question);
+    enforce_bool(extract());
     auto rightOp = extract();
     if (rightOp.is_value() && !has_ret_jump(rhsBlock))
     {
@@ -608,7 +615,7 @@ namespace tnac
   bool compiler::preview(ast::cond_short& cond) noexcept
   {
     compile(cond.cond());
-    compile_unary(extract(), tok_kind::Question);
+    enforce_bool(extract());
     auto checkedVal = extract();
     if (checkedVal.is_value())
     {
@@ -1156,6 +1163,32 @@ namespace tnac
       // todo: warning - dead code
       m_stack.pop();
     }
+  }
+
+  void compiler::enforce_bool(const ir::operand& op) noexcept
+  {
+    auto needsBool = [&]() noexcept
+      {
+        if (op.is_value() && op.get_value().id() == eval::type_id::Bool)
+          return false;
+
+        if (!op.is_register())
+          return false;
+
+        auto&& reg = op.get_reg();
+        if (!reg.has_src())
+          return false;
+
+        return detail::needs_forced_bool(reg.source().opcode());
+      };
+
+    if (needsBool())
+    {
+      compile_unary(op, tok_kind::Question);
+      return;
+    }
+
+    m_stack.push(op);
   }
 
   void compiler::compile_init(semantics::symbol& sym, ast::expr& init) noexcept

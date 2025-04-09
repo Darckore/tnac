@@ -300,6 +300,12 @@ namespace tnac
     void empty_stack() noexcept;
 
     //
+    // Emits a unary is to an operation's result,
+    // unless the operation itself returns a bool already
+    //
+    void enforce_bool(const ir::operand& op) noexcept;
+
+    //
     // Compiles an initialiser (rhs of var decls and assigns)
     //
     void compile_init(semantics::symbol& var, ast::expr& init) noexcept;
