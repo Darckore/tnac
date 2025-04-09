@@ -207,7 +207,7 @@ namespace tnac::detail
   {
     using enum ir::op_code;
     return utils::eq_none(oc, CmpE,   CmpL,  CmpLE, CmpNE, CmpG, CmpGE,
-                              CmpNot, CmpIs, Bool);
+                              CmpNot, CmpIs, Bool,  Test);
   }
 
   template <typename F>
@@ -372,6 +372,12 @@ namespace tnac
   {
     auto val = extract();
     compile_unary(val, eval::val_ops::PostTail, ir::op_code::Tail);
+  }
+
+  void compiler::visit(ast::type_check_expr& unary) noexcept
+  {
+    auto val = extract();
+    compile_test(val, detail::to_type_id(unary.type()));
   }
 
   void compiler::visit(ast::binary_expr& binary) noexcept
@@ -952,12 +958,17 @@ namespace tnac
 
   void compiler::emit_binary(ir::op_code oc, ir::operand lhs, ir::operand rhs) noexcept
   {
-    make(oc).add(lhs).add(rhs);
+    make(oc).add(std::move(lhs)).add(std::move(rhs));
   }
 
   void compiler::emit_unary(ir::op_code oc, ir::operand val) noexcept
   {
-    make(oc).add(val);
+    make(oc).add(std::move(val));
+  }
+
+  void compiler::emit_test(ir::operand val, eval::type_id id) noexcept
+  {
+    make(ir::op_code::Test).add(id).add(std::move(val));
   }
 
   void compiler::emit_jump(ir::operand value, ir::basic_block& dest) noexcept
@@ -1205,6 +1216,18 @@ namespace tnac
     const auto op = eval::detail::conv_unary(opType);
     const auto opcode = detail::to_unary_opcode(opType);
     compile_unary(val, op, opcode);
+  }
+
+  void compiler::compile_test(const ir::operand& op, eval::type_id id) noexcept
+  {
+    if (op.is_value())
+    {
+      auto opVal = op.get_value();
+      m_stack.push(eval::value{ opVal.id() == id });
+      return;
+    }
+
+    emit_test(op, id);
   }
 
   void compiler::compile_unary(const ir::operand& val, eval::val_ops opType, ir::op_code oc) noexcept

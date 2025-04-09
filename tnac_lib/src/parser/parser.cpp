@@ -1078,6 +1078,12 @@ namespace tnac
   ast::expr* parser::typed_expr() noexcept
   {
     auto kw = next_tok();
+    if (peek_next().is(token::Question))
+    {
+      next_tok();
+      auto op = primary_expr();
+      return m_builder.make_type_check(*op, kw);
+    }
 
     if (!detail::is_open_paren(peek_next()))
       return error_expr(peek_next(), diag::expected_args(), err_pos::Last);

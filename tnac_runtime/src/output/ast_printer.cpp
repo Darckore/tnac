@@ -181,6 +181,16 @@ namespace tnac::rt::out
     push_parent(1u);
   }
 
+  void ast_printer::visit(const ast::type_check_expr& expr) noexcept
+  {
+    indent();
+    node_designator("Is type");
+    print_token(expr.type());
+    additional_info(expr);
+    endl();
+    push_parent(1u);
+  }
+
   void ast_printer::visit(const ast::tail_expr& expr) noexcept
   {
     indent();

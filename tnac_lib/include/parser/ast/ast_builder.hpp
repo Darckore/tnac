@@ -121,6 +121,11 @@ namespace tnac::ast
     unary_expr* make_unary(expr& e, const token& op) noexcept;
 
     //
+    // Creates a type check expression
+    //
+    type_check_expr* make_type_check(expr& e, const token& op) noexcept;
+
+    //
     // Creates a tail expression
     //
     tail_expr* make_tail(expr& e) noexcept;

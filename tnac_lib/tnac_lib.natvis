@@ -270,6 +270,14 @@
     </Expand>
   </Type>
 
+    <Type Name="tnac::ast::type_check_expr">
+    <DisplayString>{m_kind,en} ({m_pos})</DisplayString>
+    <Expand>
+      <Item Name="[parent]" Condition="m_parent">*m_parent</Item>
+      <Item Name="[operand]">*m_expr</Item>
+    </Expand>
+  </Type>
+  
   <Type Name="tnac::ast::tail_expr">
     <DisplayString>{m_kind,en} ({m_pos})</DisplayString>
     <Expand>
@@ -545,6 +553,7 @@
     <DisplayString Condition="m_value._Which == 4">Operand (param)</DisplayString>
     <DisplayString Condition="m_value._Which == 5">Operand (index)</DisplayString>
     <DisplayString Condition="m_value._Which == 6">Operand (name)</DisplayString>
+    <DisplayString Condition="m_value._Which == 7">Operand (typeid)</DisplayString>
     <DisplayString>Operand (uninit)</DisplayString>
     <Expand>
       <Item Name="[value]">m_value</Item>

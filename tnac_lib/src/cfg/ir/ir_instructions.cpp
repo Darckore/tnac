@@ -177,6 +177,16 @@ namespace tnac::ir // operand
     UTILS_ASSERT(is_name());
     return std::get<string_t>(m_value);
   }
+
+  bool operand::is_typeid() const noexcept
+  {
+    return std::holds_alternative<eval::type_id>(m_value);
+  }
+  eval::type_id operand::get_typeid() const noexcept
+  {
+    UTILS_ASSERT(is_typeid());
+    return std::get<eval::type_id>(m_value);
+  }
 }
 
 
@@ -265,6 +275,8 @@ namespace tnac::ir // instruction
     case Float:   return "float"sv;
     case Frac:    return "frac"sv;
     case Cplx:    return "cplx"sv;
+
+    case Test:    return "test"sv;
     }
 
     UTILS_ASSERT(false);
@@ -349,6 +361,8 @@ namespace tnac::ir // instruction
     case Phi:     count = 3; break; // 2 branches is the most common case (probably)
 
     case DynBind: count = 3; break;
+
+    case Test:    count = 3; break;
 
     case Bool:    count = type_info<eval::bool_type>::maxArgs + 1;     break;
     case Int:     count = type_info<eval::int_type>::maxArgs + 1;      break;

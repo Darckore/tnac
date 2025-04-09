@@ -13,7 +13,8 @@ vreg*,\
 edge*,\
 func_param,\
 std::uint64_t, \
-string_t
+string_t, \
+eval::type_id
 
 
 namespace tnac::ir
@@ -209,6 +210,11 @@ namespace tnac::ir
     bool is_name() const noexcept;
 
     //
+    // Checks whether the operand holds a type id
+    //
+    bool is_typeid() const noexcept;
+
+    //
     // Returns the stored value
     // Callers must check is_value before using this
     //
@@ -249,6 +255,12 @@ namespace tnac::ir
     // Callers must check is_name before using this
     //
     string_t get_name() const noexcept;
+
+    //
+    // Returns the stored type id
+    // Callers must check is_typeid before using this
+    //
+    eval::type_id get_typeid() const noexcept;
 
   private:
     data_type m_value;
@@ -310,7 +322,9 @@ namespace tnac::ir
     Int,
     Float,
     Frac,
-    Cplx
+    Cplx,
+
+    Test
   };
 
   //

@@ -39,33 +39,34 @@ namespace tnac::rt::out
     indent(*root);
     switch (root->what())
     {
-    case Error:      print(cast<ast::error_expr>(*root));  break;
-    case Root:       print(cast<ast::root>(*root));        break;
-    case Module:     print(cast<ast::module_def>(*root));  break;
-    case Import:     print(cast<ast::import_dir>(*root));  break;
-    case Scope:      print(cast<ast::scope>(*root));       break;
-    case Literal:    print(cast<ast::lit_expr>(*root));    break;
-    case Identifier: print(cast<ast::id_expr>(*root));     break;
-    case Unary:      print(cast<ast::unary_expr>(*root));  break;
-    case Tail:       print(cast<ast::tail_expr>(*root));   break;
-    case Binary:     print(cast<ast::binary_expr>(*root)); break;
-    case Assign:     print(cast<ast::assign_expr>(*root)); break;
-    case Decl:       print(cast<ast::decl_expr>(*root));   break;
-    case Abs:        print(cast<ast::abs_expr>(*root));    break;
-    case Array:      print(cast<ast::array_expr>(*root));  break;
-    case Paren:      print(cast<ast::paren_expr>(*root));  break;
-    case Typed:      print(cast<ast::typed_expr>(*root));  break;
-    case Call:       print(cast<ast::call_expr>(*root));   break;
-    case Result:     print(cast<ast::result_expr>(*root)); break;
-    case Ret:        print(cast<ast::ret_expr>(*root));    break;
-    case CondShort:  print(cast<ast::cond_short>(*root));  break;
-    case Cond:       print(cast<ast::cond_expr>(*root));   break;
-    case Dot:        print(cast<ast::dot_expr>(*root));    break;
-    case Pattern:    print(cast<ast::pattern>(*root));     break;
-    case Matcher:    print(cast<ast::matcher>(*root));     break;
-    case VarDecl:    print(cast<ast::var_decl>(*root));    break;
-    case ParamDecl:  print(cast<ast::param_decl>(*root));  break;
-    case FuncDecl:   print(cast<ast::func_decl>(*root));   break;
+    case Error:      print(cast<ast::error_expr>(*root));      break;
+    case Root:       print(cast<ast::root>(*root));            break;
+    case Module:     print(cast<ast::module_def>(*root));      break;
+    case Import:     print(cast<ast::import_dir>(*root));      break;
+    case Scope:      print(cast<ast::scope>(*root));           break;
+    case Literal:    print(cast<ast::lit_expr>(*root));        break;
+    case Identifier: print(cast<ast::id_expr>(*root));         break;
+    case Unary:      print(cast<ast::unary_expr>(*root));      break;
+    case Tail:       print(cast<ast::tail_expr>(*root));       break;
+    case IsType:     print(cast<ast::type_check_expr>(*root)); break;
+    case Binary:     print(cast<ast::binary_expr>(*root));     break;
+    case Assign:     print(cast<ast::assign_expr>(*root));     break;
+    case Decl:       print(cast<ast::decl_expr>(*root));       break;
+    case Abs:        print(cast<ast::abs_expr>(*root));        break;
+    case Array:      print(cast<ast::array_expr>(*root));      break;
+    case Paren:      print(cast<ast::paren_expr>(*root));      break;
+    case Typed:      print(cast<ast::typed_expr>(*root));      break;
+    case Call:       print(cast<ast::call_expr>(*root));       break;
+    case Result:     print(cast<ast::result_expr>(*root));     break;
+    case Ret:        print(cast<ast::ret_expr>(*root));        break;
+    case CondShort:  print(cast<ast::cond_short>(*root));      break;
+    case Cond:       print(cast<ast::cond_expr>(*root));       break;
+    case Dot:        print(cast<ast::dot_expr>(*root));        break;
+    case Pattern:    print(cast<ast::pattern>(*root));         break;
+    case Matcher:    print(cast<ast::matcher>(*root));         break;
+    case VarDecl:    print(cast<ast::var_decl>(*root));        break;
+    case ParamDecl:  print(cast<ast::param_decl>(*root));      break;
+    case FuncDecl:   print(cast<ast::func_decl>(*root));       break;
 
     default: UTILS_ASSERT(false); break;
     }
@@ -167,6 +168,13 @@ namespace tnac::rt::out
   void lister::print(const ast::unary_expr& expr) noexcept
   {
     print_token(expr.op(), false);
+    print(&expr.operand());
+  }
+
+  void lister::print(const ast::type_check_expr& expr) noexcept
+  {
+    print_token(expr.type(), false);
+    out() << "? ";
     print(&expr.operand());
   }
 

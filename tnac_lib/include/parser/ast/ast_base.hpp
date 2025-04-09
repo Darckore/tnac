@@ -38,6 +38,7 @@ namespace tnac::ast
     Matcher,
     Pattern,
     Dot,
+    IsType,
 
     // Decls,
     VarDecl,

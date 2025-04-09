@@ -221,6 +221,43 @@ namespace tnac::ast
 
 
   //
+  // Type check expression
+  //
+  class type_check_expr : public expr
+  {
+  private:
+    friend class builder;
+
+  public:
+    CLASS_SPECIALS_NONE(type_check_expr);
+
+    virtual ~type_check_expr() noexcept;
+
+  protected:
+    type_check_expr(expr& e, const token& type) noexcept;
+
+  public:
+    //
+    // Returns the token corresponding to the type
+    //
+    const token& type() const noexcept;
+
+    //
+    // Returns the operand
+    //
+    const expr& operand() const noexcept;
+
+    //
+    // Returns the operand
+    // 
+    expr& operand() noexcept;
+  
+  private:
+    expr* m_expr{};
+  };
+
+
+  //
   // Binary expression
   // Provides info on the corresponding binary operator and both its operands
   //

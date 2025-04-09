@@ -83,7 +83,8 @@ namespace tnac
     void visit(ast::lit_expr& lit) noexcept;
     void visit(ast::id_expr& id) noexcept;
     void visit(ast::unary_expr& unary) noexcept;
-    void visit(ast::tail_expr& unary) noexcept;
+    void visit(ast::tail_expr& tail) noexcept;
+    void visit(ast::type_check_expr& tcheck) noexcept;
     void visit(ast::binary_expr& binary) noexcept;
     void visit(ast::array_expr& arr) noexcept;
     void visit(ast::abs_expr& abs) noexcept;
@@ -219,6 +220,11 @@ namespace tnac
     void emit_unary(ir::op_code oc, ir::operand val) noexcept;
 
     //
+    // Creates a test instruction
+    //
+    void emit_test(ir::operand val, eval::type_id id) noexcept;
+
+    //
     // Creates an unconditional jump instruction
     //
     void emit_jump(ir::operand value, ir::basic_block& dest) noexcept;
@@ -313,12 +319,17 @@ namespace tnac
     //
     // Compiles a unary expression
     //
-    void compile_unary(const ir::operand& sym, tok_kind opType) noexcept;
+    void compile_unary(const ir::operand& op, tok_kind opType) noexcept;
 
     //
     // Compiles a unary expression
     //
-    void compile_unary(const ir::operand& sym, eval::val_ops opType, ir::op_code oc) noexcept;
+    void compile_unary(const ir::operand& op, eval::val_ops opType, ir::op_code oc) noexcept;
+
+    //
+    // Compiles a type check expression
+    //
+    void compile_test(const ir::operand& op, eval::type_id id) noexcept;
 
     //
     // Compiles a binary expression

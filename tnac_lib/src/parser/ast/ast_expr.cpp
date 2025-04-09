@@ -160,6 +160,37 @@ namespace tnac::ast  // Tail expr
   }
 }
 
+namespace tnac::ast  // Type check expr
+{
+  // Special members
+
+  type_check_expr::~type_check_expr() noexcept = default;
+
+  type_check_expr::type_check_expr(expr& e, const token& type) noexcept :
+    expr{ kind::IsType, type },
+    m_expr{ &e }
+  {
+    assume_ancestry(m_expr);
+  }
+
+
+  // Public members
+
+  const token& type_check_expr::type() const noexcept
+  {
+    return pos();
+  }
+
+  const expr& type_check_expr::operand() const noexcept
+  {
+    return *m_expr;
+  }
+  expr& type_check_expr::operand() noexcept
+  {
+    return FROM_CONST(operand);
+  }
+}
+
 
 namespace tnac::ast  // Binary expr
 {

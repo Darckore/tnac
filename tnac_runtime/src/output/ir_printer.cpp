@@ -79,6 +79,7 @@ namespace tnac::rt::out
     case CmpNE:
     case CmpG:
     case CmpGE:
+    case Test:
       print_binary(instr);
       break;
 
@@ -173,6 +174,8 @@ namespace tnac::rt::out
       idx(op.get_index());
     else if (op.is_name())
       string_op(op.get_name());
+    else if (op.is_typeid())
+      id(op.get_typeid());
   }
 
   void ir_printer::print_assign(const ir::operand& op) noexcept
@@ -331,10 +334,11 @@ namespace tnac::rt::out
     fmt::print(out(), fmt::clr::Blue, kw);
   }
 
-  void ir_printer::keyword(string_t kw) noexcept
+  void ir_printer::keyword(string_t kw, bool addSpace /*= true*/) noexcept
   {
     kw_string(kw);
-    plain(" "sv);
+    if(addSpace)
+      plain(" "sv);
   }
 
   void ir_printer::name(string_t n) noexcept
@@ -352,6 +356,11 @@ namespace tnac::rt::out
   void ir_printer::id(entity_id i) noexcept
   {
     fmt::print(out(), fmt::clr::DarkYellow, i);
+  }
+
+  void ir_printer::id(eval::type_id i) noexcept
+  {
+    keyword(eval::value::id_str(i), false);
   }
 
   void ir_printer::value(const eval::value& val, bool refInterned /*= true*/) noexcept

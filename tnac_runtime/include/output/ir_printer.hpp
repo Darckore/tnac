@@ -83,13 +83,15 @@ namespace tnac::rt::out
 
     void kw_string(string_t kw) noexcept;
 
-    void keyword(string_t kw) noexcept;
+    void keyword(string_t kw, bool addSpace = true) noexcept;
 
     void name(string_t n) noexcept;
 
     void string_op(string_t str) noexcept;
 
     void id(entity_id i) noexcept;
+
+    void id(eval::type_id i) noexcept;
 
     void value(const eval::value& val, bool refInterned = true) noexcept;
 

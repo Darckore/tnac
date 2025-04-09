@@ -97,6 +97,11 @@ namespace tnac::ast
     return make<unary_expr>(e, op);
   }
 
+  type_check_expr* builder::make_type_check(expr& e, const token& op) noexcept
+  {
+    return make<type_check_expr>(e, op);
+  }
+
   tail_expr* builder::make_tail(expr& e) noexcept
   {
     return make<tail_expr>(e);
