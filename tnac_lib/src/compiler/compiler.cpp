@@ -174,6 +174,8 @@ namespace tnac::detail
     case KwInt:      return eval::type_id::Int;
     case KwFloat:    return eval::type_id::Float;
     case KwBool:     return eval::type_id::Bool;
+    case KwArray:    return eval::type_id::Array;
+    case KwFunction: return eval::type_id::Function;
 
     default: UTILS_ASSERT(false); break;
     }

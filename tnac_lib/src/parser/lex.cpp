@@ -200,6 +200,7 @@ namespace tnac
           { "int",    tok_kind::KwInt },
           { "flt",    tok_kind::KwFloat },
           { "bool",   tok_kind::KwBool },
+          { "array",  tok_kind::KwArray },
           { "ret",    tok_kind::KwRet },
           { "true",   tok_kind::KwTrue },
           { "false",  tok_kind::KwFalse },

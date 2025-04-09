@@ -197,7 +197,7 @@ namespace tnac::detail
     auto is_type_keyword(const token& tok) noexcept
     {
       using enum tok_kind;
-      return tok.is_any(KwComplex, KwFraction, KwInt, KwFloat, KwBool);
+      return tok.is_any(KwComplex, KwFraction, KwInt, KwFloat, KwBool, KwArray);
     }
 
     auto is_entry(const token& tok) noexcept
@@ -1088,14 +1088,16 @@ namespace tnac
     if (!detail::is_open_paren(peek_next()))
       return error_expr(peek_next(), diag::expected_args(), err_pos::Last);
 
-    next_tok();
+    auto op = next_tok();
     auto args = arg_list(token::ParenClose);
 
     if (!detail::is_close_paren(peek_next()))
       return error_expr(peek_next(), diag::expected(')'), err_pos::Last);
 
     next_tok();
-    return m_builder.make_typed(kw, std::move(args));
+    return kw.is(token::KwArray) ? 
+      static_cast<ast::expr*>(m_builder.make_array(op, std::move(args))):
+      static_cast<ast::expr*>(m_builder.make_typed(kw, std::move(args)));
   }
 
   parser::expr_list parser::arg_list(tok_kind closing) noexcept
