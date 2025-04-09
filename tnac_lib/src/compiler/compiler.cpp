@@ -176,6 +176,7 @@ namespace tnac::detail
     case KwBool:     return eval::type_id::Bool;
     case KwArray:    return eval::type_id::Array;
     case KwFunction: return eval::type_id::Function;
+    case KwUndef:    return eval::type_id::Invalid;
 
     default: UTILS_ASSERT(false); break;
     }
@@ -335,8 +336,9 @@ namespace tnac
     case token::IntOct:  val = value::parse_int(litValue.value(), 8);  break;
     case token::IntHex:  val = value::parse_int(litValue.value(), 16); break;
     case token::Float:   val = value::parse_float(litValue.value());   break;
+    case token::KwUndef: val = value{};                                break;
 
-    default: return;
+    default: m_stack.push_undef(); return;
     }
 
     m_stack.push(val);

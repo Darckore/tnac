@@ -1023,7 +1023,12 @@ namespace tnac
     auto&& next = peek_next();
 
     if (next.is_literal())
-      return m_builder.make_literal(next_tok());
+    {
+      auto lit = next_tok();
+      if (auto tcheck = type_check_expr(lit))
+        return tcheck;
+      return m_builder.make_literal(lit);
+    }
 
     if (detail::is_type_keyword(next))
       return typed_expr();
