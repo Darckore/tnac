@@ -11,7 +11,7 @@ namespace tnac::eval::detail
     {
       using enum val_ops;
       return utils::eq_any(op, UnaryPlus, UnaryNegation, UnaryBitwiseNot,
-        LogicalNot, LogicalIs, AbsoluteValue);
+        LogicalNot, LogicalIs, AbsoluteValue, UnaryHead, PostTail);
     }
     constexpr auto is_binary(val_ops op) noexcept
     {
@@ -215,6 +215,15 @@ namespace tnac::eval
     {
       return value{};
     }
+
+    auto unary_head(const expr_result auto& operand) noexcept
+    {
+      return value{ eval::head(operand) };
+    }
+    auto unary_head(const array_type& arr) noexcept
+    {
+      return eval::head(arr);
+    }
   }
 
   value value::unary_as_array(val_ops op) const noexcept
@@ -225,6 +234,9 @@ namespace tnac::eval
       auto toBool = get_caster<bool_type>()(std::move(arr));
       return value{ toBool.value_or(false) }.unary(op);
     }
+
+    if (op == val_ops::UnaryHead)
+      return unary_head(arr);
 
     auto&& store = arr->val_store();
     auto&& resData = store.allocate_array(arr->size());
@@ -262,6 +274,7 @@ namespace tnac::eval
           case LogicalNot:      return logical_not(*val);
           case LogicalIs:       return logical_is(*val);
           case AbsoluteValue:   return absolute(*val);
+          case UnaryHead:       return unary_head(*val);
 
           default: return value{};
           }

@@ -27,16 +27,13 @@ namespace tnac::rt
   void driver::run() noexcept
   {
     if (!m_settings.has_input_file())
-    {
       return;
-    }
 
     if (!m_feedback.load_file(m_settings.run_on()))
-    {
       return;
-    }
 
-    m_tnac.compile();
+    if(!m_parseOnly)
+      m_tnac.compile();
   }
 
   void driver::run_interactive() noexcept
@@ -65,6 +62,12 @@ namespace tnac::rt
       { on_warning(loc, msg); });
     m_feedback.on_compile_note([this](src::loc_wrapper&& loc, string_t msg) noexcept
       { on_note(loc, msg); });
+
+    m_feedback.on_command([this](ast::command cmd) noexcept
+      {
+        m_tnac.process_cmd(std::move(cmd));
+      });
+    m_tnac.declare_cmd("parse_only"sv, [this](auto) noexcept { m_parseOnly = true; });
   }
 
   void driver::error_mark() noexcept

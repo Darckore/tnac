@@ -19,6 +19,7 @@ namespace tnac::eval::detail
     case Plus:        return UnaryPlus;
     case Minus:       return UnaryNegation;
     case Tilde:       return UnaryBitwiseNot;
+    case At:          return UnaryHead;
 
     default: return InvalidOp;
     }
@@ -91,6 +92,7 @@ namespace tnac::detail
     case Exclamation: return ir::op_code::CmpNot;
     case Question:    return ir::op_code::CmpIs;
     case Plus:        return ir::op_code::Plus;
+    case At:          return ir::op_code::Head;
     case Minus:       return ir::op_code::Neg;
     case Tilde:       return ir::op_code::BNeg;
 

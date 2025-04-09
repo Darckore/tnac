@@ -15,3 +15,14 @@ namespace tnac::eval::detail
     return array_type{ vs.wrap(arr) };
   }
 }
+
+namespace tnac::eval
+{
+  value head(const array_type& arr) noexcept
+  {
+    if (arr->begin() == arr->end())
+      return value{};
+
+    return *arr->begin();
+  }
+}

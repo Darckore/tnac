@@ -237,7 +237,9 @@ namespace tnac::ir // instruction
     case CmpGE:   return "cmpge"sv;
 
     case Abs:     return "abs"sv;
-    case Plus:    return "aplus"sv;
+    case Plus:    return "plus"sv;
+    case Head:    return "head"sv;
+    case Tail:    return "tail"sv;
     case Neg:     return "neg"sv;
     case BNeg:    return "bitneg"sv;
     case CmpNot:  return "not"sv;
@@ -325,6 +327,8 @@ namespace tnac::ir // instruction
 
     case Abs:     count = 2; break;
     case Plus:    count = 2; break;
+    case Head:    count = 2; break;
+    case Tail:    count = 2; break;
     case Neg:     count = 2; break;
     case BNeg:    count = 2; break;
     case CmpNot:  count = 2; break;

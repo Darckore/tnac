@@ -34,6 +34,8 @@ namespace tnac::eval
     UnaryBitwiseNot,
     LogicalNot,
     LogicalIs,
+    UnaryHead,
+    PostTail,
     AbsoluteValue
   };
 
@@ -420,6 +422,16 @@ namespace tnac::eval
   {
     return op;
   }
+
+  inline auto head(const expr_result auto& op) noexcept
+  {
+    return op;
+  }
+  inline auto head(const complex_type& cp) noexcept
+  {
+    return cp.real();
+  }
+  value head(const array_type& arr) noexcept;
 
   template <typename T> auto inv(const T&) noexcept;
   inline auto inv(const has_invert auto& val) noexcept

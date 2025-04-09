@@ -284,6 +284,8 @@ namespace tnac::ir
 
     Abs,
     Plus,
+    Head,
+    Tail,
     Neg,
     BNeg,
     CmpNot,

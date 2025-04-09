@@ -106,5 +106,6 @@ namespace tnac::rt
     core m_tnac;
     state m_state;
     repl m_repl;
+    bool m_parseOnly{};
   };
 }

@@ -88,6 +88,8 @@ namespace tnac::rt::out
     case Plus:
     case Neg:
     case BNeg:
+    case Head:
+    case Tail:
       print_unary(instr);
       break;
 

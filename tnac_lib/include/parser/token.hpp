@@ -44,6 +44,7 @@ namespace tnac
     Pipe,
     Pow,
     Root,
+    At,
 
     Eq,
     NotEq,
