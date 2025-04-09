@@ -1047,6 +1047,7 @@ namespace tnac
     auto&& instr = make(ir::op_code::Call, size + 1);
     auto res = extract();
     m_stack.fill(instr, size);
+    intern_array(instr[1]);
     m_stack.push(std::move(res));
   }
 
