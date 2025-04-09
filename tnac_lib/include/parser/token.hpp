@@ -82,6 +82,7 @@ namespace tnac
     KwFloat,
     KwBool,
     KwArray,
+    KwUndef,
     KwRet,
     KwTrue,
     KwFalse,
@@ -171,6 +172,7 @@ namespace tnac
                     KwFloat,
                     KwBool,
                     KwArray,
+                    KwUndef,
                     KwRet,
                     KwTrue,
                     KwFalse,
@@ -185,7 +187,7 @@ namespace tnac
     auto is_literal() const noexcept
     {
       return is_any(IntBin, IntOct, IntDec, IntHex, Float,
-                    KwTrue, KwFalse, KwI, KwPi, KwE);
+                    KwTrue, KwFalse, KwI, KwPi, KwE, KwUndef);
     }
 
     auto is_identifier() const noexcept

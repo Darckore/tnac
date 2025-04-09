@@ -328,6 +328,11 @@ namespace tnac
     ast::expr* id_expr(bool dotRhs = false) noexcept;
 
     //
+    // Attempts to parse a type check expression with the given keyword
+    //
+    ast::expr* type_check_expr(const token& kw);
+
+    //
     // Parses a typed expr
     //
     ast::expr* typed_expr() noexcept;

@@ -707,14 +707,20 @@ namespace tnac
 
   ast::expr* parser::decl_expr() noexcept
   {
-    auto decl = declarator();
-    if(!decl)
-      return assign_expr();
+    auto cached = peek_next(); // A really-really ugly hack (ambiguity in grammar)
+    if (auto decl = declarator())
+    {
+      if (!decl->is_valid())
+        return error_expr(decl->pos(), diag::invalid_decl(), err_pos::Current);
+      return m_builder.make_decl_expr(*decl);
+    }
 
-    if (!decl->is_valid())
-      return error_expr(decl->pos(), diag::invalid_decl(), err_pos::Current);
-
-    return m_builder.make_decl_expr(*decl);
+    if (cached.is(token::KwFunction))
+    {
+      if (auto typeCheck = type_check_expr(cached))
+        return typeCheck;
+    }
+    return assign_expr();
   }
 
   ast::expr* parser::ret_expr() noexcept
@@ -735,11 +741,18 @@ namespace tnac
     if (next.is(token::KwFunction))
     {
       auto kw = next_tok();
+      if (peek_next().is(token::Question))
+        return {};
+
       if (detail::is_open_paren(peek_next()))
         return func_decl(kw);
 
       if (!peek_next().is_identifier())
-        return {};
+      {
+        auto pos = next_tok();
+        auto err = error_expr(pos, diag::expected_id(), err_pos::Current);
+        return m_builder.make_var_decl(pos, *err);
+      }
 
       auto name = next_tok();
       // todo: overloading
@@ -1065,6 +1078,9 @@ namespace tnac
   {
     UTILS_ASSERT(peek_next().is(token::KwFunction));
     auto kw = next_tok();
+    if (auto typeCheck = type_check_expr(kw))
+      return typeCheck;
+
     if (auto&& next = peek_next(); !detail::is_open_paren(next))
       return error_expr(next, diag::expected('('), err_pos::Current);
 
@@ -1075,15 +1091,21 @@ namespace tnac
     return m_builder.make_decl_expr(*funcDecl);
   }
 
+  ast::expr* parser::type_check_expr(const token& kw)
+  {
+    if (!peek_next().is(token::Question))
+      return {};
+
+    next_tok();
+    auto op = primary_expr();
+    return m_builder.make_type_check(*op, kw);
+  }
+
   ast::expr* parser::typed_expr() noexcept
   {
     auto kw = next_tok();
-    if (peek_next().is(token::Question))
-    {
-      next_tok();
-      auto op = primary_expr();
-      return m_builder.make_type_check(*op, kw);
-    }
+    if (auto typeCheck = type_check_expr(kw))
+      return typeCheck;
 
     if (!detail::is_open_paren(peek_next()))
       return error_expr(peek_next(), diag::expected_args(), err_pos::Last);
