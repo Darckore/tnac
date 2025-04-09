@@ -83,6 +83,7 @@ namespace tnac
     void visit(ast::lit_expr& lit) noexcept;
     void visit(ast::id_expr& id) noexcept;
     void visit(ast::unary_expr& unary) noexcept;
+    void visit(ast::tail_expr& unary) noexcept;
     void visit(ast::binary_expr& binary) noexcept;
     void visit(ast::array_expr& arr) noexcept;
     void visit(ast::abs_expr& abs) noexcept;
@@ -307,6 +308,11 @@ namespace tnac
     // Compiles a unary expression
     //
     void compile_unary(const ir::operand& sym, tok_kind opType) noexcept;
+
+    //
+    // Compiles a unary expression
+    //
+    void compile_unary(const ir::operand& sym, eval::val_ops opType, ir::op_code oc) noexcept;
 
     //
     // Compiles a binary expression

@@ -134,6 +134,33 @@ namespace tnac::ast  // Unary expr
 }
 
 
+namespace tnac::ast  // Tail expr
+{
+  // Special members
+
+  tail_expr::~tail_expr() noexcept = default;
+
+  tail_expr::tail_expr(expr& e) noexcept :
+    expr{ kind::Tail, e.pos() },
+    m_operand{ &e }
+  {
+    assume_ancestry(m_operand);
+  }
+
+
+  // Public members
+
+  const expr& tail_expr::operand() const noexcept
+  {
+    return *m_operand;
+  }
+  expr& tail_expr::operand() noexcept
+  {
+    return FROM_CONST(operand);
+  }
+}
+
+
 namespace tnac::ast  // Binary expr
 {
   // Special members

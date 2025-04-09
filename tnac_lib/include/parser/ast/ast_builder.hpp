@@ -121,6 +121,11 @@ namespace tnac::ast
     unary_expr* make_unary(expr& e, const token& op) noexcept;
 
     //
+    // Creates a tail expression
+    //
+    tail_expr* make_tail(expr& e) noexcept;
+
+    //
     // Creates a binary expression
     //
     binary_expr* make_binary(expr& left, expr& right, const token& op) noexcept;

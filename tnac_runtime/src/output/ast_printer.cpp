@@ -181,6 +181,15 @@ namespace tnac::rt::out
     push_parent(1u);
   }
 
+  void ast_printer::visit(const ast::tail_expr& expr) noexcept
+  {
+    indent();
+    node_designator("Tail expression"sv);
+    additional_info(expr);
+    endl();
+    push_parent(1u);
+  }
+
   void ast_printer::visit(const ast::array_expr& arr) noexcept
   {
     const auto size = arr.elements().size();

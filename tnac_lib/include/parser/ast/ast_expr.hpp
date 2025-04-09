@@ -188,6 +188,39 @@ namespace tnac::ast
 
 
   //
+  // Tail expr
+  // Corresponds to a postfix tail expression
+  //
+  class tail_expr final : public expr
+  {
+  private:
+    friend class builder;
+
+  public:
+    CLASS_SPECIALS_NONE(tail_expr);
+
+    virtual ~tail_expr() noexcept;
+
+  protected:
+    tail_expr(expr& e) noexcept;
+
+  public:
+    //
+    // Returns the operand
+    //
+    const expr& operand() const noexcept;
+
+    //
+    // Returns the operand
+    // 
+    expr& operand() noexcept;
+
+  private:
+    expr* m_operand{};
+  };
+
+
+  //
   // Binary expression
   // Provides info on the corresponding binary operator and both its operands
   //

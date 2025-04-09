@@ -22,6 +22,7 @@ namespace tnac::ast
     Literal,
     Identifier,
     Unary,
+    Tail,
     Binary,
     Assign,
     Array,

@@ -433,6 +433,16 @@ namespace tnac::eval
   }
   value head(const array_type& arr) noexcept;
 
+  inline auto tail(const expr_result auto&) noexcept
+  {
+    return invalid_val_t{};
+  }
+  inline auto tail(const complex_type& cp) noexcept
+  {
+    return cp.imag();
+  }
+  value tail(const array_type& arr) noexcept;
+
   template <typename T> auto inv(const T&) noexcept;
   inline auto inv(const has_invert auto& val) noexcept
   {

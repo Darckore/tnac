@@ -97,6 +97,10 @@ namespace tnac::detail
       return tok.is_any(token::Less, token::LessEq,
         token::Greater, token::GreaterEq);
     }
+    auto is_head_or_tail(const token& tok) noexcept
+    {
+      return tok.is(token::At);
+    }
     auto is_eq_comparison(const token& tok) noexcept
     {
       return tok.is_any(token::Eq, token::NotEq);
@@ -1126,6 +1130,13 @@ namespace tnac
       {
         VALUE_GUARD(m_defaultLookupType, sema::Scoped);
         res = dot_expr(*res);
+        continue;
+      }
+
+      if (detail::is_head_or_tail(next))
+      {
+        next_tok();
+        res = m_builder.make_tail(*res);
         continue;
       }
 

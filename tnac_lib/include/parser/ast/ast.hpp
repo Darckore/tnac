@@ -20,6 +20,7 @@ TYPE_TO_ID_ASSOCIATION(tnac::ast::import_dir, tnac::ast::node_kind::Import);
 TYPE_TO_ID_ASSOCIATION(tnac::ast::lit_expr,    tnac::ast::node_kind::Literal);
 TYPE_TO_ID_ASSOCIATION(tnac::ast::id_expr,     tnac::ast::node_kind::Identifier);
 TYPE_TO_ID_ASSOCIATION(tnac::ast::unary_expr,  tnac::ast::node_kind::Unary);
+TYPE_TO_ID_ASSOCIATION(tnac::ast::tail_expr,   tnac::ast::node_kind::Tail);
 TYPE_TO_ID_ASSOCIATION(tnac::ast::binary_expr, tnac::ast::node_kind::Binary);
 TYPE_TO_ID_ASSOCIATION(tnac::ast::assign_expr, tnac::ast::node_kind::Assign);
 TYPE_TO_ID_ASSOCIATION(tnac::ast::array_expr,  tnac::ast::node_kind::Array);

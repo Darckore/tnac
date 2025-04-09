@@ -97,6 +97,11 @@ namespace tnac::ast
     return make<unary_expr>(e, op);
   }
 
+  tail_expr* builder::make_tail(expr& e) noexcept
+  {
+    return make<tail_expr>(e);
+  }
+
   binary_expr* builder::make_binary(expr& left, expr& right, const token& op) noexcept
   {
     return make<binary_expr>(left, right, op);

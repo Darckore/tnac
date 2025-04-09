@@ -47,6 +47,7 @@ namespace tnac::rt::out
     case Literal:    print(cast<ast::lit_expr>(*root));    break;
     case Identifier: print(cast<ast::id_expr>(*root));     break;
     case Unary:      print(cast<ast::unary_expr>(*root));  break;
+    case Tail:       print(cast<ast::tail_expr>(*root));   break;
     case Binary:     print(cast<ast::binary_expr>(*root)); break;
     case Assign:     print(cast<ast::assign_expr>(*root)); break;
     case Decl:       print(cast<ast::decl_expr>(*root));   break;
@@ -169,6 +170,12 @@ namespace tnac::rt::out
     print(&expr.operand());
   }
 
+  void lister::print(const ast::tail_expr& expr) noexcept
+  {
+    print(&expr.operand());
+    out() << '@';
+  }
+
   void lister::print(const ast::array_expr& expr) noexcept
   {
     print_args(expr.elements(), '[', ']');
@@ -217,7 +224,7 @@ namespace tnac::rt::out
 
   void lister::print(const ast::result_expr& expr) noexcept
   {
-    print_token(expr.pos(), true);
+    print_token(expr.pos(), false);
   }
 
   void lister::print(const ast::error_expr& expr) noexcept

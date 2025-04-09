@@ -361,6 +361,12 @@ namespace tnac
     compile_unary(val, opType);
   }
 
+  void compiler::visit(ast::tail_expr& ) noexcept
+  {
+    auto val = extract();
+    compile_unary(val, eval::val_ops::PostTail, ir::op_code::Tail);
+  }
+
   void compiler::visit(ast::binary_expr& binary) noexcept
   {
     const auto opType = binary.op().what();
@@ -1163,18 +1169,23 @@ namespace tnac
 
   void compiler::compile_unary(const ir::operand& val, tok_kind opType) noexcept
   {
+    const auto op = eval::detail::conv_unary(opType);
+    const auto opcode = detail::to_unary_opcode(opType);
+    compile_unary(val, op, opcode);
+  }
+
+  void compiler::compile_unary(const ir::operand& val, eval::val_ops opType, ir::op_code oc) noexcept
+  {
     if (val.is_value())
     {
       clear_store();
-      const auto op = eval::detail::conv_unary(opType);
       auto&& sv = val.get_value();
-      m_stack.push(sv.unary(op));
+      m_stack.push(sv.unary(opType));
       return;
     }
 
-    const auto opcode = detail::to_unary_opcode(opType);
-    UTILS_ASSERT(opcode != ir::op_code::None);
-    emit_unary(opcode, val);
+    UTILS_ASSERT(oc != ir::op_code::None);
+    emit_unary(oc, val);
   }
 
   void compiler::compile_binary(const ir::operand& lhs, const ir::operand& rhs, tok_kind opType) noexcept

@@ -224,6 +224,15 @@ namespace tnac::eval
     {
       return eval::head(arr);
     }
+
+    auto unary_tail(const expr_result auto& operand) noexcept
+    {
+      return value{ eval::tail(operand) };
+    }
+    auto unary_tail(const array_type& arr) noexcept
+    {
+      return eval::tail(arr);
+    }
   }
 
   value value::unary_as_array(val_ops op) const noexcept
@@ -237,6 +246,9 @@ namespace tnac::eval
 
     if (op == val_ops::UnaryHead)
       return unary_head(arr);
+
+    if (op == val_ops::PostTail)
+      return unary_tail(arr);
 
     auto&& store = arr->val_store();
     auto&& resData = store.allocate_array(arr->size());
@@ -275,6 +287,7 @@ namespace tnac::eval
           case LogicalIs:       return logical_is(*val);
           case AbsoluteValue:   return absolute(*val);
           case UnaryHead:       return unary_head(*val);
+          case PostTail:        return unary_tail(*val);
 
           default: return value{};
           }

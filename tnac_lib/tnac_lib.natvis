@@ -270,6 +270,14 @@
     </Expand>
   </Type>
 
+  <Type Name="tnac::ast::tail_expr">
+    <DisplayString>{m_kind,en} ({m_pos})</DisplayString>
+    <Expand>
+      <Item Name="[parent]" Condition="m_parent">*m_parent</Item>
+      <Item Name="[operand]">*m_operand</Item>
+    </Expand>
+  </Type>
+
   <Type Name="tnac::ast::id_expr">
     <DisplayString>{m_kind,en} ({m_pos.m_value,sb})</DisplayString>
     <Expand>

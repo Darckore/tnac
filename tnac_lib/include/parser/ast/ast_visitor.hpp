@@ -442,6 +442,23 @@ namespace tnac::ast
     }
 
     //
+    // Visits a tail expression
+    //
+    void visit_impl(dest<tail_expr> tail) noexcept
+    {
+      if constexpr (is_top_down())
+        visit(tail);
+
+      if (preview(tail))
+      {
+        visit_root(&tail->operand());
+      }
+
+      if constexpr (is_bottom_up())
+        visit(tail);
+    }
+
+    //
     // Visits an array expr
     //
     void visit_impl(dest<array_expr> arr) noexcept
@@ -688,6 +705,7 @@ namespace tnac::ast
       case Literal:    return dispatch(&cast<lit_expr>(cur));
       case Identifier: return dispatch(&cast<id_expr>(cur));
       case Unary:      return dispatch(&cast<unary_expr>(cur));
+      case Tail:       return dispatch(&cast<tail_expr>(cur));
       case Binary:     return dispatch(&cast<binary_expr>(cur));
       case Assign:     return dispatch(&cast<assign_expr>(cur));
       case Decl:       return dispatch(&cast<decl_expr>(cur));
