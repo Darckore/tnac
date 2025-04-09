@@ -103,6 +103,12 @@ namespace tnac::detail
     void fill(ir::instruction& instr, size_type count) noexcept;
 
     //
+    // Fills values to the given vectors
+    // Operands are read in reverse order (offset to top)
+    //
+    void fill(std::vector<ir::operand>& vec, size_type count) noexcept;
+
+    //
     // Fills values to the given array
     // Operands are read in reverse order (offset to top)
     //

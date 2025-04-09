@@ -738,7 +738,17 @@ namespace tnac
     auto callable = extract();
     if (callable.is_value())
     {
-      auto fn = callable.get_value().try_get<eval::function_type>();
+      auto callVal = callable.get_value();
+      if (auto arr = callVal.try_get<eval::array_type>())
+      {
+        for (auto arg : args)
+          compile(*arg);
+
+        emit_arr_call(call, *arr);
+        return false;
+      }
+
+      auto fn = callVal.try_get<eval::function_type>();
       if (!fn)
       {
         error(call.pos().at(), diag::expected("function"sv));
@@ -768,7 +778,10 @@ namespace tnac
     UTILS_ASSERT(dot.accessor().is(ast::node_kind::Identifier));
     auto&& accr = utils::cast<ast::id_expr>(dot.accessor());
     if (auto&& sym = accr.symbol(); !sym.is(semantics::sym_kind::Deferred))
-      return true;
+    {
+      compile(accr);
+      return false;
+    }
 
     compile(dot.accessed());
     auto scope = m_stack.extract();
@@ -1004,6 +1017,62 @@ namespace tnac
       update_func_start(instr);
       before = instr.to_iterator();
     }
+  }
+
+  void compiler::emit_arr_call(ast::call_expr& call, eval::array_type arr) noexcept
+  {
+    auto&& args = call.args();
+    const auto argSz = args.size();
+    using vals_t = std::vector<ir::operand>;
+    vals_t argVals;
+    argVals.reserve(argSz);
+
+    auto pushBack = [&]() noexcept
+      {
+        for (auto arg : argVals)
+          m_stack.push(std::move(arg));
+      };
+
+    m_stack.fill(argVals, argSz);
+    vals_t::size_type count{};
+    for (auto&& callee : arr.wrapper())
+    {
+      if (auto arrT = callee.try_get<eval::array_type>())
+      {
+        pushBack();
+        emit_arr_call(call, *arrT);
+
+        auto res = m_stack.extract();
+        if (res.is_value() && !res.get_value())
+          continue;
+
+        m_stack.push(std::move(res));
+        ++count;
+        continue;
+      }
+
+      auto ft = callee.try_get<eval::function_type>();
+      if (!ft)
+        continue;
+
+      auto&& func = *ft;
+      if (func->param_count() != argSz)
+        continue;
+
+      pushBack();
+      emit_call(callee, argSz);
+      ++count;
+    }
+
+    if (!count)
+    {
+      m_stack.push_undef();
+      return;
+    }
+
+    auto&& aReg = emit_arr(count);
+    emit_append(aReg, count);
+    emit_load(aReg);
   }
 
   void compiler::emit_call(ir::operand callable, size_type argCount) noexcept

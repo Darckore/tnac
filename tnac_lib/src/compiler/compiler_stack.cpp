@@ -101,6 +101,14 @@ namespace tnac::detail
       });
   }
 
+  void compiler_stack::fill(std::vector<ir::operand>& vec, size_type count) noexcept
+  {
+    walk_back(count, [&vec](auto op) noexcept
+      {
+        vec.push_back(std::move(op));
+      });
+  }
+
   void compiler_stack::fill(eval::array_data& arr, size_type count) noexcept
   {
     walk_back(count, [&arr](auto op) noexcept

@@ -248,6 +248,11 @@ namespace tnac
     void emit_append(ir::vreg& arr, size_type size) noexcept;
 
     //
+    // Creates a series of instructions for a known array call
+    //
+    void emit_arr_call(ast::call_expr& call, eval::array_type arr) noexcept;
+
+    //
     // Creates a call instruction
     //
     void emit_call(ir::operand callable, size_type argCount) noexcept;
