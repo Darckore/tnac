@@ -87,7 +87,6 @@ namespace tnac
     void visit(ast::array_expr& arr) noexcept;
     void visit(ast::abs_expr& abs) noexcept;
     void visit(ast::typed_expr& typed) noexcept;
-    void visit(ast::call_expr& call) noexcept;
 
     bool exit_child(ast::node& node) noexcept;
     void post_exit(ast::node& node) noexcept;
@@ -251,7 +250,7 @@ namespace tnac
     //
     // Creates a call instruction
     //
-    void emit_call(size_type argCount) noexcept;
+    void emit_call(ir::operand callable, size_type argCount) noexcept;
 
     //
     // Creates a dynamic bind instruction

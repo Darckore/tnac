@@ -224,47 +224,6 @@ namespace tnac::detail
   private:
     Func m_callback;
   };
-
-  class func_extractor final : public ast::bottom_up_visitor<func_extractor>
-  {
-  public:
-    using sym_type = semantics::function;
-
-  public:
-    CLASS_SPECIALS_NONE(func_extractor);
-
-    func_extractor(ast::expr& expr) noexcept
-    {
-      operator()(&expr);
-    }
-
-    auto operator*() noexcept
-    {
-      return m_sym;
-    }
-
-    bool preview(ast::array_expr&) noexcept
-    {
-      return false;
-    }
-
-    bool preview(ast::dot_expr& dot) noexcept
-    {
-      operator()(&dot.accessor());
-      return false;
-    }
-
-    void visit(ast::id_expr& id) noexcept
-    {
-      using enum semantics::sym_kind;
-      auto&& sym = id.symbol();
-      if (sym.is_any(Function, Module))
-        m_sym = &utils::cast<Function>(sym);
-    }
-
-  private:
-    sym_type* m_sym{};
-  };
 }
 
 namespace tnac
@@ -465,12 +424,6 @@ namespace tnac
     }
 
     emit_inst(detail::to_inst_code(typeId), argLimits.second, argSz);
-  }
-
-  void compiler::visit(ast::call_expr& call) noexcept
-  {
-    const auto argSz = call.args().size();
-    emit_call(argSz);
   }
 
   bool compiler::exit_child(ast::node& node) noexcept
@@ -779,20 +732,35 @@ namespace tnac
 
   bool compiler::preview(ast::call_expr& call) noexcept
   {
-    auto sym = *detail::func_extractor{ call.callable() };
-    if (!sym)
-      return true;
-
-    const auto argSz = call.args().size();
-    const auto expSz = sym->param_count();
-    if (argSz != expSz)
+    auto&& args = call.args();
+    const auto argSz = args.size();
+    compile(call.callable());
+    auto callable = extract();
+    if (callable.is_value())
     {
-      error(call.pos().at(), diag::wrong_arg_num(expSz, argSz));
-      m_stack.push_undef();
-      return false;
+      auto fn = callable.get_value().try_get<eval::function_type>();
+      if (!fn)
+      {
+        error(call.pos().at(), diag::expected("function"sv));
+        m_stack.push_undef();
+        return false;
+      }
+
+      auto&& sym = *(*fn);
+      const auto expSz = sym.param_count();
+      if (argSz != expSz)
+      {
+        error(call.pos().at(), diag::wrong_arg_num(expSz, argSz));
+        m_stack.push_undef();
+        return false;
+      }
     }
 
-    return true;
+    for (auto arg : args)
+      compile(*arg);
+
+    emit_call(std::move(callable), argSz);
+    return false;
   }
 
   bool compiler::preview(ast::dot_expr& dot) noexcept
@@ -1038,16 +1006,16 @@ namespace tnac
     }
   }
 
-  void compiler::emit_call(size_type argCount) noexcept
+  void compiler::emit_call(ir::operand callable, size_type argCount) noexcept
   {
-    // Args + the callable itself
-    const auto size = argCount + 1;
+    const auto size = argCount;
     UTILS_ASSERT(m_stack.has_at_least(size));
 
-    auto&& instr = make(ir::op_code::Call, size + 1);
+    auto&& instr = make(ir::op_code::Call, size + 2); // result + callable + args
     auto res = extract();
+    intern_array(callable);
+    instr.add(std::move(callable));
     m_stack.fill(instr, size);
-    intern_array(instr[1]);
     m_stack.push(std::move(res));
   }
 
