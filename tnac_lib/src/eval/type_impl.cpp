@@ -86,7 +86,7 @@ namespace tnac::eval
 
   entity_id array_wrapper::id() const noexcept
   {
-    return &data();
+    return this;
   }
 
   store& array_wrapper::val_store() const noexcept
