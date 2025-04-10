@@ -417,6 +417,11 @@ namespace tnac
     void intern_array(const ir::operand& op) noexcept;
 
     //
+    // Interns arrays in all operands of an instruction
+    //
+    void intern_array(const ir::instruction& instr) noexcept;
+
+    //
     // Recursively interns all subarrays of an array
     //
     void intern_array(eval::value val) noexcept;

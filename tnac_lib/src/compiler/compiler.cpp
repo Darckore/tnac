@@ -1195,9 +1195,9 @@ namespace tnac
 
     auto&& instr = make(ir::op_code::Call, size + 2); // result + callable + args
     auto res = extract();
-    intern_array(callable);
     instr.add(std::move(callable));
     m_stack.fill(instr, size);
+    intern_array(instr);
     m_stack.push(std::move(res));
   }
 
@@ -1641,6 +1641,13 @@ namespace tnac
       return;
 
     intern_array(op.get_value());
+  }
+
+  void compiler::intern_array(const ir::instruction& instr) noexcept
+  {
+    using sz = ir::instruction::size_type;
+    for (auto count = sz{}; count < instr.operand_count(); ++count)
+      intern_array(instr[count]);
   }
 
   void compiler::intern_array(eval::value val) noexcept
