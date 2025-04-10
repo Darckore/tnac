@@ -90,6 +90,11 @@ namespace tnac
     //
     ir::cfg& get_cfg() noexcept;
 
+    //
+    // Returns the IR evaluator
+    //
+    ir_eval& ir_evaluator() noexcept;
+
   public:
     //
     // Declares a command

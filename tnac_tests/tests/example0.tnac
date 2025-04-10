@@ -1,4 +1,6 @@
-apply(func, a, b) func(a, b);
+_fn apply(func, a, b)
+  func(a, b)
+;
 
 func = _fn(a, b) a // b;
 apply(func, -1, 2)

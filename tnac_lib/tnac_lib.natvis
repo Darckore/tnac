@@ -624,5 +624,14 @@
       <Item Name="[modules]">m_modules</Item>
     </Expand>
   </Type>
+
+  <Type Name="tnac::ir_eval">
+    <DisplayString>ir evaluator</DisplayString>
+    <Expand>
+      <Item Name="[cfg]">*m_cfg</Item>
+      <Item Name="[eval result]">m_result</Item>
+      <Item Name="[call stack]">m_stack</Item>
+    </Expand>
+  </Type>
   
 </AutoVisualizer>

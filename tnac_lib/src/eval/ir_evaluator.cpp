@@ -9,4 +9,12 @@ namespace tnac
   ir_eval::ir_eval(ir::cfg& cfg) noexcept :
     m_cfg{ &cfg }
   { }
+
+
+  // Public members
+
+  void ir_eval::enter(const ir::function& func) noexcept
+  {
+    utils::unused(func);
+  }
 }

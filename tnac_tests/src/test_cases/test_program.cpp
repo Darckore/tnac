@@ -1,5 +1,27 @@
-#if 0
 #include "test_cases/test_common.hpp"
+
+#define TEST_EXAMPLE(N) "tests/example"#N".tnac"
+
+namespace tnac::tests
+{
+  TEST(program, t_playground)
+  {
+    feedback fb;
+    auto core = get_tnac(fb);
+    core.process_file(TEST_EXAMPLE(0));
+    core.compile();
+    auto&& cfg = core.get_cfg();
+    auto it = cfg.begin();
+    ASSERT_NE(it, cfg.end());
+
+    auto mod = *it;
+    auto&& ev = core.ir_evaluator();
+    ev.enter(*mod);
+    utils::unused(ev, mod);
+  }
+}
+
+#if 0
 
 namespace tnac::tests
 {

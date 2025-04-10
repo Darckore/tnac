@@ -111,6 +111,11 @@ namespace tnac
     return FROM_CONST(get_cfg);
   }
 
+  ir_eval& core::ir_evaluator() noexcept
+  {
+    return m_irEval;
+  }
+
   void core::process_cmd(ast::command cmd) noexcept
   {
     m_cmdInterpreter.on_command(std::move(cmd));
