@@ -456,6 +456,7 @@
       <Item Name="[compiler]">m_compiler</Item>
       <Item Name="[value store]">m_valStore</Item>
       <Item Name="[cfg]">m_cfg</Item>
+      <Item Name="[ir evaluator]">m_irEval</Item>
       <Item Name="[source manager]">m_srcMgr</Item>
       <Item Name="[cmd interpreter]">m_cmdInterpreter</Item>
       <Item Name="[cmd store]">m_cmdStore</Item>

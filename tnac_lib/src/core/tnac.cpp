@@ -12,7 +12,8 @@ namespace tnac
     m_parser{ m_astBuilder, m_sema, &fb },
     m_cmdInterpreter{ m_cmdStore, fb },
     m_cfg{ m_irBuilder },
-    m_compiler{ m_sema, m_valStore, m_cfg, &fb }
+    m_compiler{ m_sema, m_valStore, m_cfg, &fb },
+    m_irEval{ m_cfg }
   {
     m_feedback->on_load_request([this](fname_t path) noexcept { return process_file(std::move(path)); });
   }

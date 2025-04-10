@@ -11,6 +11,7 @@
 #include "compiler/compiler.hpp"
 #include "cfg/cfg.hpp"
 #include "eval/value/value_store.hpp"
+#include "eval/ir_evaluator.hpp"
 
 namespace tnac
 {
@@ -151,5 +152,6 @@ namespace tnac
     ir::builder m_irBuilder;
     ir::cfg m_cfg;
     compiler m_compiler;
+    ir_eval m_irEval;
   };
 }
