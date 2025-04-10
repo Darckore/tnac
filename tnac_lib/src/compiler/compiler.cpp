@@ -213,6 +213,21 @@ namespace tnac::detail
                               CmpNot, CmpIs, Bool,  Test);
   }
 
+  auto needs_forced_bool(const ir::operand& op) noexcept
+  {
+    if (op.is_value() && op.get_value().id() == eval::type_id::Bool)
+      return false;
+
+    if (!op.is_register())
+      return false;
+
+    auto&& reg = op.get_reg();
+    if (!reg.has_src())
+      return false;
+
+    return detail::needs_forced_bool(reg.source().opcode());
+  }
+
   template <typename F>
   concept fv_callback = std::is_nothrow_invocable_v<F, ast::func_decl&>;
 
@@ -1232,22 +1247,7 @@ namespace tnac
 
   void compiler::enforce_bool(const ir::operand& op) noexcept
   {
-    auto needsBool = [&]() noexcept
-      {
-        if (op.is_value() && op.get_value().id() == eval::type_id::Bool)
-          return false;
-
-        if (!op.is_register())
-          return false;
-
-        auto&& reg = op.get_reg();
-        if (!reg.has_src())
-          return false;
-
-        return detail::needs_forced_bool(reg.source().opcode());
-      };
-
-    if (needsBool())
+    if (detail::needs_forced_bool(op))
     {
       compile_unary(op, tok_kind::Question);
       return;
@@ -1274,6 +1274,20 @@ namespace tnac
 
   void compiler::compile_test(const ir::operand& op, eval::type_id id) noexcept
   {
+    // A hack for expressions that are guaranteed to return bool
+    const auto isBool = id == eval::type_id::Bool;
+    const auto boolExpr = !detail::needs_forced_bool(op);
+    if (boolExpr && isBool)
+    {
+      m_stack.push(eval::value::true_val());
+      return;
+    }
+    else if ((boolExpr && !isBool) || (!boolExpr && isBool))
+    {
+      m_stack.push(eval::value::false_val());
+      return;
+    }
+
     if (op.is_value())
     {
       auto opVal = op.get_value();
