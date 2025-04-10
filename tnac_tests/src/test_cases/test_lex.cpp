@@ -38,14 +38,14 @@ namespace tnac::tests
 {
   TEST(lexer, t_token_list)
   {
-    constexpr auto input = ". = + - ~ * / && & ^ || | ** // ! ? == != < > <= >= -> : , ; ( ) { } [ ] _true _false 1 01 0b1 0x1 1.0 id #cmd"sv;
+    constexpr auto input = ". = + - ~ * / && & ^ || | ** // ! ? == != < > <= >= -> : , ; @ ( ) { } [ ] _true _false 1 01 0b1 0x1 1.0 id #cmd"sv;
 
     using enum tok_kind;
     constexpr std::array testArr{
       Dot, Assign, Plus, Minus, Tilde, Asterisk, Slash,
       LogAnd, Amp, Hat, LogOr, Pipe, Pow, Root, Exclamation, Question,
       Eq, NotEq, Less, Greater, LessEq, GreaterEq, Arrow,
-      ExprSep, Comma, Semicolon,
+      ExprSep, Comma, Semicolon, At,
       ParenOpen, ParenClose, CurlyOpen, CurlyClose, BracketOpen, BracketClose,
       KwTrue, KwFalse,
       IntDec, IntOct, IntBin, IntHex, Float, Identifier, Command,
@@ -57,13 +57,13 @@ namespace tnac::tests
 
   TEST(lexer, t_token_list_dense)
   {
-    constexpr auto input = ".=+-~*/&&&^|||**//!?<><=>===!=->:(){}[],;0.1"sv;
+    constexpr auto input = ".=+-~*/&&&^|||**//!?<><=>===!=->:@(){}[],;0.1"sv;
 
     using enum tok_kind;
     constexpr std::array testArr{
       Dot, Assign, Plus, Minus, Tilde, Asterisk, Slash,
       LogAnd, Amp, Hat, LogOr, Pipe, Pow, Root, Exclamation, Question,
-      Less, Greater, LessEq, GreaterEq, Eq, NotEq, Arrow, ExprSep,
+      Less, Greater, LessEq, GreaterEq, Eq, NotEq, Arrow, ExprSep, At,
       ParenOpen, ParenClose, CurlyOpen, CurlyClose, BracketOpen, BracketClose,
       Comma, Semicolon, Float
     };
@@ -121,13 +121,13 @@ namespace tnac::tests
   TEST(lexer, t_keywords)
   {
     constexpr auto input = 
-      "_fn _ret _result _cplx _frac _int _flt _bool _true _false _i _pi _e _entry _import _as"sv;
+      "_fn _ret _result _cplx _frac _int _flt _bool _array _undef _true _false _i _pi _e _entry _import _as"sv;
 
     using enum tok_kind;
     constexpr std::array testArr{
-      KwFunction, KwRet,
-      KwResult, KwComplex, KwFraction, KwInt, KwFloat, KwBool,
-      KwTrue, KwFalse,
+      KwFunction, KwRet, KwResult,
+      KwComplex, KwFraction, KwInt, KwFloat, KwBool, KwArray,
+      KwUndef, KwTrue, KwFalse,
       KwI, KwPi, KwE,
       KwEntry, KwImport, KwAs
     };

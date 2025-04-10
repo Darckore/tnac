@@ -174,6 +174,16 @@ namespace tnac::tests
         check_node(expr, expr.op().value());
       }
 
+      void visit(const ast::type_check_expr& expr) noexcept
+      {
+        check_node(expr, expr.pos().value());
+      }
+
+      void visit(const ast::type_resolve_expr& expr) noexcept
+      {
+        check_node(expr, {});
+      }
+
       void visit(const ast::paren_expr& expr) noexcept
       {
         check_node(expr, {});
@@ -936,6 +946,44 @@ namespace tnac::tests
       expected_node{     {},  Pattern,    Scope },
       expected_node{     {},  Scope,      Cond },
       expected_node{     {},  Cond,       Module },
+    };
+
+    tree_checker::check_tree_structure(exp, input);
+  }
+
+  TEST(parser, t_type_check)
+  {
+    constexpr auto input = "_fn? 42"sv;
+
+    /*
+    * type_check
+    *   42
+    */
+
+    std::array exp{
+      expected_node{  "42"sv,  Literal, IsType },
+      expected_node{ "_fn"sv,  IsType,  Module }
+    };
+
+    tree_checker::check_tree_structure(exp, input);
+  }
+
+  TEST(parser, t_type_res)
+  {
+    constexpr auto input = "_fn? 42 -> 0"sv;
+
+    /*
+    * type_resolver
+    *   type-check
+    *     42
+    *   0
+    */
+
+    std::array exp{
+      expected_node{  "42"sv,  Literal, IsType },
+      expected_node{ "_fn"sv,  IsType,  TypeRes },
+      expected_node{   "0"sv,  Literal, TypeRes },
+      expected_node{       {}, TypeRes, Module }
     };
 
     tree_checker::check_tree_structure(exp, input);
