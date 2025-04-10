@@ -1,7 +1,7 @@
 #include "output/common.hpp"
 #include "output/formatting.hpp"
-#include "eval/value.hpp"
-#include "eval/type_impl.hpp"
+#include "eval/value/value.hpp"
+#include "eval/value/type_impl.hpp"
 #include "sema/sym/symbols.hpp"
 
 namespace tnac::rt::out

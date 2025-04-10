@@ -1,6 +1,6 @@
-#include "eval/value_store.hpp"
-#include "eval/value.hpp"
-#include "eval/type_impl.hpp"
+#include "eval/value/value_store.hpp"
+#include "eval/value/value.hpp"
+#include "eval/value/type_impl.hpp"
 
 namespace tnac::eval
 {

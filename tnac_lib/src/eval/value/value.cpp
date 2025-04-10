@@ -1,7 +1,7 @@
-#include "eval/value.hpp"
-#include "eval/traits.hpp"
-#include "eval/type_impl.hpp"
-#include "eval/value_store.hpp"
+#include "eval/value/value.hpp"
+#include "eval/value/traits.hpp"
+#include "eval/value/type_impl.hpp"
+#include "eval/value/value_store.hpp"
 
 namespace tnac::eval::detail
 {

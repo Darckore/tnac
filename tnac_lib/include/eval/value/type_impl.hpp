@@ -4,7 +4,7 @@
 
 #pragma once
 
-#include "eval/value.hpp"
+#include "eval/value/value.hpp"
 
 namespace tnac::eval
 {

@@ -10,7 +10,7 @@
 #include "parser/commands/cmd_interpreter.hpp"
 #include "compiler/compiler.hpp"
 #include "cfg/cfg.hpp"
-#include "eval/value_store.hpp"
+#include "eval/value/value_store.hpp"
 
 namespace tnac
 {

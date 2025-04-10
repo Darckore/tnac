@@ -1,8 +1,8 @@
 #pragma once
 #include "core/tnac.hpp"
-#include "eval/value.hpp"
-#include "eval/traits.hpp"
-#include "eval/type_impl.hpp"
+#include "eval/value/value.hpp"
+#include "eval/value/traits.hpp"
+#include "eval/value/type_impl.hpp"
 
 namespace tnac::tests
 {

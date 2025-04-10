@@ -1,5 +1,5 @@
-#include "eval/types.hpp"
-#include "eval/type_impl.hpp"
+#include "eval/value/types.hpp"
+#include "eval/value/type_impl.hpp"
 
 // functions
 namespace tnac::eval

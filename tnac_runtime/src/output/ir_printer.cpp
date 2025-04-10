@@ -1,6 +1,6 @@
 #include "output/ir_printer.hpp"
 #include "output/formatting.hpp"
-#include "eval/type_impl.hpp"
+#include "eval/value/type_impl.hpp"
 
 namespace tnac::rt::out
 {
