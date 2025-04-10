@@ -126,6 +126,11 @@ namespace tnac::ast
     type_check_expr* make_type_check(expr& e, const token& op) noexcept;
 
     //
+    // Creates a type resolver expression
+    //
+    type_resolve_expr* make_type_resolver(type_check_expr& chk, expr& res) noexcept;
+
+    //
     // Creates a tail expression
     //
     tail_expr* make_tail(expr& e) noexcept;

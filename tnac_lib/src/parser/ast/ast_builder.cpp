@@ -102,6 +102,11 @@ namespace tnac::ast
     return make<type_check_expr>(e, op);
   }
 
+  type_resolve_expr* builder::make_type_resolver(type_check_expr& chk, expr& res) noexcept
+  {
+    return make<type_resolve_expr>(chk, res);
+  }
+
   tail_expr* builder::make_tail(expr& e) noexcept
   {
     return make<tail_expr>(e);

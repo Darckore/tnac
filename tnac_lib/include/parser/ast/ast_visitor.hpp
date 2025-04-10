@@ -459,6 +459,24 @@ namespace tnac::ast
     }
 
     //
+    // Visits a type resolver expression
+    //
+    void visit_impl(dest<type_resolve_expr> tres) noexcept
+    {
+      if constexpr (is_top_down())
+        visit(tres);
+
+      if (preview(tres))
+      {
+        visit_root(&tres->checker());
+        visit_root(&tres->resolver());
+      }
+
+      if constexpr (is_bottom_up())
+        visit(tres);
+    }
+
+    //
     // Visits a tail expression
     //
     void visit_impl(dest<tail_expr> tail) noexcept
@@ -723,6 +741,7 @@ namespace tnac::ast
       case Identifier: return dispatch(&cast<id_expr>(cur));
       case Unary:      return dispatch(&cast<unary_expr>(cur));
       case IsType:     return dispatch(&cast<type_check_expr>(cur));
+      case TypeRes:    return dispatch(&cast<type_resolve_expr>(cur));
       case Tail:       return dispatch(&cast<tail_expr>(cur));
       case Binary:     return dispatch(&cast<binary_expr>(cur));
       case Assign:     return dispatch(&cast<assign_expr>(cur));

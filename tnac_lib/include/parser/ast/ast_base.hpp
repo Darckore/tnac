@@ -39,6 +39,7 @@ namespace tnac::ast
     Pattern,
     Dot,
     IsType,
+    TypeRes,
 
     // Decls,
     VarDecl,

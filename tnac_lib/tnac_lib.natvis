@@ -277,6 +277,15 @@
       <Item Name="[operand]">*m_expr</Item>
     </Expand>
   </Type>
+
+  <Type Name="tnac::ast::type_resolve_expr">
+    <DisplayString>{m_kind,en} ({m_pos})</DisplayString>
+    <Expand>
+      <Item Name="[parent]" Condition="m_parent">*m_parent</Item>
+      <Item Name="[checker]">*m_checker</Item>
+      <Item Name="[resolver]">*m_resolver</Item>
+    </Expand>
+  </Type>
   
   <Type Name="tnac::ast::tail_expr">
     <DisplayString>{m_kind,en} ({m_pos})</DisplayString>

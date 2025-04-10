@@ -184,11 +184,20 @@ namespace tnac::rt::out
   void ast_printer::visit(const ast::type_check_expr& expr) noexcept
   {
     indent();
-    node_designator("Is type");
+    node_designator("Is type"sv);
     print_token(expr.type());
     additional_info(expr);
     endl();
     push_parent(1u);
+  }
+
+  void ast_printer::visit(const ast::type_resolve_expr& expr) noexcept
+  {
+    indent();
+    node_designator("On type"sv);
+    additional_info(expr);
+    endl();
+    push_parent(2u);
   }
 
   void ast_printer::visit(const ast::tail_expr& expr) noexcept

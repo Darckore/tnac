@@ -258,6 +258,50 @@ namespace tnac::ast
 
 
   //
+  // Type resolver expression
+  // Contains a type checker and an expression evaluated when it returns true
+  //
+  class type_resolve_expr final : public expr
+  {
+  private:
+    friend class builder;
+
+  public:
+    CLASS_SPECIALS_NONE(type_resolve_expr);
+
+    virtual ~type_resolve_expr() noexcept;
+
+  protected:
+    type_resolve_expr(type_check_expr& chk, expr& res) noexcept;
+
+  public:
+    //
+    // Returns the checker
+    //
+    const type_check_expr& checker() const noexcept;
+
+    //
+    // Returns the checker
+    //
+    type_check_expr& checker() noexcept;
+
+    //
+    // Returns the resolver
+    //
+    const expr& resolver() const noexcept;
+
+    //
+    // Returns the resolver
+    //
+    expr& resolver() noexcept;
+
+  private:
+    type_check_expr* m_checker{};
+    expr* m_resolver{};
+  };
+
+
+  //
   // Binary expression
   // Provides info on the corresponding binary operator and both its operands
   //

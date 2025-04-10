@@ -1102,8 +1102,14 @@ namespace tnac
       return {};
 
     next_tok();
-    auto op = primary_expr();
-    return m_builder.make_type_check(*op, kw);
+    auto op = postfix_expr();
+    auto chk = m_builder.make_type_check(*op, kw);
+    if(!detail::is_arrow(peek_next()))
+      return chk;
+
+    next_tok();
+    auto resolver = postfix_expr();
+    return m_builder.make_type_resolver(*chk, *resolver);
   }
 
   ast::expr* parser::typed_expr() noexcept

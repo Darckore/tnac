@@ -192,6 +192,44 @@ namespace tnac::ast  // Type check expr
 }
 
 
+namespace tnac::ast  // Type resolver expr
+{
+  // Special members
+
+  type_resolve_expr::~type_resolve_expr() noexcept = default;
+
+  type_resolve_expr::type_resolve_expr(type_check_expr& chk, expr& res) noexcept :
+    expr{ kind::TypeRes, chk.pos() },
+    m_checker{ &chk },
+    m_resolver{ &res }
+  {
+    assume_ancestry(m_checker);
+    assume_ancestry(m_resolver);
+  }
+
+
+  // Public members
+
+  const type_check_expr& type_resolve_expr::checker() const noexcept
+  {
+    return *m_checker;
+  }
+  type_check_expr& type_resolve_expr::checker() noexcept
+  {
+    return FROM_CONST(checker);
+  }
+
+  const expr& type_resolve_expr::resolver() const noexcept
+  {
+    return *m_resolver;
+  }
+  expr& type_resolve_expr::resolver() noexcept
+  {
+    return FROM_CONST(resolver);
+  }
+}
+
+
 namespace tnac::ast  // Binary expr
 {
   // Special members
