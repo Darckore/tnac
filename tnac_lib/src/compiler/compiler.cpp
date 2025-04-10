@@ -219,13 +219,31 @@ namespace tnac::detail
       return false;
 
     if (!op.is_register())
-      return false;
+      return true;
 
     auto&& reg = op.get_reg();
     if (!reg.has_src())
-      return false;
+      return true;
 
-    return detail::needs_forced_bool(reg.source().opcode());
+    auto&& src = reg.source();
+    const auto oc = src.opcode();
+    if (oc == ir::op_code::Phi)
+    {
+      const auto ops = src.operand_count();
+      using st = decltype(src.operand_count());
+      for (auto count = st{ 1 }; count < ops; ++count)
+      {
+        auto&& operand = src[count];
+        if (!operand.is_edge())
+          continue;
+
+        auto&& edge = operand.get_edge();
+        if (!needs_forced_bool(edge.value()))
+          return false;
+      }
+    }
+
+    return needs_forced_bool(oc);
   }
 
   template <typename F>
@@ -1282,7 +1300,7 @@ namespace tnac
       m_stack.push(eval::value::true_val());
       return;
     }
-    else if ((boolExpr && !isBool) || (!boolExpr && isBool))
+    else if (boolExpr && !isBool)
     {
       m_stack.push(eval::value::false_val());
       return;
