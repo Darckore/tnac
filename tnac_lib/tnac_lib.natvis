@@ -629,8 +629,13 @@
     <DisplayString>ir evaluator</DisplayString>
     <Expand>
       <Item Name="[cfg]">*m_cfg</Item>
-      <Item Name="[eval result]">m_result</Item>
+      <Item Name="[values]">*m_valStore</Item>
       <Item Name="[call stack]">m_stack</Item>
+      <Item Name="[eval result]">m_result</Item>
+      <Item Name="[cur frame]" Condition="m_curFrame">*m_curFrame</Item>
+      <Item Name="[cur frame]" Condition="!m_curFrame">"&lt;no frame&gt;",sb</Item>
+      <Item Name="[iptr]" Condition="m_instrPtr">*m_instrPtr</Item>
+      <Item Name="[iptr]" Condition="!m_instrPtr">"&lt;null&gt;",sb</Item>
     </Expand>
   </Type>
   

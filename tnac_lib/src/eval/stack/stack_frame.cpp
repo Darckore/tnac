@@ -6,12 +6,42 @@ namespace tnac::eval
 
   stack_frame::~stack_frame() noexcept = default;
 
-  stack_frame::stack_frame(name_type fname, param_count argSz) noexcept :
-    m_name{ fname }
+  stack_frame::stack_frame(name_type fname, param_count argSz, entity_id jmpBack) noexcept :
+    m_name{ fname },
+    m_jmp{ jmpBack }
   {
-    m_args.reserve(argSz);
+    m_mem.reserve(argSz);
   }
 
 
   // Public members
+
+  stack_frame::name_type stack_frame::name() const noexcept
+  {
+    return m_name;
+  }
+
+  stack_frame& stack_frame::add_arg(value argVal) noexcept
+  {
+    m_mem.emplace_back(std::move(argVal));
+    return *this;
+  }
+
+  entity_id stack_frame::allocate() noexcept
+  {
+    const auto idx = m_mem.size();
+    m_mem.emplace_back();
+    return idx;
+  }
+
+  value stack_frame::value_for(entity_id id) const noexcept
+  {
+    const auto idx = *id;
+    return (idx < m_mem.size()) ? m_mem[idx] : value{};
+  }
+
+  entity_id stack_frame::jump_back() const noexcept
+  {
+    return m_jmp;
+  }
 }

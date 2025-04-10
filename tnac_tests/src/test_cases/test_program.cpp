@@ -17,7 +17,7 @@ namespace tnac::tests
     auto mod = *it;
     auto&& ev = core.ir_evaluator();
     ev.enter(*mod);
-    utils::unused(ev, mod);
+    ev.leave();
   }
 }
 
