@@ -125,6 +125,11 @@ namespace tnac
     bool preview(ast::binary_expr& binary) noexcept;
 
     //
+    // Handles type resolvers
+    //
+    bool preview(ast::type_resolve_expr& tres) noexcept;
+
+    //
     // Handles short conditionals
     //
     bool preview(ast::cond_short& cond) noexcept;

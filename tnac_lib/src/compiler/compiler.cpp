@@ -622,6 +622,56 @@ namespace tnac
     return false;
   }
 
+  bool compiler::preview(ast::type_resolve_expr& tres) noexcept
+  {
+    auto&& checker = tres.checker();
+    compile(checker.operand());
+    auto onFalse = extract();
+    compile_test(onFalse, detail::to_type_id(checker.type()));
+    auto checkedVal = extract();
+    if (checkedVal.is_value())
+    {
+      auto&& sv = checkedVal.get_value();
+      auto boolVal = eval::to_bool(sv);
+      if (!boolVal)
+        m_stack.push(onFalse);
+      else
+        compile(tres.resolver());
+
+      return false;
+    }
+
+    constexpr auto namePref = "ontype"sv;
+    auto&& lastBlock = m_context.current_block();
+    auto lastEnd = m_context.func_end();
+
+    auto&& endBlock = m_context.create_block(m_names.make_block_name(namePref, "end"sv));
+
+    auto&& passBlock = m_context.create_block(m_names.make_block_name(namePref, "pass"sv));
+    m_context.enter_block(passBlock);
+    m_context.terminate_at(passBlock);
+    compile(tres.resolver());
+    auto trueRes = extract();
+    emit_jump(trueRes, endBlock);
+
+    auto&& elseBlock = m_context.create_block(m_names.make_block_name(namePref, "else"sv));
+    m_context.enter_block(elseBlock);
+    m_context.terminate_at(elseBlock);
+    m_stack.push(onFalse);
+    emit_jump(onFalse, endBlock);
+
+    lastEnd = m_context.override_last(lastBlock.end());
+    m_context.enter_block(lastBlock);
+
+    emit_cond_jump(checkedVal, passBlock, elseBlock);
+
+    m_context.enter_block(endBlock);
+    m_context.terminate_at(endBlock);
+    converge();
+
+    return false;
+  }
+
   bool compiler::preview(ast::cond_short& cond) noexcept
   {
     compile(cond.cond());

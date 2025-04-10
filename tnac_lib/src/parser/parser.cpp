@@ -1102,13 +1102,13 @@ namespace tnac
       return {};
 
     next_tok();
-    auto op = postfix_expr();
+    auto op = unary_expr();
     auto chk = m_builder.make_type_check(*op, kw);
     if(!detail::is_arrow(peek_next()))
       return chk;
 
     next_tok();
-    auto resolver = postfix_expr();
+    auto resolver = unary_expr();
     return m_builder.make_type_resolver(*chk, *resolver);
   }
 
