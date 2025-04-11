@@ -206,6 +206,11 @@ namespace tnac
       jump();
       return;
     }
+    if (opcode == Call)
+    {
+      call();
+      return;
+    }
 
     SCOPE_GUARD(m_instrPtr = m_instrPtr->next());
     if (opcode == Alloc)
@@ -218,8 +223,6 @@ namespace tnac
       test_type();
     else if (opcode == Phi)
       phi();
-    else if (opcode == Call)
-      call();
     else if (detail::is_unary(opcode))
       unary(opcode);
     else if (detail::is_binary(opcode))
