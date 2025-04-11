@@ -96,7 +96,9 @@ namespace tnac
   {
     auto jmpBack = m_instrPtr ? m_instrPtr->next() : nullptr;
     m_curFrame = &m_stack.make_frame(func.name(), func.param_count(), jmpBack);
-    m_instrPtr = &(*func.entry().begin());
+    auto&& entry = func.entry();
+    m_branching.push({ nullptr, &entry });
+    m_instrPtr = &(*entry.begin());
   }
 
   void ir_eval::leave() noexcept
@@ -176,10 +178,29 @@ namespace tnac
     return regId;
   }
 
+  void ir_eval::jump_to(const ir::operand& op) noexcept
+  {
+    UTILS_ASSERT(op.is_block());
+    auto&& block = op.get_block();
+
+    UTILS_ASSERT(!m_branching.empty());
+    auto&& br = m_branching.top();
+    br.m_from = br.m_to;
+    br.m_to = &block;
+
+    m_instrPtr = &(*block.begin());
+  }
+
   void ir_eval::dispatch() noexcept
   {
     using enum ir::op_code;
     const auto opcode = m_instrPtr->opcode();
+
+    if (opcode == Jump)
+    {
+      jump();
+      return;
+    }
 
     SCOPE_GUARD(m_instrPtr = m_instrPtr->next());
     if (opcode == Alloc)
@@ -201,7 +222,6 @@ namespace tnac
 
     Select,
     Call,
-    Jump,
     Ret,
 
     Phi,
@@ -251,6 +271,29 @@ namespace tnac
     auto&& target = to.get_reg();
     auto par = from.get_param();
     m_env.map(&target, *par);
+  }
+
+  void ir_eval::jump() noexcept
+  {
+    auto&& instr = cur();
+    if (instr.operand_count() == 1)
+    {
+      auto&& op = instr[0];
+      jump_to(op);
+      return;
+    }
+
+    auto&& cond = instr[0];
+    auto&& ifTrue = instr[1];
+    auto&& ifFalse = instr[2];
+
+    auto condVal = get_value(cond);
+    UTILS_ASSERT(condVal);
+
+    if (eval::to_bool(*condVal))
+      jump_to(ifTrue);
+    else
+      jump_to(ifFalse);
   }
 
   void ir_eval::unary(ir::op_code oc) noexcept

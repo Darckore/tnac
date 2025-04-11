@@ -16,6 +16,15 @@ namespace tnac
   //
   class ir_eval final
   {
+  private:
+    struct branch
+    {
+      const ir::basic_block* m_from{};
+      const ir::basic_block* m_to{};
+    };
+
+    using branch_stack = utils::stack<branch>;
+
   public:
     using val_opt = std::optional<eval::value>;
 
@@ -90,6 +99,12 @@ namespace tnac
     entity_id alloc_new(const ir::operand& op) noexcept;
 
     //
+    // Enters the specified basic block,
+    // sets the instruction pointer, and updates the current branch
+    //
+    void jump_to(const ir::operand& op) noexcept;
+
+    //
     // Dispatches the current instruction and moves the instuction pointer
     // Result is stored on the current stack frame
     //
@@ -109,6 +124,11 @@ namespace tnac
     // Loads a value from a load instruction
     //
     void load() noexcept;
+
+    //
+    // Handles jumps
+    //
+    void jump() noexcept;
 
     //
     // Calculates a unary
@@ -132,6 +152,7 @@ namespace tnac
     eval::value m_result{};
     eval::call_stack m_stack;
     eval::stack_frame* m_curFrame{};
+    branch_stack m_branching;
     const ir::instruction* m_instrPtr{};
   };
 }
