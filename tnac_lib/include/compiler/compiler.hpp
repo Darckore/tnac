@@ -276,6 +276,11 @@ namespace tnac
 
   private:
     //
+    // Creates a register for a variable and adds it to the context
+    //
+    ir::vreg& make_variable_register(string_t varName) noexcept;
+
+    //
     // Deletes a basic block and all of the blocks it is connected to
     // Returns true on success
     //

@@ -501,8 +501,18 @@ namespace tnac
   void compiler::visit(ast::param_decl& param) noexcept
   {
     auto&& sym = param.symbol();
-    emit_alloc(sym);
-    emit_store(sym);
+    auto&& target = make_variable_register(sym.name());
+    m_context.store(sym, target);
+
+    UTILS_ASSERT(!m_stack.empty());
+    auto val = m_stack.extract();
+
+    auto&& builder = m_cfg->get_builder();
+    auto&& block = m_context.current_block();
+    auto&& instr = builder.add_instruction(block, ir::op_code::Load, m_context.func_end());
+    instr.add(&target).add(std::move(val));
+    update_func_start(instr);
+    m_context.read_into(sym, target);
   }
 
   void compiler::visit(ast::func_decl& fd) noexcept
@@ -959,12 +969,7 @@ namespace tnac
     auto&& entry = curFn.entry();
     auto&& builder = m_cfg->get_builder();
     auto&& var = builder.add_var(entry, m_context.funct_start());
-    if (!m_context.new_var_name(varName))
-    {
-      varName = m_names.var_name(varName);
-    }
-
-    auto&& reg = builder.make_register(varName);
+    auto&& reg = make_variable_register(varName);
     var.add(&reg);
     return reg;
   }
@@ -1228,6 +1233,17 @@ namespace tnac
     auto lastInstr = block.last();
     using enum ir::op_code;
     return lastInstr && utils::eq_any(lastInstr->opcode(), Jump, Ret);
+  }
+
+  ir::vreg& compiler::make_variable_register(string_t varName) noexcept
+  {
+    if (!m_context.new_var_name(varName))
+    {
+      varName = m_names.var_name(varName);
+    }
+
+    auto&& builder = m_cfg->get_builder();
+    return builder.make_register(varName);
   }
 
   bool compiler::delete_block_tree(ir::basic_block& root) noexcept
