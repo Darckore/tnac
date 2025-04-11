@@ -1,6 +1,6 @@
-_fn accumulate(sum, val)
-  sum + _array? val -> accumulate(sum, val@)
+_fn sum(val)
+  _array? val -> (@val + sum(val@))
 ;
 
-a = [ 1, 2, 3, 4, 5, 6 ] :
-accumulate(0, a)
+x = [ 1, 2, 3, 4, 5 ] :
+sum(x)

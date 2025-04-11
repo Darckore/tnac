@@ -8,7 +8,7 @@ namespace tnac::tests
   {
     feedback fb;
     auto core = get_tnac(fb);
-    core.process_file(TEST_EXAMPLE(0));
+    core.process_file(TEST_EXAMPLE(2));
     core.compile();
     auto&& cfg = core.get_cfg();
     auto it = cfg.begin();
@@ -18,7 +18,7 @@ namespace tnac::tests
     auto&& ev = core.ir_evaluator();
     ev.enter(*mod);
     ev.evaluate_current();
-    ev.clear_env();
+    utils::unused(ev);
   }
 }
 
