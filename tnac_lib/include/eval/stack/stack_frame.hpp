@@ -56,9 +56,20 @@ namespace tnac::eval
     //
     entity_id jump_back() const noexcept;
 
+    //
+    // Sets the return value id
+    //
+    void attach_ret_val(entity_id rv) noexcept;
+
+    //
+    // Returns the return value id
+    //
+    entity_id ret_val() const noexcept;
+
   private:
     memory m_mem;
     name_type m_name;
     entity_id m_jmp{};
+    entity_id m_retId{};
   };
 }

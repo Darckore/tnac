@@ -218,6 +218,8 @@ namespace tnac
       test_type();
     else if (opcode == Phi)
       phi();
+    else if (opcode == Call)
+      call();
     else if (detail::is_unary(opcode))
       unary(opcode);
     else if (detail::is_binary(opcode))
@@ -228,7 +230,6 @@ namespace tnac
     Append,
 
     Select,
-    Call,
     Ret,
 
     DynBind,
@@ -370,5 +371,41 @@ namespace tnac
     
     UTILS_ASSERT(opVal);
     store_value(regId, eval::value{ opVal->id() == typeId });
+  }
+
+  void ir_eval::call() noexcept
+  {
+    auto&& instr = cur();
+    auto&& to = instr[0];
+    auto&& f = instr[1];
+    const auto argCount = instr.operand_count() - 2;
+
+    const auto regId = alloc_new(to);
+    auto callable = get_value(f).value_or(eval::value{}).try_get<eval::function_type>();
+    if (!callable)
+    {
+      // todo: error & abort
+      return;
+    }
+
+    auto&& func = *callable;
+    if(func->param_count() != argCount)
+    {
+      // todo: error & abort
+      return;
+    }
+
+    auto prevFrame = m_curFrame;
+    enter(*func);
+    m_curFrame->attach_ret_val(regId);
+    auto nextFrame = m_curFrame;
+    m_curFrame = prevFrame;
+    for (auto idx = op_count{ 2 }; idx < instr.operand_count(); ++idx)
+    {
+      auto arg = get_value(instr[idx]);
+      UTILS_ASSERT(arg);
+      nextFrame->add_arg(std::move(*arg));
+    }
+    m_curFrame = nextFrame;
   }
 }

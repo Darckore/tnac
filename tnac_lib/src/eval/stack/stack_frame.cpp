@@ -51,4 +51,14 @@ namespace tnac::eval
   {
     return m_jmp;
   }
+
+  void stack_frame::attach_ret_val(entity_id rv) noexcept
+  {
+    m_retId = rv;
+  }
+
+  entity_id stack_frame::ret_val() const noexcept
+  {
+    return m_retId;
+  }
 }

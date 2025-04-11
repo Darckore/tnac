@@ -157,6 +157,11 @@ namespace tnac
     //
     void test_type() noexcept;
 
+    //
+    // Calls the target function
+    //
+    void call() noexcept;
+
   private:
     ir::cfg* m_cfg{};
     eval::store* m_valStore{};
