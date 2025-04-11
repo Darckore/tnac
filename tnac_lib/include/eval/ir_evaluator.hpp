@@ -162,6 +162,11 @@ namespace tnac
     //
     void call() noexcept;
 
+    //
+    // Handles returns from functions
+    //
+    void ret();
+
   private:
     ir::cfg* m_cfg{};
     eval::store* m_valStore{};

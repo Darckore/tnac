@@ -103,7 +103,12 @@ namespace tnac
 
   void ir_eval::leave() noexcept
   {
-    UTILS_ASSERT(m_curFrame);
+    if (!m_curFrame)
+    {
+      m_instrPtr = nullptr;
+      return;
+    }
+
     m_instrPtr = detail::to_addr(m_curFrame->jump_back());
     m_curFrame = m_stack.pop_frame();
     m_branching.pop();
@@ -201,6 +206,8 @@ namespace tnac
     using enum ir::op_code;
     const auto opcode = m_instrPtr->opcode();
 
+    // Instructions which involve forced jumps go here:
+
     if (opcode == Jump)
     {
       jump();
@@ -211,6 +218,13 @@ namespace tnac
       call();
       return;
     }
+    if (opcode == Ret)
+    {
+      ret();
+      return;
+    }
+
+    // Non-jump instructions go here:
 
     SCOPE_GUARD(m_instrPtr = m_instrPtr->next());
     if (opcode == Alloc)
@@ -233,7 +247,6 @@ namespace tnac
     Append,
 
     Select,
-    Ret,
 
     DynBind,
 
@@ -410,5 +423,31 @@ namespace tnac
       nextFrame->add_arg(std::move(*arg));
     }
     m_curFrame = nextFrame;
+  }
+
+  void ir_eval::ret()
+  {
+    auto&& instr = cur();
+    auto&& op = instr[0];
+    const auto retAddr = m_curFrame->ret_val();
+
+    auto retVal = get_value(op);
+    UTILS_ASSERT(retVal);
+
+    auto cur = m_curFrame;
+    auto retFrame = m_curFrame->prev();
+
+    // Root
+    if (!retFrame)
+    {
+      m_result = std::move(*retVal);
+      leave();
+      return;
+    }
+
+    m_curFrame = retFrame;
+    store_value(retAddr, std::move(*retVal));
+    m_curFrame = cur;
+    leave();
   }
 }
