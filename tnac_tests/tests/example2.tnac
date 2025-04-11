@@ -1,8 +1,6 @@
-accumulate(sum, val) sum + val;
+_fn accumulate(sum, val)
+  sum + _array? val -> accumulate(sum, val@)
+;
 
-sum = accumulate(0, 1) :
-sum = accumulate(sum, 2) :
-sum = accumulate(sum, 3) :
-sum = accumulate(sum, 4) :
-sum = accumulate(sum, 5) :
-sum
+a = [ 1, 2, 3, 4, 5, 6 ] :
+accumulate(0, a)

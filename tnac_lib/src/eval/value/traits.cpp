@@ -30,12 +30,17 @@ namespace tnac::eval
   {
     auto arr = op;
     auto&& wrapper = arr.wrapper();
-    if (wrapper.size() == array_data::size_type{})
+    using sz = array_data::size_type;
+    constexpr auto threshold = sz{ 2u };
+    const auto size = wrapper.size();
+    if (size < threshold)
       return value{};
+    else if (size == threshold)
+      return *std::next(wrapper.begin());
 
     auto&& data = arr->data();
     auto&& vs = arr->val_store();
-    auto&& res = vs.wrap(data, wrapper.offset() + 1, wrapper.size() - 1u);
+    auto&& res = vs.wrap(data, wrapper.offset() + 1, size - 1u);
     return value{ array_type{ res } };
   }
 }

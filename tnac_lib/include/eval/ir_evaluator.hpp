@@ -11,6 +11,11 @@
 
 namespace tnac
 {
+  class feedback;
+}
+
+namespace tnac
+{
   //
   // Runs evaluation over the CFG with the given input data
   //
@@ -34,7 +39,7 @@ namespace tnac
 
     ~ir_eval() noexcept;
 
-    ir_eval(ir::cfg& cfg, eval::store& vals) noexcept;
+    ir_eval(ir::cfg& cfg, eval::store& vals, feedback* fb) noexcept;
 
   public:
     //
@@ -176,5 +181,6 @@ namespace tnac
     eval::stack_frame* m_curFrame{};
     branch_stack m_branching;
     const ir::instruction* m_instrPtr{};
+    feedback* m_feedback{};
   };
 }

@@ -18,7 +18,7 @@ namespace tnac::tests
     auto&& ev = core.ir_evaluator();
     ev.enter(*mod);
     ev.evaluate_current();
-    ev.leave();
+    ev.clear_env();
   }
 }
 

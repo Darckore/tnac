@@ -1,5 +1,5 @@
-sum(a, b) a + b;
-mul(a, b) a * b;
+_fn sum(a, b) a + b;
+_fn mul(a, b) a * b;
 
 var1 = sum(10, 12) :
 var2 = mul(var1, 3) :

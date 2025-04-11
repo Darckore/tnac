@@ -1,4 +1,5 @@
 #include "eval/ir_evaluator.hpp"
+#include "common/feedback.hpp"
 
 namespace tnac::detail
 {
@@ -74,9 +75,10 @@ namespace tnac
 
   ir_eval::~ir_eval() noexcept = default;
 
-  ir_eval::ir_eval(ir::cfg& cfg, eval::store& vals) noexcept :
+  ir_eval::ir_eval(ir::cfg& cfg, eval::store& vals, feedback* fb) noexcept :
     m_cfg{ &cfg },
-    m_valStore{ &vals }
+    m_valStore{ &vals },
+    m_feedback{ fb }
   { }
 
 

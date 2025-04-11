@@ -4,4 +4,4 @@ _fn apply(func, a, b)
 
 func = _fn(a, b) a // b;
 x = _fn? func -> 1:
-apply(func, -x, x + 2)
+apply(func, -x, x + 1)
