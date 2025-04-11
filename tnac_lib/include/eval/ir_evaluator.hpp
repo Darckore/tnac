@@ -75,6 +75,16 @@ namespace tnac
     entity_id get_reg(const ir::vreg& reg) const noexcept;
 
     //
+    // Stores a value to the specified register
+    //
+    void store_value(entity_id reg, const ir::operand& from) noexcept;
+
+    //
+    // Creates a new stack value and returns its id
+    //
+    entity_id alloc_new(const ir::operand& op) noexcept;
+
+    //
     // Dispatches the current instruction and moves the instuction pointer
     // Result is stored on the current stack frame
     //
@@ -89,6 +99,11 @@ namespace tnac
     // Stores a value from a store instruction
     //
     void store() noexcept;
+
+    //
+    // Loads a value from a load instruction
+    //
+    void load() noexcept;
 
   private:
     ir::cfg* m_cfg{};

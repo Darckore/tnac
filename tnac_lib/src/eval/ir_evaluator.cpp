@@ -97,6 +97,22 @@ namespace tnac
     return regId.value_or(entity_id{});
   }
 
+  void ir_eval::store_value(entity_id reg, const ir::operand& from) noexcept
+  {
+    auto fromVal = get_value(from);
+    UTILS_ASSERT(fromVal);
+    m_curFrame->store(reg, std::move(*fromVal));
+  }
+
+  entity_id ir_eval::alloc_new(const ir::operand& op) noexcept
+  {
+    UTILS_ASSERT(op.is_register());
+    auto&& target = op.get_reg();
+    const auto regId = m_curFrame->allocate();
+    m_env.map(&target, regId);
+    return regId;
+  }
+
   void ir_eval::dispatch() noexcept
   {
     using enum ir::op_code;
@@ -108,10 +124,14 @@ namespace tnac
       alloc();
       return;
     }
-
     if (opcode == Store)
     {
       store();
+      return;
+    }
+    if (opcode == Load)
+    {
+      load();
       return;
     }
   }
@@ -120,9 +140,7 @@ namespace tnac
   {
     auto&& instr = cur();
     auto&& allocRes = instr[0];
-    UTILS_ASSERT(allocRes.is_register());
-    const auto varId = m_curFrame->allocate();
-    m_env.map(&allocRes.get_reg(), varId);
+    alloc_new(allocRes);
   }
 
   void ir_eval::store() noexcept
@@ -133,10 +151,25 @@ namespace tnac
 
     UTILS_ASSERT(to.is_register());
     const auto toReg = get_reg(to.get_reg());
-    
-    auto fromVal = get_value(from);
-    UTILS_ASSERT(fromVal);
+    store_value(toReg, from);
+  }
 
-    m_curFrame->store(toReg, std::move(*fromVal));
+  void ir_eval::load() noexcept
+  {
+    auto&& instr = cur();
+    auto&& to = instr[0];
+    auto&& from = instr[1];
+
+    if (!from.is_param())
+    {
+      const auto regId = alloc_new(to);
+      store_value(regId, from);
+      return;
+    }
+
+    UTILS_ASSERT(to.is_register());
+    auto&& target = to.get_reg();
+    auto par = from.get_param();
+    m_env.map(&target, *par);
   }
 }
