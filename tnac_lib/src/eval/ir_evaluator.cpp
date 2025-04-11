@@ -106,6 +106,7 @@ namespace tnac
     UTILS_ASSERT(m_curFrame);
     m_instrPtr = detail::to_addr(m_curFrame->jump_back());
     m_curFrame = m_stack.pop_frame();
+    m_branching.pop();
   }
 
   void ir_eval::evaluate_current() noexcept
@@ -182,7 +183,11 @@ namespace tnac
   {
     UTILS_ASSERT(op.is_block());
     auto&& block = op.get_block();
+    jump_to(block);
+  }
 
+  void ir_eval::jump_to(const ir::basic_block& block) noexcept
+  {
     UTILS_ASSERT(!m_branching.empty());
     auto&& br = m_branching.top();
     br.m_from = br.m_to;
@@ -209,12 +214,14 @@ namespace tnac
       store();
     else if (opcode == Load)
       load();
+    else if (opcode == Test)
+      test_type();
+    else if (opcode == Phi)
+      phi();
     else if (detail::is_unary(opcode))
       unary(opcode);
     else if (detail::is_binary(opcode))
       binary(opcode);
-    else if (opcode == Test)
-      test_type();
 
     /*
     Arr,
@@ -223,8 +230,6 @@ namespace tnac
     Select,
     Call,
     Ret,
-
-    Phi,
 
     DynBind,
 
@@ -294,6 +299,29 @@ namespace tnac
       jump_to(ifTrue);
     else
       jump_to(ifFalse);
+  }
+
+  void ir_eval::phi() noexcept
+  {
+    auto&& instr = cur();
+    auto&& to = instr[0];
+
+    const auto regId = alloc_new(to);
+
+    UTILS_ASSERT(!m_branching.empty());
+    auto&& br = m_branching.top();
+
+    for (auto idx = op_count{ 1 }; idx < instr.operand_count(); ++idx)
+    {
+      auto&& op = instr[idx];
+      UTILS_ASSERT(op.is_edge());
+      auto&& edge = op.get_edge();
+      if (&edge.incoming() != br.m_from)
+        continue;
+
+      store_value(regId, edge.value());
+      return;
+    }
   }
 
   void ir_eval::unary(ir::op_code oc) noexcept

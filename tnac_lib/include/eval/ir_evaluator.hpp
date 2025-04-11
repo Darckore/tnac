@@ -26,7 +26,8 @@ namespace tnac
     using branch_stack = utils::stack<branch>;
 
   public:
-    using val_opt = std::optional<eval::value>;
+    using val_opt  = std::optional<eval::value>;
+    using op_count = ir::instruction::size_type;
 
   public:
     CLASS_SPECIALS_NONE(ir_eval);
@@ -105,6 +106,12 @@ namespace tnac
     void jump_to(const ir::operand& op) noexcept;
 
     //
+    // Enters the specified basic block,
+    // sets the instruction pointer, and updates the current branch
+    //
+    void jump_to(const ir::basic_block& block) noexcept;
+
+    //
     // Dispatches the current instruction and moves the instuction pointer
     // Result is stored on the current stack frame
     //
@@ -129,6 +136,11 @@ namespace tnac
     // Handles jumps
     //
     void jump() noexcept;
+
+    //
+    // Handles phi nodes
+    //
+    void phi() noexcept;
 
     //
     // Calculates a unary
