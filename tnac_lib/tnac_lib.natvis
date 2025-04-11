@@ -631,6 +631,7 @@
       <Item Name="[cfg]">*m_cfg</Item>
       <Item Name="[values]">*m_valStore</Item>
       <Item Name="[call stack]">m_stack</Item>
+      <Item Name="[environment]">m_env</Item>
       <Item Name="[eval result]">m_result</Item>
       <Item Name="[cur frame]" Condition="m_curFrame">*m_curFrame</Item>
       <Item Name="[cur frame]" Condition="!m_curFrame">"&lt;no frame&gt;",sb</Item>

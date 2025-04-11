@@ -30,6 +30,11 @@ namespace tnac
     return m_result;
   }
 
+  void ir_eval::clear_env() noexcept
+  {
+    m_env.clear();
+  }
+
   void ir_eval::enter(const ir::function& func) noexcept
   {
     auto jmpBack = m_instrPtr ? m_instrPtr->next() : nullptr;
@@ -46,9 +51,92 @@ namespace tnac
 
   void ir_eval::evaluate_current() noexcept
   {
-    while (m_instrPtr)
+    while (step())
     {
-      m_instrPtr = m_instrPtr->next();
     }
+  }
+
+  bool ir_eval::step() noexcept
+  {
+    if (!m_instrPtr)
+      return false;
+
+    dispatch();
+    return true;
+  }
+
+
+  // Private members
+
+  const ir::instruction& ir_eval::cur() const noexcept
+  {
+    return *m_instrPtr;
+  }
+
+  ir_eval::val_opt ir_eval::get_value(const ir::operand& op) const noexcept
+  {
+    val_opt res{};
+    if (op.is_value())
+    {
+      res.emplace(op.get_value());
+    }
+    else if (op.is_register())
+    {
+      auto&& reg = op.get_reg();
+      const auto regId = get_reg(reg);
+      res.emplace(m_curFrame->value_for(regId));
+    }
+
+    return res;
+  }
+
+  entity_id ir_eval::get_reg(const ir::vreg& reg) const noexcept
+  {
+    const auto regId = m_env.find_reg(&reg);
+    UTILS_ASSERT(regId);
+    return regId.value_or(entity_id{});
+  }
+
+  void ir_eval::dispatch() noexcept
+  {
+    using enum ir::op_code;
+    const auto opcode = m_instrPtr->opcode();
+
+    SCOPE_GUARD(m_instrPtr = m_instrPtr->next());
+    if (opcode == Alloc)
+    {
+      alloc();
+      return;
+    }
+
+    if (opcode == Store)
+    {
+      store();
+      return;
+    }
+  }
+
+  void ir_eval::alloc() noexcept
+  {
+    auto&& instr = cur();
+    auto&& allocRes = instr[0];
+    UTILS_ASSERT(allocRes.is_register());
+    const auto varId = m_curFrame->allocate();
+    m_env.map(&allocRes.get_reg(), varId);
+  }
+
+  void ir_eval::store() noexcept
+  {
+    auto&& instr = cur();
+    auto&& from = instr[0];
+    auto&& to = instr[1];
+
+    UTILS_ASSERT(to.is_register());
+    const auto toReg = get_reg(to.get_reg());
+    
+    auto fromVal = get_value(from);
+    UTILS_ASSERT(fromVal);
+
+    m_curFrame->store(toReg, std::move(*fromVal));
   }
 }

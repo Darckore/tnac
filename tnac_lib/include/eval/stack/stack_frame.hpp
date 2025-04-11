@@ -37,6 +37,11 @@ namespace tnac::eval
     stack_frame& add_arg(value argVal) noexcept;
 
     //
+    // Stores a value into the specified register
+    //
+    stack_frame& store(entity_id id, value val) noexcept;
+
+    //
     // Allocates a variable and returns its id
     //
     entity_id allocate() noexcept;

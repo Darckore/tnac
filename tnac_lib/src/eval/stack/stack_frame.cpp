@@ -27,6 +27,13 @@ namespace tnac::eval
     return *this;
   }
 
+  stack_frame& stack_frame::store(entity_id id, value val) noexcept
+  {
+    UTILS_ASSERT(*id < m_mem.size());
+    m_mem[*id] = std::move(val);
+    return *this;
+  }
+
   entity_id stack_frame::allocate() noexcept
   {
     const auto idx = m_mem.size();
