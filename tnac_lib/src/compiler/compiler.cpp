@@ -1642,7 +1642,7 @@ namespace tnac
 
   void compiler::transfer_last_load(size_type prevSz) noexcept
   {
-    if (prevSz != m_stack.size())
+    if (prevSz < m_stack.size())
       return;
 
     if (auto last = m_context.last_store())
