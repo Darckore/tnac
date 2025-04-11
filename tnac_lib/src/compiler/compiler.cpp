@@ -700,7 +700,6 @@ namespace tnac
     auto&& elseBlock = m_context.create_block(m_names.make_block_name(namePref, "else"sv));
     m_context.enter_block(elseBlock);
     m_context.terminate_at(elseBlock);
-    m_stack.push(onFalse);
     emit_jump(onFalse, endBlock);
 
     lastEnd = m_context.override_last(lastBlock.end());
