@@ -80,6 +80,11 @@ namespace tnac
     void store_value(entity_id reg, const ir::operand& from) noexcept;
 
     //
+    // Stores a value to the specified register
+    //
+    void store_value(entity_id reg, eval::value val) noexcept;
+
+    //
     // Creates a new stack value and returns its id
     //
     entity_id alloc_new(const ir::operand& op) noexcept;
@@ -104,6 +109,21 @@ namespace tnac
     // Loads a value from a load instruction
     //
     void load() noexcept;
+
+    //
+    // Calculates a unary
+    //
+    void unary(ir::op_code oc) noexcept;
+
+    //
+    // Calculates a binary
+    //
+    void binary(ir::op_code oc) noexcept;
+
+    //
+    // Tests the type of a value
+    //
+    void test_type() noexcept;
 
   private:
     ir::cfg* m_cfg{};

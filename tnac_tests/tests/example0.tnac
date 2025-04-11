@@ -3,4 +3,5 @@ _fn apply(func, a, b)
 ;
 
 func = _fn(a, b) a // b;
-apply(func, -1, 2)
+x = _int? func -> 0:
+apply(func, -x, x + 2)
