@@ -697,15 +697,9 @@ namespace tnac
     auto trueRes = extract();
     emit_jump(trueRes, endBlock);
 
-    auto&& elseBlock = m_context.create_block(m_names.make_block_name(namePref, "else"sv));
-    m_context.enter_block(elseBlock);
-    m_context.terminate_at(elseBlock);
-    emit_jump(onFalse, endBlock);
-
     lastEnd = m_context.override_last(lastBlock.end());
     m_context.enter_block(lastBlock);
-
-    emit_cond_jump(checkedVal, passBlock, elseBlock);
+    emit_cond_jump(checkedVal, passBlock, endBlock, std::move(onFalse));
 
     m_context.enter_block(endBlock);
     m_context.terminate_at(endBlock);
@@ -1078,14 +1072,14 @@ namespace tnac
     update_func_start(instr);
   }
 
-  void compiler::emit_cond_jump(ir::operand cond, ir::basic_block& ifTrue, ir::basic_block& ifFalse, eval::value falseV /*= {}*/) noexcept
+  void compiler::emit_cond_jump(ir::operand cond, ir::basic_block& ifTrue, ir::basic_block& ifFalse, ir::operand falseV /*= eval::value{}*/) noexcept
   {
     clear_store();
     auto&& block = m_context.current_block();
     auto&& instr = m_cfg->get_builder().add_instruction(block, ir::op_code::Jump, m_context.func_end());
     instr.add(cond).add(&ifTrue).add(&ifFalse);
-    m_cfg->connect(block, ifTrue, cond);
-    m_cfg->connect(block, ifFalse, falseV);
+    m_cfg->connect(block, ifTrue, std::move(cond));
+    m_cfg->connect(block, ifFalse, std::move(falseV));
     update_func_start(instr);
   }
 
