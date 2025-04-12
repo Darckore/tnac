@@ -262,6 +262,8 @@ namespace tnac
       phi();
     else if (opcode == Select)
       select();
+    else if (opcode == Arr)
+      alloc_array();
     else if (detail::is_unary(opcode))
       unary(opcode);
     else if (detail::is_binary(opcode))
@@ -286,6 +288,17 @@ namespace tnac
     auto&& instr = cur();
     auto&& allocRes = instr[0];
     alloc_new(allocRes);
+  }
+
+  void ir_eval::alloc_array() noexcept
+  {
+    auto&& instr = cur();
+    auto&& arr = instr[0];
+    auto&& sz = instr[1];
+    UTILS_ASSERT(sz.is_index());
+    const auto size = sz.get_index();
+    const auto regId = alloc_new(arr);
+    utils::unused(size, regId);
   }
 
   void ir_eval::store() noexcept

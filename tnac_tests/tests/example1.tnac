@@ -1,6 +1,7 @@
-_fn sum(a, b) a + b;
-_fn mul(a, b) a * b;
+_fn sum(val)
+  _array? val -> (@val + sum(val@))
+;
 
-var1 = sum(10, 12) :
-var2 = mul(var1, 3) :
-var1 + var2 * _frac(1, 2)
+e = 1 :
+x = [ e, e + 1, e + 2, e + 3, e + 4 ] :
+sum(x)

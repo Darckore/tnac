@@ -148,6 +148,11 @@ namespace tnac
     void alloc() noexcept;
 
     //
+    // Allocates an array
+    //
+    void alloc_array() noexcept;
+
+    //
     // Stores a value from a store instruction
     //
     void store() noexcept;
