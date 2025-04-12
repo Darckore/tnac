@@ -85,9 +85,19 @@ namespace tnac
     val_opt get_value(const ir::operand& op) const noexcept;
 
     //
+    // Attempts to extract a value from the given operand
+    //
+    val_opt get_value(const eval::stack_frame& frame, const ir::operand& op) const noexcept;
+
+    //
     // Locates a register id
     //
     entity_id get_reg(const ir::vreg& reg) const noexcept;
+
+    //
+    // Locates a register id
+    //
+    entity_id get_reg(const eval::stack_frame* frame, const ir::vreg& reg) const noexcept;
 
     //
     // Stores a value to the specified register
@@ -97,7 +107,17 @@ namespace tnac
     //
     // Stores a value to the specified register
     //
+    void store_value(eval::stack_frame& frame, entity_id reg, const ir::operand& from) noexcept;
+
+    //
+    // Stores a value to the specified register
+    //
     void store_value(entity_id reg, eval::value val) noexcept;
+
+    //
+    // Stores a value to the specified register
+    //
+    void store_value(eval::stack_frame& frame, entity_id reg, eval::value val) noexcept;
 
     //
     // Creates a new stack value and returns its id

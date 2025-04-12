@@ -12,8 +12,9 @@ namespace tnac::eval
   class env final
   {
   public:
-    using mem_map = std::unordered_map<entity_id, entity_id>;
-    using reg_opt = std::optional<entity_id>;
+    using mem_frame = std::unordered_map<entity_id, entity_id>;
+    using mem_map   = std::unordered_map<entity_id, mem_frame>;
+    using reg_opt   = std::optional<entity_id>;
 
   public:
     CLASS_SPECIALS_NONE_CUSTOM(env);
@@ -24,14 +25,19 @@ namespace tnac::eval
 
   public:
     //
-    // Adds a mapping
+    // Adds a mapping to the specified frame
     //
-    void map(entity_id ent, entity_id reg) noexcept;
+    void map(entity_id frame, entity_id ent, entity_id reg) noexcept;
 
     //
-    // Finds a mapping
+    // Finds a mapping in the specified frame
     //
-    reg_opt find_reg(entity_id ent) const noexcept;
+    reg_opt find_reg(entity_id frame, entity_id ent) const noexcept;
+
+    //
+    // Removes the specified frame
+    //
+    void remove_frame(entity_id frame) noexcept;
 
     //
     // Drops all data

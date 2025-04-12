@@ -640,5 +640,18 @@
       <Item Name="[iptr]" Condition="!m_instrPtr">"&lt;null&gt;",sb</Item>
     </Expand>
   </Type>
+
+  <Type Name="tnac::eval::stack_frame">
+    <DisplayString>frame: {m_name,sb}</DisplayString>
+    <Expand>
+      <Item Name="[memory]">m_mem</Item>
+      <Item Name="[return addr]">m_jmp</Item>
+      <Item Name="[return value id]">m_retId</Item>
+      <Item Name="[prev]" Condition="m_prev">*m_prev</Item>
+      <Item Name="[prev]" Condition="!m_prev">"&lt;null&gt;",sb</Item>
+      <Item Name="[next]" Condition="m_next">*m_next</Item>
+      <Item Name="[next]" Condition="!m_next">"&lt;null&gt;",sb</Item>
+    </Expand>
+  </Type>
   
 </AutoVisualizer>

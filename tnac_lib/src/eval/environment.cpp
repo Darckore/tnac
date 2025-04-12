@@ -11,17 +11,29 @@ namespace tnac::eval
 
   // Public members
 
-  void env::map(entity_id ent, entity_id reg) noexcept
+  void env::map(entity_id frame, entity_id ent, entity_id reg) noexcept
   {
-    m_map.try_emplace(ent, reg);
+    auto newFrame = m_map.try_emplace(frame, mem_frame{});
+    auto&& fr = newFrame.first->second;
+    fr.try_emplace(ent, reg);
   }
 
-  env::reg_opt env::find_reg(entity_id ent) const noexcept
+  env::reg_opt env::find_reg(entity_id frame, entity_id ent) const noexcept
   {
-    auto found = m_map.find(ent);
-    return found != m_map.end() ?
-           reg_opt{ found->second } :
-           reg_opt{};
+    auto frIt = m_map.find(frame);
+    if (frIt == m_map.end())
+      return {};
+
+    auto&& fr = frIt->second;
+    auto regIt = fr.find(ent);
+    return regIt != fr.end() ?
+      reg_opt{ regIt->second } :
+      reg_opt{};
+  }
+
+  void env::remove_frame(entity_id frame) noexcept
+  {
+    m_map.erase(frame);
   }
 
   void env::clear() noexcept

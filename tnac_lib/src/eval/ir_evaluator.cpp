@@ -112,6 +112,7 @@ namespace tnac
     }
 
     m_instrPtr = detail::to_addr(m_curFrame->jump_back());
+    m_env.remove_frame(m_curFrame);
     m_curFrame = m_stack.pop_frame();
     m_branching.pop();
   }
@@ -142,6 +143,11 @@ namespace tnac
 
   ir_eval::val_opt ir_eval::get_value(const ir::operand& op) const noexcept
   {
+    return get_value(*m_curFrame, op);
+  }
+
+  ir_eval::val_opt ir_eval::get_value(const eval::stack_frame& frame, const ir::operand& op) const noexcept
+  {
     val_opt res{};
     if (op.is_value())
     {
@@ -150,8 +156,8 @@ namespace tnac
     else if (op.is_register())
     {
       auto&& reg = op.get_reg();
-      const auto regId = get_reg(reg);
-      res.emplace(m_curFrame->value_for(regId));
+      const auto regId = get_reg(&frame, reg);
+      res.emplace(frame.value_for(regId));
     }
 
     return res;
@@ -159,21 +165,36 @@ namespace tnac
 
   entity_id ir_eval::get_reg(const ir::vreg& reg) const noexcept
   {
-    const auto regId = m_env.find_reg(&reg);
+    return get_reg(m_curFrame, reg);
+  }
+
+  entity_id ir_eval::get_reg(const eval::stack_frame* frame, const ir::vreg& reg) const noexcept
+  {
+    const auto regId = m_env.find_reg(frame, &reg);
     UTILS_ASSERT(regId);
     return regId.value_or(entity_id{});
   }
 
   void ir_eval::store_value(entity_id reg, const ir::operand& from) noexcept
   {
-    auto fromVal = get_value(from);
+    store_value(*m_curFrame, reg, from);
+  }
+
+  void ir_eval::store_value(eval::stack_frame& frame, entity_id reg, const ir::operand& from) noexcept
+  {
+    auto fromVal = get_value(frame, from);
     UTILS_ASSERT(fromVal);
-    store_value(reg, std::move(*fromVal));
+    store_value(frame, reg, std::move(*fromVal));
   }
 
   void ir_eval::store_value(entity_id reg, eval::value val) noexcept
   {
-    m_curFrame->store(reg, val);
+    store_value(*m_curFrame, reg, std::move(val));
+  }
+
+  void ir_eval::store_value(eval::stack_frame& frame, entity_id reg, eval::value val) noexcept
+  {
+    frame.store(reg, val);
     m_result = std::move(val);
   }
 
@@ -182,7 +203,7 @@ namespace tnac
     UTILS_ASSERT(op.is_register());
     auto&& target = op.get_reg();
     const auto regId = m_curFrame->allocate();
-    m_env.map(&target, regId);
+    m_env.map(m_curFrame, &target, regId);
     return regId;
   }
 
@@ -294,7 +315,7 @@ namespace tnac
     UTILS_ASSERT(to.is_register());
     auto&& target = to.get_reg();
     auto par = from.get_param();
-    m_env.map(&target, *par);
+    m_env.map(m_curFrame, &target, *par);
   }
 
   void ir_eval::jump() noexcept
@@ -416,15 +437,12 @@ namespace tnac
     auto prevFrame = m_curFrame;
     enter(*func);
     m_curFrame->attach_ret_val(regId);
-    auto nextFrame = m_curFrame;
-    m_curFrame = prevFrame;
     for (auto idx = op_count{ 2 }; idx < instr.operand_count(); ++idx)
     {
-      auto arg = get_value(instr[idx]);
+      auto arg = get_value(*prevFrame, instr[idx]);
       UTILS_ASSERT(arg);
-      nextFrame->add_arg(std::move(*arg));
+      m_curFrame->add_arg(std::move(*arg));
     }
-    m_curFrame = nextFrame;
   }
 
   void ir_eval::ret()
@@ -436,7 +454,6 @@ namespace tnac
     auto retVal = get_value(op);
     UTILS_ASSERT(retVal);
 
-    auto cur = m_curFrame;
     auto retFrame = m_curFrame->prev();
 
     // Root
@@ -447,9 +464,7 @@ namespace tnac
       return;
     }
 
-    m_curFrame = retFrame;
-    store_value(retAddr, std::move(*retVal));
-    m_curFrame = cur;
+    store_value(*retFrame, retAddr, std::move(*retVal));
     leave();
   }
 }
