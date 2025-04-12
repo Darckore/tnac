@@ -260,6 +260,8 @@ namespace tnac
       test_type();
     else if (opcode == Phi)
       phi();
+    else if (opcode == Select)
+      select();
     else if (detail::is_unary(opcode))
       unary(opcode);
     else if (detail::is_binary(opcode))
@@ -268,8 +270,6 @@ namespace tnac
     /*
     Arr,
     Append,
-
-    Select,
 
     DynBind,
 
@@ -362,6 +362,22 @@ namespace tnac
       store_value(regId, edge.value());
       return;
     }
+  }
+
+  void ir_eval::select() noexcept
+  {
+    auto&& instr = cur();
+    auto&& res = instr[0];
+    auto&& cond = instr[1];
+    auto&& onTrue = instr[2];
+    auto&& onFalse = instr[3];
+
+    const auto regId = alloc_new(res);
+    auto condVal = get_value(cond);
+    UTILS_ASSERT(condVal);
+    const auto testRes = eval::to_bool(*condVal);
+    auto&& result = testRes ? onTrue : onFalse;
+    store_value(regId, result);
   }
 
   void ir_eval::unary(ir::op_code oc) noexcept

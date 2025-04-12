@@ -168,6 +168,11 @@ namespace tnac
     void phi() noexcept;
 
     //
+    // Calculates a select op
+    //
+    void select() noexcept;
+
+    //
     // Calculates a unary
     //
     void unary(ir::op_code oc) noexcept;

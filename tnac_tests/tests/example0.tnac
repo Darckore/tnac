@@ -1,7 +1,5 @@
-_fn apply(func, a, b)
-  func(a, b)
+_fn select(a)
+  { a } -> { _fn(a, b) a + b;, _fn(a, b) a * b; }
 ;
 
-func = _fn(a, b) a // b;
-x = _fn? func -> 1:
-apply(func, -x, x + 1)
+select(_true)(2, 3) + select(_false)(4, 5)
