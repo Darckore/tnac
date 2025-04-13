@@ -47,11 +47,10 @@ namespace tnac::rt
     init_modules();
 
     auto&& core = m_state->tnac_core();
-    //auto&& cfg = core.get_cfg();
     auto&& replMod = std::as_const(*m_replMod);
     auto&& ev = core.ir_evaluator();
+    utils::unused(replMod, ev);
 
-    auto lastInstr = replMod.entry().last();
     while (m_state->is_running())
     {
       auto input = consume_input();
@@ -64,38 +63,6 @@ namespace tnac::rt
 
       m_last = parseRes;
       core.compile(*m_last);
-
-      bool hasNewInstr = false;
-      if (!lastInstr)
-      {
-        if (auto first = replMod.entry().begin())
-        {
-          lastInstr = first;
-          hasNewInstr = true;
-        }
-      }
-      else if (auto next = lastInstr->next())
-      {
-        lastInstr = next->to_iterator();
-        hasNewInstr = true;
-      }
-
-      if (!hasNewInstr)
-      {
-        if (auto lastVal = core.get_compiler().peek_value())
-          print_value(*lastVal);
-        else
-          print_value(ev.result());
-        continue;
-      }
-
-      ev.init_instr_ptr(*lastInstr);
-      do
-      {
-        lastInstr = ev.instr_ptr()->to_iterator();
-        ev.step();
-      } while (ev.instr_ptr());
-      print_value(ev.result());
     }
   }
 
