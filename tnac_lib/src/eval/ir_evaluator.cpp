@@ -274,6 +274,8 @@ namespace tnac
       select();
     else if (opcode == Arr)
       alloc_array();
+    else if (opcode == DynBind)
+      dyn_bind();
     else if (detail::is_unary(opcode))
       unary(opcode);
     else if (detail::is_binary(opcode))
@@ -282,8 +284,6 @@ namespace tnac
     /*
     Arr,
     Append,
-
-    DynBind,
 
     Bool,
     Int,
@@ -385,6 +385,37 @@ namespace tnac
       store_value(regId, edge.value());
       return;
     }
+  }
+
+  void ir_eval::dyn_bind() noexcept
+  {
+    auto&& instr = cur();
+    auto&& res = instr[0];
+    auto&& src = instr[1];
+    auto&& name = instr[2];
+
+    const auto regId = alloc_new(res);
+    auto srcVal = get_value(src);
+    UTILS_ASSERT(srcVal);
+    auto func = eval::cast_value<eval::function_type>(*srcVal);
+    if(!func)
+    {
+      // todo: error & abort
+      return;
+    }
+
+    UTILS_ASSERT(name.is_name());
+    auto memName = name.get_name();
+
+    auto&& callable = *func;
+    auto result = callable->lookup(memName);
+    if(!result)
+    {
+      // todo: error & abort
+      return;
+    }
+
+    store_value(regId, eval::value{ eval::function_type{ *result } });
   }
 
   void ir_eval::select() noexcept

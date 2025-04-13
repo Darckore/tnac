@@ -183,6 +183,11 @@ namespace tnac
     void phi() noexcept;
 
     //
+    // Handles dynamic binds
+    //
+    void dyn_bind() noexcept;
+
+    //
     // Calculates a select op
     //
     void select() noexcept;
