@@ -307,6 +307,14 @@ namespace tnac
     return FROM_CONST(cfg);
   }
 
+  compiler::val_opt compiler::peek_value() const noexcept
+  {
+    if (!m_stack.has_values(1))
+      return {};
+
+    return m_stack.top().get_value();
+  }
+
 
   // Exprs
 

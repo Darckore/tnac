@@ -52,7 +52,7 @@ namespace tnac::detail
     //
     // Returns the current top item
     //
-    value_type top() noexcept;
+    value_type top() const noexcept;
 
     //
     // Removes the top item

@@ -116,6 +116,16 @@ namespace tnac
     return m_irEval;
   }
 
+  sema& core::get_sema() noexcept
+  {
+    return m_sema;
+  }
+
+  compiler& core::get_compiler() noexcept
+  {
+    return m_compiler;
+  }
+
   void core::process_cmd(ast::command cmd) noexcept
   {
     m_cmdInterpreter.on_command(std::move(cmd));

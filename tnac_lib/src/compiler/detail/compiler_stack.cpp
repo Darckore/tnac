@@ -23,7 +23,7 @@ namespace tnac::detail
     push(eval::value{});
   }
 
-  compiler_stack::value_type compiler_stack::top() noexcept
+  compiler_stack::value_type compiler_stack::top() const noexcept
   {
     UTILS_ASSERT(!m_data.empty());
     return m_data.back();

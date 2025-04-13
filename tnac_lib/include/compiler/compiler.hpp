@@ -52,6 +52,8 @@ namespace tnac
     using size_type = edge_view::size_type;
     using size_opt  = std::optional<size_type>;
 
+    using val_opt = std::optional<eval::value>;
+
   public:
     CLASS_SPECIALS_NONE(compiler);
 
@@ -75,6 +77,13 @@ namespace tnac
     // Returns a reference to the CFG
     //
     ir::cfg& cfg() noexcept;
+
+    //
+    // Looks at the top of the stack
+    // If it holds a value, returns it
+    // Otherwise, returns an empty optional
+    //
+    val_opt peek_value() const noexcept;
 
   public: // Exprs
     void visit(ast::error_expr& err) noexcept;

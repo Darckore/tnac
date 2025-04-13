@@ -95,6 +95,16 @@ namespace tnac
     //
     ir_eval& ir_evaluator() noexcept;
 
+    //
+    // Returns the sema
+    //
+    sema& get_sema() noexcept;
+
+    //
+    // Returns the compiler
+    //
+    compiler& get_compiler() noexcept;
+
   public:
     //
     // Declares a command
