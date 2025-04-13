@@ -91,6 +91,11 @@ namespace tnac::rt
     void on_exit() noexcept;
 
     //
+    // Prints a value
+    //
+    void print_value(const eval::value& val) noexcept;
+
+    //
     // Generalised print function used in different command handlers
     //
     template <std::invocable<> F>

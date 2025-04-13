@@ -85,6 +85,14 @@ namespace tnac
     //
     val_opt peek_value() const noexcept;
 
+    //
+    // Compiles an existing module attached to the CFG after initial compilation
+    // Also, stays in the newly attached module and maintains its context
+    // Mostly, this is needed for REPL to function properly,
+    // but can potentially be useful elswhere as well
+    //
+    void attach_module(ir::function& mod, ast::module_def& def) noexcept;
+
   public: // Exprs
     void visit(ast::error_expr& err) noexcept;
     void visit(ast::result_expr& res) noexcept;

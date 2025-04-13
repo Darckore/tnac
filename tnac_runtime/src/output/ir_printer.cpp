@@ -52,7 +52,8 @@ namespace tnac::rt::out
   void ir_printer::visit(const ir::basic_block& bb) noexcept
   {
     auto last = bb.last();
-    UTILS_ASSERT(last);
+    if (!last)
+      return;
     if(last->opcode() != ir::op_code::Ret)
       endl();
   }

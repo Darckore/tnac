@@ -315,6 +315,16 @@ namespace tnac
     return m_stack.top().get_value();
   }
 
+  void compiler::attach_module(ir::function& mod, ast::module_def& def) noexcept
+  {
+    m_context.enter_function(mod, def);
+    auto _ = m_names.init_indicies();
+    auto&& entry = m_context.create_block(m_names.entry_block_name());
+    m_context.enter_block(entry);
+
+    compile(def.children());
+  }
+
 
   // Exprs
 

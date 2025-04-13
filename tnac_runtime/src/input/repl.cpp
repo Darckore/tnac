@@ -47,6 +47,13 @@ namespace tnac::rt
     init_modules();
 
     auto&& core = m_state->tnac_core();
+    auto&& cfg = core.get_cfg();
+    auto&& instructions = cfg.instructions();
+    auto lastInstr = instructions.empty() ?
+      instructions.cend() :
+      instructions.back().to_iterator();
+
+    auto&& ev = core.ir_evaluator();
     while (m_state->is_running())
     {
       auto input = consume_input();
@@ -59,6 +66,25 @@ namespace tnac::rt
 
       m_last = parseRes;
       core.compile(*m_last);
+      if (instructions.empty() ||
+          instructions.back().to_iterator() == lastInstr ||
+          instructions.back().opcode() == ir::op_code::Ret)
+      {
+        if (auto lastVal = core.get_compiler().peek_value())
+          print_value(*lastVal);
+        else
+          print_value(ev.result());
+        continue;
+      }
+
+      if (lastInstr)
+        ev.init_instr_ptr(*lastInstr->next());
+      else
+        ev.init_instr_ptr(*instructions.begin());
+
+      lastInstr = instructions.back().to_iterator();
+      ev.evaluate_current();
+      print_value(ev.result());
     }
   }
 
@@ -142,7 +168,7 @@ namespace tnac::rt
 
     auto&& cmp = core.get_compiler();
     auto&& cfg = cmp.cfg();
-    auto&& replIr = cfg.declare_module(replMod, replMod->name(), {});
+    auto&& replIr = cfg.declare_module(&replMod->symbol(), replMod->name(), {});
     for (auto mod : modules)
     {
       auto curMod = cfg.find_entity(&mod->symbol());
@@ -155,9 +181,11 @@ namespace tnac::rt
 
       sema.visit_import_alias(*mod);
       replIr.add_child_name(*curMod);
+      cmp.attach_module(replIr, *replMod);
     }
 
-    utils::unused(cfg);
+    auto&& ev = core.ir_evaluator();
+    ev.enter(replIr);
   }
 
   string_t repl::consume_input() noexcept
@@ -205,6 +233,16 @@ namespace tnac::rt
   {
     fmt::println(m_state->out(), fmt::clr::Yellow, "\nGoody-bye"sv);
     m_state->stop();
+  }
+
+  void repl::print_value(const eval::value& val) noexcept
+  {
+    auto&& os = m_state->out();
+    fmt::println(os, fmt::clr::Yellow, "Result: "sv);
+    fmt::add_clr(os, fmt::clr::White);
+    out::value_printer{}(val, m_state->num_base(), os);
+    fmt::clear_clr(os);
+    os << '\n';
   }
 
   template <std::invocable<> F>

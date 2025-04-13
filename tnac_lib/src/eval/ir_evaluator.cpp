@@ -100,7 +100,12 @@ namespace tnac
     m_curFrame = &m_stack.make_frame(func.name(), func.param_count(), jmpBack);
     auto&& entry = func.entry();
     m_branching.push({ nullptr, &entry });
-    m_instrPtr = &(*entry.begin());
+    init_instr_ptr(*entry.begin());
+  }
+
+  void ir_eval::init_instr_ptr(const ir::instruction& instr) noexcept
+  {
+    m_instrPtr = &instr;
   }
 
   void ir_eval::leave() noexcept
