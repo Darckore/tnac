@@ -47,12 +47,30 @@ namespace tnac::rt
     init_modules();
 
     auto&& core = m_state->tnac_core();
-    auto&& replMod = std::as_const(*m_replMod);
+    auto&& replMod = *m_replMod;
     auto&& ev = core.ir_evaluator();
-    utils::unused(replMod, ev);
 
+    using block_set = std::unordered_set<const ir::basic_block*>;
+    block_set blocks;
+
+    auto&& entry = replMod.entry();
+    auto curBlock = &entry;
+    auto lastInstr = entry.begin();
+
+    auto runFunc = [&](auto term) noexcept
+      {
+        for (;;)
+        {
+          ev.step();
+          if (ev.instr_ptr() == term)
+            break;
+        }
+      };
+
+    bool nullRetAddr = false;
     while (m_state->is_running())
     {
+      using enum ir::op_code;
       auto input = consume_input();
       if (input.empty())
         continue;
@@ -63,6 +81,66 @@ namespace tnac::rt
 
       m_last = parseRes;
       core.compile(*m_last);
+
+      bool hasNew = false;
+      if (!lastInstr)
+      {
+        lastInstr = entry.begin();
+        hasNew = true;
+      }
+      else if (nullRetAddr)
+      {
+        auto next = lastInstr->next();
+        hasNew = static_cast<bool>(next);
+        if (hasNew)
+          lastInstr = next->to_iterator();
+      }
+      else
+      {
+        hasNew = lastInstr != curBlock->last();
+      }
+
+      if (!hasNew)
+      {
+        if (auto val = core.get_compiler().peek_value())
+          print_value(*val);
+        else
+          print_value(ev.result());
+        continue;
+      }
+
+      ev.init_instr_ptr(*lastInstr);
+      for (;;)
+      {
+        const auto oc = lastInstr->opcode();
+        if (oc == Call)
+        {
+          auto retAddr = lastInstr->next();
+          nullRetAddr = !static_cast<bool>(retAddr);
+          runFunc(retAddr);
+        }
+        else
+        {
+          nullRetAddr = false;
+          ev.step();
+        }
+
+        auto iptr = ev.instr_ptr();
+        if (!iptr)
+          break;
+
+        if (auto block = &iptr->owner_block(); block != &lastInstr->owner_block())
+        {
+          if (oc != Jump || blocks.find(block) != blocks.end())
+            break;
+
+          blocks.emplace(block);
+          curBlock = block;
+        }
+        lastInstr = iptr->to_iterator();
+      }
+
+      print_value(ev.result());
     }
   }
 

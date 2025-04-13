@@ -157,7 +157,7 @@ namespace tnac::rt
     state* m_state{};
     feedback* m_feedback{};
     ast::node* m_last{};
-    ir::function* m_replMod{};
+    const ir::function* m_replMod{};
     bool m_commandsReady{};
   };
 }
