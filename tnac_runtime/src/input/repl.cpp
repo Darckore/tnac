@@ -262,7 +262,7 @@ namespace tnac::rt
     for (auto mod : modules)
     {
       auto curMod = cfg.find_entity(&mod->symbol());
-      if (curMod == &replIr)
+      if (!curMod || curMod == &replIr)
         break;
 
       auto modName = detail::get_module_name(*curMod);
@@ -271,9 +271,9 @@ namespace tnac::rt
 
       sema.visit_import_alias(*mod);
       replIr.add_child_name(*curMod);
-      cmp.attach_module(replIr, *replMod);
     }
 
+    cmp.attach_module(replIr, *replMod);
     auto&& ev = core.ir_evaluator();
     ev.enter(replIr);
     m_replMod = &replIr;
