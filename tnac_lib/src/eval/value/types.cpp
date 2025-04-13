@@ -68,4 +68,9 @@ namespace tnac::eval
   {
     return *operator->();
   }
+
+  array_wrapper& array_type::wrapper() noexcept
+  {
+    return FROM_CONST(wrapper);
+  }
 }

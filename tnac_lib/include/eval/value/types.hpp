@@ -123,6 +123,8 @@ namespace tnac::eval
 
   public:
     const array_wrapper& wrapper() const noexcept;
+
+    array_wrapper& wrapper() noexcept;
   };
 }
 

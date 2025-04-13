@@ -1,5 +1,6 @@
 #include "eval/ir_evaluator.hpp"
 #include "common/feedback.hpp"
+#include "eval/value/type_impl.hpp"
 
 namespace tnac::detail
 {
@@ -274,6 +275,8 @@ namespace tnac
       select();
     else if (opcode == Arr)
       alloc_array();
+    else if (opcode == Append)
+      append();
     else if (opcode == DynBind)
       dyn_bind();
     else if (detail::is_unary(opcode))
@@ -282,9 +285,6 @@ namespace tnac
       binary(opcode);
 
     /*
-    Arr,
-    Append,
-
     Bool,
     Int,
     Float,
@@ -308,7 +308,30 @@ namespace tnac
     UTILS_ASSERT(sz.is_index());
     const auto size = sz.get_index();
     const auto regId = alloc_new(arr);
-    utils::unused(size, regId);
+
+    auto&& arrData = m_valStore->allocate_array(size);
+    auto&& wrapper = m_valStore->wrap(arrData, 0u, size);
+    store_value(regId, eval::value{ eval::array_type{ wrapper } });
+  }
+
+  void ir_eval::append() noexcept
+  {
+    auto&& instr = cur();
+    auto&& from = instr[0];
+    auto&& to = instr[1];
+
+    auto storedVal = get_value(from);
+    UTILS_ASSERT(storedVal);
+
+    auto arr = get_value(to);
+    UTILS_ASSERT(arr);
+
+    auto arrOpt = eval::cast_value<eval::array_type>(*arr);
+    UTILS_ASSERT(arrOpt);
+
+    auto arrVal = *arrOpt;
+    auto&& arrData = arrVal.wrapper().data();
+    arrData.add(std::move(*storedVal));
   }
 
   void ir_eval::store() noexcept
