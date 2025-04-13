@@ -76,7 +76,7 @@ namespace tnac::rt
           lastAlloc = entry.begin();
           if (!lastAlloc)
             return;
-          if (lastAlloc->opcode() != Alloc)
+          if (utils::eq_none(lastAlloc->opcode(), Alloc, Arr))
           {
             lastAlloc = {};
             return;
@@ -90,7 +90,7 @@ namespace tnac::rt
           auto next = lastAlloc->next();
           if (!next)
             return;
-          if (next->opcode() == Alloc)
+          if (utils::eq_any(next->opcode(), Alloc, Arr))
           {
             ev.init_instr_ptr(*next);
             ev.step();
