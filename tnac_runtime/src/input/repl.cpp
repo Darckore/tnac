@@ -50,12 +50,14 @@ namespace tnac::rt
     auto&& replMod = *m_replMod;
     auto&& ev = core.ir_evaluator();
 
+    using enum ir::op_code;
     using block_set = std::unordered_set<const ir::basic_block*>;
     block_set blocks;
 
     auto&& entry = replMod.entry();
     auto curBlock = &entry;
     auto lastInstr = entry.begin();
+    auto lastAlloc = lastInstr;
 
     auto runFunc = [&](auto term) noexcept
       {
@@ -67,10 +69,41 @@ namespace tnac::rt
         }
       };
 
+    auto collectAllocs = [&]() noexcept
+      {
+        if (!lastAlloc)
+        {
+          lastAlloc = entry.begin();
+          if (!lastAlloc)
+            return;
+          if (lastAlloc->opcode() != Alloc)
+          {
+            lastAlloc = {};
+            return;
+          }
+          ev.init_instr_ptr(*lastAlloc);
+          ev.step();
+        }
+
+        for (;;)
+        {
+          auto next = lastAlloc->next();
+          if (!next)
+            return;
+          if (next->opcode() == Alloc)
+          {
+            ev.init_instr_ptr(*next);
+            ev.step();
+            lastAlloc = next->to_iterator();
+            continue;
+          }
+          return;
+        }
+      };
+
     bool nullRetAddr = false;
     while (m_state->is_running())
     {
-      using enum ir::op_code;
       auto input = consume_input();
       if (input.empty())
         continue;
@@ -82,6 +115,7 @@ namespace tnac::rt
       m_last = parseRes;
       core.compile(*m_last);
 
+      collectAllocs();
       bool hasNew = false;
       if (!lastInstr)
       {
