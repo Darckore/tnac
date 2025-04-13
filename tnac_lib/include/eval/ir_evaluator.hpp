@@ -63,6 +63,11 @@ namespace tnac
     void init_instr_ptr(const ir::instruction& instr) noexcept;
 
     //
+    // Returns the current instruction pointer
+    //
+    const ir::instruction* instr_ptr() const noexcept;
+
+    //
     // Leaves the current function
     //
     void leave() noexcept;

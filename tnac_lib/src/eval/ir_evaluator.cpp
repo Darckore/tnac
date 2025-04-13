@@ -108,6 +108,11 @@ namespace tnac
     m_instrPtr = &instr;
   }
 
+  const ir::instruction* ir_eval::instr_ptr() const noexcept
+  {
+    return m_instrPtr;
+  }
+
   void ir_eval::leave() noexcept
   {
     if (!m_curFrame)
