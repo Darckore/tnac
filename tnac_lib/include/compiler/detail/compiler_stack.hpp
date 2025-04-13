@@ -25,12 +25,6 @@ namespace tnac::detail
     using data_type  = std::vector<value_type>;
     using size_type  = data_type::size_type;
 
-    template <size_type N>
-    using val_array = std::array<eval::value, N>;
-
-    template <size_type N>
-    using cval_array = const val_array<N>;
-
   public:
     CLASS_SPECIALS_NONE_CUSTOM(compiler_stack);
 
@@ -133,12 +127,6 @@ namespace tnac::detail
     //
     template <eval::expr_result Obj>
     void instantiate(size_type argSz) noexcept;
-
-    //
-    // Instantiation helper for types
-    //
-    template <eval::expr_result Obj, typename Int, Int... Seq>
-    void instantiate(cval_array<sizeof...(Seq)>& args, utils::idx_seq<Int, Seq...>) noexcept;
 
   private:
     data_type m_data;

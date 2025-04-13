@@ -614,4 +614,23 @@ namespace tnac::eval
     default:        return size_of<Invalid>();
     }
   }
+
+  template <std::size_t N>
+  using val_array = std::array<eval::value, N>;
+
+  template <std::size_t N>
+  using cval_array = const val_array<N>;
+
+  using val_opt = std::optional<value>;
+
+  template <eval::expr_result Obj, typename Int, Int... Seq>
+  inline val_opt instantiate(eval::cval_array<sizeof...(Seq)>& args, utils::idx_seq<Int, Seq...>) noexcept
+  {
+    using type_info = eval::type_info<Obj>;
+    using type_gen  = eval::type_wrapper<Obj>;
+    auto instance = type_gen{}(
+      eval::cast_value<utils::id_to_type_t<type_info::params[Seq]>>(args[Seq])...);
+
+    return instance ? val_opt{ value{ *instance } } : val_opt{};
+  }
 }

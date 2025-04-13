@@ -118,26 +118,11 @@ namespace tnac::detail
       });
   }
 
-  template <eval::expr_result Obj, typename Int, Int... Seq>
-  void compiler_stack::instantiate(cval_array<sizeof...(Seq)>& args, utils::idx_seq<Int, Seq...>) noexcept
-  {
-    using type_info = eval::type_info<Obj>;
-    using type_gen  = eval::type_wrapper<Obj>;
-    auto instance = type_gen{}(
-      eval::cast_value<utils::id_to_type_t<type_info::params[Seq]>>(args[Seq])...);
-
-    eval::value res{};
-    if (instance)
-      res = *instance;
-    
-    push(res);
-  }
-
   template <eval::expr_result Obj>
   void compiler_stack::instantiate(size_type argSz) noexcept
   {
     static constexpr auto max = eval::type_info<Obj>::maxArgs;
-    val_array<max> args{};
+    eval::val_array<max> args{};
     size_type idx{};
     walk_back(argSz, [&args, &idx](auto op) noexcept
       {
@@ -145,7 +130,8 @@ namespace tnac::detail
         args[idx++] = op.get_value();
       });
     
-    instantiate<Obj>(args, utils::idx_gen<max>{});
+    auto instance = eval::instantiate<Obj>(args, utils::idx_gen<max>{});
+    push(instance.value_or(eval::value{}));
   }
 
   void compiler_stack::instantiate(eval::type_id type, size_type argSz) noexcept
