@@ -65,6 +65,11 @@ namespace tnac::rt
 
   private:
     //
+    // Inits modules from any pre-loaded files and imports them into repl
+    //
+    void init_modules() noexcept;
+
+    //
     // Interns an input string and returns a view into it
     //
     string_t consume_input() noexcept;

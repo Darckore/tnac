@@ -117,6 +117,11 @@ namespace tnac::ir
     m_blocks.remove(root.name());
   }
 
+  void function::add_child_name(function& child) noexcept
+  {
+    add_child_name(child.raw_name(), child);
+  }
+
 
   // Private members
 
@@ -135,11 +140,6 @@ namespace tnac::ir
   void function::add_child_name(string_t name, function& child) noexcept
   {
     m_childSt.try_emplace(name, &child);
-  }
-
-  void function::add_child_name(function& child) noexcept
-  {
-    add_child_name(child.raw_name(), child);
   }
 
   void function::make_loose() noexcept

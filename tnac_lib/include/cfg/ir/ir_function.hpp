@@ -127,6 +127,11 @@ namespace tnac::ir
     //
     void delete_block_tree(basic_block& root) noexcept;
 
+    //
+    // Adds a function name into the internal symbol table
+    //
+    void add_child_name(function& child) noexcept;
+
   private:
     //
     // Demangles the name
@@ -142,11 +147,6 @@ namespace tnac::ir
     // Adds a function with an alias name into the internal symbol table
     //
     void add_child_name(string_t name, function& child) noexcept;
-
-    //
-    // Adds a function name into the internal symbol table
-    //
-    void add_child_name(function& child) noexcept;
 
     //
     // Usable by ir builder

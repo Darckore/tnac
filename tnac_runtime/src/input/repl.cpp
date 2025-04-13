@@ -9,6 +9,23 @@
 #include "src_mgr/source_manager.hpp"
 #include "parser/ast/ast.hpp"
 
+namespace tnac::rt::detail
+{
+  namespace
+  {
+    string_t get_module_name(const ir::function& mod) noexcept
+    {
+      auto name = utils::split(mod.name(), ":"sv);
+      return *name.begin();
+    }
+    bool is_top_level(string_t name) noexcept
+    {
+      const auto dot = name.find_first_of('.');
+      return dot == string_t::npos;
+    }
+  }
+}
+
 namespace tnac::rt
 {
   // Special members
@@ -27,8 +44,9 @@ namespace tnac::rt
   void repl::run() noexcept
   {
     m_state->start();
-    auto&& core = m_state->tnac_core();
+    init_modules();
 
+    auto&& core = m_state->tnac_core();
     while (m_state->is_running())
     {
       auto input = consume_input();
@@ -106,6 +124,41 @@ namespace tnac::rt
 
 
   // Private members
+
+  void repl::init_modules() noexcept
+  {
+    auto&& core = m_state->tnac_core();
+    auto astRoot = utils::try_cast<ast::root>(core.parse({}, m_loc));
+    UTILS_ASSERT(astRoot);
+
+    auto&& modules = astRoot->modules();
+    UTILS_ASSERT(!modules.empty());
+
+    auto replMod = astRoot->modules().back();
+    UTILS_ASSERT(replMod->name() == "REPL"sv);
+
+    auto&& sema = core.get_sema();
+    auto scg = sema.assume_scope(replMod->symbol().own_scope());
+
+    auto&& cmp = core.get_compiler();
+    auto&& cfg = cmp.cfg();
+    auto&& replIr = cfg.declare_module(replMod, replMod->name(), {});
+    for (auto mod : modules)
+    {
+      auto curMod = cfg.find_entity(&mod->symbol());
+      if (curMod == &replIr)
+        break;
+
+      auto modName = detail::get_module_name(*curMod);
+      if (!detail::is_top_level(modName))
+        continue;
+
+      sema.visit_import_alias(*mod);
+      replIr.add_child_name(*curMod);
+    }
+
+    utils::unused(cfg);
+  }
 
   string_t repl::consume_input() noexcept
   {
