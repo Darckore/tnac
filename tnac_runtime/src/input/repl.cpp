@@ -69,7 +69,7 @@ namespace tnac::rt
         }
       };
 
-    auto collectAllocs = [&]() noexcept
+    auto evalAllocs = [&]() noexcept
       {
         if (!lastAlloc)
         {
@@ -115,7 +115,7 @@ namespace tnac::rt
       m_last = parseRes;
       core.compile(*m_last);
 
-      collectAllocs();
+      evalAllocs();
       bool hasNew = false;
       if (!lastInstr)
       {
