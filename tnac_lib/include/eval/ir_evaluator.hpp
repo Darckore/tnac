@@ -213,6 +213,11 @@ namespace tnac
     void test_type() noexcept;
 
     //
+    // Instantiates types
+    //
+    void type(ir::op_code oc) noexcept;
+
+    //
     // Calls the target function
     //
     void call() noexcept;

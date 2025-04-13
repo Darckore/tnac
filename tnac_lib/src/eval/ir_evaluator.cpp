@@ -67,6 +67,27 @@ namespace tnac::detail
 
       return val_ops::InvalidOp;
     }
+
+    constexpr auto is_type(ir::op_code oc) noexcept
+    {
+      using enum ir::op_code;
+      return utils::eq_any(oc, Bool, Int, Float, Frac, Cplx);
+    }
+    constexpr auto to_type_id(ir::op_code oc) noexcept
+    {
+      using eval::type_id;
+      using enum ir::op_code;
+      switch (oc)
+      {
+      case Bool:  return type_id::Bool;
+      case Int:   return type_id::Int;
+      case Float: return type_id::Float;
+      case Frac:  return type_id::Fraction;
+      case Cplx:  return type_id::Complex;
+      }
+
+      return type_id::Invalid;
+    }
   }
 }
 
@@ -283,14 +304,8 @@ namespace tnac
       unary(opcode);
     else if (detail::is_binary(opcode))
       binary(opcode);
-
-    /*
-    Bool,
-    Int,
-    Float,
-    Frac,
-    Cplx,
-    */
+    else if (detail::is_type(opcode))
+      type(opcode);
   }
 
   void ir_eval::alloc() noexcept
@@ -503,6 +518,15 @@ namespace tnac
     
     UTILS_ASSERT(opVal);
     store_value(regId, eval::value{ opVal->id() == typeId });
+  }
+
+  void ir_eval::type(ir::op_code oc) noexcept
+  {
+    const auto ti = detail::to_type_id(oc);
+    auto&& instr = cur();
+    auto&& res = instr[0];
+    const auto regId = alloc_new(res);
+    utils::unused(ti, regId);
   }
 
   void ir_eval::call() noexcept
