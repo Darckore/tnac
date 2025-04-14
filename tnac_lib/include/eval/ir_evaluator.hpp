@@ -29,6 +29,7 @@ namespace tnac
     };
 
     using branch_stack = utils::stack<branch>;
+    using arr_map      = std::unordered_map<eval::array_wrapper*, std::size_t>;
 
   public:
     using val_opt  = std::optional<eval::value>;
@@ -231,7 +232,7 @@ namespace tnac
     //
     // Performs an array call
     //
-    void call(entity_id regId, eval::array_type arr, const ir::instruction& instr) noexcept;
+    void call(entity_id regId, eval::array_wrapper& arr, const ir::instruction& instr) noexcept;
 
     //
     // Calls the target function
@@ -251,8 +252,8 @@ namespace tnac
     eval::call_stack m_stack;
     eval::stack_frame* m_curFrame{};
     branch_stack m_branching;
+    arr_map m_arrCalls;
     const ir::instruction* m_instrPtr{};
     feedback* m_feedback{};
-    std::optional<std::size_t> m_arrCallIndex{};
   };
 }

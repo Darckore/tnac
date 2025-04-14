@@ -1,6 +1,7 @@
 #include "eval/ir_evaluator.hpp"
 #include "common/feedback.hpp"
 #include "eval/value/type_impl.hpp"
+#include "eval/value/traits.hpp"
 
 namespace tnac::detail
 {
@@ -572,62 +573,68 @@ namespace tnac
     return true;
   }
 
-  void ir_eval::call(entity_id regId, eval::array_type arr, const ir::instruction& instr) noexcept
+  void ir_eval::call(entity_id regId, eval::array_wrapper& arr, const ir::instruction& instr) noexcept
   {
-    auto&& wrapper = arr.wrapper();
-    if (!m_arrCallIndex)
+    auto [newIt, addOk] = m_arrCalls.try_emplace(&arr, std::size_t{});
+    auto&& arrIdx = newIt->second;
+
+    if (const auto sz = arr.size(); addOk)
     {
-      m_arrCallIndex.emplace(0u);
-      const auto sz = wrapper.size();
-      auto&& resArr = m_valStore->allocate_array(sz);
-      auto&& resW   = m_valStore->wrap(resArr, 0u, sz);
+      auto&& resW = m_valStore->alloc_wrapped(sz);
       store_value(regId, eval::value::array(resW));
     }
-    else if (*m_arrCallIndex >= wrapper.size())
+    else if (arrIdx >= sz)
     {
-      m_arrCallIndex.reset();
-      m_instrPtr = instr.next();
+      m_arrCalls.erase(&arr);
+      if (m_arrCalls.empty())
+        m_instrPtr = instr.next();
 
       auto res = m_curFrame->value_for(regId);
-      UTILS_ASSERT(res);
-      auto toArrT = eval::cast_value<eval::array_type>(res);
-      UTILS_ASSERT(toArrT);
-
-      auto&& resData = (*toArrT)->data();
+      auto resArr = eval::extract_array(res);
+      auto&& resData = resArr->data();
       for (auto&& elem : resData)
       {
         auto elemId = m_env.find_reg(m_curFrame, &elem);
         UTILS_ASSERT(elemId);
-        auto val = m_curFrame->value_for(*elemId);
-        elem = val;
+        elem = m_curFrame->value_for(*elemId);
       }
 
-      auto&& vs = resData.val_store();
-      auto&& resWrp = vs.wrap(resData);
+      auto&& resWrp = m_valStore->wrap(resData);
       store_value(regId, eval::value::array(resWrp));
       return;
     }
 
-    std::size_t curIdx = *m_arrCallIndex;
-    for (auto it = std::next(wrapper.begin(), curIdx); it != wrapper.end(); ++it)
+    auto allocElem = [&](eval::stack_frame& frame) noexcept
+      {
+        auto resStorage = frame.value_for(regId);
+        auto resArr = eval::extract_array(resStorage);
+        UTILS_ASSERT(resArr);
+        auto&& underlying = resArr->data();
+        underlying.add(eval::value{});
+        return entity_id{ &(*underlying.rbegin()) };
+      };
+
+    for (auto it = std::next(arr.begin(), arrIdx); it != arr.end(); ++it)
     {
-      ++curIdx;
-      m_arrCallIndex.emplace(curIdx);
-      auto lastFrame = m_curFrame;
+      ++arrIdx;
+      if (auto subarr = eval::extract_array(*it))
+      {
+        const auto arrId = &(*it);
+        const auto subId = alloc_new(arrId);
+        store_value(subId, *it);
+        const auto elemAddr = allocElem(*m_curFrame);
+        alloc_new(elemAddr);
+        call(subId, *subarr, instr);
+        continue;
+      }
+
+      auto prevFrame = m_curFrame;
       if (!call(regId, *it, instr))
         continue;
 
-      auto toArr = lastFrame->value_for(regId);
-      UTILS_ASSERT(toArr);
-      auto toArrT = eval::cast_value<eval::array_type>(toArr);
-      UTILS_ASSERT(toArrT);
-
-      auto&& toWrp = toArrT->wrapper();
-      toWrp->add(eval::value{});
-      const auto elemAddr = entity_id{ &(*toWrp.data().rbegin()) };
-
+      const auto elemAddr = allocElem(*prevFrame);
       auto callFrame = m_curFrame;
-      m_curFrame = lastFrame;
+      m_curFrame = prevFrame;
       const auto callRes = alloc_new(elemAddr);
       m_curFrame = callFrame;
       m_curFrame->attach_ret_val(callRes);
@@ -644,10 +651,9 @@ namespace tnac
     const auto regId = alloc_new(to);
     auto callable = get_value(f);
     UTILS_ASSERT(callable);
-    auto arr = eval::cast_value<eval::array_type>(callable.value_or(eval::value{}));
-    if (arr)
+    if (auto arr = eval::extract_array(callable.value_or(eval::value{})))
     {
-      call(regId, std::move(*arr), instr);
+      call(regId, *arr, instr);
       return;
     }
 
