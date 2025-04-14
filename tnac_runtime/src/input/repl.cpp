@@ -120,7 +120,7 @@ namespace tnac::rt
       if (!lastInstr)
       {
         lastInstr = entry.begin();
-        hasNew = true;
+        hasNew = static_cast<bool>(lastInstr);
       }
       else if (nullRetAddr)
       {
