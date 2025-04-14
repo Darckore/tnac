@@ -81,4 +81,10 @@ namespace tnac::eval
 
     return val_opt{};
   }
+
+  array_wrapper* extract_array(const value& val) noexcept
+  {
+    auto arrOpt = cast_value<array_type>(val);
+    return arrOpt ? &(arrOpt->wrapper()) : nullptr;
+  }
 }

@@ -36,6 +36,11 @@ namespace tnac::eval
     array_data& allocate_array(size_type size) noexcept;
 
     //
+    // Allocates an array and wraps it with zero offset and the specified size
+    //
+    array_wrapper& alloc_wrapped(size_type size) noexcept;
+
+    //
     // Wraps the given array with the specified offset and length
     //
     array_wrapper& wrap(array_data& arr, size_type offset, size_type size) noexcept;

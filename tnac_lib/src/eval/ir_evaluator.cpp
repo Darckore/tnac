@@ -331,10 +331,8 @@ namespace tnac
     UTILS_ASSERT(sz.is_index());
     const auto size = sz.get_index();
     const auto regId = alloc_new(arr);
-
-    auto&& arrData = m_valStore->allocate_array(size);
-    auto&& wrapper = m_valStore->wrap(arrData, 0u, size);
-    store_value(regId, eval::value{ eval::array_type{ wrapper } });
+    auto&& wrapper = m_valStore->alloc_wrapped(size);
+    store_value(regId, eval::value::array(wrapper));
   }
 
   void ir_eval::append() noexcept
@@ -346,14 +344,10 @@ namespace tnac
     auto storedVal = get_value(from);
     UTILS_ASSERT(storedVal);
 
-    auto arr = get_value(to);
-    UTILS_ASSERT(arr);
+    auto arrWrp = eval::extract_array(get_value(to).value_or(eval::value{}));
+    UTILS_ASSERT(arrWrp);
 
-    auto arrOpt = eval::cast_value<eval::array_type>(*arr);
-    UTILS_ASSERT(arrOpt);
-
-    auto arrVal = *arrOpt;
-    auto&& arrData = arrVal.wrapper().data();
+    auto&& arrData = arrWrp->data();
     arrData.add(std::move(*storedVal));
   }
 
@@ -587,7 +581,7 @@ namespace tnac
       const auto sz = wrapper.size();
       auto&& resArr = m_valStore->allocate_array(sz);
       auto&& resW   = m_valStore->wrap(resArr, 0u, sz);
-      store_value(regId, eval::value{ eval::array_type{ resW } });
+      store_value(regId, eval::value::array(resW));
     }
     else if (*m_arrCallIndex >= wrapper.size())
     {
@@ -610,7 +604,7 @@ namespace tnac
 
       auto&& vs = resData.val_store();
       auto&& resWrp = vs.wrap(resData);
-      store_value(regId, eval::value{ eval::array_type{ resWrp } });
+      store_value(regId, eval::value::array(resWrp));
       return;
     }
 

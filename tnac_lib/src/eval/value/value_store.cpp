@@ -18,6 +18,12 @@ namespace tnac::eval
     return m_arrData.emplace_back(*this, size);
   }
 
+  array_wrapper& store::alloc_wrapped(size_type size) noexcept
+  {
+    auto&& data = allocate_array(size);
+    return wrap(data, 0u, size);
+  }
+
   array_wrapper& store::wrap(array_data& arr, size_type offset, size_type size) noexcept
   {
     return m_arrWrappers.emplace_back(arr, offset, size);
