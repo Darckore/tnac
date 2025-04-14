@@ -28,8 +28,14 @@ namespace tnac
       const ir::basic_block* m_to{};
     };
 
+    struct arr_call
+    {
+      std::size_t m_idx{};
+      entity_id m_callRes{};
+    };
+
     using branch_stack = utils::stack<branch>;
-    using arr_map      = std::unordered_map<eval::array_wrapper*, std::size_t>;
+    using arr_map      = std::unordered_map<eval::array_wrapper*, arr_call>;
 
   public:
     using val_opt  = std::optional<eval::value>;
@@ -226,13 +232,15 @@ namespace tnac
 
     //
     // Calls the target function
+    // Returns true on success
     //
     bool call(entity_id regId, eval::value f, const ir::instruction& instr) noexcept;
 
     //
     // Performs an array call
+    // Returns true is the array has not been exhausted yet
     //
-    void call(entity_id regId, eval::array_wrapper& arr, const ir::instruction& instr) noexcept;
+    bool call(entity_id regId, eval::array_wrapper& arr, const ir::instruction& instr) noexcept;
 
     //
     // Calls the target function

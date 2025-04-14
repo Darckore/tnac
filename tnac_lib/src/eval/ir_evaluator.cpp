@@ -573,10 +573,10 @@ namespace tnac
     return true;
   }
 
-  void ir_eval::call(entity_id regId, eval::array_wrapper& arr, const ir::instruction& instr) noexcept
+  bool ir_eval::call(entity_id regId, eval::array_wrapper& arr, const ir::instruction& instr) noexcept
   {
-    auto [newIt, addOk] = m_arrCalls.try_emplace(&arr, std::size_t{});
-    auto&& arrIdx = newIt->second;
+    auto [arrIt, addOk] = m_arrCalls.try_emplace(&arr, 0u, regId);
+    auto&& arrIdx = arrIt->second.m_idx;
 
     if (const auto sz = arr.size(); addOk)
     {
@@ -601,7 +601,7 @@ namespace tnac
 
       auto&& resWrp = m_valStore->wrap(resData);
       store_value(regId, eval::value::array(resWrp));
-      return;
+      return false;
     }
 
     auto allocElem = [&](eval::stack_frame& frame) noexcept
@@ -616,18 +616,25 @@ namespace tnac
 
     for (auto it = std::next(arr.begin(), arrIdx); it != arr.end(); ++it)
     {
-      ++arrIdx;
       if (auto subarr = eval::extract_array(*it))
       {
-        const auto arrId = &(*it);
-        const auto subId = alloc_new(arrId);
-        store_value(subId, *it);
-        const auto elemAddr = allocElem(*m_curFrame);
-        alloc_new(elemAddr);
-        call(subId, *subarr, instr);
-        continue;
+        auto existing = m_arrCalls.find(subarr);
+        entity_id subReg{};
+        if (existing == m_arrCalls.end())
+        {
+          const auto parentElem = allocElem(*m_curFrame);
+          subReg = alloc_new(parentElem);
+        }
+        else
+        {
+          subReg = existing->second.m_callRes;
+        }
+
+        if (call(subReg, *subarr, instr))
+          break;
       }
 
+      ++arrIdx;
       auto prevFrame = m_curFrame;
       if (!call(regId, *it, instr))
         continue;
@@ -641,6 +648,8 @@ namespace tnac
       m_curFrame->redirrect(&instr);
       break;
     }
+
+    return true;
   }
 
   void ir_eval::call() noexcept
