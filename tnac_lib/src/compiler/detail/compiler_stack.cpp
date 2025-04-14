@@ -121,16 +121,20 @@ namespace tnac::detail
   template <eval::expr_result Obj>
   void compiler_stack::instantiate(size_type argSz) noexcept
   {
-    static constexpr auto max = eval::type_info<Obj>::maxArgs;
-    eval::val_array<max> args{};
-    size_type idx{};
-    walk_back(argSz, [&args, &idx](auto op) noexcept
+    auto beg = std::next(m_data.begin(), m_data.size() - argSz);
+    auto end = m_data.end();
+    auto it = beg;
+    auto instance = eval::instantiate<Obj>(argSz, [&](eval::value& arg) noexcept
       {
-        UTILS_ASSERT(op.is_value());
-        args[idx++] = op.get_value();
+        if (it == end)
+          return;
+
+        UTILS_ASSERT(it->is_value());
+        arg = it->get_value();
+        ++it;
       });
-    
-    auto instance = eval::instantiate<Obj>(args, utils::idx_gen<max>{});
+
+    drop(argSz);
     push(instance.value_or(eval::value{}));
   }
 
@@ -161,7 +165,6 @@ namespace tnac::detail
     for (auto it = beg; it < m_data.end(); ++it)
       proc(*it);
 
-    while (count--)
-      pop();
+    drop(count);
   }
 }

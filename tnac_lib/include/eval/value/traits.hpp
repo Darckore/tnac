@@ -623,6 +623,8 @@ namespace tnac::eval
 
   using val_opt = std::optional<value>;
 
+  using arg_filler = std::move_only_function<void(value&) noexcept>;
+
   template <eval::expr_result Obj, typename Int, Int... Seq>
   inline val_opt instantiate(eval::cval_array<sizeof...(Seq)>& args, utils::idx_seq<Int, Seq...>) noexcept
   {
@@ -632,5 +634,17 @@ namespace tnac::eval
       eval::cast_value<utils::id_to_type_t<type_info::params[Seq]>>(args[Seq])...);
 
     return instance ? val_opt{ value{ *instance } } : val_opt{};
+  }
+
+  template <eval::expr_result Obj>
+  inline val_opt instantiate(std::size_t argSz, arg_filler filler) noexcept
+  {
+    static constexpr auto max = eval::type_info<Obj>::maxArgs;
+    val_array<max> args{};
+    UTILS_ASSERT(argSz <= max);
+    for (std::size_t idx{}; idx < argSz; ++idx)
+      filler(args[idx]);
+
+    return instantiate<Obj>(args, utils::idx_gen<max>{});
   }
 }
