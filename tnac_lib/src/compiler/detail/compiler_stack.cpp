@@ -118,13 +118,12 @@ namespace tnac::detail
       });
   }
 
-  template <eval::expr_result Obj>
-  void compiler_stack::instantiate(size_type argSz) noexcept
+  void compiler_stack::instantiate(eval::type_id type, size_type argSz) noexcept
   {
     auto beg = std::next(m_data.begin(), m_data.size() - argSz);
     auto end = m_data.end();
     auto it = beg;
-    auto instance = eval::instantiate<Obj>(argSz, [&](eval::value& arg) noexcept
+    auto instance = eval::instantiate(type, argSz, [&](eval::value& arg) noexcept
       {
         if (it == end)
           return;
@@ -138,20 +137,6 @@ namespace tnac::detail
     push(instance.value_or(eval::value{}));
   }
 
-  void compiler_stack::instantiate(eval::type_id type, size_type argSz) noexcept
-  {
-    using enum eval::type_id;
-    switch (type)
-    {
-    case Bool:     instantiate<eval::bool_type>(argSz); break;
-    case Int:      instantiate<eval::int_type>(argSz); break;
-    case Float:    instantiate<eval::float_type>(argSz); break;
-    case Complex:  instantiate<eval::complex_type>(argSz); break;
-    case Fraction: instantiate<eval::fraction_type>(argSz); break;
-
-    default: break;
-    }
-  }
 
   // Private members
 

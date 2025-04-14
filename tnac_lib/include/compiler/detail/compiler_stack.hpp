@@ -121,13 +121,6 @@ namespace tnac::detail
     //
     void walk_back(size_type count, op_processor auto&& proc) noexcept;
 
-    //
-    // Extracts the specified number of values and constructs a value of the given type
-    // using the extracted ones as its arguments
-    //
-    template <eval::expr_result Obj>
-    void instantiate(size_type argSz) noexcept;
-
   private:
     data_type m_data;
   };

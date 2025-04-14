@@ -43,4 +43,42 @@ namespace tnac::eval
     auto&& res = vs.wrap(data, wrapper.offset() + 1, size - 1u);
     return value{ array_type{ res } };
   }
+
+  template <eval::expr_result Obj, typename Int, Int... Seq>
+  inline val_opt instantiate(eval::cval_array<sizeof...(Seq)>& args, utils::idx_seq<Int, Seq...>) noexcept
+  {
+    using type_info = eval::type_info<Obj>;
+    using type_gen = eval::type_wrapper<Obj>;
+    auto instance = type_gen{}(
+      eval::cast_value<utils::id_to_type_t<type_info::params[Seq]>>(args[Seq])...);
+
+    return instance ? val_opt{ value{ *instance } } : val_opt{};
+  }
+
+  template <eval::expr_result Obj>
+  inline val_opt instantiate(std::size_t argSz, arg_filler filler) noexcept
+  {
+    static constexpr auto max = eval::type_info<Obj>::maxArgs;
+    val_array<max> args{};
+    UTILS_ASSERT(argSz <= max);
+    for (std::size_t idx{}; idx < argSz; ++idx)
+      filler(args[idx]);
+
+    return instantiate<Obj>(args, utils::idx_gen<max>{});
+  }
+
+  val_opt instantiate(type_id ti, std::size_t argSz, arg_filler filler) noexcept
+  {
+    using enum eval::type_id;
+    switch (ti)
+    {
+    case Bool:     return instantiate<eval::bool_type>(argSz, std::move(filler));
+    case Int:      return instantiate<eval::int_type>(argSz, std::move(filler));
+    case Float:    return instantiate<eval::float_type>(argSz, std::move(filler));
+    case Complex:  return instantiate<eval::complex_type>(argSz, std::move(filler));
+    case Fraction: return instantiate<eval::fraction_type>(argSz, std::move(filler));
+    }
+
+    return val_opt{};
+  }
 }
