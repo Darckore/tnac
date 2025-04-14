@@ -599,6 +599,12 @@ namespace tnac
         elem = m_curFrame->value_for(*elemId);
       }
 
+      resData.erase([](const eval::value& val) noexcept
+        {
+          auto arr = eval::extract_array(val);
+          return arr && arr->size() == std::size_t{};
+        });
+
       auto&& resWrp = m_valStore->wrap(resData);
       store_value(regId, eval::value::array(resWrp));
       return false;

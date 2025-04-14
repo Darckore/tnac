@@ -30,6 +30,12 @@ namespace tnac::eval
   {
     return *m_store;
   }
+
+  void array_data::erase(eraser_t eraser) noexcept
+  {
+    auto it = std::remove_if(m_data.begin(), m_data.end(), std::move(eraser));
+    m_data.erase(it, m_data.end());
+  }
 }
 
 

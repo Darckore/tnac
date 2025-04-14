@@ -23,6 +23,7 @@ namespace tnac::eval
   public:
     using data_type = std::vector<value>;
     using size_type = data_type::size_type;
+    using eraser_t = std::move_only_function<bool(const value&) noexcept>;
 
   public:
     CLASS_SPECIALS_NONE(array_data);
@@ -46,6 +47,11 @@ namespace tnac::eval
     // Returns a reference to the underlying data store
     //
     store& val_store() const noexcept;
+
+    //
+    // Removes elements that match the specified condition
+    //
+    void erase(eraser_t eraser) noexcept;
 
   public:
     auto begin() const noexcept
