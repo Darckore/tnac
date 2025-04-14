@@ -578,6 +578,70 @@ namespace tnac
     return true;
   }
 
+  void ir_eval::call(entity_id regId, eval::array_type arr, const ir::instruction& instr) noexcept
+  {
+    auto&& wrapper = arr.wrapper();
+    if (!m_arrCallIndex)
+    {
+      m_arrCallIndex.emplace(0u);
+      const auto sz = wrapper.size();
+      auto&& resArr = m_valStore->allocate_array(sz);
+      auto&& resW   = m_valStore->wrap(resArr, 0u, sz);
+      store_value(regId, eval::value{ eval::array_type{ resW } });
+    }
+    else if (*m_arrCallIndex >= wrapper.size())
+    {
+      m_arrCallIndex.reset();
+      m_instrPtr = instr.next();
+
+      auto res = m_curFrame->value_for(regId);
+      UTILS_ASSERT(res);
+      auto toArrT = eval::cast_value<eval::array_type>(res);
+      UTILS_ASSERT(toArrT);
+
+      auto&& resData = (*toArrT)->data();
+      for (auto&& elem : resData)
+      {
+        auto elemId = m_env.find_reg(m_curFrame, &elem);
+        UTILS_ASSERT(elemId);
+        auto val = m_curFrame->value_for(*elemId);
+        elem = val;
+      }
+
+      auto&& vs = resData.val_store();
+      auto&& resWrp = vs.wrap(resData);
+      store_value(regId, eval::value{ eval::array_type{ resWrp } });
+      return;
+    }
+
+    std::size_t curIdx = *m_arrCallIndex;
+    for (auto it = std::next(wrapper.begin(), curIdx); it != wrapper.end(); ++it)
+    {
+      ++curIdx;
+      m_arrCallIndex.emplace(curIdx);
+      auto lastFrame = m_curFrame;
+      if (!call(regId, *it, instr))
+        continue;
+
+      auto toArr = lastFrame->value_for(regId);
+      UTILS_ASSERT(toArr);
+      auto toArrT = eval::cast_value<eval::array_type>(toArr);
+      UTILS_ASSERT(toArrT);
+
+      auto&& toWrp = toArrT->wrapper();
+      toWrp->add(eval::value{});
+      const auto elemAddr = entity_id{ &(*toWrp.data().rbegin()) };
+
+      auto callFrame = m_curFrame;
+      m_curFrame = lastFrame;
+      const auto callRes = alloc_new(elemAddr);
+      m_curFrame = callFrame;
+      m_curFrame->attach_ret_val(callRes);
+      m_curFrame->redirrect(&instr);
+      break;
+    }
+  }
+
   void ir_eval::call() noexcept
   {
     auto&& instr = cur();
@@ -589,68 +653,7 @@ namespace tnac
     auto arr = eval::cast_value<eval::array_type>(callable.value_or(eval::value{}));
     if (arr)
     {
-      auto&& wrapper = arr->wrapper();
-      if (!m_arrCallIndex)
-      {
-        m_arrCallIndex.emplace(0u);
-        auto&& store = wrapper->val_store();
-        const auto sz = wrapper.size();
-        auto&& resArr = store.allocate_array(sz);
-        auto&& resW = store.wrap(resArr, 0u, sz);
-        store_value(regId, eval::value{ eval::array_type{ resW } });
-      }
-      else if(*m_arrCallIndex >= wrapper.size())
-      {
-        m_arrCallIndex.reset();
-        m_instrPtr = instr.next();
-
-        auto res = get_value(to);
-        UTILS_ASSERT(res);
-        auto toArrT = eval::cast_value<eval::array_type>(*res);
-        UTILS_ASSERT(toArrT);
-
-        auto&& resData = (*toArrT)->data();
-        for (auto&& elem : resData)
-        {
-          auto elemId = m_env.find_reg(m_curFrame, &elem);
-          UTILS_ASSERT(elemId);
-          auto val = m_curFrame->value_for(*elemId);
-          elem = val;
-        }
-
-        auto&& vs = resData.val_store();
-        auto&& resWrp = vs.wrap(resData);
-        store_value(regId, eval::value{ eval::array_type{ resWrp } });
-        return;
-      }
-
-      std::size_t curIdx = *m_arrCallIndex;
-      for (auto it = std::next(wrapper.begin(), curIdx); it != wrapper.end(); ++it)
-      {
-        ++curIdx;
-        m_arrCallIndex.emplace(curIdx);
-        auto lastFrame = m_curFrame;
-        if (!call(regId, *it, instr))
-          continue;
-
-        auto toArr = get_value(*lastFrame, to);
-        UTILS_ASSERT(toArr);
-        auto toArrT = eval::cast_value<eval::array_type>(*toArr);
-        UTILS_ASSERT(toArrT);
-
-        auto&& toWrp = toArrT->wrapper();
-        toWrp->add(eval::value{});
-        const auto elemAddr = entity_id{ &(*toWrp.data().rbegin()) };
-
-        auto callFrame = m_curFrame;
-        m_curFrame = lastFrame;
-        const auto callRes = alloc_new(elemAddr);
-        m_curFrame = callFrame;
-        m_curFrame->attach_ret_val(callRes);
-        m_curFrame->redirrect(&instr);
-        break;
-      }
-
+      call(regId, std::move(*arr), instr);
       return;
     }
 

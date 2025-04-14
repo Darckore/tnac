@@ -229,6 +229,11 @@ namespace tnac
     bool call(entity_id regId, eval::value f, const ir::instruction& instr) noexcept;
 
     //
+    // Performs an array call
+    //
+    void call(entity_id regId, eval::array_type arr, const ir::instruction& instr) noexcept;
+
+    //
     // Calls the target function
     //
     void call() noexcept;
