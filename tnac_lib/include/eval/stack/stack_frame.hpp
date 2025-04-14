@@ -52,6 +52,11 @@ namespace tnac::eval
     value value_for(entity_id id) const noexcept;
 
     //
+    // Directs return address to a specific instruction
+    //
+    void redirrect(entity_id jmp) noexcept;
+
+    //
     // Returns the jump back address
     //
     entity_id jump_back() const noexcept;

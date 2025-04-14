@@ -132,6 +132,12 @@ namespace tnac
     //
     // Creates a new stack value and returns its id
     //
+    entity_id alloc_new(entity_id op) noexcept;
+
+    //
+    // Creates a new stack value and returns its id
+    // Creates a new stack value and returns its id
+    //
     entity_id alloc_new(const ir::operand& op) noexcept;
 
     //
@@ -220,7 +226,7 @@ namespace tnac
     //
     // Calls the target function
     //
-    bool call(entity_id regId, const ir::operand& f, const ir::instruction& instr) noexcept;
+    bool call(entity_id regId, eval::value f, const ir::instruction& instr) noexcept;
 
     //
     // Calls the target function
@@ -242,5 +248,6 @@ namespace tnac
     branch_stack m_branching;
     const ir::instruction* m_instrPtr{};
     feedback* m_feedback{};
+    std::optional<std::size_t> m_arrCallIndex{};
   };
 }

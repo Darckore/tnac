@@ -47,6 +47,11 @@ namespace tnac::eval
     return (idx < m_mem.size()) ? m_mem[idx] : value{};
   }
 
+  void stack_frame::redirrect(entity_id jmp) noexcept
+  {
+    m_jmp = jmp;
+  }
+
   entity_id stack_frame::jump_back() const noexcept
   {
     return m_jmp;

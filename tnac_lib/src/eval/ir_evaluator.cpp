@@ -230,13 +230,21 @@ namespace tnac
     m_result = std::move(val);
   }
 
+  entity_id ir_eval::alloc_new(entity_id op) noexcept
+  {
+    if (auto existing = m_env.find_reg(m_curFrame, op))
+      return *existing;
+
+    const auto regId = m_curFrame->allocate();
+    m_env.map(m_curFrame, op, regId);
+    return regId;
+  }
+
   entity_id ir_eval::alloc_new(const ir::operand& op) noexcept
   {
     UTILS_ASSERT(op.is_register());
     auto&& target = op.get_reg();
-    const auto regId = m_curFrame->allocate();
-    m_env.map(m_curFrame, &target, regId);
-    return regId;
+    return alloc_new(entity_id{ &target });
   }
 
   void ir_eval::jump_to(const ir::operand& op) noexcept
@@ -542,10 +550,10 @@ namespace tnac
     store_value(regId, instance.value_or(eval::value{}));
   }
 
-  bool ir_eval::call(entity_id regId, const ir::operand& f, const ir::instruction& instr) noexcept
+  bool ir_eval::call(entity_id regId, eval::value f, const ir::instruction& instr) noexcept
   {
     const auto argCount = instr.operand_count() - 2;
-    auto callable = get_value(f).value_or(eval::value{}).try_get<eval::function_type>();
+    auto callable = f.try_get<eval::function_type>();
     if (!callable)
     {
       return false;
@@ -576,7 +584,77 @@ namespace tnac
     auto&& to = instr[0];
     auto&& f = instr[1];
     const auto regId = alloc_new(to);
-    if (!call(regId, f, instr))
+    auto callable = get_value(f);
+    UTILS_ASSERT(callable);
+    auto arr = eval::cast_value<eval::array_type>(callable.value_or(eval::value{}));
+    if (arr)
+    {
+      auto&& wrapper = arr->wrapper();
+      if (!m_arrCallIndex)
+      {
+        m_arrCallIndex.emplace(0u);
+        auto&& store = wrapper->val_store();
+        const auto sz = wrapper.size();
+        auto&& resArr = store.allocate_array(sz);
+        auto&& resW = store.wrap(resArr, 0u, sz);
+        store_value(regId, eval::value{ eval::array_type{ resW } });
+      }
+      else if(*m_arrCallIndex >= wrapper.size())
+      {
+        m_arrCallIndex.reset();
+        m_instrPtr = instr.next();
+
+        auto res = get_value(to);
+        UTILS_ASSERT(res);
+        auto toArrT = eval::cast_value<eval::array_type>(*res);
+        UTILS_ASSERT(toArrT);
+
+        auto&& resData = (*toArrT)->data();
+        for (auto&& elem : resData)
+        {
+          auto elemId = m_env.find_reg(m_curFrame, &elem);
+          UTILS_ASSERT(elemId);
+          auto val = m_curFrame->value_for(*elemId);
+          elem = val;
+        }
+
+        auto&& vs = resData.val_store();
+        auto&& resWrp = vs.wrap(resData);
+        store_value(regId, eval::value{ eval::array_type{ resWrp } });
+        return;
+      }
+
+      std::size_t curIdx = *m_arrCallIndex;
+      for (auto it = std::next(wrapper.begin(), curIdx); it != wrapper.end(); ++it)
+      {
+        ++curIdx;
+        m_arrCallIndex.emplace(curIdx);
+        auto lastFrame = m_curFrame;
+        if (!call(regId, *it, instr))
+          continue;
+
+        auto toArr = get_value(*lastFrame, to);
+        UTILS_ASSERT(toArr);
+        auto toArrT = eval::cast_value<eval::array_type>(*toArr);
+        UTILS_ASSERT(toArrT);
+
+        auto&& toWrp = toArrT->wrapper();
+        toWrp->add(eval::value{});
+        const auto elemAddr = entity_id{ &(*toWrp.data().rbegin()) };
+
+        auto callFrame = m_curFrame;
+        m_curFrame = lastFrame;
+        const auto callRes = alloc_new(elemAddr);
+        m_curFrame = callFrame;
+        m_curFrame->attach_ret_val(callRes);
+        m_curFrame->redirrect(&instr);
+        break;
+      }
+
+      return;
+    }
+
+    if (!call(regId, *callable, instr))
     {
       // todo: error & abort
       return;
