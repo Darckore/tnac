@@ -526,7 +526,20 @@ namespace tnac
     auto&& instr = cur();
     auto&& res = instr[0];
     const auto regId = alloc_new(res);
-    utils::unused(ti, regId);
+    auto argIdx = 1u;
+    const auto argSz = instr.operand_count() - argIdx;
+    auto instance = eval::instantiate(ti, argSz, [&](eval::value& arg) noexcept
+      {
+        if (argIdx > argSz)
+          return;
+
+        auto argVal = get_value(instr[argIdx]);
+        UTILS_ASSERT(argVal);
+        arg = *argVal;
+        ++argIdx;
+      });
+
+    store_value(regId, instance.value_or(eval::value{}));
   }
 
   void ir_eval::call() noexcept
