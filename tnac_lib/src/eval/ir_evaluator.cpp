@@ -542,26 +542,19 @@ namespace tnac
     store_value(regId, instance.value_or(eval::value{}));
   }
 
-  void ir_eval::call() noexcept
+  bool ir_eval::call(entity_id regId, const ir::operand& f, const ir::instruction& instr) noexcept
   {
-    auto&& instr = cur();
-    auto&& to = instr[0];
-    auto&& f = instr[1];
     const auto argCount = instr.operand_count() - 2;
-
-    const auto regId = alloc_new(to);
     auto callable = get_value(f).value_or(eval::value{}).try_get<eval::function_type>();
     if (!callable)
     {
-      // todo: error & abort
-      return;
+      return false;
     }
 
     auto&& func = *callable;
-    if(func->param_count() != argCount)
+    if (func->param_count() != argCount)
     {
-      // todo: error & abort
-      return;
+      return false;
     }
 
     auto prevFrame = m_curFrame;
@@ -572,6 +565,21 @@ namespace tnac
       auto arg = get_value(*prevFrame, instr[idx]);
       UTILS_ASSERT(arg);
       m_curFrame->add_arg(std::move(*arg));
+    }
+
+    return true;
+  }
+
+  void ir_eval::call() noexcept
+  {
+    auto&& instr = cur();
+    auto&& to = instr[0];
+    auto&& f = instr[1];
+    const auto regId = alloc_new(to);
+    if (!call(regId, f, instr))
+    {
+      // todo: error & abort
+      return;
     }
   }
 

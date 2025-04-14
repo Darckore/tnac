@@ -220,6 +220,11 @@ namespace tnac
     //
     // Calls the target function
     //
+    bool call(entity_id regId, const ir::operand& f, const ir::instruction& instr) noexcept;
+
+    //
+    // Calls the target function
+    //
     void call() noexcept;
 
     //
