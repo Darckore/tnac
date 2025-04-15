@@ -126,7 +126,7 @@ namespace tnac
     token get_after() const noexcept
     {
       const auto delta = static_cast<src::location::line_pos>(m_value.length());
-      auto location = *m_loc;
+      auto location = m_loc->clone();
       location.incr_column_by(delta);
       return { m_value, Error, location.record() };
     }

@@ -16,8 +16,14 @@ namespace tnac::src
   location::~location() noexcept = default;
 
   location::location(path_ref path, source_manager& mgr) noexcept :
-    m_path{ &path },
-    m_mgr{ &mgr }
+    location{ &path, &mgr, {}, {} }
+  {}
+
+  location::location(path_ptr path, source_manager* mgr, line_num ln, line_pos lp) noexcept :
+    m_path{ path },
+    m_mgr{ mgr },
+    m_lineNumber{ ln },
+    m_column{ lp }
   {}
 
   location::location() noexcept = default;
@@ -27,6 +33,11 @@ namespace tnac::src
   bool location::is_dummy() const noexcept
   {
     return !(m_path && m_mgr);
+  }
+
+  location location::clone() const noexcept
+  {
+    return { m_path, m_mgr, m_lineNumber, m_column };
   }
 
   void location::decr_column_by(line_pos delta) noexcept

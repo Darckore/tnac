@@ -327,7 +327,7 @@ namespace tnac
       tokVal.remove_suffix(1);
     }
 
-    auto sloc = src_loc();
+    auto sloc = src_loc().clone();
     const auto tokLen = tokVal.length();
     sloc.decr_column_by(static_cast<loc::line_pos>(tokLen));
     token res{ tokVal, kind, sloc.record() };

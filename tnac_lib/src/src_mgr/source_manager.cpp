@@ -39,7 +39,8 @@ namespace tnac
 
   src::loc_wrapper source_manager::register_location(const src::location& loc) noexcept
   {
-    return src::loc_wrapper{ m_locations.emplace_front(loc) };
+    auto&& newLoc = m_locations.emplace_back(&loc.file(), this, loc.line(), loc.col());
+    return src::loc_wrapper{ newLoc };
   }
 
   const source_manager::file_t* source_manager::fetch_file(src::loc_wrapper loc) const noexcept

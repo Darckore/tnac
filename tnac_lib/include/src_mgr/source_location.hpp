@@ -16,7 +16,9 @@ namespace tnac::src
   //
   // Stores information about locations of entities in source files
   //
-  class location final
+  class location final :
+    public utils::ilist_node<location>,
+    public ref_counted<location>
   {
   public:
     using hash_t   = std::size_t;
@@ -34,11 +36,13 @@ namespace tnac::src
     static location& dummy() noexcept;
 
   public:
-    CLASS_SPECIALS_ALL_CUSTOM(location);
+    CLASS_SPECIALS_NONE_CUSTOM(location);
 
     ~location() noexcept;
 
     location(path_ref path, source_manager& mgr) noexcept;
+
+    location(path_ptr path, source_manager* mgr, line_num ln, line_pos lp) noexcept;
 
   private:
     location() noexcept;
@@ -50,6 +54,11 @@ namespace tnac::src
     // refer to any valid path
     //
     bool is_dummy() const noexcept;
+
+    //
+    // Clones the location as a stack object
+    //
+    location clone() const noexcept;
 
     //
     // Decrements column number by the specified amout
@@ -113,42 +122,46 @@ namespace tnac::src
   //
   // Light wrapper for a source location
   //
-  class loc_wrapper final
+  class loc_wrapper final :
+    public rc_wrapper<location>
   {
+  public:
+    using rc_base = rc_wrapper<location>;
+
   public:
     CLASS_SPECIALS_NODEFAULT(loc_wrapper);
 
-    ~loc_wrapper() noexcept = default;
+    ~loc_wrapper() noexcept
+    {
+      auto loc = operator->();
+      if (!loc || !loc->is_attached())
+        return;
+
+      if (!loc->is_last())
+        return;
+
+      auto&& list = loc->list();
+      list.remove(*loc);
+    }
 
     explicit loc_wrapper(location& loc) noexcept :
-      m_loc{ &loc }
+      rc_base{ loc }
     {}
 
   public:
     explicit operator bool() const noexcept
     {
-      return !m_loc->is_dummy();
+      auto loc = operator->();
+      return !loc->is_dummy();
     }
 
     const location& operator*() const noexcept
     {
-      return *m_loc;
+      return *operator->();
     }
     location& operator*() noexcept
     {
       return FROM_CONST(operator*);
     }
-
-    const location* operator->() const noexcept
-    {
-      return m_loc;
-    }
-    location* operator->() noexcept
-    {
-      return FROM_CONST(operator->);
-    }
-
-  private:
-    location* m_loc{};
   };
 }

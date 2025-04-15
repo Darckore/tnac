@@ -35,11 +35,11 @@
   </Type>
 
   <Type Name="tnac::src::loc_wrapper">
-    <DisplayString Condition="m_loc">loc wrapper</DisplayString>
-    <DisplayString Condition="!m_loc">loc wrapper (empty)</DisplayString>
+    <DisplayString Condition="m_obj">loc wrapper</DisplayString>
+    <DisplayString Condition="!m_obj">loc wrapper (empty)</DisplayString>
     <Expand>
-      <Item Name="[location]" Condition="m_loc">*m_loc</Item>
-      <Item Name="[location]" Condition="!m_loc">"&lt;empty&gt;",sb</Item>
+      <Item Name="[location]" Condition="m_obj">*m_obj</Item>
+      <Item Name="[location]" Condition="!m_obj">"&lt;empty&gt;",sb</Item>
     </Expand>
   </Type>
 
