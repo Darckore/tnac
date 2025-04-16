@@ -107,6 +107,15 @@ namespace tnac
 
   // Public members
 
+  void ir_eval::try_load(const ir::vreg& reg) noexcept
+  {
+    auto regId = m_env.find_reg(m_curFrame, &reg);
+    if (!regId)
+      return;
+
+    m_result = m_curFrame->value_for(*regId);
+  }
+
   eval::value ir_eval::result() const noexcept
   {
     return m_result;

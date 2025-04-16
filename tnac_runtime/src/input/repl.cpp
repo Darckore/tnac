@@ -136,7 +136,11 @@ namespace tnac::rt
 
       if (!hasNew)
       {
-        if (auto val = core.get_compiler().peek_value())
+        auto&& compiler = core.get_compiler();
+        if (auto reg = compiler.peek_reg())
+          ev.try_load(*reg);
+
+        if (auto val = compiler.peek_value())
           print_value(*val);
         else
           print_value(ev.result());

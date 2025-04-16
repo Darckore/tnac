@@ -86,6 +86,13 @@ namespace tnac
     val_opt peek_value() const noexcept;
 
     //
+    // Looks at the top of the stack
+    // If it holds a register, returns a pointer to it
+    // Otherwise, returns a nullptr
+    //
+    const ir::vreg* peek_reg() const noexcept;
+
+    //
     // Compiles an existing module attached to the CFG after initial compilation
     // Also, stays in the newly attached module and maintains its context
     // Mostly, this is needed for REPL to function properly,

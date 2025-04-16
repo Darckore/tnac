@@ -315,6 +315,15 @@ namespace tnac
     return m_stack.top().get_value();
   }
 
+  const ir::vreg* compiler::peek_reg() const noexcept
+  {
+    if (m_stack.empty())
+      return {};
+
+    auto&& op = m_stack.top();
+    return op.is_register() ? &op.get_reg() : nullptr;
+  }
+
   void compiler::attach_module(ir::function& mod, ast::module_def& def) noexcept
   {
     m_context.enter_function(mod, def);

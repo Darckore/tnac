@@ -50,6 +50,12 @@ namespace tnac
 
   public:
     //
+    // Attempts to load a value from the given register
+    // If successful, overwrites the last result
+    //
+    void try_load(const ir::vreg& reg) noexcept;
+
+    //
     // Returns the evaluation result
     //
     eval::value result() const noexcept;
