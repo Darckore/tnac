@@ -136,14 +136,7 @@ namespace tnac::rt
 
       if (!hasNew)
       {
-        auto&& compiler = core.get_compiler();
-        if (auto reg = compiler.peek_reg())
-          ev.try_load(*reg);
-
-        if (auto val = compiler.peek_value())
-          print_value(*val);
-        else
-          print_value(ev.result());
+        print_result();
         continue;
       }
 
@@ -340,6 +333,20 @@ namespace tnac::rt
     os << '\n';
   }
 
+  void repl::print_result() noexcept
+  {
+    auto&& core = m_state->tnac_core();
+    auto&& compiler = core.get_compiler();
+    auto&& ev = core.ir_evaluator();
+    if (auto reg = compiler.peek_reg())
+      ev.try_load(*reg);
+
+    if (auto val = compiler.peek_value())
+      print_value(*val);
+    else
+      print_value(ev.result());
+  }
+
   template <std::invocable<> F>
   void repl::print_cmd(const ast::command& cmd, F&& printFunc) noexcept
   {
@@ -358,7 +365,33 @@ namespace tnac::rt
 
   void repl::print_result(ast::command cmd) noexcept
   {
-    utils::unused(cmd);
+    using size_type = ast::command::size_type;
+    static constexpr auto bin = "bin"sv;
+    static constexpr auto oct = "oct"sv;
+    static constexpr auto dec = "dec"sv;
+    static constexpr auto hex = "hex"sv;
+
+    auto base = m_state->num_base();
+    const auto prevBase = base;
+    if (cmd.arg_count())
+    {
+      auto&& arg = cmd[size_type{}];
+      auto argName = arg.value();
+      if (argName == bin)
+        base = 2;
+      else if (argName == oct)
+        base = 8;
+      else if (argName == dec)
+        base = 10;
+      else if (argName == hex)
+        base = 16;
+      else
+        m_feedback->compile_error(arg.at(), diag::wrong_cmd_arg(size_type{}, arg.value()));
+    }
+
+    m_state->set_base(base);
+    SCOPE_GUARD(m_state->set_base(prevBase));
+    print_result();
   }
 
   void repl::list_code(ast::command cmd) noexcept
