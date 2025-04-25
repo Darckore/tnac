@@ -238,6 +238,28 @@ namespace tnac::tests
       .with(2).act(val_ops::BitwiseOr, 3).verify(2ll | 3ll)   // 2 | 3
     ;
   }
+
+  TEST(evaluation, t_arr_eq)
+  {
+    array_builder ab;
+    auto arr1 = ab.with_new(3).add(1).add(2).add(3).get();
+    auto arr2 = ab.with_new(3).add(1).add(2).add(4).get();
+    auto arr3 = ab.with_new(3).add(1).add(arr1).add(arr2).add(4).get();
+
+    value_checker{ val_ops::Equal }
+
+      .with(arr1).act(arr1).verify(true)
+      .with(arr1).act(arr2).verify(false)
+      .with(arr3).act(arr3).verify(true)
+      .with(arr3).act(arr1).verify(false)
+
+      .with_op(val_ops::NEqual)
+      .with(arr1).act(arr1).verify(false)
+      .with(arr1).act(arr2).verify(true)
+      .with(arr3).act(arr3).verify(false)
+      .with(arr3).act(arr1).verify(true)
+    ;
+  }
 }
 
 #if 0

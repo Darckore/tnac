@@ -3,6 +3,7 @@
 #include "eval/value/value.hpp"
 #include "eval/value/traits.hpp"
 #include "eval/value/type_impl.hpp"
+#include "eval/value/value_store.hpp"
 
 namespace tnac::tests
 {
@@ -41,38 +42,40 @@ namespace tnac::tests
     utils::integer<T> ||
     utils::real<T>;
 
+  namespace detail
+  {
+    template <typename T>
+    inline auto cast(T value) noexcept
+    {
+      return value;
+    }
+
+    inline auto cast(utils::integer auto value) noexcept
+    {
+      return static_cast<eval::int_type>(value);
+    }
+
+    inline auto cast(utils::real auto value) noexcept
+    {
+      return static_cast<eval::float_type>(value);
+    }
+
+    inline auto to_value(testable auto val) noexcept
+    {
+      return value{ cast(val) };
+    }
+
+    inline bool eq(dummy, dummy) noexcept
+    {
+      return true;
+    }
+  }
+
   class value_checker final
   {
   public:
     using enum eval::val_ops;
     using stored_op = std::optional<eval::val_ops>;
-
-  private:
-    template <typename T>
-    static auto cast(T value) noexcept
-    {
-      return value;
-    }
-
-    static auto cast(utils::integer auto value) noexcept
-    {
-      return static_cast<eval::int_type>(value);
-    }
-
-    static auto cast(utils::real auto value) noexcept
-    {
-      return static_cast<eval::float_type>(value);
-    }
-
-    static auto to_value(testable auto val) noexcept
-    {
-      return value{ cast(val) };
-    }
-
-    static bool eq(dummy, dummy) noexcept
-    {
-      return true;
-    }
 
   public:
     CLASS_SPECIALS_NONE_CUSTOM(value_checker);
@@ -99,7 +102,7 @@ namespace tnac::tests
     template <testable T>
     value_checker& verify(T expected) noexcept
     {
-      const auto target = cast(expected);
+      const auto target = detail::cast(expected);
       using target_t = std::remove_cvref_t<decltype(target)>;
       constexpr auto targetId = utils::type_to_id_v<target_t>;
       const auto curId = m_value.id();
@@ -144,14 +147,14 @@ namespace tnac::tests
 
     value_checker& with(testable auto val) noexcept
     {
-      m_value = to_value(val);
+      m_value = detail::to_value(val);
       return *this;
     }
 
   public:
     value_checker& act(eval::val_ops op, testable auto val) noexcept
     {
-      m_value = m_value.binary(op, to_value(val));
+      m_value = m_value.binary(op, detail::to_value(val));
       return *this;
     }
 
@@ -190,6 +193,45 @@ namespace tnac::tests
   {
     return std::numeric_limits<eval::float_type>::quiet_NaN();
   }
+
+
+  class array_builder final
+  {
+  public:
+    using arr_store = eval::store;
+    using arr       = eval::array_data;
+    using size_type = arr::size_type;
+
+  public:
+    CLASS_SPECIALS_NONE_CUSTOM(array_builder);
+
+    array_builder() noexcept = default;
+
+  public:
+    array_builder& with_new(size_type sz) noexcept
+    {
+      m_cur = &m_arrays.allocate_array(sz);
+      return *this;
+    }
+
+    array_builder& add(testable auto val) noexcept
+    {
+      UTILS_ASSERT(m_cur);
+      m_cur->add(detail::to_value(val));
+      return *this;
+    }
+
+    eval::array_type get() noexcept
+    {
+      UTILS_ASSERT(m_cur);
+      auto&& wrapper = m_arrays.wrap(*m_cur);
+      return eval::array_type{ wrapper };
+    }
+
+  private:
+    arr_store m_arrays;
+    arr* m_cur{};
+  };
 
 #if 0
   //
@@ -388,39 +430,5 @@ namespace tnac::tests
   {
     verify_program(fname, tnac::eval::invalid_val_t{});
   }
-
-
-  //
-  // Arrays
-  //
-
-  class array_builder final
-  {
-  public:
-    using value_type = tnac::eval::array_type;
-    using arr_t      = value_type::value_type;
-    using arr_store  = std::forward_list<arr_t>;
-
-  public:
-    CLASS_SPECIALS_NONE_CUSTOM(array_builder);
-
-    array_builder() noexcept = default;
-
-  public:
-    arr_t& add(std::size_t prealloc) noexcept
-    {
-      auto&& arr = m_arrays.emplace_front();
-      arr.reserve(prealloc);
-      return arr;
-    }
-
-    value_type to_array_type(arr_t& arr) noexcept
-    {
-      return { arr, ~std::size_t{} };
-    }
-
-  private:
-    arr_store m_arrays;
-  };
 #endif
 }
