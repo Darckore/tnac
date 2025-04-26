@@ -33,6 +33,16 @@ namespace tnac::eval::detail
 
 namespace tnac::eval
 {
+  enum class cmp : std::uint8_t
+  {
+    Less,
+    Equal,
+    Greater
+  };
+}
+
+namespace tnac::eval
+{
   // Special members
 
   value::~value() noexcept = default;
@@ -365,6 +375,41 @@ namespace tnac::eval
       return value{};
     }
 
+    cmp compare_arrays(array_type lhs, array_type rhs) noexcept
+    {
+      const auto lsz = lhs->size();
+      const auto rsz = rhs->size();
+      if (lhs->id() == rhs->id() && 
+          lhs->offset() == rhs->offset() &&
+          lsz == rsz)
+      {
+        return cmp::Equal;
+      }
+
+      auto res = cmp::Equal;
+      for (auto&& [le, re] : utils::make_iterators(lhs.wrapper(), rhs.wrapper()))
+      {
+        if (to_bool(le.binary(val_ops::Equal, re)))
+          continue;
+
+        if (to_bool(le.binary(val_ops::RelLess, re)))
+        {
+          res = cmp::Less;
+          break;
+        }
+
+        res = cmp::Greater;
+        break;
+      }
+
+      if (res != cmp::Equal)
+        return res;
+
+      if (lsz < rsz)
+        return cmp::Less;
+
+      return cmp::Greater;
+    }
 
     auto eq(const eq_comparable auto& lhs, const eq_comparable auto& rhs, bool compareForEquality) noexcept
     {
@@ -377,25 +422,11 @@ namespace tnac::eval
     }
     auto eq(array_type lhs, array_type rhs, bool compareForEquality) noexcept
     {
-      if (lhs->id() == rhs->id())
-      {
-        const auto res = lhs->offset() == rhs->offset() &&
-                         lhs->size() == rhs->size();
-        return value{ compareForEquality && res };
-      }
+      const auto cmpRes = compare_arrays(std::move(lhs), std::move(rhs));
+      if (cmpRes == cmp::Equal)
+        return value{ compareForEquality };
 
-      if (lhs->size() != rhs->size())
-        return value{ !compareForEquality };
-
-      for (auto&& [le, re] : utils::make_iterators(lhs.wrapper(), rhs.wrapper()))
-      {
-        if (!to_bool(le.binary(val_ops::Equal, re)))
-        {
-          return value{ !compareForEquality };
-        }
-      }
-
-      return value{ compareForEquality };
+      return value{ !compareForEquality };
     }
 
     auto lt(const rel_comparable auto& lhs, const rel_comparable auto& rhs) noexcept
@@ -408,22 +439,8 @@ namespace tnac::eval
     }
     auto lt(array_type lhs, array_type rhs) noexcept
     {
-      if (lhs->id() == rhs->id() &&
-          lhs->offset() == rhs->offset() &&
-          lhs->size() == rhs->size())
-      {
-        return value::false_val();
-      }
-
-      for (auto&& [lv, rv] : utils::make_iterators(lhs.wrapper(), rhs.wrapper()))
-      {
-        if (to_bool(lv.binary(val_ops::RelLess, rv)))
-        {
-          return value::true_val();
-        }
-      }
-
-      return value{ lhs->size() < rhs->size() };
+      const auto cmpRes = compare_arrays(std::move(lhs), std::move(rhs));
+      return value{ cmpRes == cmp::Less };
     }
 
     auto lte(const fully_comparable auto& lhs, const fully_comparable auto& rhs) noexcept
@@ -436,11 +453,8 @@ namespace tnac::eval
     }
     auto lte(array_type lhs, array_type rhs) noexcept
     {
-      if (to_bool(lt(lhs, rhs)))
-      {
-        return value::true_val();
-      }
-      return eq(std::move(lhs), std::move(rhs), true);
+      const auto cmpRes = compare_arrays(std::move(lhs), std::move(rhs));
+      return value{ utils::eq_any(cmpRes, cmp::Less, cmp::Equal) };
     }
 
     auto gt(const fully_comparable auto& lhs, const fully_comparable auto& rhs) noexcept
@@ -453,22 +467,8 @@ namespace tnac::eval
     }
     auto gt(array_type lhs, array_type rhs) noexcept
     {
-      if (lhs->id() == rhs->id() &&
-          lhs->offset() == rhs->offset() &&
-          lhs->size() == rhs->size())
-      {
-        return value::false_val();
-      }
-
-      for (auto&& [lv, rv] : utils::make_iterators(lhs.wrapper(), rhs.wrapper()))
-      {
-        if (to_bool(lv.binary(val_ops::RelGr, rv)))
-        {
-          return value::true_val();
-        }
-      }
-
-      return value{ lhs->size() > rhs->size() };
+      const auto cmpRes = compare_arrays(std::move(lhs), std::move(rhs));
+      return value{ cmpRes == cmp::Greater };
     }
 
     auto gte(const rel_comparable auto& lhs, const rel_comparable auto& rhs) noexcept
@@ -481,11 +481,8 @@ namespace tnac::eval
     }
     auto gte(array_type lhs, array_type rhs) noexcept
     {
-      if (to_bool(gt(lhs, rhs)))
-      {
-        return value::true_val();
-      }
-      return eq(std::move(lhs), std::move(rhs), true);
+      const auto cmpRes = compare_arrays(std::move(lhs), std::move(rhs));
+      return value{ utils::eq_any(cmpRes, cmp::Greater, cmp::Equal) };
     }
 
 

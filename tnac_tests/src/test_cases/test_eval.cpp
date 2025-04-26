@@ -260,6 +260,45 @@ namespace tnac::tests
       .with(arr3).act(arr1).verify(true)
     ;
   }
+
+  TEST(evaluation, t_arr_rel_cmp)
+  {
+    array_builder ab;
+    auto arr1 = ab.with_new(3).add(1).add(2).add(3).get();
+    auto arr2 = ab.with_new(3).add(1).add(2).add(4).get();
+    auto arr3 = ab.with_new(3).add(1).add(2).get();
+    auto arr4 = ab.with_new(3).add(0).add(arr1).add(arr2).add(4).get();
+
+    value_checker{ val_ops::RelLess }
+
+      .with(arr1).act(arr1).verify(false)
+      .with(2).act(arr4).verify(false)
+      .with(arr1).act(arr2).verify(true)
+      .with(arr3).act(arr1).verify(true)
+      .with(arr4).act(arr1).verify(true)
+
+      .with_op(val_ops::RelLessEq)
+      .with(arr1).act(arr1).verify(true)
+      .with(2).act(arr4).verify(false)
+      .with(arr1).act(arr2).verify(true)
+      .with(arr3).act(arr1).verify(true)
+      .with(arr4).act(arr1).verify(true)
+
+      .with_op(val_ops::RelGr)
+      .with(arr1).act(arr1).verify(false)
+      .with(2).act(arr4).verify(true)
+      .with(arr1).act(arr2).verify(false)
+      .with(arr3).act(arr1).verify(false)
+      .with(arr4).act(arr1).verify(false)
+
+      .with_op(val_ops::RelGrEq)
+      .with(arr1).act(arr1).verify(true)
+      .with(2).act(arr4).verify(true)
+      .with(arr1).act(arr2).verify(false)
+      .with(arr3).act(arr1).verify(false)
+      .with(arr4).act(arr1).verify(false)
+    ;
+  }
 }
 
 #if 0
@@ -348,78 +387,6 @@ namespace tnac::tests
     vc::check("1 == 2 == 0"sv, true);
     vc::check("2 > 3 == _cplx(3, 4) < _frac(10, 6)"sv, true);
 
-  }
-
-  TEST(evaluation, t_arr_eq)
-  {
-    vc::check("a = [1,2,3] : b = a : a == b"sv, true);
-    vc::check("a = [1,2,3] : b = a : a != b"sv, false);
-    vc::check("[1,2,3] == [1,2,3]"sv, true);
-    vc::check("[1,2,3] != [1,2,3]"sv, false);
-    vc::check("[1,2,3] != [1,2,4]"sv, true);
-    vc::check("[1,2,3] == [1,2,4]"sv, false);
-    vc::check("[1,2] != [1,2,4]"sv, true);
-    vc::check("[1,2] == [1,2,4]"sv, false);
-    vc::check("[1.0,2.0] == [1,2]"sv, true);
-    vc::check("[1.0,2.0] != [1,2]"sv, false);
-    vc::check("[1, [2, 3], 4] == [1, [2, 3], 4]"sv, true);
-    vc::check("[1, [2, 3], 4] != [1, [2, 3], 4]"sv, false);
-  }
-
-  TEST(evaluation, t_arr_less)
-  {
-    vc::check("a = [1,2,3] : b = a : a < b"sv, false);
-    vc::check("[1,2,3] < [1,2,3]"sv, false);
-    vc::check("[1,2,3] < [1,2,4]"sv, true);
-    vc::check("[1,2,4] < [1,2,3]"sv, false);
-    vc::check("[1,2] < [1,2,4]"sv, true);
-    vc::check("[1,2,4] < [1,2]"sv, false);
-    vc::check("[1.0,2.0] < [1,2]"sv, false);
-    vc::check("[1, [2, 3], 4] < [1, [2, 3], 4]"sv, false);
-    vc::check("[1, [2, 3], 4, 1] < [1, [2, 3], 4]"sv, false);
-    vc::check("[1, [2, 3], 4] < [1, [2, 3, 5], 4]"sv, true);
-  }
-
-  TEST(evaluation, t_arr_less_eq)
-  {
-    vc::check("a = [1,2,3] : b = a : a <= b"sv, true);
-    vc::check("[1,2,3] <= [1,2,3]"sv, true);
-    vc::check("[1,2,3] <= [1,2,4]"sv, true);
-    vc::check("[1,2,4] <= [1,2,3]"sv, false);
-    vc::check("[1,2] <= [1,2,4]"sv, true);
-    vc::check("[1,2,4] <= [1,2]"sv, false);
-    vc::check("[1.0,2.0] <= [1,2]"sv, true);
-    vc::check("[1, [2, 3], 4] <= [1, [2, 3], 4]"sv, true);
-    vc::check("[1, [2, 3], 4, 1] <= [1, [2, 3], 4]"sv, false);
-    vc::check("[1, [2, 3], 4] <= [1, [2, 3, 5], 4]"sv, true);
-  }
-
-  TEST(evaluation, t_arr_greater)
-  {
-    vc::check("a = [1,2,3] : b = a : a > b"sv, false);
-    vc::check("[1,2,3] > [1,2,3]"sv, false);
-    vc::check("[1,2,3] > [1,2,4]"sv, false);
-    vc::check("[1,2,4] > [1,2,3]"sv, true);
-    vc::check("[1,2] > [1,2,4]"sv, false);
-    vc::check("[1,2,4] > [1,2]"sv, true);
-    vc::check("[1.0,2.0] > [1,2]"sv, false);
-    vc::check("[1, [2, 3], 4] > [1, [2, 3], 4]"sv, false);
-    vc::check("[1, [2, 3], 4, 1] > [1, [2, 3], 4]"sv, true);
-    vc::check("[1, [2, 3], 4] > [1, [2, 3, 5], 4]"sv, false);
-  }
-
-  TEST(evaluation, t_arr_greater_eq)
-  {
-    vc::check("a = [1,2,3] : b = a : a >= b"sv, true);
-    vc::check("[1,2,3] >= [1,2,3]"sv, true);
-    vc::check("[1,2,3] >= [1,2,4]"sv, false);
-    vc::check("[1,2,4] >= [1,2,3]"sv, true);
-    vc::check("[1,2] >= [1,2,4]"sv, false);
-    vc::check("[1,2,4] >= [1,2]"sv, true);
-    vc::check("[1.0,2.0] >= [1,2]"sv, true);
-    vc::check("[1, [2, 3], 4] >= [1, [2, 3], 4]"sv, true);
-    vc::check("[1, [2, 3], 4, 1] >= [1, [2, 3], 4]"sv, true);
-    vc::check("[1, [2, 3], 4] >= [1, [2, 3, 5], 4]"sv, false);
   }
 
   TEST(evaluation, t_short_circuit)
