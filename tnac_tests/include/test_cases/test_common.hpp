@@ -233,6 +233,35 @@ namespace tnac::tests
     arr* m_cur{};
   };
 
+
+  class source_tester final
+  {
+  public:
+    CLASS_SPECIALS_NONE(source_tester);
+
+    explicit source_tester(string_t path) noexcept :
+      m_core{ m_fb }
+    {
+      const auto loadRes = m_core.process_file(path);
+      EXPECT_TRUE(loadRes);
+
+      m_core.compile();
+      auto&& cfg = m_core.get_cfg();
+      auto it = cfg.begin();
+      EXPECT_NE(it, cfg.end());
+    }
+
+    source_tester& test(string_t input, testable auto expected) noexcept
+    {
+      utils::unused(input, expected);
+      return *this;
+    }
+
+  private:
+    feedback m_fb;
+    core m_core;
+  };
+
 #if 0
   //
   // Evaluator
