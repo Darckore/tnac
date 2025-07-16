@@ -1,6 +1,7 @@
 #include "src_mgr/source_location.hpp"
 #include "src_mgr/source_manager.hpp"
 
+// location
 namespace tnac::src
 {
   // Statics
@@ -110,5 +111,47 @@ namespace tnac::src
       return loc_wrapper{ dummy() };
 
     return src_mgr().register_location(*this);
+  }
+}
+
+// loc_wrapper
+namespace tnac::src
+{
+  // Special members
+
+  loc_wrapper::~loc_wrapper() noexcept
+  {
+    auto loc = operator->();
+    if (!loc || !loc->is_attached())
+      return;
+
+    if (!loc->is_last())
+      return;
+
+    auto&& list = loc->list();
+    list.remove(*loc);
+  }
+
+  loc_wrapper::loc_wrapper(location& loc) noexcept :
+    rc_base{ loc }
+  {
+  }
+
+
+  // Public members
+
+  loc_wrapper::operator bool() const noexcept
+  {
+    auto loc = operator->();
+    return !loc->is_dummy();
+  }
+
+  const location& loc_wrapper::operator*() const noexcept
+  {
+    return *operator->();
+  }
+  location& loc_wrapper::operator*() noexcept
+  {
+    return FROM_CONST(operator*);
   }
 }

@@ -131,37 +131,14 @@ namespace tnac::src
   public:
     CLASS_SPECIALS_NODEFAULT(loc_wrapper);
 
-    ~loc_wrapper() noexcept
-    {
-      auto loc = operator->();
-      if (!loc || !loc->is_attached())
-        return;
+    ~loc_wrapper() noexcept;
 
-      if (!loc->is_last())
-        return;
-
-      auto&& list = loc->list();
-      list.remove(*loc);
-    }
-
-    explicit loc_wrapper(location& loc) noexcept :
-      rc_base{ loc }
-    {}
+    explicit loc_wrapper(location& loc) noexcept;
 
   public:
-    explicit operator bool() const noexcept
-    {
-      auto loc = operator->();
-      return !loc->is_dummy();
-    }
+    explicit operator bool() const noexcept;
 
-    const location& operator*() const noexcept
-    {
-      return *operator->();
-    }
-    location& operator*() noexcept
-    {
-      return FROM_CONST(operator*);
-    }
+    const location& operator*() const noexcept;
+    location& operator*() noexcept;
   };
 }
