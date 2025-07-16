@@ -53,6 +53,11 @@ namespace tnac::eval
     //
     void erase(eraser_t eraser) noexcept;
 
+    //
+    // Removes the current object from the list
+    //
+    void remove() noexcept;
+
   public:
     auto begin() const noexcept
     {
@@ -160,6 +165,11 @@ namespace tnac::eval
     // Returns a reference the value store of the underlying array
     //
     store& val_store() const noexcept;
+
+    //
+    // Removes the current object from the list
+    //
+    void remove() noexcept;
 
   public:
     auto begin() const noexcept

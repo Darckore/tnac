@@ -36,6 +36,11 @@ namespace tnac::eval
     auto it = std::remove_if(m_data.begin(), m_data.end(), std::move(eraser));
     m_data.erase(it, m_data.end());
   }
+
+  void array_data::remove() noexcept
+  {
+    SELF_DELETE();
+  }
 }
 
 
@@ -44,15 +49,7 @@ namespace tnac::eval
 {
   // Special members
 
-  array_wrapper::~array_wrapper() noexcept
-  {
-    auto&& arr = data();
-    if (!arr.is_last())
-      return;
-
-    auto&& list = arr.list();
-    list.remove(arr);
-  }
+  array_wrapper::~array_wrapper() noexcept = default;
 
   array_wrapper::array_wrapper(array_data& arr, size_type offset, size_type count) noexcept :
     wrapper_base{ arr },
@@ -98,6 +95,11 @@ namespace tnac::eval
   store& array_wrapper::val_store() const noexcept
   {
     return data().val_store();
+  }
+
+  void array_wrapper::remove() noexcept
+  {
+    SELF_DELETE();
   }
 
 

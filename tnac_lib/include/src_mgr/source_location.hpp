@@ -111,6 +111,11 @@ namespace tnac::src
     //
     loc_wrapper record() noexcept;
 
+    //
+    // Removes the current object from the location list
+    //
+    void remove() noexcept;
+
   private:
     path_ptr m_path{};
     source_manager* m_mgr{};

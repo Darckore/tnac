@@ -107,7 +107,16 @@ namespace tnac
     std::unsigned_integral<T>;
 
   //
-  // Base for ref-counter types
+  // Defines a ref-counted type capable of deleting itself
+  //
+  template <typename T>
+  concept self_deletable = requires (T&& obj)
+  {
+    { obj.remove() };
+  };
+
+  //
+  // Base for ref-counted types
   //
   template <typename Derived, counter C = std::size_t>
   class ref_counted
@@ -150,16 +159,6 @@ namespace tnac
       return static_cast<bool>(m_refs);
     }
 
-    //
-    // Special case
-    // Checks that the last referenced instance of the object remains
-    // Need this in destructors of users to manage the last ref
-    //
-    bool is_last() const noexcept
-    {
-      return m_refs == counter_type{ 1 };
-    }
-
   private:
     counter_type m_refs{};
   };
@@ -194,6 +193,14 @@ namespace tnac
     {
       if (obj)
         obj->release();
+
+      if constexpr (self_deletable<object_type>)
+      {
+        if (!obj || obj->hasref())
+          return;
+
+        obj->remove();
+      }
     }
 
   public:
@@ -211,9 +218,10 @@ namespace tnac
       unref(m_obj);
     }
 
-    rc_wrapper(const rc_wrapper& other) noexcept :
-      m_obj{ other.m_obj }
+    rc_wrapper(const rc_wrapper& other) noexcept
     {
+      unref(m_obj);
+      m_obj = other.m_obj;
       ref(m_obj);
     }
 
@@ -228,9 +236,10 @@ namespace tnac
       return *this;
     }
 
-    rc_wrapper(rc_wrapper&& other) noexcept :
-      m_obj{ other.m_obj }
+    rc_wrapper(rc_wrapper&& other) noexcept
     {
+      unref(m_obj);
+      m_obj = other.m_obj;
       other.m_obj = {};
     }
 
@@ -276,3 +285,10 @@ namespace tnac
     pointer m_obj{};
   };
 }
+
+//
+// A macro to auto-generate samy remove functions for various ref-conted types
+//
+#define SELF_DELETE() \
+UTILS_ASSERT(!hasref()); \
+SCOPE_GUARD(auto&& lst = list(); lst.remove(*this))

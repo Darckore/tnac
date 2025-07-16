@@ -112,6 +112,14 @@ namespace tnac::src
 
     return src_mgr().register_location(*this);
   }
+
+  void location::remove() noexcept
+  {
+    if (!is_attached() || is_dummy())
+      return;
+
+    SELF_DELETE();
+  }
 }
 
 // loc_wrapper
@@ -119,18 +127,7 @@ namespace tnac::src
 {
   // Special members
 
-  loc_wrapper::~loc_wrapper() noexcept
-  {
-    auto loc = operator->();
-    if (!loc || !loc->is_attached())
-      return;
-
-    if (!loc->is_last())
-      return;
-
-    auto&& list = loc->list();
-    list.remove(*loc);
-  }
+  loc_wrapper::~loc_wrapper() noexcept = default;
 
   loc_wrapper::loc_wrapper(location& loc) noexcept :
     rc_base{ loc }

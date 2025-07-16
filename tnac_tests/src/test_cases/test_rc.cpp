@@ -20,8 +20,6 @@ namespace tnac::tests
     ASSERT_FALSE(arrlist.empty());
 
     wrplist.remove(wrap2);
-    ASSERT_TRUE(arr.is_last());
-
     wrplist.remove(wrap3);
     ASSERT_TRUE(arrlist.empty());
   }

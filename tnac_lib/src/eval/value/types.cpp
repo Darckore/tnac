@@ -41,15 +41,7 @@ namespace tnac::eval
 {
   // Special members
 
-  array_type::~array_type() noexcept
-  {
-    auto obj = operator->();
-    if (!obj || !obj->is_last())
-      return;
-
-    auto&& list = obj->list();
-    list.remove(*obj);
-  }
+  array_type::~array_type() noexcept = default;
 
   array_type::array_type(reference aw) noexcept :
     rc_base{ aw }
