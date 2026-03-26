@@ -615,7 +615,16 @@ namespace tnac
   {
     const auto opType = binary.op().what();
     if (!detail::is_logical(opType))
-      return true;
+    {
+      compile(binary.left());
+      auto lhs = extract();
+      compile(binary.right());
+      auto rhs = extract();
+
+      m_stack.push(std::move(lhs));
+      m_stack.push(std::move(rhs));
+      return false;
+    }
 
     auto alwaysSame = [&](const eval::value& val, bool isLhs) noexcept
       {
