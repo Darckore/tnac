@@ -768,7 +768,6 @@ namespace tnac
 
     auto&& endBlock = m_context.create_block(m_names.make_block_name(namePref, "end"sv));
 
-    m_stack.push(checkedVal);
     auto&& onTrue  = m_context.create_block(m_names.make_block_name(namePref, "true"sv));
     m_context.enter_block(onTrue);
     m_context.terminate_at(onTrue);
@@ -777,10 +776,8 @@ namespace tnac
     else
       compile(cond.on_true());
     auto trueRes = extract();
-    extract();
     emit_jump(trueRes, endBlock);
 
-    m_stack.push(checkedVal);
     auto&& onFalse = m_context.create_block(m_names.make_block_name(namePref, "false"sv));
     m_context.enter_block(onFalse);
     m_context.terminate_at(onFalse);
@@ -789,7 +786,6 @@ namespace tnac
     else
       compile(cond.on_false());
     auto falseRes = extract();
-    extract();
     emit_jump(falseRes, endBlock);
 
     lastEnd = m_context.override_last(lastBlock.end());
