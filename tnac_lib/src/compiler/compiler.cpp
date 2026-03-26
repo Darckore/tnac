@@ -444,17 +444,6 @@ namespace tnac
     compile_test(val, detail::to_type_id(unary.type()));
   }
 
-  void compiler::visit(ast::binary_expr& binary) noexcept
-  {
-    const auto opType = binary.op().what();
-    if (detail::is_logical(opType) || detail::is_assign(opType))
-      return;
-
-    auto rhs = extract();
-    auto lhs = extract();
-    compile_binary(lhs, rhs, opType);
-  }
-
   void compiler::visit(ast::array_expr& arr) noexcept
   {
     const auto size = arr.elements().size();
@@ -621,8 +610,7 @@ namespace tnac
       compile(binary.right());
       auto rhs = extract();
 
-      m_stack.push(std::move(lhs));
-      m_stack.push(std::move(rhs));
+      compile_binary(lhs, rhs, opType);
       return false;
     }
 
