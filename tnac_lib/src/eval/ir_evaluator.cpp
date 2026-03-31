@@ -175,6 +175,12 @@ namespace tnac
     return true;
   }
 
+  void ir_eval::add_arg(eval::value arg) noexcept
+  {
+    if (m_curFrame)
+      m_curFrame->add_arg(std::move(arg));
+  }
+
 
   // Private members
 

@@ -6,11 +6,6 @@ namespace tnac::tests
 {
   TEST(program, t_playground)
   {
-    //auto mod = *it;
-    //auto&& ev = core.ir_evaluator();
-    //ev.enter(*mod);
-    //ev.evaluate_current();
-    //utils::unused(ev);
     source_tester st{ TEST_EXAMPLE(1) };
     st.test("example1"sv, 15, 1);
   }

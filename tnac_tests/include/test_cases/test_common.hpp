@@ -272,6 +272,7 @@ namespace tnac::tests
 
       auto&& ev = m_core.ir_evaluator();
       ev.enter(*fn);
+      ( ..., ev.add_arg(detail::to_value(args)) );
       ev.evaluate_current();
 
       value_checker{ ev.result() }.verify(expected);

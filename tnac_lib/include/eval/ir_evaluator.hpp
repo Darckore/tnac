@@ -96,6 +96,11 @@ namespace tnac
     //
     bool step() noexcept;
 
+    //
+    // Adds an argument value to the current call stack frame
+    //
+    void add_arg(eval::value arg) noexcept;
+
   private:
     //
     // Returns a reference to the current instruction
