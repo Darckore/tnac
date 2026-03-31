@@ -237,6 +237,9 @@ namespace tnac::tests
   class source_tester final
   {
   public:
+    using symtab = std::unordered_map<string_t, const ir::function*>;
+
+  public:
     CLASS_SPECIALS_NONE(source_tester);
 
     explicit source_tester(string_t path) noexcept :
@@ -248,18 +251,57 @@ namespace tnac::tests
       m_core.compile();
       auto&& cfg = m_core.get_cfg();
       auto it = cfg.begin();
-      EXPECT_NE(it, cfg.end());
+      auto end = cfg.end();
+      EXPECT_NE(it, end);
+
+      for (; it != end; ++it)
+      {
+        auto mod = *it;
+        auto modName = mod->raw_name();
+        auto res = m_st.emplace(modName, mod);
+        EXPECT_TRUE(res.second);
+      }
     }
 
-    source_tester& test(string_t input, testable auto expected) noexcept
+    template <testable... Args>
+    source_tester& test(string_t input, testable auto expected, Args... args) noexcept
     {
-      utils::unused(input, expected);
+      utils::unused(args...);
+      auto fn = find_fn(input, sizeof...(args));
+      if (!fn) return *this;
+
+      auto&& ev = m_core.ir_evaluator();
+      ev.enter(*fn);
+      ev.evaluate_current();
+
+      value_checker{ ev.result() }.verify(expected);
       return *this;
+    }
+
+  private:
+    const ir::function* find_fn(string_t name, ir::function::size_type paramCount) noexcept
+    {
+      auto fnIt = m_st.find(name);
+      if (fnIt == m_st.end())
+      {
+        EXPECT_TRUE(false) << "No function with name " << name;
+        return {};
+      }
+
+      auto fn = fnIt->second;
+      if (const auto parCnt = fn->param_count(); parCnt != paramCount)
+      {
+        EXPECT_EQ(parCnt, paramCount);
+        return {};
+      }
+
+      return fn;
     }
 
   private:
     feedback m_fb;
     core m_core;
+    symtab m_st;
   };
 
 #if 0

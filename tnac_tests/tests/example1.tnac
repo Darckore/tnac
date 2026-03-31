@@ -1,7 +1,9 @@
+_entry(start)
+
 _fn sum(val)
-  _array? val -> (@val + sum(val@))
+  _array? val -> (sum(@val) + sum(val@))
 ;
 
-e = 1 :
+e = start :
 x = [ e, e + 1, e + 2, e + 3, e + 4 ] :
 sum(x)

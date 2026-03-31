@@ -12,7 +12,7 @@ namespace tnac::tests
     //ev.evaluate_current();
     //utils::unused(ev);
     source_tester st{ TEST_EXAMPLE(1) };
-    st.test(""sv, 15);
+    st.test("example1"sv, 15, 1);
   }
 }
 
