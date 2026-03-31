@@ -13,11 +13,6 @@ namespace tnac::rt::detail
 {
   namespace
   {
-    string_t get_module_name(const ir::function& mod) noexcept
-    {
-      auto name = utils::split(mod.name(), ":"sv);
-      return *name.begin();
-    }
     bool is_top_level(string_t name) noexcept
     {
       const auto dot = name.find_first_of('.');
@@ -262,7 +257,7 @@ namespace tnac::rt
       if (!curMod || curMod == &replIr)
         break;
 
-      auto modName = detail::get_module_name(*curMod);
+      auto modName = curMod->raw_name();
       if (!detail::is_top_level(modName))
         continue;
 

@@ -132,12 +132,12 @@ namespace tnac::ir
     //
     void add_child_name(function& child) noexcept;
 
-  private:
     //
     // Demangles the name
     //
     string_t raw_name() const noexcept;
 
+  private:
     //
     // Adds a nested function
     //

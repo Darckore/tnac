@@ -122,14 +122,14 @@ namespace tnac::ir
     add_child_name(child.raw_name(), child);
   }
 
-
-  // Private members
-
   string_t function::raw_name() const noexcept
   {
     auto parts = utils::split(m_name, ":"sv);
     return *parts.begin();
   }
+
+
+  // Private members
 
   void function::add_child(function& child) noexcept
   {
