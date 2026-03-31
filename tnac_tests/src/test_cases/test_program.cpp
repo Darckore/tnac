@@ -10,6 +10,18 @@ namespace tnac::tests
     st.test("example1"sv, 15, 1);
   }
 
+  TEST(program, t_example_comments)
+  {
+    source_tester st{ TEST_EXAMPLE(_comments) };
+    st.test("example_comments"sv, 42);
+  }
+
+  TEST(program, t_example_ret)
+  {
+    source_tester st{ TEST_EXAMPLE(_ret) };
+    st.test("example_ret"sv, 42);
+  }
+
   TEST(program, t_example_fact)
   {
     source_tester st{ TEST_EXAMPLE(_fact) };
@@ -55,17 +67,7 @@ namespace tnac::tests
 
 namespace tnac::tests
 {
-  #define TEST_EXAMPLE(N) "tests/example"#N".tnac"
 
-  TEST(program, t_example_comments)
-  {
-    verify_program(TEST_EXAMPLE(_comments), 42ll);
-  }
-
-  TEST(program, t_example_ret)
-  {
-    verify_program(TEST_EXAMPLE(_ret), 42ll);
-  }
 
   TEST(program, t_example0)
   {

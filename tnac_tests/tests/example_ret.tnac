@@ -1,4 +1,4 @@
-func()
+_fn func()
   _ret 41 :
   0 `unreachable`
 ;
