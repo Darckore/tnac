@@ -282,14 +282,32 @@ namespace tnac::tests
   private:
     const ir::function* find_fn(string_t name, ir::function::size_type paramCount) noexcept
     {
-      auto fnIt = m_st.find(name);
-      if (fnIt == m_st.end())
+      EXPECT_FALSE(name.empty());
+      auto nameParts = utils::split(name, "."sv);
+      auto beg = nameParts.begin();
+      auto end = nameParts.end();
+
+      auto modName = *beg;
+      auto modIt = m_st.find(modName);
+      if (modIt == m_st.end())
       {
-        EXPECT_TRUE(false) << "No function with name " << name;
+        EXPECT_TRUE(false) << "No module with name " << modName;
         return {};
       }
+      auto fn = modIt->second;
+      ++beg;
 
-      auto fn = fnIt->second;
+      for (; beg != end; ++beg)
+      {
+        auto fName = *beg;
+        fn = fn->lookup(fName);
+        if (!fn)
+        {
+          EXPECT_TRUE(false) << "No function with name " << fName;
+          return {};
+        }
+      }
+
       if (const auto parCnt = fn->param_count(); parCnt != paramCount)
       {
         EXPECT_EQ(parCnt, paramCount);

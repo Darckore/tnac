@@ -9,6 +9,46 @@ namespace tnac::tests
     source_tester st{ TEST_EXAMPLE(1) };
     st.test("example1"sv, 15, 1);
   }
+
+  TEST(program, t_example_fact)
+  {
+    source_tester st{ TEST_EXAMPLE(_fact) };
+    constexpr auto fn = "example_fact.factorial"sv;
+    st
+      .test(fn, 1, 0)
+      .test(fn, 1, 1)
+      .test(fn, 2, 2)
+      .test(fn, 6, 3)
+      .test(fn, 24, 4)
+      .test(fn, 120, 5)
+      .test(fn, 720, 6)
+      .test(fn, 5040, 7)
+      .test(fn, 40320, 8)
+      .test(fn, 362880, 9)
+      .test(fn, 3628800, 10)
+    ;
+  }
+
+  TEST(program, t_example_fib)
+  {
+    source_tester st{ TEST_EXAMPLE(_fib) };
+    constexpr auto fn = "example_fib.fib"sv;
+    st
+      .test(fn, -1, -1)
+      .test(fn, 0, 0)
+      .test(fn, 1, 1)
+      .test(fn, 1, 2)
+      .test(fn, 2, 3)
+      .test(fn, 3, 4)
+      .test(fn, 5, 5)
+      .test(fn, 8, 6)
+      .test(fn, 13, 7)
+      .test(fn, 21, 8)
+      .test(fn, 34, 9)
+      .test(fn, 55, 10)
+    ;
+  }
+
 }
 
 #if 0
@@ -20,53 +60,6 @@ namespace tnac::tests
   TEST(program, t_example_comments)
   {
     verify_program(TEST_EXAMPLE(_comments), 42ll);
-  }
-
-  TEST(program, t_example_fact)
-  {
-    auto vc = read_program(TEST_EXAMPLE(_fact), true);
-    std::array expected{
-      std::pair{ "factorial(0)"sv,        1ll },
-      std::pair{ "factorial(1)"sv,        1ll },
-      std::pair{ "factorial(2)"sv,        2ll },
-      std::pair{ "factorial(3)"sv,        6ll },
-      std::pair{ "factorial(4)"sv,       24ll },
-      std::pair{ "factorial(5)"sv,      120ll },
-      std::pair{ "factorial(6)"sv,      720ll },
-      std::pair{ "factorial(7)"sv,     5040ll },
-      std::pair{ "factorial(8)"sv,    40320ll },
-      std::pair{ "factorial(9)"sv,   362880ll },
-      std::pair{ "factorial(10)"sv, 3628800ll },
-    };
-
-    for (auto&& [input, val] : expected)
-    {
-      vc(input, val);
-    }
-  }
-
-  TEST(program, t_example_fib)
-  {
-    auto vc = read_program(TEST_EXAMPLE(_fib), true);
-    std::array expected{
-      std::pair{ "fib(-1)"sv, -1ll },
-      std::pair{ "fib(0)"sv,   0ll },
-      std::pair{ "fib(1)"sv,   1ll },
-      std::pair{ "fib(2)"sv,   1ll },
-      std::pair{ "fib(3)"sv,   2ll },
-      std::pair{ "fib(4)"sv,   3ll },
-      std::pair{ "fib(5)"sv,   5ll },
-      std::pair{ "fib(6)"sv,   8ll },
-      std::pair{ "fib(7)"sv,  13ll },
-      std::pair{ "fib(8)"sv,  21ll },
-      std::pair{ "fib(9)"sv,  34ll },
-      std::pair{ "fib(10)"sv, 55ll },
-    };
-
-    for (auto&& [input, val] : expected)
-    {
-      vc(input, val);
-    }
   }
 
   TEST(program, t_example_ret)

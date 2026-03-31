@@ -1,4 +1,4 @@
-factorial(arg)
+_fn factorial(arg)
   { arg }
     { < 0 }  -> ;
     { ! }    ->  1  ;
