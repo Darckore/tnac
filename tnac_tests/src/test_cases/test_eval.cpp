@@ -244,7 +244,7 @@ namespace tnac::tests
     array_builder ab;
     auto arr1 = ab.with_new(3).add(1).add(2).add(3).get();
     auto arr2 = ab.with_new(3).add(1).add(2).add(4).get();
-    auto arr3 = ab.with_new(3).add(1).add(arr1).add(arr2).add(4).get();
+    auto arr3 = ab.with_new(4).add(1).add(arr1).add(arr2).add(4).get();
 
     value_checker{ val_ops::Equal }
 
@@ -266,8 +266,8 @@ namespace tnac::tests
     array_builder ab;
     auto arr1 = ab.with_new(3).add(1).add(2).add(3).get();
     auto arr2 = ab.with_new(3).add(1).add(2).add(4).get();
-    auto arr3 = ab.with_new(3).add(1).add(2).get();
-    auto arr4 = ab.with_new(3).add(0).add(arr1).add(arr2).add(4).get();
+    auto arr3 = ab.with_new(2).add(1).add(2).get();
+    auto arr4 = ab.with_new(4).add(0).add(arr1).add(arr2).add(4).get();
 
     value_checker{ val_ops::RelLess }
 
@@ -299,6 +299,28 @@ namespace tnac::tests
       .with(arr4).act(arr1).verify(false)
     ;
   }
+
+  TEST(evaluation, t_arr_binary)
+  {
+    array_builder ab;
+    auto src = ab.with_new(3).add(1).add(2).add(3).get();
+    auto dst = ab.with_new(3).add(2).add(3).add(4).get();
+
+    auto arrSum = ab.with_new(9)
+      .add(3).add(4).add(5).add(4)
+      .add(5).add(6).add(5).add(6).add(7)
+      .get();
+
+    auto nestSrc = ab.with_new(3).add(41).add(src).add(68).get();
+    auto nestDst = ab.with_new(3).add(42).add(dst).add(69).get();
+
+    value_checker{ val_ops::Addition }
+      .with(src).act(1).verify(dst)
+      .with(nestSrc).act(1).verify(nestDst)
+      .with(src).act(dst).verify(arrSum)
+    ;
+  }
+
 }
 
 #if 0
