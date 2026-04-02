@@ -1025,8 +1025,6 @@ namespace tnac
     if (next.is_literal())
     {
       auto lit = next_tok();
-      if (auto tcheck = type_check_expr(lit))
-        return tcheck;
       return m_builder.make_literal(lit);
     }
 
