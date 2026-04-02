@@ -105,7 +105,7 @@ namespace tnac::tests
 
   TEST(lexer, t_strings_bad)
   {
-    constexpr auto input = "'this string has no end"sv;
+    constexpr auto input = "'this string has a\n newline' 'this string has no end"sv;
 
     using enum tok_kind;
     all_same(input, Error);

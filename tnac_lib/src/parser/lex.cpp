@@ -394,6 +394,10 @@ namespace tnac
     while (good())
     {
       const auto next = peek_char();
+      if (detail::is_newline(next))
+      {
+        return consume(tok_kind::Error);
+      }
       if (detail::is_single_quote(next))
       {
         advance();
