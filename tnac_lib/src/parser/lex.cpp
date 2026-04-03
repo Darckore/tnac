@@ -307,6 +307,21 @@ namespace tnac
     m_srcLocation = &loc::dummy();
   }
 
+  bool lex::try_backarrow() noexcept
+  {
+    if (peek_char() != '<')
+      return false;
+
+    auto nextIt = std::next(m_to);
+    if (nextIt == m_buf.end() || *nextIt != '-')
+      return false;
+
+    advance(); // <
+    advance(); // -
+    consume(tok_kind::BackArrow);
+    return true;
+  }
+
 
   // Private members
 

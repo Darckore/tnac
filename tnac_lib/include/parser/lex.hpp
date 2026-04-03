@@ -54,6 +54,13 @@ namespace tnac
     //
     void detach_loc() noexcept;
 
+    //
+    // Lexer hack
+    // Since the <- operator is ambiguous, we need to process it on demand
+    // in places where it is expected
+    //
+    bool try_backarrow() noexcept;
+
   private:
     //
     // Consumes the current character sequence between from an to iterators,

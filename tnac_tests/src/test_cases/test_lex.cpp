@@ -71,6 +71,22 @@ namespace tnac::tests
     check_tokens(input, testArr);
   }
 
+  TEST(lexer, t_backarrow)
+  {
+    constexpr auto input = "<-<-< -"sv;
+    lex l;
+    l(input);
+
+    using enum tok_kind;
+    EXPECT_EQ(l.next().what(), Less);
+    EXPECT_EQ(l.next().what(), Minus);
+    EXPECT_TRUE(l.try_backarrow());
+    EXPECT_EQ(l.next().what(), BackArrow);
+    EXPECT_FALSE(l.try_backarrow());
+    EXPECT_EQ(l.next().what(), Less);
+    EXPECT_EQ(l.next().what(), Minus);
+  }
+
   TEST(lexer, t_nums_good)
   {
     constexpr auto binInts = "0b0 0b1 0b11111 0b000000 0b011101101"sv;

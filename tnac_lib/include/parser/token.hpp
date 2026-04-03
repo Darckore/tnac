@@ -58,6 +58,7 @@ namespace tnac
     LogOr,
 
     Arrow,
+    BackArrow,
 
     // Punctuation
     ParenOpen,
