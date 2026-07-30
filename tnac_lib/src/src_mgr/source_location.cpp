@@ -41,6 +41,17 @@ namespace tnac::src
     return { m_path, m_mgr, m_lineNumber, m_column };
   }
 
+  void location::assign_from(loc_wrapper other) noexcept
+  {
+    if (!other || &(*other) == this)
+      return;
+
+    m_path = other->m_path;
+    m_mgr = other->m_mgr;
+    m_lineNumber = other->m_lineNumber;
+    m_column = other->m_column;
+  }
+
   void location::decr_column_by(line_pos delta) noexcept
   {
     if (m_column < delta)

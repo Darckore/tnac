@@ -310,14 +310,30 @@ namespace tnac
 
   bool lex::try_backarrow() noexcept
   {
-    if (peek_char() != '<')
+    if (peek_char() == '<')
+    {
+      auto nextIt = std::next(m_to);
+      if (nextIt == m_buf.end() || *nextIt != '-')
+        return false;
+
+      advance(); // <
+      advance(); // -
+      consume(tok_kind::BackArrow);
+      return true;
+    }
+
+    if (!m_preview || !m_preview->is(token::Less))
       return false;
 
-    auto nextIt = std::next(m_to);
-    if (nextIt == m_buf.end() || *nextIt != '-')
+    if (peek_char() != '-')
       return false;
 
-    advance(); // <
+    auto prevIt = std::next(m_to, -1);
+    if (*prevIt != '<')
+      return false;
+
+    m_from = prevIt;
+    src_loc().assign_from(m_preview->at());
     advance(); // -
     consume(tok_kind::BackArrow);
     return true;

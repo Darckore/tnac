@@ -61,6 +61,11 @@ namespace tnac::src
     location clone() const noexcept;
 
     //
+    // Overwrites itself from another location
+    //
+    void assign_from(loc_wrapper other) noexcept;
+
+    //
     // Decrements column number by the specified amout
     // will not go past 0
     //
