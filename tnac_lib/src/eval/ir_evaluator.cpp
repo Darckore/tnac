@@ -324,6 +324,10 @@ namespace tnac
       append();
     else if (opcode == DynBind)
       dyn_bind();
+    else if (opcode == StreamRead)
+      stream_read();
+    else if (opcode == StreamWrite)
+      stream_write();
     else if (detail::is_unary(opcode))
       unary(opcode);
     else if (detail::is_binary(opcode))
@@ -692,6 +696,30 @@ namespace tnac
       // todo: error & abort
       return;
     }
+  }
+
+  void ir_eval::stream_read() noexcept
+  {
+    auto&& instr = cur();
+    auto&& to = instr[0];
+    auto regId = alloc_new(to);
+
+    eval::value val{}; // todo: = cin
+    store_value(regId, std::move(val));
+  }
+  
+  void ir_eval::stream_write() noexcept
+  {
+    auto&& instr = cur();
+    auto&& to = instr[0];
+    auto&& from = instr[1];
+    auto regId = alloc_new(to);
+
+    auto val = get_value(from);
+    UTILS_ASSERT(val);
+
+    // todo: cout
+    store_value(regId, std::move(*val));
   }
 
   void ir_eval::ret()
