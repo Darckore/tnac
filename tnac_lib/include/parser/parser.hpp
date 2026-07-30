@@ -323,6 +323,16 @@ namespace tnac
     ast::expr* primary_expr() noexcept;
 
     //
+    // Parses an IO clause
+    //
+    ast::expr* io_clause() noexcept;
+
+    //
+    // Parses an IO expr
+    //
+    ast::expr* io_expr() noexcept;
+
+    //
     // Parses an id expr
     //
     ast::expr* id_expr(bool dotRhs = false) noexcept;

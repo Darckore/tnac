@@ -179,6 +179,10 @@ namespace tnac::detail
     {
       return tok.is(token::Arrow);
     }
+    auto is_backarrow(const token& tok) noexcept
+    {
+      return tok.is(token::BackArrow);
+    }
     auto is_pipe(const token& tok) noexcept
     {
       return tok.is(token::Pipe);
@@ -1037,6 +1041,9 @@ namespace tnac
     if (next.is(token::KwResult))
       return m_builder.make_result(next_tok());
 
+    if (next.is(token::KwIO))
+      return io_expr();
+
     if (detail::is_open_bracket(next))
       return array_expr();
 
@@ -1054,6 +1061,47 @@ namespace tnac
 
     auto err = next_tok();
     return error_expr(err, diag::expected_expr(), err_pos::Current);
+  }
+
+  ast::expr* parser::io_clause() noexcept
+  {
+    if (!(m_lex.try_backarrow() || detail::is_arrow(peek_next())))
+      return {};
+
+    auto op = next_tok();
+    if (detail::is_backarrow(op)) // output, any unary will do
+    {
+      auto expr = unary_expr();
+      return m_builder.make_io_clause(*expr, op);
+    }
+
+    // input, need a var name
+    auto&& next = peek_next();
+    if (!next.is_identifier())
+      return error_expr(next, diag::expected_id(), err_pos::Current);
+
+    auto expr = id_expr();
+    if (auto id = utils::try_cast<ast::id_expr>(expr);
+             id && !detail::is_assignable(id->symbol()))
+    {
+      return error_expr(id->pos(), diag::expected_assignable(), err_pos::Current);
+    }
+    return m_builder.make_io_clause(*expr, op);
+  }
+  
+  ast::expr* parser::io_expr() noexcept
+  {
+    auto kw = next_tok();
+    ast::io_expr::io_seq seq;
+    for(;;)
+    {
+      auto clause = io_clause();
+      if (!clause)
+        break;
+
+      seq.push_back(clause);
+    }
+    return m_builder.make_io_expr(kw, std::move(seq));
   }
 
   ast::expr* parser::id_expr(bool dotRhs /*= false*/) noexcept

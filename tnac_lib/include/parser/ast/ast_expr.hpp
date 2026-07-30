@@ -862,6 +862,8 @@ namespace tnac::ast
 
     //
     // Checks whether the clause is an input or output one
+    // -> is input (e.g., _io -> varName)
+    // <- is output (e.g., _io <- expr)
     //
     bool is_input() const noexcept;
 

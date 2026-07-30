@@ -720,7 +720,7 @@ namespace tnac::ast // IO clause
 
   bool io_clause::is_input() const noexcept
   {
-    return pos().is(token::BackArrow);
+    return pos().is(token::Arrow);
   }
 }
 
