@@ -271,7 +271,7 @@ namespace tnac
     //
     // Handles returns from functions
     //
-    void ret();
+    void ret() noexcept;
 
   private:
     ir::cfg* m_cfg{};

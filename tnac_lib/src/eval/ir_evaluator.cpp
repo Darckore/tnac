@@ -722,7 +722,7 @@ namespace tnac
     store_value(regId, std::move(*val));
   }
 
-  void ir_eval::ret()
+  void ir_eval::ret() noexcept
   {
     auto&& instr = cur();
     auto&& op = instr[0];
