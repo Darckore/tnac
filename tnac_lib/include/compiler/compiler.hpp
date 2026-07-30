@@ -113,6 +113,8 @@ namespace tnac
     void visit(ast::abs_expr& abs) noexcept;
     void visit(ast::typed_expr& typed) noexcept;
 
+    void visit(ast::io_expr& io) noexcept;
+
     bool exit_child(ast::node& node) noexcept;
     void post_exit(ast::node& node) noexcept;
 
@@ -172,6 +174,11 @@ namespace tnac
     // Handles dot expressions with potentially unknown entities
     //
     bool preview(ast::dot_expr& dot) noexcept;
+
+    //
+    // Handles IO
+    //
+    bool preview(ast::io_clause& clause) noexcept;
 
   private: // Emitions
     //
@@ -296,6 +303,16 @@ namespace tnac
     // Creates a dynamic bind instruction
     //
     void emit_dyn(ir::operand scope, string_t name) noexcept;
+
+    //
+    // Creates a stream write instruction
+    //
+    void emit_write(ir::operand op) noexcept;
+
+    //
+    // Creates a stream read instruction
+    //
+    void emit_read(semantics::symbol* var) noexcept;
 
   private:
     //

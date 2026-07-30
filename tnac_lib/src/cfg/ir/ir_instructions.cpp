@@ -277,6 +277,9 @@ namespace tnac::ir // instruction
     case Cplx:    return "cplx"sv;
 
     case Test:    return "test"sv;
+
+    case StreamRead:  return "stream_read"sv;
+    case StreamWrite: return "stream_write"sv;
     }
 
     UTILS_ASSERT(false);
@@ -363,6 +366,9 @@ namespace tnac::ir // instruction
     case DynBind: count = 3; break;
 
     case Test:    count = 3; break;
+
+    case StreamRead:  count = 1; break;
+    case StreamWrite: count = 2; break;
 
     case Bool:    count = type_info<eval::bool_type>::maxArgs + 1;     break;
     case Int:     count = type_info<eval::int_type>::maxArgs + 1;      break;

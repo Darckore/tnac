@@ -203,7 +203,7 @@ namespace tnac::detail
   constexpr auto needs_named_reg(ir::op_code oc) noexcept
   {
     using enum ir::op_code;
-    return utils::eq_none(oc, Load, Phi, Bool, Int, Float, Frac, Cplx);
+    return utils::eq_none(oc, Load, Phi, Bool, Int, Float, Frac, Cplx, StreamRead, StreamWrite);
   }
 
   constexpr auto needs_forced_bool(ir::op_code oc) noexcept
@@ -498,6 +498,20 @@ namespace tnac
     }
 
     emit_inst(detail::to_inst_code(typeId), argLimits.second, argSz);
+  }
+
+  void compiler::visit(ast::io_expr& io) noexcept
+  {
+    auto&& seq = io.sequence();
+    if (seq.empty())
+    {
+      emit_read({});
+      return;
+    }
+
+    auto last = extract();
+    m_stack.drop(seq.size());
+    m_stack.push(std::move(last));
   }
 
   bool compiler::exit_child(ast::node& node) noexcept
@@ -920,6 +934,24 @@ namespace tnac
     return false;
   }
 
+  bool compiler::preview(ast::io_clause& clause) noexcept
+  {
+    auto&& op = clause.operand();
+    if (!clause.is_input())
+    {
+      compile(op);
+      auto val = extract();
+      emit_write(std::move(val));
+      return false;
+    }
+
+    UTILS_ASSERT(op.is(ast::node_kind::Identifier));
+    auto&& var = utils::cast<ast::id_expr>(op).symbol();
+    emit_read(&var);
+    return false;
+  }
+
+
   // Private members (Emitions)
 
   void compiler::update_func_start(ir::instruction& instr) noexcept
@@ -1222,6 +1254,20 @@ namespace tnac
   void compiler::emit_dyn(ir::operand scope, string_t name) noexcept
   {
     make(ir::op_code::DynBind).add(std::move(scope)).add(name);
+  }
+
+  void compiler::emit_write(ir::operand op) noexcept
+  {
+    make(ir::op_code::StreamWrite).add(std::move(op));
+  }
+
+  void compiler::emit_read(semantics::symbol* var) noexcept
+  {
+    make(ir::op_code::StreamRead);
+    if (!var)
+      return;
+
+    emit_store(*var);
   }
 
   // Private members

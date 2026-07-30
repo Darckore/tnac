@@ -270,7 +270,23 @@
     </Expand>
   </Type>
 
-    <Type Name="tnac::ast::type_check_expr">
+  <Type Name="tnac::ast::io_clause">
+    <DisplayString>{m_kind,en} ({m_pos})</DisplayString>
+    <Expand>
+      <Item Name="[parent]" Condition="m_parent">*m_parent</Item>
+      <Item Name="[operand]">*m_expr</Item>
+    </Expand>
+  </Type>
+
+  <Type Name="tnac::ast::io_expr">
+    <DisplayString>{m_kind,en}</DisplayString>
+    <Expand>
+      <Item Name="[parent]" Condition="m_parent">*m_parent</Item>
+      <Item Name="[sequence]">m_seq</Item>
+    </Expand>
+  </Type>
+  
+  <Type Name="tnac::ast::type_check_expr">
     <DisplayString>{m_kind,en} ({m_pos})</DisplayString>
     <Expand>
       <Item Name="[parent]" Condition="m_parent">*m_parent</Item>

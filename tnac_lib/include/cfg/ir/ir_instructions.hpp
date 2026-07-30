@@ -324,7 +324,10 @@ namespace tnac::ir
     Frac,
     Cplx,
 
-    Test
+    Test,
+
+    StreamRead,
+    StreamWrite
   };
 
   //

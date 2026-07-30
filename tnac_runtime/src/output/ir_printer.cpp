@@ -108,6 +108,9 @@ namespace tnac::rt::out
     
     case DynBind: print_dyn_bind(instr); break;
 
+    case StreamRead:  print_stream_read(instr); break;
+    case StreamWrite: print_stream_write(instr); break;
+
     case Bool:
     case Int:
     case Float:
@@ -318,6 +321,19 @@ namespace tnac::rt::out
     print_operand(dyn[1]);
     plain(", "sv);
     print_operand(dyn[2]);
+  }
+
+  void ir_printer::print_stream_read(const ir::instruction& r) noexcept
+  {
+    print_assign(r[0]);
+    keyword(r.opcode_str());
+  }
+
+  void ir_printer::print_stream_write(const ir::instruction& w) noexcept
+  {
+    print_assign(w[0]);
+    keyword(w.opcode_str());
+    print_operand(w[1]);
   }
 
   out_stream& ir_printer::out() noexcept
