@@ -92,7 +92,8 @@ namespace tnac
     KwPi,
     KwEntry,
     KwImport,
-    KwAs
+    KwAs,
+    KwIO
   };
 
   //

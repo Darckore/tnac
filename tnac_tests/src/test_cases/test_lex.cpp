@@ -137,7 +137,7 @@ namespace tnac::tests
   TEST(lexer, t_keywords)
   {
     constexpr auto input = 
-      "_fn _ret _result _cplx _frac _int _flt _bool _array _undef _true _false _i _pi _e _entry _import _as"sv;
+      "_fn _ret _result _cplx _frac _int _flt _bool _array _undef _true _false _i _pi _e _entry _import _as _io"sv;
 
     using enum tok_kind;
     constexpr std::array testArr{
@@ -145,7 +145,7 @@ namespace tnac::tests
       KwComplex, KwFraction, KwInt, KwFloat, KwBool, KwArray,
       KwUndef, KwTrue, KwFalse,
       KwI, KwPi, KwE,
-      KwEntry, KwImport, KwAs
+      KwEntry, KwImport, KwAs, KwIO
     };
 
     check_tokens(input, testArr);
