@@ -85,6 +85,10 @@ namespace tnac::rt::out
 
     void print(const ast::func_decl& decl) noexcept;
 
+    void print(const ast::io_clause& clause) noexcept;
+
+    void print(const ast::io_expr& io) noexcept;
+
   private:
     using args_t   = ast::list<ast::expr>::elem_list;
     using params_t = std::vector<ast::param_decl*>;

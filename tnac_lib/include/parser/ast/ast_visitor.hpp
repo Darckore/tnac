@@ -720,6 +720,43 @@ namespace tnac::ast
     }
 
     //
+    // Visits an io clause
+    //
+    void visit_impl(dest<io_clause> clause) noexcept
+    {
+      if constexpr (is_top_down())
+        visit(clause);
+
+      if (preview(clause))
+      {
+        visit_root(&clause->operand());
+      }
+
+      if constexpr (is_bottom_up())
+        visit(clause);
+    }
+
+    //
+    // Visits an io expr
+    //
+    void visit_impl(dest<io_expr> io) noexcept
+    {
+      if constexpr (is_top_down())
+        visit(io);
+
+      if (preview(io))
+      {
+        for (auto clause : io->sequence())
+        {
+          visit_root(clause);
+        }
+      }
+
+      if constexpr (is_bottom_up())
+        visit(io);
+    }
+
+    //
     // Applies the given function according to the node type
     //
     template <typename F>
@@ -759,6 +796,8 @@ namespace tnac::ast
       case CondShort:  return dispatch(&cast<cond_short>(cur));
       case Cond:       return dispatch(&cast<cond_expr>(cur));
       case Dot:        return dispatch(&cast<dot_expr>(cur));
+      case IOClause:   return dispatch(&cast<io_clause>(cur));
+      case IOExpr:     return dispatch(&cast<io_expr>(cur));
       case Error:      return dispatch(&cast<error_expr>(cur));
 
       default:         return dispatch(&cur);

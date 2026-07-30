@@ -147,6 +147,16 @@ namespace tnac::ast
     return make<dot_expr>(accessed, accessor);
   }
 
+  io_clause* builder::make_io_clause(expr& e, const token& op) noexcept
+  {
+    return make<io_clause>(op, e);
+  }
+
+  io_expr* builder::make_io_expr(const token& pos, io_expr::io_seq seq) noexcept
+  {
+    return make<io_expr>(pos, std::move(seq));
+  }
+
 
   // Public members(Declarators)
 

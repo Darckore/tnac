@@ -85,6 +85,10 @@ namespace tnac::rt::out
 
     void visit(const ast::ret_expr& expr) noexcept;
 
+    void visit(const ast::io_clause& clause) noexcept;
+
+    void visit(const ast::io_expr& io) noexcept;
+
     void visit(const ast::error_expr& expr) noexcept;
 
   private:

@@ -38,6 +38,8 @@ TYPE_TO_ID_ASSOCIATION(tnac::ast::cond_expr,         tnac::ast::node_kind::Cond)
 TYPE_TO_ID_ASSOCIATION(tnac::ast::dot_expr,          tnac::ast::node_kind::Dot);
 TYPE_TO_ID_ASSOCIATION(tnac::ast::type_check_expr,   tnac::ast::node_kind::IsType);
 TYPE_TO_ID_ASSOCIATION(tnac::ast::type_resolve_expr, tnac::ast::node_kind::TypeRes);
+TYPE_TO_ID_ASSOCIATION(tnac::ast::io_clause,         tnac::ast::node_kind::IOClause);
+TYPE_TO_ID_ASSOCIATION(tnac::ast::io_expr,           tnac::ast::node_kind::IOExpr);
 
 TYPE_TO_ID_ASSOCIATION(tnac::ast::var_decl,   tnac::ast::node_kind::VarDecl);
 TYPE_TO_ID_ASSOCIATION(tnac::ast::func_decl,  tnac::ast::node_kind::FuncDecl);

@@ -68,6 +68,8 @@ namespace tnac::rt::out
     case VarDecl:    print(cast<ast::var_decl>(*root));          break;
     case ParamDecl:  print(cast<ast::param_decl>(*root));        break;
     case FuncDecl:   print(cast<ast::func_decl>(*root));         break;
+    case IOClause:   print(cast<ast::io_clause>(*root));         break;
+    case IOExpr:     print(cast<ast::io_expr>(*root));           break;
 
     default: UTILS_ASSERT(false); break;
     }
@@ -374,6 +376,22 @@ namespace tnac::rt::out
     }
 
     out() << "; ";
+  }
+
+  void lister::print(const ast::io_clause& clause) noexcept
+  {
+    out() << ' ';
+    print_token(clause.pos(), true);
+    print(&clause.operand());
+  }
+
+  void lister::print(const ast::io_expr& io) noexcept
+  {
+    print_token(io.pos(), false);
+    for (auto clause : io.sequence())
+    {
+      print(clause);
+    }
   }
 
   const ast::node& lister::nearest_to_scope(const ast::node& src) noexcept

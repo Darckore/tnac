@@ -170,6 +170,17 @@ namespace tnac::ast
     //
     dot_expr* make_dot(expr& accessed, expr& accessor) noexcept;
 
+    //
+    // Creates an io clause
+    //
+    io_clause* make_io_clause(expr& e, const token& op) noexcept;
+
+    //
+    // Creates an io expr
+    //
+    io_expr* make_io_expr(const token& pos, io_expr::io_seq seq) noexcept;
+
+
   public: // Declarations
     //
     // Makes a decl expression

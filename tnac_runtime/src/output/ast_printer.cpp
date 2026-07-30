@@ -330,14 +330,14 @@ namespace tnac::rt::out
     }
     else if (matcher.has_implicit_op())
     {
-      push_parent(1);
+      push_parent(1u);
       out() << '{'; 
       node_value("=="sv);
       out() << '}';
     }
     else
     {
-      push_parent(1);
+      push_parent(1u);
       out() << '{'; 
       node_value(matcher.pos().value());
       out() << '}';
@@ -382,6 +382,26 @@ namespace tnac::rt::out
     additional_info(expr);
     endl();
     push_parent(1u);
+  }
+
+  void ast_printer::visit(const ast::io_clause& clause) noexcept
+  {
+    indent();
+    const auto kind = clause.is_input() ? "input"sv : "output"sv;
+    node_designator("IO clause - "sv);
+    node_designator(kind);
+    additional_info(clause);
+    endl();
+    push_parent(1u);
+  }
+
+  void ast_printer::visit(const ast::io_expr& io) noexcept
+  {
+    indent();
+    node_designator("IO expr"sv);
+    additional_info(io);
+    endl();
+    push_parent(io.sequence().size());
   }
 
   void ast_printer::visit(const ast::error_expr& expr) noexcept

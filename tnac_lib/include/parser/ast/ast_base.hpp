@@ -40,6 +40,8 @@ namespace tnac::ast
     Dot,
     IsType,
     TypeRes,
+    IOClause,
+    IOExpr,
 
     // Decls,
     VarDecl,

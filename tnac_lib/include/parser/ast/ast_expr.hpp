@@ -831,4 +831,77 @@ namespace tnac::ast
     expr* m_false{};
   };
 
+
+  //
+  // IO clause
+  // Part of the IO sequence
+  //
+  class io_clause : public expr
+  {
+  private:
+    friend class builder;
+
+  public:
+    CLASS_SPECIALS_NONE(io_clause);
+
+    virtual ~io_clause() noexcept;
+
+  protected:
+    io_clause(const token& op, expr& e) noexcept;
+
+  public:
+    //
+    // Returns the operand
+    //
+    const expr& operand() const noexcept;
+
+    //
+    // Returns the operand
+    // 
+    expr& operand() noexcept;
+
+    //
+    // Checks whether the clause is an input or output one
+    //
+    bool is_input() const noexcept;
+
+  private:
+    expr* m_expr{};
+  };
+
+
+  //
+  // IO expression
+  // Defines a number of input and output clauses performed in order of appearance
+  //
+  class io_expr : public list<expr>, public expr
+  {
+  public:
+    using io_seq = elem_list;
+
+  private:
+    friend class builder;
+
+  public:
+    CLASS_SPECIALS_NONE(io_expr);
+
+    virtual ~io_expr() noexcept;
+
+  protected:
+    io_expr(const token& pos, io_seq seq) noexcept;
+
+  public:
+    //
+    // Returns the io sequence
+    //
+    io_seq& sequence() noexcept;
+
+    //
+    // Returns the io sequence
+    //
+    const io_seq& sequence() const noexcept;
+
+  private:
+    io_seq m_seq;
+  };
 }

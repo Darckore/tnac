@@ -691,3 +691,66 @@ namespace tnac::ast // Conditional shorthand expr
   }
 
 }
+
+
+namespace tnac::ast // IO clause
+{
+  // Special members
+
+  io_clause::~io_clause() noexcept = default;
+
+  io_clause::io_clause(const token& op, expr& e) noexcept :
+    expr{ node_kind::IOClause, op },
+    m_expr{ &e }
+  {
+    assume_ancestry(m_expr);
+  }
+
+
+  // Public members
+
+  const expr& io_clause::operand() const noexcept
+  {
+    return *m_expr;
+  }
+  expr& io_clause::operand() noexcept
+  {
+    return FROM_CONST(operand);
+  }
+
+  bool io_clause::is_input() const noexcept
+  {
+    return pos().is(token::BackArrow);
+  }
+}
+
+
+namespace tnac::ast // IO expression
+{
+  // Special members
+
+  io_expr::~io_expr() noexcept = default;
+
+  io_expr::io_expr(const token& pos, io_seq seq) noexcept :
+    expr{ node_kind::IOExpr, pos },
+    m_seq{ std::move(seq) }
+  {
+    for (auto e : m_seq)
+    {
+      assume_ancestry(e);
+    }
+  }
+
+
+  // Public members
+
+  const io_expr::io_seq& io_expr::sequence() const noexcept
+  {
+    return m_seq;
+  }
+  io_expr::io_seq& io_expr::sequence() noexcept
+  {
+    return FROM_CONST(sequence);
+  }
+
+}
