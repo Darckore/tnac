@@ -122,5 +122,6 @@ namespace tnac::rt::out
     out_stream* m_out{ &std::cout };
     static constexpr auto spacesPerIndent = std::size_t{ 2 };
     std::size_t m_indent{};
+    bool m_skipped{};
   };
 }

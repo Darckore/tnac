@@ -403,6 +403,7 @@ namespace tnac
     sema& m_sema;
     root_ptr m_root{};
     module_ptr m_curModule{};
+    expr_list* m_curBody{};
     tok_opt m_lastConsumed{};
 
     feedback* m_feedback{};

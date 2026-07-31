@@ -139,6 +139,13 @@ namespace tnac::rt::out
     {
       print(child);
       ++idx;
+
+      if (m_skipped)
+      {
+        m_skipped = false;
+        continue;
+      }
+
       if (child->is(ast::node_kind::Error))
       {
         endl();
@@ -338,7 +345,10 @@ namespace tnac::rt::out
   void lister::print(const ast::var_decl& decl) noexcept
   {
     if (decl.is_synthetic())
+    {
+      m_skipped = true;
       return;
+    }
 
     print_token(decl.pos(), false);
     out() << "=";

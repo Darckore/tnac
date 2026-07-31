@@ -602,7 +602,8 @@ namespace tnac
   {
     auto&& sym = var.symbol();
     emit_alloc(sym);
-    compile_init(sym, var.initialiser());
+    if(!var.is_synthetic())
+      compile_init(sym, var.initialiser());
     return false;
   }
 

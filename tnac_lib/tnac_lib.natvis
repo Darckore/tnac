@@ -421,6 +421,8 @@
       <Item Name="[root]" Condition="!m_root">"&lt;null&gt;",sb</Item>
       <Item Name="[current module]" Condition="m_curModule">*m_curModule</Item>
       <Item Name="[current module]" Condition="!m_curModule">"&lt;null&gt;",sb</Item>
+      <Item Name="[current body]" Condition="m_curBody">*m_curBody</Item>
+      <Item Name="[current body]" Condition="!m_curBody">"&lt;null&gt;",sb</Item>
     </Expand>
   </Type>
 

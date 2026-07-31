@@ -667,6 +667,7 @@ namespace tnac
   parser::expr_list parser::expression_list(scope_level scopeLvl) noexcept
   {
     expr_list res;
+    VALUE_GUARD(m_curBody, &res);
 
     while (!peek_next().is_eol())
     {
@@ -1079,6 +1080,17 @@ namespace tnac
     auto&& next = peek_next();
     if (!next.is_identifier())
       return error_expr(next, diag::expected_id(), err_pos::Current);
+
+    if (auto sym = m_sema.find(next, m_defaultLookupType); !sym)
+    {
+      auto init = m_builder.make_null(next);
+      auto var = m_builder.make_var_decl(next, *init);
+      m_sema.visit_decl(*var);
+
+      auto de = m_builder.make_decl_expr(*var);
+      UTILS_ASSERT(m_curBody);
+      m_curBody->push_back(de);
+    }
 
     auto expr = id_expr();
     if (auto id = utils::try_cast<ast::id_expr>(expr);
