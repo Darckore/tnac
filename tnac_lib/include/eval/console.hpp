@@ -55,6 +55,21 @@ namespace tnac::eval
     //
     static void write_complex(rt::out_stream& stream, complex_type val, bool dropZero) noexcept;
 
+    //
+    // Prints an array
+    //
+    static void write_array(rt::out_stream& stream, array_type val) noexcept;
+
+    //
+    // Prints a function
+    //
+    static void write_function(rt::out_stream& stream, function_type val) noexcept;
+
+    //
+    // Dispatches the printing to the given stream
+    //
+    static void write(rt::out_stream& stream, const value& val) noexcept;
+
   public:
     //
     // Writes the given value to the current output stream

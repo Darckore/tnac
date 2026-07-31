@@ -1,4 +1,7 @@
 #include "eval/console.hpp"
+#include "eval/value/types.hpp"
+#include "eval/value/type_impl.hpp"
+#include "cfg/ir/ir.hpp"
 
 namespace tnac::eval
 {
@@ -136,47 +139,69 @@ namespace tnac::eval
     }
   }
 
+  void console::write_array(rt::out_stream& stream, array_type val) noexcept
+  {
+    stream << "[ ";
+    const auto end = val->end();
+    for (auto it = val->begin(); it != val->end(); ++it)
+    {
+      write(stream, *it);
+      stream << ' ';
+    }
+    stream << ']';
+  }
 
-  // Public members
+  void console::write_function(rt::out_stream& stream, function_type val) noexcept
+  {
+    stream << val->name() << '(' << val->param_count() << ')';
+  }
 
-  void console::write(const value& val) noexcept
+  void console::write(rt::out_stream& stream, const value& val) noexcept
   {
     utils::visitor v
     {
       [&](int_type val) noexcept
       {
-        write_int(out(), val, 10);
+        write_int(stream, val, 10);
       },
       [&](float_type val) noexcept
       {
-        write_float(out(), val);
+        write_float(stream, val);
       },
       [&](bool_type val) noexcept
       {
-        write_bool(out(), val, false);
+        write_bool(stream, val, false);
       },
       [&](fraction_type val) noexcept
       {
-        write_fraction(out(), val, false);
+        write_fraction(stream, val, false);
       },
       [&](complex_type val) noexcept
       {
-        write_complex(out(), val, false);
+        write_complex(stream, val, false);
       },
       [&](array_type val) noexcept
       {
-        utils::unused(val);
+        write_array(stream, val);
       },
       [&](function_type val) noexcept
       {
-        utils::unused(val);
+        write_function(stream, val);
       },
       [&](auto) noexcept
       {
-        write_undef(out());
+        write_undef(stream);
       }
     };
     on_value(val, v);
+  }
+
+
+  // Public members
+
+  void console::write(const value& val) noexcept
+  {
+    write(out(), val);
   }
 
 

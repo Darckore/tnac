@@ -1,6 +1,5 @@
 #include "output/common.hpp"
 #include "eval/value/value.hpp"
-#include "eval/value/type_impl.hpp"
 #include "eval/console.hpp"
 
 namespace tnac::rt::out
@@ -60,19 +59,11 @@ namespace tnac::rt::out
       },
       [&](array_type val) noexcept
       {
-        out() << "[ ";
-          const auto end = val->end();
-          for (auto it = val->begin(); it != val->end(); ++it)
-          {
-            print_value(*it);
-            if (std::next(it) != end)
-              out() << ", ";
-          }
-          out() << " ]";
+        console::write_array(out(), val);
       },
       [&](function_type val) noexcept
       {
-        out() << "function: " << val->name() << "( " << val->param_count() << " )";
+        console::write_function(out(), val);
       },
       [&](auto) noexcept
       {
