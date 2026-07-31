@@ -321,7 +321,7 @@ namespace tnac::rt
   void repl::print_value(const eval::value& val) noexcept
   {
     auto&& os = m_state->out();
-    fmt::println(os, fmt::clr::Yellow, "Result: "sv);
+    fmt::println(os, fmt::clr::Yellow, "\nResult: "sv);
     fmt::add_clr(os, fmt::clr::White);
     out::value_printer{}(val, m_state->num_base(), os);
     fmt::clear_clr(os);
