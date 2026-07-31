@@ -8,6 +8,7 @@
 #include "eval/value/value.hpp"
 #include "eval/value/value_store.hpp"
 #include "cfg/cfg.hpp"
+#include "eval/console.hpp"
 
 namespace tnac
 {
@@ -284,5 +285,6 @@ namespace tnac
     arr_map m_arrCalls;
     const ir::instruction* m_instrPtr{};
     feedback* m_feedback{};
+    eval::console m_io;
   };
 }

@@ -718,7 +718,7 @@ namespace tnac
     auto val = get_value(from);
     UTILS_ASSERT(val);
 
-    // todo: cout
+    m_io.write(*val);
     store_value(regId, std::move(*val));
   }
 

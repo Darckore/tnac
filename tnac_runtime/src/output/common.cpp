@@ -3,6 +3,7 @@
 #include "eval/value/value.hpp"
 #include "eval/value/type_impl.hpp"
 #include "sema/sym/symbols.hpp"
+#include "eval/console.hpp"
 
 namespace tnac::rt::out
 {
@@ -40,47 +41,20 @@ namespace tnac::rt::out
       {
         using vt = decltype(val);
         using eval::int_type;
+        using eval::float_type;
         using eval::bool_type;
         using eval::array_type;
         if constexpr (utils::same_noquals<vt, int_type>)
         {
-          if (m_base == 10)
-          {
-            out() << val;
-            return;
-          }
-
-          buf_t conv;
-          static constexpr auto byteSizeInBin = 8u;
-          static constexpr auto byteSizeInOct = 3u;
-          static constexpr auto byteSizeInHex = 2u;
-          static constexpr auto intSize = sizeof(eval::int_type);
-
-          switch (m_base)
-          {
-          case 2:
-            conv.resize(byteSizeInBin * intSize);
-            out() << "0b";
-            break;
-          case 8:
-            conv.resize(byteSizeInOct * intSize);
-            out() << '0';
-            break;
-          case 16:
-            conv.resize(byteSizeInHex * intSize);
-            out() << "0x";
-            break;
-          }
-
-          using uint = std::make_unsigned_t<eval::int_type>;
-          auto outVal = std::bit_cast<uint>(val);
-          auto basePtr = conv.data();
-          std::to_chars(basePtr, basePtr + conv.size(), outVal, m_base);
-          out() << conv;
+          eval::console::write_int(out(), val, m_base);
+        }
+        else if constexpr (utils::same_noquals<vt, float_type>)
+        {
+          eval::console::write_float(out(), val);
         }
         else if constexpr (utils::same_noquals<vt, bool_type>)
         {
-          out() << (val ? "_true" : "_false");
+          eval::console::write_bool(out(), val, true);
         }
         else if constexpr (utils::same_noquals<vt, array_type>)
         {
