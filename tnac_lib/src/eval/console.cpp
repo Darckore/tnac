@@ -2,6 +2,7 @@
 #include "eval/value/types.hpp"
 #include "eval/value/type_impl.hpp"
 #include "cfg/ir/ir.hpp"
+#include "parser/lex.hpp"
 
 namespace tnac::eval
 {
@@ -204,6 +205,39 @@ namespace tnac::eval
     write(out(), val);
   }
 
+  value console::read() noexcept
+  {
+    value res{};
+
+    buf_t input;
+    std::getline(in(), input);
+    lex l;
+    l(input);
+
+    auto piece = l.next();
+    auto op = val_ops::UnaryPlus;
+    if (piece.is(token::Minus))
+    {
+      op = val_ops::UnaryNegation;
+      piece = l.next();
+    }
+    else if (piece.is(token::Plus))
+      piece = l.next();
+
+    auto tokStr = piece.value();
+    switch (piece.what())
+    {
+    case token::IntBin: res = value::parse_int(tokStr, 2).unary(op);  break;
+    case token::IntOct: res = value::parse_int(tokStr, 8).unary(op);  break;
+    case token::IntHex: res = value::parse_int(tokStr, 16).unary(op); break;
+    case token::IntDec: res = value::parse_int(tokStr, 10).unary(op); break;
+    case token::Float:  res = value::parse_float(tokStr).unary(op);   break;
+    
+    default: break;
+    }
+
+    return res;
+  }
 
   // Private members
 

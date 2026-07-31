@@ -704,7 +704,7 @@ namespace tnac
     auto&& to = instr[0];
     auto regId = alloc_new(to);
 
-    eval::value val{}; // todo: = cin
+    auto val = m_io.read();
     store_value(regId, std::move(val));
   }
   

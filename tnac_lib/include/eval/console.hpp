@@ -76,6 +76,12 @@ namespace tnac::eval
     //
     void write(const value& val) noexcept;
 
+    //
+    // Reads a value from the current input stream
+    // Returns undef on error
+    //
+    value read() noexcept;
+
   private:
     rt::out_stream& out() noexcept;
 
