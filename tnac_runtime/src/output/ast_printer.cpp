@@ -375,6 +375,14 @@ namespace tnac::rt::out
     endl();
   }
 
+  void ast_printer::visit(const ast::null_expr& expr) noexcept
+  {
+    indent();
+    node_designator("Null expression"sv);
+    additional_info(expr);
+    endl();
+  }
+
   void ast_printer::visit(const ast::ret_expr& expr) noexcept
   {
     indent();

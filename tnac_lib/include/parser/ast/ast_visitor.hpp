@@ -720,6 +720,14 @@ namespace tnac::ast
     }
 
     //
+    // Visits a null expression
+    //
+    void visit_impl(dest<null_expr> ne) noexcept
+    {
+      visit(ne);
+    }
+
+    //
     // Visits an io clause
     //
     void visit_impl(dest<io_clause> clause) noexcept
@@ -772,6 +780,7 @@ namespace tnac::ast
       case Module:     return dispatch(&cast<module_def>(cur));
       case Import:     return dispatch(&cast<import_dir>(cur));
       case Scope:      return dispatch(&cast<scope>(cur));
+      case NullExpr:   return dispatch(&cast<null_expr>(cur));
       case Result:     return dispatch(&cast<result_expr>(cur));
       case Ret:        return dispatch(&cast<ret_expr>(cur));
       case Literal:    return dispatch(&cast<lit_expr>(cur));

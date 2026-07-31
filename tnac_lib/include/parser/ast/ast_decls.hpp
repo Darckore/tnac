@@ -134,6 +134,11 @@ namespace tnac::ast
     // Returns the initialiser which is present at the right side of the the assignment operator
     //
     expr& initialiser() noexcept;
+
+    //
+    // Checks whether the variable is synthetic (has a null init)
+    //
+    bool is_synthetic() const noexcept;
   };
 
 

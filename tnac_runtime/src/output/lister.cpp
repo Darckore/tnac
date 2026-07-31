@@ -71,6 +71,7 @@ namespace tnac::rt::out
     case IOClause:   print(cast<ast::io_clause>(*root));         break;
     case IOExpr:     print(cast<ast::io_expr>(*root));           break;
 
+    case NullExpr: break;
     default: UTILS_ASSERT(false); break;
     }
   }
@@ -336,6 +337,9 @@ namespace tnac::rt::out
 
   void lister::print(const ast::var_decl& decl) noexcept
   {
+    if (decl.is_synthetic())
+      return;
+
     print_token(decl.pos(), false);
     out() << "=";
     print(&decl.initialiser());

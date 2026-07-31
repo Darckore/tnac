@@ -40,6 +40,26 @@ namespace tnac::ast
 
 
   //
+  // Null expression
+  // Represents literally nothing
+  // Used as a synthetic fake node where needed
+  //
+  class null_expr final : public expr
+  {
+  private:
+    friend class builder;
+
+  public:
+    CLASS_SPECIALS_NONE(null_expr);
+
+    virtual ~null_expr() noexcept;
+
+  protected:
+    null_expr(const token& tok) noexcept;
+  };
+
+
+  //
   // Result expression
   // Corresponds to the _result keyword
   // Holds the last evaluated value

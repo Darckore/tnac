@@ -19,6 +19,7 @@ namespace tnac::ast
     Import,
 
     // Expressions
+    NullExpr,
     Literal,
     Identifier,
     Unary,

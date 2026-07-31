@@ -71,6 +71,11 @@ namespace tnac::ast
 
   public: // Expressions
     //
+    // Creates a null expression
+    //
+    null_expr* make_null(const token& tok) noexcept;
+
+    //
     // Creates a result expression
     //
     result_expr* make_result(const token& tok) noexcept;

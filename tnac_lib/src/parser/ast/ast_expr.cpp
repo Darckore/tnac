@@ -21,6 +21,18 @@ namespace tnac::ast // Base expr
 }
 
 
+namespace tnac::ast // Null expr
+{
+  // Special members
+
+  null_expr::~null_expr() noexcept = default;
+
+  null_expr::null_expr(const token& tok) noexcept :
+    expr{ kind::NullExpr, tok }
+  {}
+}
+
+
 namespace tnac::ast // Result expr
 {
   // Special members

@@ -47,6 +47,11 @@ namespace tnac::ast
 
   // Public members(Expressions)
 
+  null_expr* builder::make_null(const token& tok) noexcept
+  {
+    return make<null_expr>(tok);
+  }
+
   result_expr* builder::make_result(const token& tok) noexcept
   {
     return make<result_expr>(tok);

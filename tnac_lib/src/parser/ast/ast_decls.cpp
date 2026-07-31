@@ -109,6 +109,11 @@ namespace tnac::ast // Variable decl
   {
     return FROM_CONST(initialiser);
   }
+
+  bool var_decl::is_synthetic() const noexcept
+  {
+    return initialiser().is(node_kind::NullExpr);
+  }
 }
 
 
