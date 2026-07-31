@@ -8,6 +8,27 @@
 namespace tnac::rt::out
 {
   //
+  // Defines an ast node derived from ast::decl
+  //
+  template <typename N>
+  concept is_decl = 
+    !std::same_as<N, ast::decl> &&
+     std::derived_from<N, ast::decl>;
+
+  //
+  // Defines an ast node which has a pos method
+  //
+  template <typename N>
+  concept has_pos = 
+    ast::ast_node<N> &&
+    !is_decl<N> &&
+    requires (const N& n)
+  {
+    { n.pos() } -> utils::same_noquals<token>;
+  };
+
+
+  //
   // Printer for AST
   // Visits each node top to bottom and prints it into the specified stream
   //
@@ -122,13 +143,13 @@ namespace tnac::rt::out
 
     void location_info(src::loc_wrapper loc) noexcept;
 
+    void additional_info(const has_pos auto& n) noexcept;
+
     void additional_info(const ast::node& n) noexcept;
 
-    void additional_info(const ast::expr& e) noexcept;
+    void additional_info(const ast::id_expr& id) noexcept;
 
-    void additional_info(const ast::decl& d) noexcept;
-    
-    void additional_info(const ast::import_dir& d) noexcept;
+    void additional_info(const is_decl auto& d) noexcept;
 
     void endl() noexcept;
 
@@ -139,6 +160,8 @@ namespace tnac::rt::out
     void print_value(const eval::value& v) noexcept;
 
     void print_module_name(const ast::module_def& moduleDef) noexcept;
+
+    void print_id(entity_id id) noexcept;
 
   private:
     child_tracker m_indetations;
