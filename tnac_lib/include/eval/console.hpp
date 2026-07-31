@@ -21,21 +21,39 @@ namespace tnac::eval
 
   public:
     //
+    // Prints an invalid value
+    //
+    static void write_undef(rt::out_stream& stream) noexcept;
+
+    //
     // Prints an int value with the specified base
     //
-    static void write_int(rt::out_stream& stream, eval::int_type val, int base) noexcept;
+    static void write_int(rt::out_stream& stream, int_type val, int base) noexcept;
 
     //
     // Prints a float value
     //
-    static void write_float(rt::out_stream& stream, eval::float_type val) noexcept;
+    static void write_float(rt::out_stream& stream, float_type val) noexcept;
 
     //
     // Prints a bool value
     // The asStr parameter specifies whether to print the value as a number
     // or a true/false string representation
     //
-    static void write_bool(rt::out_stream& stream, eval::bool_type val, bool asStr) noexcept;
+    static void write_bool(rt::out_stream& stream, bool_type val, bool asStr) noexcept;
+
+    //
+    // Prints a fraction value
+    // The extractWhole parameter specifies whether to print the value as is
+    // or to extract the whole part if the nominator is greater than the denominator
+    //
+    static void write_fraction(rt::out_stream& stream, fraction_type val, bool extractWhole) noexcept;
+
+    //
+    // Prints a complex value
+    // The dropZero param specifies whether or not to print zero parts of the value
+    //
+    static void write_complex(rt::out_stream& stream, complex_type val, bool dropZero) noexcept;
 
   public:
     //

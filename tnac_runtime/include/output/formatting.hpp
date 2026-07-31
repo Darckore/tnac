@@ -4,7 +4,6 @@
 
 #pragma once
 #include "output/common.hpp"
-#include "eval/value/types.hpp"
 
 namespace tnac::rt::fmt::detail
 {
@@ -86,26 +85,6 @@ tnac::rt::out_stream& operator<<(tnac::rt::out_stream& out, const tnac::token& t
 // Location output
 //
 tnac::rt::out_stream& operator<<(tnac::rt::out_stream& out, tnac::src::loc_wrapper loc) noexcept;
-
-//
-// Invalid value output
-//
-tnac::rt::out_stream& operator<<(tnac::rt::out_stream& out, tnac::eval::invalid_val_t) noexcept;
-
-//
-// Compex output
-//
-tnac::rt::out_stream& operator<<(tnac::rt::out_stream& out, const tnac::eval::complex_type& c) noexcept;
-
-//
-// Fraction output
-//
-tnac::rt::out_stream& operator<<(tnac::rt::out_stream& out, const tnac::eval::fraction_type& f) noexcept;
-
-//
-// Function type output
-//
-tnac::rt::out_stream& operator<<(tnac::rt::out_stream& out, const tnac::eval::function_type& f) noexcept;
 
 //
 // Entity id output

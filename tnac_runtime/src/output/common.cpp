@@ -1,8 +1,6 @@
 #include "output/common.hpp"
-#include "output/formatting.hpp"
 #include "eval/value/value.hpp"
 #include "eval/value/type_impl.hpp"
-#include "sema/sym/symbols.hpp"
 #include "eval/console.hpp"
 
 namespace tnac::rt::out
@@ -37,28 +35,32 @@ namespace tnac::rt::out
 
   void value_printer::print_value(const eval::value& val) noexcept
   {
-    eval::on_value(val, [this](auto val)
+    using namespace eval;
+    utils::visitor v
+    {
+      [&](int_type val) noexcept
       {
-        using vt = decltype(val);
-        using eval::int_type;
-        using eval::float_type;
-        using eval::bool_type;
-        using eval::array_type;
-        if constexpr (utils::same_noquals<vt, int_type>)
-        {
-          eval::console::write_int(out(), val, m_base);
-        }
-        else if constexpr (utils::same_noquals<vt, float_type>)
-        {
-          eval::console::write_float(out(), val);
-        }
-        else if constexpr (utils::same_noquals<vt, bool_type>)
-        {
-          eval::console::write_bool(out(), val, true);
-        }
-        else if constexpr (utils::same_noquals<vt, array_type>)
-        {
-          out() << "[ ";
+        console::write_int(out(), val, 10);
+      },
+      [&](float_type val) noexcept
+      {
+        console::write_float(out(), val);
+      },
+      [&](bool_type val) noexcept
+      {
+        console::write_bool(out(), val, false);
+      },
+      [&](fraction_type val) noexcept
+      {
+        console::write_fraction(out(), val, false);
+      },
+      [&](complex_type val) noexcept
+      {
+        console::write_complex(out(), val, false);
+      },
+      [&](array_type val) noexcept
+      {
+        out() << "[ ";
           const auto end = val->end();
           for (auto it = val->begin(); it != val->end(); ++it)
           {
@@ -67,11 +69,16 @@ namespace tnac::rt::out
               out() << ", ";
           }
           out() << " ]";
-        }
-        else
-        {
-          out() << val;
-        }
-      });
+      },
+      [&](function_type val) noexcept
+      {
+        out() << "function: " << val->name() << "( " << val->param_count() << " )";
+      },
+      [&](auto) noexcept
+      {
+        console::write_undef(out());
+      }
+    };
+    on_value(val, v);
   }
 }
