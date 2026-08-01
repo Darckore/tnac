@@ -11,8 +11,6 @@ namespace tnac::detail // var data
     ~var_data() noexcept = default;
 
     ir::vreg* m_reg{};
-    //ir::vreg* m_lastRead{};
-    //bool m_modified{};
   };
 }
 
