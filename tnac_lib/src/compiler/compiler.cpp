@@ -346,8 +346,6 @@ namespace tnac
 
   void compiler::visit(ast::result_expr&) noexcept
   {
-    if (auto last = m_context.last_store())
-      emit_load(*last);
     if (m_stack.empty())
       m_stack.push_undef();
     else
@@ -542,7 +540,6 @@ namespace tnac
     auto&& instr = builder.add_instruction(block, ir::op_code::Load, m_context.func_end());
     instr.add(&target).add(std::move(val));
     update_func_start(instr);
-    m_context.read_into(sym, target);
   }
 
   void compiler::visit(ast::func_decl& fd) noexcept
@@ -1342,9 +1339,7 @@ namespace tnac
 
   void compiler::compile_init(semantics::symbol& sym, ast::expr& init) noexcept
   {
-    const auto stackSz = m_stack.size();
     compile(init);
-    transfer_last_load(stackSz);
     if (!check_post_jmp())
       emit_store(sym);
   }
@@ -1687,17 +1682,6 @@ namespace tnac
       UTILS_ASSERT(alSym);
       if (auto aliasFn = m_cfg->find_entity(alSym->referenced().to_module()))
         mod.add_child_name(alias->name(), *aliasFn);
-    }
-  }
-
-  void compiler::transfer_last_load(size_type prevSz) noexcept
-  {
-    if (prevSz < m_stack.size())
-      return;
-
-    if (auto last = m_context.last_store())
-    {
-      emit_load(*last);
     }
   }
 

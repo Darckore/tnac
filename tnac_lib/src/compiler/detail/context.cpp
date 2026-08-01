@@ -11,8 +11,8 @@ namespace tnac::detail // var data
     ~var_data() noexcept = default;
 
     ir::vreg* m_reg{};
-    ir::vreg* m_lastRead{};
-    bool m_modified{};
+    //ir::vreg* m_lastRead{};
+    //bool m_modified{};
   };
 }
 
@@ -141,11 +141,6 @@ namespace tnac::detail
   {
     auto&& fd = cur_data();
     fd.m_curBlock = &block;
-    for (auto&& var : fd.m_vars)
-    {
-      var.second.m_modified = true;
-      var.second.m_lastRead = {};
-    }
   }
 
   ir::basic_block& context::current_block() noexcept
@@ -221,22 +216,6 @@ namespace tnac::detail
   context::symbol* context::last_store() noexcept
   {
     return cur_data().m_lastStore;
-  }
-
-  void context::read_into(symbol& var, ir::vreg& reg) noexcept
-  {
-    auto vd = locate_var(var);
-    UTILS_ASSERT(vd);
-
-    vd->m_lastRead = &reg;
-    vd->m_modified = false;
-  }
-
-  ir::vreg* context::last_read(symbol& var) noexcept
-  {
-    auto vd = locate_var(var);
-    UTILS_ASSERT(vd);
-    return vd->m_lastRead;
   }
 
   ir::vreg* context::ret_val() noexcept

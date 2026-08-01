@@ -446,16 +446,6 @@ namespace tnac
     void register_import_scopes(ir::function& mod, ast::module_def& def) noexcept;
 
     //
-    // Transfers last stored value in case there are multiple vars are assigned or declared
-    // inside a single expression
-    // The previous value that was on the stack is consumed at this point for a store operation
-    //
-    // The parameter holds a stack size value before the previous operation,
-    // the transfer occurs if it is equal to the current stack size
-    //
-    void transfer_last_load(size_type prevSz) noexcept;
-
-    //
     // Interns an array
     // This is needed in order to store compile-time arrays in a special data section
     //

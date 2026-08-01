@@ -197,16 +197,6 @@ namespace tnac::detail
     symbol* last_store() noexcept;
 
     //
-    // Marks a variable as read
-    //
-    void read_into(symbol& var, ir::vreg& reg) noexcept;
-
-    //
-    // Returns the last register a variable was read to
-    //
-    ir::vreg* last_read(symbol& var) noexcept;
-
-    //
     // Returns a pointer to the dedicated return variable
     //
     ir::vreg* ret_val() noexcept;
