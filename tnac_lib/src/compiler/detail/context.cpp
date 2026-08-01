@@ -232,15 +232,6 @@ namespace tnac::detail
     vd->m_modified = false;
   }
 
-  void context::modify(symbol& var) noexcept
-  {
-    auto vd = locate_var(var);
-    UTILS_ASSERT(vd);
-
-    vd->m_lastRead = {};
-    vd->m_modified = true;
-  }
-
   ir::vreg* context::last_read(symbol& var) noexcept
   {
     auto vd = locate_var(var);

@@ -1060,7 +1060,6 @@ namespace tnac
       m_context.save_store(var);
 
     emit_store(*target, val);
-    m_context.modify(var);
   }
 
   void compiler::emit_store(ir::vreg& target, ir::operand val) noexcept
@@ -1073,18 +1072,9 @@ namespace tnac
 
   void compiler::emit_load(semantics::symbol& var) noexcept
   {
-    if (auto res = m_context.last_read(var))
-    {
-      clear_store();
-      m_stack.push(res);
-      return;
-    }
-
     auto target = m_context.locate(var);
     UTILS_ASSERT(target);
-
-    auto&& res = emit_load(*target);
-    m_context.read_into(var, res);
+    emit_load(*target);
   }
 
   ir::vreg& compiler::emit_load(ir::vreg& target) noexcept

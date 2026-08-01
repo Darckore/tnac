@@ -202,11 +202,6 @@ namespace tnac::detail
     void read_into(symbol& var, ir::vreg& reg) noexcept;
 
     //
-    // Marks a variable as modified
-    //
-    void modify(symbol& var) noexcept;
-
-    //
     // Returns the last register a variable was read to
     //
     ir::vreg* last_read(symbol& var) noexcept;
