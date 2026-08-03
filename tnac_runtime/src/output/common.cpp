@@ -47,7 +47,7 @@ namespace tnac::rt::out
       },
       [&](bool_type val) noexcept
       {
-        console::write_bool(out(), val, false);
+        console::write_bool(out(), val, true);
       },
       [&](fraction_type val) noexcept
       {
