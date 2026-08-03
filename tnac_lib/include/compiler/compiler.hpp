@@ -107,6 +107,7 @@ namespace tnac
     void visit(ast::lit_expr& lit) noexcept;
     void visit(ast::id_expr& id) noexcept;
     void visit(ast::unary_expr& unary) noexcept;
+    void visit(ast::binary_expr& binary) noexcept;
     void visit(ast::tail_expr& tail) noexcept;
     void visit(ast::type_check_expr& tcheck) noexcept;
     void visit(ast::array_expr& arr) noexcept;

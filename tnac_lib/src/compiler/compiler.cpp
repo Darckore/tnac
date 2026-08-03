@@ -430,6 +430,17 @@ namespace tnac
     compile_unary(val, opType);
   }
 
+  void compiler::visit(ast::binary_expr& binary) noexcept
+  {
+    const auto opType = binary.op().what();
+    if (detail::is_logical(opType) || detail::is_assign(opType))
+      return;
+
+    auto rhs = extract();
+    auto lhs = extract();
+    compile_binary(lhs, rhs, opType);
+  }
+
   void compiler::visit(ast::tail_expr& ) noexcept
   {
     auto val = extract();
@@ -616,15 +627,7 @@ namespace tnac
   {
     const auto opType = binary.op().what();
     if (!detail::is_logical(opType))
-    {
-      compile(binary.left());
-      auto lhs = extract();
-      compile(binary.right());
-      auto rhs = extract();
-
-      compile_binary(lhs, rhs, opType);
-      return false;
-    }
+      return true;
 
     auto alwaysSame = [&](const eval::value& val, bool isLhs) noexcept
       {
@@ -645,11 +648,17 @@ namespace tnac
     compile(binary.left());
     enforce_bool(extract());
     auto leftOp = extract();
+    m_stack.push(leftOp);
+
     if (leftOp.is_value())
     {
       if (!alwaysSame(leftOp.get_value(), true))
       {
         compile(binary.right());
+        enforce_bool(extract());
+        auto rightOp = extract();
+        extract(); // dropping leftOp
+        m_stack.push(std::move(rightOp));
       }
       return false;
     }
@@ -665,6 +674,8 @@ namespace tnac
 
     enforce_bool(extract());
     auto rightOp = extract();
+    extract(); // dropping leftOp
+
     if (rightOp.is_value() && !has_ret_jump(rhsBlock))
     {
       m_context.enter_block(lastBlock);
@@ -672,7 +683,7 @@ namespace tnac
       m_context.terminate_at(lastBlock);
       if (!alwaysSame(rightOp.get_value(), false))
       {
-        m_stack.push(leftOp);
+        m_stack.push(std::move(leftOp));
       }
 
       m_context.override_last(lastEnd);
