@@ -18,6 +18,27 @@ namespace tnac::rt::detail
       const auto dot = name.find_first_of('.');
       return dot == string_t::npos;
     }
+
+    ast::scope* to_scope(ast::node* n) noexcept
+    {
+      if (!n || !n->is_any(ast::node::Scope, ast::node::Module))
+        return {};
+
+      return &utils::cast<ast::scope>(*n);
+    }
+
+    ast::var_decl* extract_synth_var(ast::node* n) noexcept
+    {
+      auto decl = utils::try_cast<ast::decl_expr>(n);
+      if (!decl)
+        return {};
+
+      auto var = utils::try_cast<ast::var_decl>(&decl->declarator());
+      if (!var || !var->is_synthetic())
+        return {};
+
+      return var;
+    }
   }
 }
 
@@ -96,6 +117,34 @@ namespace tnac::rt
         }
       };
 
+    auto processImplicitVars = [&]() noexcept
+      {
+        auto parent = detail::to_scope(m_last->parent());
+        if (!parent)
+          return;
+
+        auto&& scopeChildren = parent->children();
+        auto steps = 0u;
+        auto rbeg = std::next(scopeChildren.rbegin());
+        while (rbeg != scopeChildren.rend())
+        {
+          if (!detail::extract_synth_var(*rbeg))
+            break;
+
+          ++steps;
+          ++rbeg;
+        }
+
+        rbeg = std::next(scopeChildren.rbegin(), steps);
+        while (steps)
+        {
+          auto curDecl = *rbeg;
+          core.compile(*curDecl);
+          --rbeg;
+          --steps;
+        }
+      };
+
     bool nullRetAddr = false;
     while (m_state->is_running())
     {
@@ -108,6 +157,7 @@ namespace tnac::rt
         continue;
 
       m_last = parseRes;
+      processImplicitVars();
       core.compile(*m_last);
 
       evalAllocs();
