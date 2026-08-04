@@ -21,7 +21,8 @@ namespace tnac::ir
     Edge,
     Instruction,
     Register,
-    Constant
+    Constant,
+    Record
   };
 
   //

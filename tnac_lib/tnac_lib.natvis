@@ -621,6 +621,13 @@
     </Expand>
   </Type>
 
+  <Type Name="tnac::ir::record">
+    <DisplayString>ir record</DisplayString>
+    <Expand>
+      <Item Name="[elements]">m_elems</Item>
+    </Expand>
+  </Type>
+
   <Type Name="tnac::ir::builder">
     <DisplayString>IR builder</DisplayString>
     <Expand>
@@ -629,6 +636,7 @@
       <Item Name="[instructions]">m_instructions</Item>
       <Item Name="[edges]">m_edges</Item>
       <Item Name="[constants]">m_consts</Item>
+      <Item Name="[records]">m_recs</Item>
       <Item Name="[registers]">m_regs</Item>
       <Item Name="[arrays]">m_arrays</Item>
       <Item Name="[loose edges]">m_looseEdges</Item>

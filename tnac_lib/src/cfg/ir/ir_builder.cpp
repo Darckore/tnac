@@ -114,6 +114,12 @@ namespace tnac::ir
     return res;
   }
 
+  record& builder::declare_rec(record::size_type size) noexcept
+  {
+    auto&& res = m_recs.emplace_back(size);
+    return res;
+  }
+
   builder::instruction_list& builder::instructions() noexcept
   {
     return m_instructions;
@@ -122,6 +128,11 @@ namespace tnac::ir
   builder::edge_list& builder::edges() noexcept
   {
     return m_edges;
+  }
+
+  builder::rec_list& builder::records() noexcept
+  {
+    return m_recs;
   }
 
   builder::const_list& builder::interned() noexcept

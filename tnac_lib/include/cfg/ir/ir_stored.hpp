@@ -53,3 +53,47 @@ namespace tnac::ir
     value_type m_value;
   };
 }
+
+
+namespace tnac::ir
+{
+  //
+  // Represents a structure (aka record) descriptor
+  //
+  class record final :
+    public utils::ilist_node<record>,
+    public node
+  {
+  public:
+    using elem_list = std::vector<vreg*>;
+    using size_type = elem_list::size_type;
+
+  public:
+    CLASS_SPECIALS_NONE(record);
+
+    virtual ~record() noexcept;
+
+    explicit record(size_type size) noexcept;
+
+  public:
+    //
+    // Appends an element
+    //
+    record& append(vreg& elem) noexcept;
+
+    //
+    // Returns a pointer to the element register at the given index
+    // or nullptr if out of bounds
+    //
+    const vreg* get_element(size_type idx) const noexcept;
+
+    //
+    // Returns a pointer to the element register at the given index
+    // or nullptr if out of bounds
+    //
+    vreg* get_element(size_type idx) noexcept;
+
+  private:
+    elem_list m_elems;
+  };
+}

@@ -23,6 +23,7 @@ namespace tnac::ir
     using edge_list        = edge::list_type;
     using const_list       = constant::list_type;
     using const_val        = constant::value_type;
+    using rec_list         = record::list_type;
     using size_type        = instruction::size_type;
     using arr_store        = std::unordered_map<entity_id, constant*>;
 
@@ -133,6 +134,11 @@ namespace tnac::ir
     constant& intern(vreg& reg, eval::array_type val) noexcept;
 
     //
+    // Declares a record
+    //
+    record& declare_rec(record::size_type size) noexcept;
+
+    //
     // Returns a reference to the instruction list
     //
     instruction_list& instructions() noexcept;
@@ -141,6 +147,11 @@ namespace tnac::ir
     // Returns a reference to the edge list
     //
     edge_list& edges() noexcept;
+
+    //
+    // Returns a reference to the list of records
+    //
+    rec_list& records() noexcept;
 
     //
     // Returns a reference to the list of interned values
@@ -173,6 +184,7 @@ namespace tnac::ir
     edge_list m_looseEdges;
 
     const_list m_consts;
+    rec_list m_recs;
     register_store m_regs;
     arr_store m_arrays;
 

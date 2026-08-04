@@ -1,6 +1,6 @@
 #include "cfg/ir/ir_stored.hpp"
 
-namespace tnac::ir
+namespace tnac::ir // constant
 {
   // Special members
 
@@ -27,5 +27,37 @@ namespace tnac::ir
   const constant::value_type& constant::value() const noexcept
   {
     return m_value;
+  }
+}
+
+
+namespace tnac::ir // record
+{
+  // Special members
+
+  record::~record() noexcept = default;
+
+  record::record(size_type size) noexcept :
+    node{ kind::Record }
+  {
+    m_elems.reserve(size);
+  }
+
+
+  // Public members
+
+  record& record::append(vreg& elem) noexcept
+  {
+    m_elems.push_back(&elem);
+    return *this;
+  }
+
+  const vreg* record::get_element(size_type idx) const noexcept
+  {
+    return idx < m_elems.size() ? m_elems[idx] : nullptr;
+  }
+  vreg* record::get_element(size_type idx) noexcept
+  {
+    return FROM_CONST(get_element, idx);
   }
 }
