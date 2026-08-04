@@ -941,6 +941,21 @@ namespace tnac
     if (sym)
     {
       auto err = error_expr(name, diag::name_redef(), err_pos::Current);
+      for (;;)
+      {
+        auto&& nextTok = peek_next();
+        if (nextTok.is_any(token::Comma, token::BracketClose, token::Eol))
+          break;
+
+        if (detail::is_expr_starter(nextTok))
+        {
+          expr();
+          break;
+        }
+
+        next_tok();
+      }
+
       return m_builder.make_var_decl(name, *err);
     }
 
@@ -963,7 +978,7 @@ namespace tnac
     }
     else if (!sym->is_any(semantics::sym_kind::Variable, semantics::sym_kind::Parameter))
     {
-      auto err = error_expr(name, diag::undef_id(), err_pos::Current);
+      auto err = error_expr(name, diag::expected_var(), err_pos::Current);
       return m_builder.make_var_decl(name, *err);
     }
 
