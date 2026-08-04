@@ -114,9 +114,9 @@ namespace tnac::ir
     return res;
   }
 
-  record& builder::declare_rec(record::size_type size) noexcept
+  record& builder::declare_rec(string_t name, record::size_type size) noexcept
   {
-    auto&& res = m_recs.emplace_back(size);
+    auto&& res = m_recs.emplace_back(name, size);
     return res;
   }
 

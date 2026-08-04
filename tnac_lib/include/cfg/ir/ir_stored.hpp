@@ -73,7 +73,7 @@ namespace tnac::ir
 
     virtual ~record() noexcept;
 
-    explicit record(size_type size) noexcept;
+    record(string_t name, size_type size) noexcept;
 
   public:
     //
@@ -98,7 +98,13 @@ namespace tnac::ir
     //
     size_type size() const noexcept;
 
+    //
+    // Returns the record name
+    //
+    string_t name() const noexcept;
+
   private:
+    string_t m_name;
     elem_list m_elems;
   };
 }

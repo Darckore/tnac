@@ -136,7 +136,7 @@ namespace tnac::ir
     //
     // Declares a record
     //
-    record& declare_rec(record::size_type size) noexcept;
+    record& declare_rec(string_t name, record::size_type size) noexcept;
 
     //
     // Returns a reference to the instruction list

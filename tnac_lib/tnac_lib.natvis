@@ -624,6 +624,7 @@
   <Type Name="tnac::ir::record">
     <DisplayString>ir record</DisplayString>
     <Expand>
+      <Item Name="[name]">m_name</Item>
       <Item Name="[elements]">m_elems</Item>
     </Expand>
   </Type>
