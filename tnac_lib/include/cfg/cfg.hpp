@@ -20,6 +20,7 @@ namespace tnac::ir
     using instr_list  = builder::instruction_list;
     using edge_list   = builder::edge_list;
     using const_list  = builder::const_list;
+    using rec_list    = builder::rec_list;
 
   public:
     CLASS_SPECIALS_NONE(cfg);
@@ -83,6 +84,16 @@ namespace tnac::ir
     // Returns a reference to the list of interned values
     //
     const_list& interned() noexcept;
+
+    //
+    // Returns a reference to the list of records
+    //
+    const rec_list& records() const noexcept;
+
+    //
+    // Returns a reference to the list of records
+    //
+    rec_list& records() noexcept;
 
     //
     // Searches for the interned constant by array instance

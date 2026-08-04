@@ -67,6 +67,15 @@ namespace tnac::ir
     return FROM_CONST(interned);
   }
 
+  const cfg::rec_list& cfg::records() const noexcept
+  {
+    return m_builder->records();
+  }
+  cfg::rec_list& cfg::records() noexcept
+  {
+    return FROM_CONST(records);
+  }
+
   const ir::constant* cfg::find_array(const eval::array_type& arr) const noexcept
   {
     return m_builder->interned(arr);
