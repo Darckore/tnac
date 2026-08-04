@@ -93,6 +93,11 @@ namespace tnac::ir
     //
     vreg* get_element(size_type idx) noexcept;
 
+    //
+    // Returns the number of elements
+    //
+    size_type size() const noexcept;
+
   private:
     elem_list m_elems;
   };

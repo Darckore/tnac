@@ -134,6 +134,23 @@ namespace tnac::rt::out
       endl();
   }
 
+  void ir_printer::visit(const ir::record& rec) noexcept
+  {
+    keyword("declare record"sv);
+    plain("[ "sv);
+    const auto sz = rec.size();
+    for (ir::record::size_type idx{}; idx < sz; ++idx)
+    {
+      auto reg = rec.get_element(idx);
+      UTILS_ASSERT(reg);
+      vreg(*reg);
+
+      if (idx < sz - 1)
+        plain(", "sv);
+    }
+    plain(" ]"sv);
+  }
+
 
   // Private members
 

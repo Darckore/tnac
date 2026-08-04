@@ -43,6 +43,8 @@ namespace tnac::rt::out
 
     void visit(const ir::constant& val) noexcept;
 
+    void visit(const ir::record& rec) noexcept;
+
   private:
     void print_preds(const ir::basic_block& target) noexcept;
 

@@ -60,4 +60,9 @@ namespace tnac::ir // record
   {
     return FROM_CONST(get_element, idx);
   }
+
+  record::size_type record::size() const noexcept
+  {
+    return m_elems.size();
+  }
 }
