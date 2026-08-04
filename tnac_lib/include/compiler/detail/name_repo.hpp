@@ -28,6 +28,7 @@ namespace tnac::detail
 
       ~idx_cache() noexcept
       {
+        m_pool->reset();
         m_pool->restore(std::move(m_cache));
       }
 
