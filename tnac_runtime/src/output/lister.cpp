@@ -375,6 +375,32 @@ namespace tnac::rt::out
     print_token(decl.pos(), false);
     print_params(decl.params());
 
+    auto&& caps = decl.captures();
+    if (!caps.empty())
+    {
+      out() << "<-[";
+
+      auto idx = std::size_t{};
+      const auto size = caps.size();
+      for (auto c : caps)
+      {
+        print_token(c->pos(), false);
+        auto&& init = c->initialiser();
+        if (auto initId = utils::try_cast<ast::node_kind::Identifier>(&init);
+                !initId || initId->name() != c->name())
+        {
+          out() << '=';
+          print(&init);
+        }
+
+        ++idx;
+        if (idx != size)
+          out() << ", ";
+      }
+
+      out() << ']';
+    }
+
     if (auto&& body = decl.body(); !body.children().empty())
     {
       endl();
