@@ -161,6 +161,11 @@ namespace tnac
     return format(detail::expectedAfterCh, "->"sv, "condition matcher"sv);
   }
 
+  string_t diag::expected_var() noexcept
+  {
+    return expected("variable or parameter name"sv);
+  }
+
   string_t diag::undef_id() noexcept
   {
     return "Undefined identifier"sv;

@@ -180,8 +180,8 @@ namespace tnac::ast
     return make<param_decl>(name, opt);
   }
 
-  func_decl* builder::make_func_decl(const token& func, const token& pos, scope& def, func_decl::param_list params) noexcept
+  func_decl* builder::make_func_decl(const token& func, const token& pos, scope& def, func_decl::param_list params, func_decl::capture_list caps) noexcept
   {
-    return make<func_decl>(func, pos, def, std::move(params));
+    return make<func_decl>(func, pos, def, std::move(params), std::move(caps));
   }
 }

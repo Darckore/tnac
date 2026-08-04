@@ -146,6 +146,11 @@ namespace tnac
     static string_t expected_matcher_def() noexcept;
 
     //
+    // Returns a 'expected variable' error message
+    //
+    static string_t expected_var() noexcept;
+
+    //
     // Returns an 'undefined id' message
     //
     static string_t undef_id() noexcept;

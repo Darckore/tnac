@@ -205,7 +205,7 @@ namespace tnac::ast
     //
     // Makes a function declarator
     //
-    func_decl* make_func_decl(const token& func, const token& pos, scope& def, func_decl::param_list params) noexcept;
+    func_decl* make_func_decl(const token& func, const token& pos, scope& def, func_decl::param_list params, func_decl::capture_list caps) noexcept;
 
   private:
     owner_store m_store;

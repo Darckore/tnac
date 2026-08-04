@@ -811,7 +811,6 @@ namespace tnac
     scope_guard _{ *this, semantics::scope_kind::Function };
 
     auto params = formal_params();
-
     if (auto&& cp = peek_next(); !detail::is_close_paren(cp))
     {
       auto opt = error_expr(cp, diag::expected(')'), err_pos::Last);
@@ -822,13 +821,27 @@ namespace tnac
       next_tok();
     }
 
+    auto capList = captures();
+    if (!capList.empty())
+    {
+      if (auto&& cb = peek_next(); !detail::is_close_bracket(cb))
+      {
+        auto opt = error_expr(cb, diag::expected(']'), err_pos::Last);
+        params.push_back(m_builder.make_param_decl(cb, opt));
+      }
+      else
+      {
+        next_tok();
+      }
+    }
+
     auto pos = name;
     if (name.is(token::KwFunction))
     {
       name = token{ m_sema.contrive_func_name(), token::Identifier };
     }
 
-    auto funcDecl = m_builder.make_func_decl(name, pos, *def, std::move(params));
+    auto funcDecl = m_builder.make_func_decl(name, pos, *def, std::move(params), std::move(capList));
     if (funcDecl->is_valid())
       m_sema.visit_decl(*funcDecl);
 
@@ -897,6 +910,96 @@ namespace tnac
 
       if (!paramDecl->definition())
         m_sema.visit_decl(*paramDecl);
+
+      auto&& next = peek_next();
+
+      if (detail::is_comma(next))
+      {
+        next_tok();
+        continue;
+      }
+
+      if (!detail::is_comma(next))
+        break;
+    }
+
+    return res;
+  }
+
+  ast::var_decl* parser::capture() noexcept
+  {
+    auto name = peek_next();
+    if (!name.is_identifier())
+    {
+      expr();
+      auto err = error_expr(name, diag::expected_id(), err_pos::Current);
+      return m_builder.make_var_decl(name, *err);
+    }
+
+    next_tok(); // name
+    auto sym = m_sema.find(name, sema::Scoped);
+    if (sym)
+    {
+      auto err = error_expr(name, diag::name_redef(), err_pos::Current);
+      return m_builder.make_var_decl(name, *err);
+    }
+
+    auto outerScope = m_sema.current_scope()->enclosing();
+    UTILS_ASSERT(outerScope);
+    auto _ = m_sema.assume_scope(*outerScope);
+
+    if (detail::is_init(peek_next()))
+    {
+      next_tok(); // =
+      auto init = binary_expr();
+      return m_builder.make_var_decl(name, *init);
+    }
+
+    sym = m_sema.find(name, sema::Scoped);
+    if(!sym)
+    {
+      auto err = error_expr(name, diag::undef_id(), err_pos::Current);
+      return m_builder.make_var_decl(name, *err);
+    }
+    else if (!sym->is_any(semantics::sym_kind::Variable, semantics::sym_kind::Parameter))
+    {
+      auto err = error_expr(name, diag::undef_id(), err_pos::Current);
+      return m_builder.make_var_decl(name, *err);
+    }
+
+    auto init = m_builder.make_id(name, *sym);
+    return m_builder.make_var_decl(name, *init);
+  }
+
+  parser::capture_list parser::captures() noexcept
+  {
+    capture_list res;
+
+    if (!m_lex.try_backarrow())
+      return res;
+    next_tok(); // <-
+
+    if (!detail::is_open_bracket(peek_next()))
+      return res;
+    next_tok(); // [
+
+    if (auto&& next = peek_next(); detail::is_close_bracket(next))
+    {
+      auto err = error_expr(next, diag::expected_id(), err_pos::Current);
+      res.push_back(m_builder.make_var_decl(next, *err));
+      return res;
+    }
+
+    for (;;)
+    {
+      if (detail::is_close_bracket(peek_next()))
+        break;
+
+      auto c = capture();
+      res.push_back(c);
+
+      if (c->is_valid())
+        m_sema.visit_decl(*c);
 
       auto&& next = peek_next();
 

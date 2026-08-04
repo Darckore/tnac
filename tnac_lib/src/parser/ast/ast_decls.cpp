@@ -135,12 +135,16 @@ namespace tnac::ast // Function decl
 
   func_decl::~func_decl() noexcept = default;
 
-  func_decl::func_decl(const token& func, const token& pos, scope& def, param_list params) noexcept :
+  func_decl::func_decl(const token& func, const token& pos, scope& def, param_list params, capture_list caps) noexcept :
     decl{ kind::FuncDecl, func, pos, &def },
-    m_params{ std::move(params) }
+    m_params{ std::move(params) },
+    m_captures{ std::move(caps) }
   {
     for (auto p : m_params)
       assume_ancestry(p);
+
+    for (auto c : m_captures)
+      assume_ancestry(c);
   }
 
 

@@ -51,6 +51,7 @@ namespace tnac
 
     using expr_list      = ast::scope::elem_list;
     using param_list     = ast::func_decl::param_list;
+    using capture_list   = ast::func_decl::capture_list;
     using import_name    = ast::import_dir::elem_list;
     using import_alias   = ast::import_dir::pointer;
 
@@ -271,6 +272,16 @@ namespace tnac
     // Parses function parameters
     //
     param_list formal_params() noexcept;
+
+    //
+    // Parses a capture element
+    //
+    ast::var_decl* capture() noexcept;
+
+    //
+    // Parses closure captures
+    //
+    capture_list captures() noexcept;
 
     //
     // Parses an assign expr

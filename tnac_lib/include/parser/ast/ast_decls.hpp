@@ -179,7 +179,7 @@ namespace tnac::ast
     virtual ~func_decl() noexcept;
 
   protected:
-    func_decl(const token& func, const token& pos, scope& def, param_list params) noexcept;
+    func_decl(const token& func, const token& pos, scope& def, param_list params, capture_list caps) noexcept;
 
   public:
     //

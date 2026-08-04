@@ -133,6 +133,12 @@ namespace tnac::rt::out
 
   void ast_printer::visit(const ast::var_decl& decl) noexcept
   {
+    if (!decl.parent()->is(ast::node::Decl))
+    {
+      indent();
+      push_parent(1u);
+    }
+
     out() << "<VarName: "; 
     node_value(decl.name()); 
     out() << '>';
