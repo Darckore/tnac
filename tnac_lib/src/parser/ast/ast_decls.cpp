@@ -160,6 +160,20 @@ namespace tnac::ast // Function decl
     return params().size();
   }
 
+  const func_decl::capture_list& func_decl::captures() const noexcept
+  {
+    return m_captures;
+  }
+  func_decl::capture_list& func_decl::captures() noexcept
+  {
+    return FROM_CONST(captures);
+  }
+
+  func_decl::size_type func_decl::capture_count() const noexcept
+  {
+    return captures().size();
+  }
+
   const scope& func_decl::body() const noexcept
   {
     return utils::cast<scope>(*definition());

@@ -182,6 +182,7 @@
       <Item Name="[symbol]">*m_symbol</Item>
       <Item Name="[definition]">*m_def</Item>
       <Item Name="[params]">m_params</Item>
+      <Item Name="[captures]">m_captures</Item>
     </Expand>
   </Type>
 

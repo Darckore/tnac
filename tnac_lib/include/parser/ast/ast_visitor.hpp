@@ -381,6 +381,9 @@ namespace tnac::ast
         for (auto p : funcDecl->params())
           visit_root(p);
 
+        for (auto c : funcDecl->captures())
+          visit_root(c);
+
         visit_root(&funcDecl->body());
       }
 

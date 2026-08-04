@@ -166,8 +166,9 @@ namespace tnac::ast
   class func_decl final : public decl
   {
   public:
-    using param_list = std::vector<param_decl*>;
-    using size_type = param_list::size_type;
+    using param_list   = std::vector<param_decl*>;
+    using capture_list = std::vector<var_decl*>;
+    using size_type    = param_list::size_type;
 
   private:
     friend class builder;
@@ -197,6 +198,21 @@ namespace tnac::ast
     size_type param_count() const noexcept;
 
     //
+    // Returns function capture list
+    //
+    const capture_list& captures() const noexcept;
+
+    //
+    // Returns function capture list
+    //
+    capture_list& captures() noexcept;
+
+    //
+    // Returns the number of captures
+    //
+    size_type capture_count() const noexcept;
+
+    //
     // Returns function body
     //
     const scope& body() const noexcept;
@@ -208,6 +224,7 @@ namespace tnac::ast
 
   private:
     param_list m_params;
+    capture_list m_captures;
   };
 
 }
