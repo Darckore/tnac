@@ -150,6 +150,11 @@ namespace tnac::ast // Function decl
 
   // Public members
 
+  bool func_decl::is_closure() const noexcept
+  {
+    return !captures().empty();
+  }
+
   const func_decl::param_list& func_decl::params() const noexcept
   {
     return m_params;

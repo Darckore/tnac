@@ -36,13 +36,18 @@ namespace tnac::detail
     return var_name(".array"sv);
   }
 
+  string_t name_repo::record_name(const ir::function& func) noexcept
+  {
+    return m_plainNames.format(".rec.{:X}"sv, *func.id());
+  }
+
   string_t name_repo::make_block_name(string_t prefix, string_t postfix) noexcept
   {
     auto name = m_plainNames.format("{}.{}."sv, prefix, postfix);
     return m_prefNames.next_indexed(name);
   }
 
-  string_t name_repo::mangle_module_name(semantics::module_sym& sym, std::size_t parCnt) noexcept
+  string_t name_repo::mangle_module_name(const semantics::module_sym& sym, std::size_t parCnt) noexcept
   {
     std::vector<string_t> parts;
     auto symScope = &sym.owner_scope();

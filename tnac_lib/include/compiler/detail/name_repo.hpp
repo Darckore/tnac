@@ -75,9 +75,14 @@ namespace tnac::detail
     string_t ret_var_name() noexcept;
 
     //
-    // Returns a name base for a global array
+    // Returns a name for a global array
     //
     string_t array_name() noexcept;
+
+    //
+    // Returns a name for a record
+    //
+    string_t record_name(const ir::function& func) noexcept;
 
     //
     // Returns a prefixed name for a block
@@ -88,7 +93,7 @@ namespace tnac::detail
     //
     // Creates a mangled name of a module
     //
-    string_t mangle_module_name(semantics::module_sym& sym, std::size_t parCnt) noexcept;
+    string_t mangle_module_name(const semantics::module_sym& sym, std::size_t parCnt) noexcept;
 
     //
     // Creates a mangled name of a function

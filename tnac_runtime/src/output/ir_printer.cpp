@@ -137,9 +137,9 @@ namespace tnac::rt::out
   void ir_printer::visit(const ir::record& rec) noexcept
   {
     keyword("declare record"sv);
-    name(" @"sv);
+    name("@"sv);
     name(rec.name());
-    plain("[ "sv);
+    plain(" [ "sv);
     const auto sz = rec.size();
     for (ir::record::size_type idx{}; idx < sz; ++idx)
     {
@@ -151,6 +151,10 @@ namespace tnac::rt::out
         plain(", "sv);
     }
     plain(" ]"sv);
+    endl();
+
+    if (!rec.next())
+      endl();
   }
 
 

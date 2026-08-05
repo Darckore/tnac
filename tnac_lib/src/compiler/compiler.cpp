@@ -598,6 +598,23 @@ namespace tnac
     const auto parCnt = fd.param_count();
     auto funcName = m_names.mangle_func_name(fd.name(), owner, parCnt);
     auto&& func = m_cfg->declare_function(&fd.symbol(), owner, funcName, parCnt);
+
+    if (fd.is_closure())
+    {
+      auto _ = m_names.init_indicies();
+
+      auto&& builder = m_cfg->get_builder();
+      auto&& caps = fd.captures();
+      auto recName = m_names.record_name(func);
+      auto&& rec = builder.declare_rec(recName, caps.size());
+
+      for (auto cap : caps)
+      {
+        auto&& var = builder.make_register(m_names.var_name(cap->name()));
+        rec.append(var);
+      }
+    }
+
     m_context.enter_function(func, fd.body());
     compile(fd.params(), fd.body().children());
     m_context.exit_function();

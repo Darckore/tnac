@@ -183,6 +183,11 @@ namespace tnac::ast
 
   public:
     //
+    // Checks whether the function is a closure (has captures)
+    //
+    bool is_closure() const noexcept;
+
+    //
     // Returns function parameter list
     //
     const param_list& params() const noexcept;
