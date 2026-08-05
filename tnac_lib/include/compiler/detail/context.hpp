@@ -11,6 +11,7 @@ namespace tnac
     class module_def;
     class ret_expr;
     class scope;
+    class expr;
   }
 
   namespace semantics
@@ -25,6 +26,7 @@ namespace tnac
     class basic_block;
     class instruction;
     class vreg;
+    class record;
   }
 }
 
