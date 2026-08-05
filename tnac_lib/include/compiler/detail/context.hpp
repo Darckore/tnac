@@ -9,6 +9,7 @@ namespace tnac
   namespace ast
   {
     class module_def;
+    class func_decl;
     class ret_expr;
     class scope;
     class expr;
@@ -51,6 +52,10 @@ namespace tnac::detail
     struct var_data;
     using var_store       = std::unordered_map<symbol*, var_data>;
     using known_var_names = std::unordered_set<string_t>;
+
+    struct closure;
+    using closure_store   = std::unordered_map<const ir::function*, closure>;
+
     struct func_data;
     using data_stack = std::vector<func_data>;
 
@@ -215,7 +220,6 @@ namespace tnac::detail
     //
     bool new_var_name(string_t name) noexcept;
 
-
     //
     // Enters the given scope
     // Returns a reference to the previous scope
@@ -226,6 +230,17 @@ namespace tnac::detail
     // Checks whether the current scope is the same as the function scope
     //
     bool is_in_func_scope() const noexcept;
+
+    //
+    // Creates an uninited closure
+    //
+    void add_closure(const ir::function& fn, ast::func_decl& fd) noexcept;
+
+    //
+    // Marks the specified closure as inited and returns a pointer to its declarator
+    // nullptr if already inited
+    //
+    ast::func_decl* init_closure(const ir::function& fn) noexcept;
 
   private:
     //

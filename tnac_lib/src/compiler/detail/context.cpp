@@ -6,14 +6,17 @@ namespace tnac::detail // var data
 {
   struct context::var_data
   {
-    CLASS_SPECIALS_ALL(var_data);
-
-    ~var_data() noexcept = default;
-
     ir::vreg* m_reg{};
   };
 }
 
+namespace tnac::detail // closure data
+{
+  struct context::closure
+  {
+    ast::func_decl* m_decl{};
+  };
+}
 
 namespace tnac::detail // func data
 {
@@ -35,6 +38,7 @@ namespace tnac::detail // func data
     reg_idx m_regIdx{};
     symbol* m_lastStore{};
     var_store m_vars;
+    closure_store m_closures;
     known_var_names m_varNames;
   };
 }
@@ -246,6 +250,26 @@ namespace tnac::detail
   {
     auto&& fd = cur_data();
     return fd.m_funcScope == fd.m_curScope;
+  }
+
+  void context::add_closure(const ir::function& fn, ast::func_decl& fd) noexcept
+  {
+    auto&& data = cur_data();
+    data.m_closures.try_emplace(&fn, closure{ .m_decl = &fd });
+  }
+
+  ast::func_decl* context::init_closure(const ir::function& fn) noexcept
+  {
+    auto&& data = cur_data().m_closures;
+    auto it = data.find(&fn);
+    if (it != data.end())
+    {
+      auto decl = it->second.m_decl;
+      data.erase(it);
+      return decl;
+    }
+
+    return {};
   }
 
 

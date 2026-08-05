@@ -598,9 +598,13 @@ namespace tnac
     const auto parCnt = fd.param_count();
     auto funcName = m_names.mangle_func_name(fd.name(), owner, parCnt);
     auto&& func = m_cfg->declare_function(&fd.symbol(), owner, funcName, parCnt);
+    const auto isClosure = fd.is_closure();
+    if (isClosure)
+      m_context.add_closure(func, fd);
+
     m_context.enter_function(func, fd.body());
 
-    if (fd.is_closure())
+    if (isClosure)
     {
       auto _ = m_names.init_indicies();
 
@@ -958,7 +962,7 @@ namespace tnac
     }
 
     compile(dot.accessed());
-    auto scope = m_stack.extract();
+    auto scope = extract();
     emit_dyn(std::move(scope), accr.name());
     return false;
   }
@@ -1063,7 +1067,7 @@ namespace tnac
 
   void compiler::emit_ret(ir::basic_block& block) noexcept
   {
-    auto op = m_stack.extract();
+    auto op = extract();
     intern_array(op);
     auto&& instr = m_cfg->get_builder().add_instruction(block, ir::op_code::Ret, m_context.func_end());
     instr.add(std::move(op));
@@ -1082,7 +1086,7 @@ namespace tnac
     if (m_stack.empty())
       return;
     
-    auto val = m_stack.extract();
+    auto val = extract();
     intern_array(val);
     if(!val.is_param())
       m_context.save_store(var);
@@ -1231,7 +1235,7 @@ namespace tnac
         pushBack();
         emit_arr_call(call, *arrT);
 
-        auto res = m_stack.extract();
+        auto res = extract();
         if (res.is_value() && !res.get_value())
           continue;
 
@@ -1354,7 +1358,10 @@ namespace tnac
   ir::operand compiler::extract() noexcept
   {
     if (!m_stack.empty())
+    {
+      init_closure(m_stack.top());
       return m_stack.extract();
+    }
 
     if (auto last = m_context.last_store())
     {
@@ -1669,6 +1676,26 @@ namespace tnac
     {
       compile(*mod);
       empty_stack();
+    }
+  }
+
+  void compiler::init_closure(const ir::operand& op) noexcept
+  {
+    if (!op.is_value())
+      return;
+
+    auto ft = op.get_value().try_get<eval::function_type>();
+    if (!ft)
+      return;
+
+    auto&& func = ft->operator*();
+    auto decl = m_context.init_closure(func);
+    if (!decl)
+      return;
+
+    for (auto cap : decl->captures())
+    {
+      utils::unused(cap);
     }
   }
 

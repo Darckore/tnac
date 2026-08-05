@@ -442,6 +442,11 @@ namespace tnac
     void compile_modules() noexcept;
 
     //
+    // Attempts to init a closure
+    //
+    void init_closure(const ir::operand& op) noexcept;
+
+    //
     // Attempts to retrieve the module symbol from the given import directive
     //
     semantics::module_sym* get_module(ast::import_dir& imp) noexcept;
