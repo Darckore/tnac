@@ -598,6 +598,7 @@ namespace tnac
     const auto parCnt = fd.param_count();
     auto funcName = m_names.mangle_func_name(fd.name(), owner, parCnt);
     auto&& func = m_cfg->declare_function(&fd.symbol(), owner, funcName, parCnt);
+    m_context.enter_function(func, fd.body());
 
     if (fd.is_closure())
     {
@@ -612,12 +613,12 @@ namespace tnac
       {
         auto&& var = builder.make_register(cap->name());
         rec.append(var);
+        m_context.store(cap->symbol(), var);
       }
 
       func.attach_record(rec);
     }
 
-    m_context.enter_function(func, fd.body());
     compile(fd.params(), fd.body().children());
     m_context.exit_function();
     if(!lastVal.is_undef())
@@ -1506,12 +1507,12 @@ namespace tnac
     {
       auto&& rec = curFn.rec();
       emit_load(rec.target_reg());
-      for (ir::record::size_type idx{}; idx < rec.size(); ++idx)
-      {
-        auto elem = rec.get_element(idx);
-        UTILS_ASSERT(elem && elem->is_named());
-        emit_alloc(elem->name());
-      }
+      //for (ir::record::size_type idx{}; idx < rec.size(); ++idx)
+      //{
+      //  auto elem = rec.get_element(idx);
+      //  UTILS_ASSERT(elem && elem->is_named());
+      //  emit_alloc(elem->name());
+      //}
     }
 
     compile(body);
