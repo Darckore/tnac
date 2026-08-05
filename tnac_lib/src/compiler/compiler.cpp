@@ -613,6 +613,8 @@ namespace tnac
         auto&& var = builder.make_register(m_names.var_name(cap->name()));
         rec.append(var);
       }
+
+      func.attach_record(rec);
     }
 
     m_context.enter_function(func, fd.body());

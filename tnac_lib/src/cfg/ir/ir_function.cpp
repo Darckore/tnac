@@ -39,6 +39,27 @@ namespace tnac::ir
     return m_id;
   }
 
+  bool function::is_closure() const noexcept
+  {
+    return static_cast<bool>(m_rec);
+  }
+
+  void function::attach_record(record& rec) noexcept
+  {
+    UTILS_ASSERT(!is_closure());
+    m_rec = &rec;
+  }
+
+  const record& function::rec() const noexcept
+  {
+    UTILS_ASSERT(is_closure());
+    return *m_rec;
+  }
+  record& function::rec() noexcept
+  {
+    return FROM_CONST(rec);
+  }
+
   bool function::is_loose() const noexcept
   {
     return m_loose;

@@ -549,6 +549,9 @@
       <Item Name="[module]" Condition="!m_owner">"yes",sb</Item>
       <Item Name="[nested]">m_children</Item>
       <Item Name="[basic blocks]">m_blocks</Item>
+      <Item Name="[record]" Condition="m_rec">*m_rec</Item>
+      <Item Name="[closure]" Condition="m_rec">"yes",sb</Item>
+      <Item Name="[closure]" Condition="!m_rec">"no",sb</Item>
       <Item Name="[symtab]">m_childSt</Item>
     </Expand>
   </Type>

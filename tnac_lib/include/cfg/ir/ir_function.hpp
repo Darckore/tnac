@@ -13,6 +13,11 @@ namespace tnac
 
 namespace tnac::ir
 {
+  class record;
+}
+
+namespace tnac::ir
+{
   //
   // Represents IR functions and modules
   //
@@ -50,6 +55,28 @@ namespace tnac::ir
     // Returns the function's id
     //
     entity_id id() const noexcept;
+
+    //
+    // Checks whether the function is a closure, i.e., has a record attached
+    //
+    bool is_closure() const noexcept;
+
+    //
+    // Attaches a record to the function
+    //
+    void attach_record(record& rec) noexcept;
+
+    //
+    // Returns a reference to the associated record
+    // MUST check is_closure before using
+    //
+    const record& rec() const noexcept;
+
+    //
+    // Returns a reference to the associated record
+    // MUST check is_closure before using
+    //
+    record& rec() noexcept;
 
     //
     // Checks whether the function is loose
@@ -160,6 +187,7 @@ namespace tnac::ir
     block_list m_blocks;
     basic_block* m_entry{};
     entity_id m_id;
+    record* m_rec{};
     child_sym_tab m_childSt;
     size_type m_paramCount{};
     bool m_loose{};
