@@ -201,6 +201,8 @@ namespace tnac::rt::out
       block(op.get_block());
     else if (op.is_edge())
       edge(op.get_edge());
+    else if (op.is_record())
+      vreg(op.get_record().target_reg());
     else if (op.is_index())
       idx(op.get_index());
     else if (op.is_name())

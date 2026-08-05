@@ -246,6 +246,12 @@ namespace tnac
     ir::vreg& emit_load(ir::vreg& target) noexcept;
 
     //
+    // Creates a load instruction for the specified record
+    // Returns a reference to the register read into
+    //
+    ir::vreg& emit_load(ir::record& target) noexcept;
+
+    //
     // Creates a binary instruction
     //
     void emit_binary(ir::op_code oc, ir::operand lhs, ir::operand rhs) noexcept;

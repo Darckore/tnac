@@ -1112,6 +1112,13 @@ namespace tnac
     return res.get_reg();
   }
 
+  ir::vreg& compiler::emit_load(ir::record& target) noexcept
+  {
+    auto&& instr = make(ir::op_code::Load).add(&target);
+    auto&& res = instr[0];
+    return res.get_reg();
+  }
+
   void compiler::emit_binary(ir::op_code oc, ir::operand lhs, ir::operand rhs) noexcept
   {
     make(oc).add(std::move(lhs)).add(std::move(rhs));
@@ -1516,7 +1523,7 @@ namespace tnac
     if (auto&& curFn = m_context.current_function(); curFn.is_closure())
     {
       auto&& rec = curFn.rec();
-      auto&& loadRes = emit_load(rec.target_reg());
+      auto&& loadRes = emit_load(rec);
       for (ir::record::size_type idx{}; idx < rec.size(); ++idx)
       {
         auto elem = rec.get_element(idx);

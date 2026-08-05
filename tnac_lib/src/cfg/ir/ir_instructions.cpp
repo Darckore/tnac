@@ -158,6 +158,16 @@ namespace tnac::ir // operand
     return *std::get<edge*>(m_value);
   }
 
+  bool operand::is_record() const noexcept
+  {
+    return std::holds_alternative<record*>(m_value);
+  }
+  record& operand::get_record() const noexcept
+  {
+    UTILS_ASSERT(is_record());
+    return *std::get<record*>(m_value);
+  }
+
   bool operand::is_index() const noexcept
   {
     return std::holds_alternative<idx_type>(m_value);

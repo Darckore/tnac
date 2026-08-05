@@ -11,6 +11,7 @@
 basic_block*,\
 vreg*,\
 edge*,\
+record*,\
 func_param,\
 std::uint64_t, \
 string_t, \
@@ -136,6 +137,7 @@ namespace tnac::ir
 {
   class basic_block;
   class edge;
+  class record;
 
   namespace detail
   {
@@ -200,6 +202,11 @@ namespace tnac::ir
     bool is_edge() const noexcept;
 
     //
+    // Checks whether the operand holds a record reference
+    //
+    bool is_record() const noexcept;
+
+    //
     // Checks whether the operand holds a 64-bit index
     //
     bool is_index() const noexcept;
@@ -243,6 +250,12 @@ namespace tnac::ir
     // Callers must check is_edge before using this
     //
     edge& get_edge() const noexcept;
+
+    //
+    // Returns the stored record
+    // Callers must check is_record before using this
+    //
+    record& get_record() const noexcept;
 
     //
     // Returns the stored index
