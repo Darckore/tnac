@@ -223,8 +223,14 @@ namespace tnac::rt::out
   {
     print_assign(alloc[0]);
     keyword(alloc.opcode_str());
-    if (utils::eq_any(alloc.opcode(), ir::op_code::Arr, ir::op_code::StructAlloc))
+    const auto oc = alloc.opcode();
+    if (utils::eq_any(oc, ir::op_code::Arr, ir::op_code::StructAlloc))
       print_operand(alloc[1]);
+    if (oc == ir::op_code::StructAlloc)
+    {
+      plain(", "sv);
+      print_operand(alloc[2]);
+    }
   }
 
   void ir_printer::print_store(const ir::instruction& store) noexcept

@@ -1053,14 +1053,14 @@ namespace tnac
     return reg;
   }
 
-  ir::vreg& compiler::emit_salloc(ir::record& rec) noexcept
+  ir::vreg& compiler::emit_salloc(ir::record& rec, ir::operand owner) noexcept
   {
     auto&& curFn = m_context.current_function();
     auto&& entry = curFn.entry();
     auto&& builder = m_cfg->get_builder();
     auto&& var = builder.add_struct(entry, m_context.funct_start());
     auto&& reg = builder.make_register(m_context.register_index());
-    var.add(&reg).add(&rec);
+    var.add(&reg).add(&rec).add(std::move(owner));
     return reg;
   }
 
@@ -1721,7 +1721,7 @@ namespace tnac
     if (!decl)
       return;
 
-    auto&& rec = emit_salloc(func.rec());
+    auto&& rec = emit_salloc(func.rec(), op);
     for (ir::record::size_type idx{}; auto cap : decl->captures())
     {
       compile(cap->initialiser());
