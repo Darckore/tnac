@@ -88,6 +88,11 @@ namespace tnac::ir
     instruction& add_var(basic_block& owner, instruction_list::iterator pos) noexcept;
 
     //
+    // Adds a structure allocation to the specified block before the given iterator
+    //
+    instruction& add_struct(basic_block& owner, instruction_list::iterator pos) noexcept;
+
+    //
     // Adds an array allocation to the specified block before the given iterator
     //
     instruction& add_array(basic_block& owner, instruction_list::iterator pos) noexcept;

@@ -319,6 +319,7 @@ namespace tnac::ir
     Store,
     Load,
     Alloc,
+    StructAlloc,
     Arr,
     Append,
 

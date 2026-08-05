@@ -1052,6 +1052,17 @@ namespace tnac
     return reg;
   }
 
+  ir::vreg& compiler::emit_salloc(ir::record& rec) noexcept
+  {
+    auto&& curFn = m_context.current_function();
+    auto&& entry = curFn.entry();
+    auto&& builder = m_cfg->get_builder();
+    auto&& var = builder.add_struct(entry, m_context.funct_start());
+    auto&& reg = builder.make_register(m_context.register_index());
+    var.add(&reg).add(&rec);
+    return reg;
+  }
+
   ir::vreg& compiler::emit_arr(ir::operand::idx_type size) noexcept
   {
     auto&& curFn = m_context.current_function();
@@ -1684,18 +1695,20 @@ namespace tnac
     if (!op.is_value())
       return;
 
-    auto ft = op.get_value().try_get<eval::function_type>();
-    if (!ft)
+    auto&& val = op.get_value();
+    if (val.id() != eval::value::Function)
       return;
 
-    auto&& func = ft->operator*();
+    auto ft = val.get<eval::function_type>();
+    auto&& func = *ft;
     auto decl = m_context.init_closure(func);
     if (!decl)
       return;
 
+    auto&& rec = emit_salloc(func.rec());
     for (auto cap : decl->captures())
     {
-      utils::unused(cap);
+      utils::unused(rec,cap);
     }
   }
 

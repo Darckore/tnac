@@ -214,6 +214,12 @@ namespace tnac
     ir::vreg& emit_alloc(string_t varName) noexcept;
 
     //
+    // Creates a struct alloc instruction for the specified record
+    // Returns a reference to the created virtual register
+    //
+    ir::vreg& emit_salloc(ir::record& rec) noexcept;
+
+    //
     // Creates an alloc instruction for an array of the given size
     // Returns a reference to the created virtual register
     //

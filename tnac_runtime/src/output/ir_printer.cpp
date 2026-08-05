@@ -95,16 +95,17 @@ namespace tnac::rt::out
       print_unary(instr);
       break;
 
-    case Select: print_select(instr); break;
-    case Arr:    print_alloc(instr);  break;
-    case Alloc:  print_alloc(instr);  break;
-    case Store:  print_store(instr);  break;
-    case Append: print_append(instr); break;
-    case Load:   print_load(instr);   break;
-    case Call:   print_call(instr);   break;
-    case Jump:   print_jump(instr);   break;
-    case Ret:    print_ret(instr);    break;
-    case Phi:    print_phi(instr);    break;
+    case Select:      print_select(instr); break;
+    case Arr:         print_alloc(instr);  break;
+    case Alloc:       print_alloc(instr);  break;
+    case StructAlloc: print_alloc(instr);  break;
+    case Store:       print_store(instr);  break;
+    case Append:      print_append(instr); break;
+    case Load:        print_load(instr);   break;
+    case Call:        print_call(instr);   break;
+    case Jump:        print_jump(instr);   break;
+    case Ret:         print_ret(instr);    break;
+    case Phi:         print_phi(instr);    break;
     
     case DynBind: print_dyn_bind(instr); break;
 
@@ -221,7 +222,7 @@ namespace tnac::rt::out
   {
     print_assign(alloc[0]);
     keyword(alloc.opcode_str());
-    if (alloc.opcode() == ir::op_code::Arr)
+    if (utils::eq_any(alloc.opcode(), ir::op_code::Arr, ir::op_code::StructAlloc))
       print_operand(alloc[1]);
   }
 

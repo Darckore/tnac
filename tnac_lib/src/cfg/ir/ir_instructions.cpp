@@ -265,11 +265,12 @@ namespace tnac::ir // instruction
     case CmpNot:  return "not"sv;
     case CmpIs:   return "is"sv;
 
-    case Alloc:   return "alloc"sv;
-    case Arr:     return "arr"sv;
-    case Store:   return "store"sv;
-    case Load:    return "load"sv;
-    case Append:  return "append"sv;
+    case Alloc:       return "alloc"sv;
+    case StructAlloc: return "salloc"sv;
+    case Arr:         return "arr"sv;
+    case Store:       return "store"sv;
+    case Load:        return "load"sv;
+    case Append:      return "append"sv;
 
     case Select:  return "sel"sv;
     case Call:    return "call"sv;
@@ -361,11 +362,12 @@ namespace tnac::ir // instruction
     case CmpNot:  count = 2; break;
     case CmpIs:   count = 2; break;
 
-    case Store:   count = 2; break;
-    case Load:    count = 2; break;
-    case Alloc:   count = 1; break;
-    case Arr:     count = 2; break;
-    case Append:  count = 2; break;
+    case Store:       count = 2; break;
+    case Load:        count = 2; break;
+    case Alloc:       count = 1; break;
+    case StructAlloc: count = 2; break;
+    case Arr:         count = 2; break;
+    case Append:      count = 2; break;
 
     case Select:  count = 4; break;
     case Call:    count = 2; break;

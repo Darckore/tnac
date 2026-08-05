@@ -67,6 +67,11 @@ namespace tnac::ir
     return add_alloc(owner, op_code::Alloc, pos);
   }
 
+  instruction& builder::add_struct(basic_block& owner, instruction_list::iterator pos) noexcept
+  {
+    return add_alloc(owner, op_code::StructAlloc, pos);
+  }
+
   instruction& builder::add_array(basic_block& owner, instruction_list::iterator pos) noexcept
   {
     return add_alloc(owner, op_code::Arr, pos);
