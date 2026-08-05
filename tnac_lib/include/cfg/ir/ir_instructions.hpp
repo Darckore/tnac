@@ -327,7 +327,9 @@ namespace tnac::ir
     Test,
 
     StreamRead,
-    StreamWrite
+    StreamWrite,
+
+    GetElem
   };
 
   //

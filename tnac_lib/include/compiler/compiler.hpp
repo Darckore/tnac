@@ -315,6 +315,11 @@ namespace tnac
     //
     void emit_read(semantics::symbol* var) noexcept;
 
+    //
+    // Creates a get element instruction
+    //
+    void emit_ge(ir::vreg& res, ir::operand from, size_type idx) noexcept;
+
   private:
     //
     // Creates a register for a variable and adds it to the context

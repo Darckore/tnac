@@ -203,7 +203,7 @@ namespace tnac::detail
   constexpr auto needs_named_reg(ir::op_code oc) noexcept
   {
     using enum ir::op_code;
-    return utils::eq_none(oc, Load, Phi, Bool, Int, Float, Frac, Cplx, StreamRead, StreamWrite);
+    return utils::eq_none(oc, Load, Phi, Bool, Int, Float, Frac, Cplx, StreamRead, StreamWrite, GetElem);
   }
 
   constexpr auto needs_forced_bool(ir::op_code oc) noexcept
@@ -1289,6 +1289,16 @@ namespace tnac
     emit_store(*var);
   }
 
+  void compiler::emit_ge(ir::vreg& res, ir::operand from, size_type idx) noexcept
+  {
+    clear_store();
+    auto&& block = m_context.current_block();
+    auto&& instr = m_cfg->get_builder().add_instruction(block, ir::op_code::GetElem, m_context.func_end());
+    instr.add(&res).add(std::move(from)).add(idx);
+    update_func_start(instr);
+  }
+
+
   // Private members
 
   bool compiler::has_ret_jump() noexcept
@@ -1506,13 +1516,13 @@ namespace tnac
     if (auto&& curFn = m_context.current_function(); curFn.is_closure())
     {
       auto&& rec = curFn.rec();
-      emit_load(rec.target_reg());
-      //for (ir::record::size_type idx{}; idx < rec.size(); ++idx)
-      //{
-      //  auto elem = rec.get_element(idx);
-      //  UTILS_ASSERT(elem && elem->is_named());
-      //  emit_alloc(elem->name());
-      //}
+      auto&& loadRes = emit_load(rec.target_reg());
+      for (ir::record::size_type idx{}; idx < rec.size(); ++idx)
+      {
+        auto elem = rec.get_element(idx);
+        UTILS_ASSERT(elem);
+        emit_ge(*elem, &loadRes, idx);
+      }
     }
 
     compile(body);

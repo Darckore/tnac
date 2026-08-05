@@ -111,6 +111,8 @@ namespace tnac::rt::out
     case StreamRead:  print_stream_read(instr); break;
     case StreamWrite: print_stream_write(instr); break;
 
+    case GetElem:     print_get_elem(instr); break;
+
     case Bool:
     case Int:
     case Float:
@@ -359,6 +361,15 @@ namespace tnac::rt::out
     print_assign(w[0]);
     keyword(w.opcode_str());
     print_operand(w[1]);
+  }
+
+  void ir_printer::print_get_elem(const ir::instruction& ge) noexcept
+  {
+    print_assign(ge[0]);
+    keyword(ge.opcode_str());
+    print_operand(ge[1]);
+    plain(", "sv);
+    print_operand(ge[2]);
   }
 
   out_stream& ir_printer::out() noexcept

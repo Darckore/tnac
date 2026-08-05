@@ -280,6 +280,8 @@ namespace tnac::ir // instruction
 
     case StreamRead:  return "stream_read"sv;
     case StreamWrite: return "stream_write"sv;
+
+    case GetElem:     return "get_elem"sv;
     }
 
     UTILS_ASSERT(false);
@@ -369,6 +371,8 @@ namespace tnac::ir // instruction
 
     case StreamRead:  count = 1; break;
     case StreamWrite: count = 2; break;
+
+    case GetElem:     count = 3; break;
 
     case Bool:    count = type_info<eval::bool_type>::maxArgs + 1;     break;
     case Int:     count = type_info<eval::int_type>::maxArgs + 1;      break;

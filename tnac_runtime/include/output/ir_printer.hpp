@@ -81,6 +81,8 @@ namespace tnac::rt::out
     void print_stream_read(const ir::instruction& r) noexcept;
 
     void print_stream_write(const ir::instruction& w) noexcept;
+    
+    void print_get_elem(const ir::instruction& ge) noexcept;
 
   private:
     out_stream& out() noexcept;
