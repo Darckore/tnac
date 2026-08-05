@@ -138,14 +138,16 @@ namespace tnac::rt::out
   {
     keyword("declare record"sv);
     name("@"sv);
-    name(rec.name());
+    auto&& reg = rec.target_reg();
+    UTILS_ASSERT(reg.is_named());
+    name(reg.name());
     plain(" [ "sv);
     const auto sz = rec.size();
     for (ir::record::size_type idx{}; idx < sz; ++idx)
     {
-      auto reg = rec.get_element(idx);
-      UTILS_ASSERT(reg);
-      vreg(*reg);
+      auto elemReg = rec.get_element(idx);
+      UTILS_ASSERT(elemReg);
+      vreg(*elemReg);
 
       if (idx < sz - 1)
         plain(", "sv);

@@ -37,9 +37,9 @@ namespace tnac::ir // record
 
   record::~record() noexcept = default;
 
-  record::record(string_t name, size_type size) noexcept :
+  record::record(vreg& reg, size_type size) noexcept :
     node{ kind::Record },
-    m_name{ name }
+    m_reg{ &reg }
   {
     m_elems.reserve(size);
   }
@@ -67,8 +67,12 @@ namespace tnac::ir // record
     return m_elems.size();
   }
 
-  string_t record::name() const noexcept
+  const vreg& record::target_reg() const noexcept
   {
-    return m_name;
+    return *m_reg;
+  }
+  vreg& record::target_reg() noexcept
+  {
+    return FROM_CONST(target_reg);
   }
 }

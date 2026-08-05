@@ -605,12 +605,12 @@ namespace tnac
 
       auto&& builder = m_cfg->get_builder();
       auto&& caps = fd.captures();
-      auto recName = m_names.record_name(func);
-      auto&& rec = builder.declare_rec(recName, caps.size());
+      auto&& reg = builder.make_global_register(m_names.record_name(func));
+      auto&& rec = builder.declare_rec(reg, caps.size());
 
       for (auto cap : caps)
       {
-        auto&& var = builder.make_register(m_names.var_name(cap->name()));
+        auto&& var = builder.make_register(cap->name());
         rec.append(var);
       }
 
@@ -1502,12 +1502,19 @@ namespace tnac
       compile(*param);
     }
 
-    compile(body);
-
-    if (m_stack.empty())
+    if (auto&& curFn = m_context.current_function(); curFn.is_closure())
     {
-      m_stack.push_undef(); // Undefined, probably, an empty body
+      auto&& rec = curFn.rec();
+      emit_load(rec.target_reg());
+      for (ir::record::size_type idx{}; idx < rec.size(); ++idx)
+      {
+        auto elem = rec.get_element(idx);
+        UTILS_ASSERT(elem && elem->is_named());
+        emit_alloc(elem->name());
+      }
     }
+
+    compile(body);
 
     auto block = &m_context.terminal_or_entry();
     if (auto last = m_context.last_store())
@@ -1529,6 +1536,11 @@ namespace tnac
       m_context.terminate_at(*block);
       auto&& loadRes = emit_load(*rv);
       m_stack.push(&loadRes);
+    }
+
+    if (m_stack.empty())
+    {
+      m_stack.push_undef(); // Undefined, probably, an empty body
     }
 
     emit_ret(*block);
