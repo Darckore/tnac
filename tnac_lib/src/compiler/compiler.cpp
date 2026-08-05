@@ -416,6 +416,7 @@ namespace tnac
     if (auto func = m_cfg->find_entity(sym))
     {
       m_stack.push(eval::value::function(*func));
+      init_closure(m_stack.top());
       return;
     }
 
