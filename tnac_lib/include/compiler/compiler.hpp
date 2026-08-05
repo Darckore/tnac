@@ -241,6 +241,11 @@ namespace tnac
     void emit_store(ir::vreg& target, ir::operand val) noexcept;
 
     //
+    // Creates an element store instruction for the specified vreg, value, and idx
+    //
+    void emit_elem_store(ir::vreg& target, ir::operand val, size_type idx) noexcept;
+
+    //
     // Creates a load instruction for the specified variable
     //
     void emit_load(semantics::symbol& var) noexcept;

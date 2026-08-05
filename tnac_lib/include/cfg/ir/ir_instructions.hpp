@@ -322,6 +322,7 @@ namespace tnac::ir
     StructAlloc,
     Arr,
     Append,
+    StoreElem,
 
     Select,
     Call,

@@ -271,6 +271,7 @@ namespace tnac::ir // instruction
     case Store:       return "store"sv;
     case Load:        return "load"sv;
     case Append:      return "append"sv;
+    case StoreElem:   return "store_elem"sv;
 
     case Select:  return "sel"sv;
     case Call:    return "call"sv;
@@ -365,9 +366,10 @@ namespace tnac::ir // instruction
     case Store:       count = 2; break;
     case Load:        count = 2; break;
     case Alloc:       count = 1; break;
-    case StructAlloc: count = 2; break;
+    case StructAlloc: count = 3; break;
     case Arr:         count = 2; break;
     case Append:      count = 2; break;
+    case StoreElem:   count = 2; break;
 
     case Select:  count = 4; break;
     case Call:    count = 2; break;
@@ -398,7 +400,7 @@ namespace tnac::ir // instruction
 
   bool instruction::needs_result(op_code code) noexcept
   {
-    return utils::eq_none(code, Store, Append, Jump, Ret);
+    return utils::eq_none(code, Store, Append, Jump, Ret, StoreElem);
   }
 
   void instruction::prealloc(size_type size) noexcept

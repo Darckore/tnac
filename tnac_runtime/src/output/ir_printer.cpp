@@ -95,17 +95,18 @@ namespace tnac::rt::out
       print_unary(instr);
       break;
 
-    case Select:      print_select(instr); break;
-    case Arr:         print_alloc(instr);  break;
-    case Alloc:       print_alloc(instr);  break;
-    case StructAlloc: print_alloc(instr);  break;
-    case Store:       print_store(instr);  break;
-    case Append:      print_append(instr); break;
-    case Load:        print_load(instr);   break;
-    case Call:        print_call(instr);   break;
-    case Jump:        print_jump(instr);   break;
-    case Ret:         print_ret(instr);    break;
-    case Phi:         print_phi(instr);    break;
+    case Select:      print_select(instr);     break;
+    case Arr:         print_alloc(instr);      break;
+    case Alloc:       print_alloc(instr);      break;
+    case StructAlloc: print_alloc(instr);      break;
+    case Store:       print_store(instr);      break;
+    case StoreElem:   print_elem_store(instr); break;
+    case Append:      print_append(instr);     break;
+    case Load:        print_load(instr);       break;
+    case Call:        print_call(instr);       break;
+    case Jump:        print_jump(instr);       break;
+    case Ret:         print_ret(instr);        break;
+    case Phi:         print_phi(instr);        break;
     
     case DynBind: print_dyn_bind(instr); break;
 
@@ -232,6 +233,16 @@ namespace tnac::rt::out
     print_operand(store[0]);
     plain(", "sv);
     print_operand(store[1]);
+  }
+
+  void ir_printer::print_elem_store(const ir::instruction& store) noexcept
+  {
+    keyword(store.opcode_str());
+    print_operand(store[0]);
+    plain(", "sv);
+    print_operand(store[1]);
+    plain(", "sv);
+    print_operand(store[2]);
   }
 
   void ir_printer::print_append(const ir::instruction& append) noexcept

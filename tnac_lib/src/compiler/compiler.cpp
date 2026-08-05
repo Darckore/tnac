@@ -1113,6 +1113,14 @@ namespace tnac
     update_func_start(instr);
   }
 
+  void compiler::emit_elem_store(ir::vreg& target, ir::operand val, size_type idx) noexcept
+  {
+    auto&& block = m_context.current_block();
+    auto&& instr = m_cfg->get_builder().add_instruction(block, ir::op_code::StoreElem, m_context.func_end());
+    instr.add(val).add(&target).add(idx);
+    update_func_start(instr);
+  }
+
   void compiler::emit_load(semantics::symbol& var) noexcept
   {
     auto target = m_context.locate(var);
@@ -1552,6 +1560,13 @@ namespace tnac
 
     compile(body);
 
+    // force init any closure that might be there
+    if (!m_stack.empty() && m_stack.top().is_value())
+    {
+      auto lastVal = extract();
+      m_stack.push(std::move(lastVal));
+    }
+
     auto block = &m_context.terminal_or_entry();
     if (auto last = m_context.last_store())
       emit_load(*last);
@@ -1706,9 +1721,12 @@ namespace tnac
       return;
 
     auto&& rec = emit_salloc(func.rec());
-    for (auto cap : decl->captures())
+    for (ir::record::size_type idx{}; auto cap : decl->captures())
     {
-      utils::unused(rec,cap);
+      compile(cap->initialiser());
+      auto res = extract();
+      emit_elem_store(rec, std::move(res), idx);
+      ++idx;
     }
   }
 
