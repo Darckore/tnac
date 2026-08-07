@@ -1716,13 +1716,8 @@ namespace tnac
     if (!decl)
       return;
 
-    init_closure(op, func, *decl);
-  }
-
-  void compiler::init_closure(const ir::operand& op, ir::function& func, ast::func_decl& decl) noexcept
-  {
     auto&& rec = emit_salloc(func.rec(), op);
-    for (ir::record::size_type idx{}; auto cap : decl.captures())
+    for (ir::record::size_type idx{}; auto cap : decl->captures())
     {
       compile(cap->initialiser());
       auto res = extract();
@@ -1738,6 +1733,12 @@ namespace tnac
     {
       auto lastVal = extract();
       m_stack.push(std::move(lastVal));
+    }
+
+    while (auto next = m_context.next_closure())
+    {
+      auto op = ir::operand{ eval::value::function(*next) };
+      init_closure(op);
     }
   }
 

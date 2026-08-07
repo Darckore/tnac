@@ -458,11 +458,6 @@ namespace tnac
     void init_closure(const ir::operand& op) noexcept;
 
     //
-    // Attempts to init a closure
-    //
-    void init_closure(const ir::operand& op, ir::function& func, ast::func_decl& decl) noexcept;
-
-    //
     // Inits all remaining closures on function exit
     //
     void init_all_closures() noexcept;
