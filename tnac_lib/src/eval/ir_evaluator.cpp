@@ -371,6 +371,10 @@ namespace tnac
 
     auto func = funcVal.get<eval::value::Function>();
     auto&& arrData = m_valStore->allocate_array(rec.size());
+    for (ir::record::size_type idx{}; idx < rec.size(); ++idx)
+    {
+      arrData.add({});
+    }
     func.attach_closure(arrData);
     const auto regId = alloc_new(res);
     store_value(regId, eval::value{ std::move(func) });
