@@ -320,6 +320,8 @@ namespace tnac
       select();
     else if (opcode == Arr)
       alloc_array();
+    else if (opcode == StructAlloc)
+      alloc_record();
     else if (opcode == Append)
       append();
     else if (opcode == DynBind)
@@ -353,6 +355,21 @@ namespace tnac
     const auto regId = alloc_new(arr);
     auto&& wrapper = m_valStore->alloc_wrapped(size);
     store_value(regId, eval::value::array(wrapper));
+  }
+
+  void ir_eval::alloc_record() noexcept
+  {
+    auto&& instr = cur();
+    auto&& res = instr[0];
+    auto&& recOp = instr[1];
+    auto&& fnOp = instr[2];
+    UTILS_ASSERT(recOp.is_record());
+
+    auto&& rec = recOp.get_record();
+    auto&& func = get_value(fnOp);
+    UTILS_ASSERT(func);
+
+    utils::unused(res, rec, func);
   }
 
   void ir_eval::append() noexcept

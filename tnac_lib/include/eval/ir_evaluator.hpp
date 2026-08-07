@@ -155,7 +155,6 @@ namespace tnac
 
     //
     // Creates a new stack value and returns its id
-    // Creates a new stack value and returns its id
     //
     entity_id alloc_new(const ir::operand& op) noexcept;
 
@@ -186,6 +185,11 @@ namespace tnac
     // Allocates an array
     //
     void alloc_array() noexcept;
+
+    //
+    // Allocates a record
+    //
+    void alloc_record() noexcept;
 
     //
     // Appends a value into an array
