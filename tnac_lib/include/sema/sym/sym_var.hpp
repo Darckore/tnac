@@ -22,6 +22,14 @@ namespace tnac::semantics
 
   protected:
     variable(scope& owner, name_t name, loc_t loc) noexcept;
+
+    void mark_capture() noexcept;
+
+  public:
+    bool is_capture() const noexcept;
+
+  private:
+    bool m_isCapture{};
   };
 
 

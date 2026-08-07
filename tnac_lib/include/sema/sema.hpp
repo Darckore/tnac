@@ -110,6 +110,11 @@ namespace tnac
     void visit_decl(ast::decl& decl) noexcept;
 
     //
+    // Visits an element of a closure's capture list
+    //
+    void visit_capture(ast::var_decl& decl) noexcept;
+
+    //
     // Visits a newly created module definition and registers it in the symbol table
     //
     void visit_module_def(ast::module_def& def) noexcept;

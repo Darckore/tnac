@@ -150,6 +150,14 @@ namespace tnac
     }
   }
 
+  void sema::visit_capture(ast::var_decl& decl) noexcept
+  {
+    auto name = decl.name();
+    auto loc = decl.pos().at();
+    auto&& var = m_symTab.add_capture(name, m_curScope, loc);
+    decl.attach_symbol(var);
+  }
+
   void sema::visit_module_def(ast::module_def& def) noexcept
   {
     if (!m_curScope)

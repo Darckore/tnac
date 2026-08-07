@@ -25,6 +25,13 @@ namespace tnac::semantics
     return newVar;
   }
 
+  variable& sym_table::add_capture(name_t name, scope_ptr parent, loc_t loc) noexcept
+  {
+    auto&& newVar = add_variable(name, parent, loc);
+    newVar.mark_capture();
+    return newVar;
+  }
+
   parameter& sym_table::add_parameter(name_t name, scope_ptr parent, loc_t loc) noexcept
   {
     return *make_symbol<parameter>(name, parent, loc);

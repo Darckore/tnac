@@ -265,7 +265,7 @@ namespace tnac::tests
   class source_tester final
   {
   public:
-    using symtab = std::unordered_map<string_t, const ir::function*>;
+    using symtab = std::unordered_map<string_t, ir::function*>;
 
   public:
     CLASS_SPECIALS_NONE(source_tester);
@@ -308,7 +308,7 @@ namespace tnac::tests
     }
 
   private:
-    const ir::function* find_fn(string_t name, ir::function::size_type paramCount) noexcept
+    ir::function* find_fn(string_t name, ir::function::size_type paramCount) noexcept
     {
       EXPECT_FALSE(name.empty());
       auto nameParts = utils::split(name, "."sv);

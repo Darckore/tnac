@@ -158,6 +158,11 @@ namespace tnac::semantics
     variable& add_variable(name_t name, scope_ptr parent, loc_t loc) noexcept;
 
     //
+    // Inserts a closure capture variable to the specified scope
+    //
+    variable& add_capture(name_t name, scope_ptr parent, loc_t loc) noexcept;
+
+    //
     // Inserts a parameter to the specified scope
     //
     parameter& add_parameter(name_t name, scope_ptr parent, loc_t loc) noexcept;

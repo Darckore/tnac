@@ -1014,7 +1014,7 @@ namespace tnac
       res.push_back(c);
 
       if (c->is_valid())
-        m_sema.visit_decl(*c);
+        m_sema.visit_capture(*c);
 
       auto&& next = peek_next();
 
@@ -1242,7 +1242,13 @@ namespace tnac
 
     using semantics::sym_kind;
     if (dotRhs && utils::eq_any(sym->what(), sym_kind::Variable, sym_kind::Parameter))
-      return error_expr(next_tok(), diag::var_not_allowed(), err_pos::Current);
+    {
+      if (auto var = utils::try_cast<sym_kind::Variable>(sym);
+               !var || !var->is_capture())
+      {
+        return error_expr(next_tok(), diag::var_not_allowed(), err_pos::Current);
+      }
+    }
 
     auto id = next_tok();
     if (auto ref = utils::try_cast<semantics::scope_ref>(sym);
