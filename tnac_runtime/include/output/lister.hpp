@@ -59,6 +59,8 @@ namespace tnac::rt::out
 
     void print(const ast::call_expr& expr) noexcept;
 
+    void print(const ast::bind_expr& expr) noexcept;
+
     void print(const ast::lit_expr& expr) noexcept;
 
     void print(const ast::id_expr& expr) noexcept;

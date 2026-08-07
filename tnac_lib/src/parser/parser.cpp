@@ -1349,6 +1349,12 @@ namespace tnac
         continue;
       }
 
+      if (detail::is_open_bracket(next))
+      {
+        res = bind_expr(*res);
+        continue;
+      }
+
       if (detail::is_dot(next))
       {
         VALUE_GUARD(m_defaultLookupType, sema::Scoped);
@@ -1380,6 +1386,19 @@ namespace tnac
       next_tok();
 
     return m_builder.make_call(callee, std::move(args));
+  }
+
+  ast::expr* parser::bind_expr(ast::expr& closure) noexcept
+  {
+    next_tok();
+    auto args = arg_list(token::BracketClose);
+
+    if (!detail::is_close_bracket(peek_next()))
+      args.emplace_back(error_expr(peek_next(), diag::expected(']'), err_pos::Last));
+    else
+      next_tok();
+
+    return m_builder.make_bind(closure, std::move(args));
   }
 
   ast::expr* parser::dot_expr(ast::expr& accd) noexcept

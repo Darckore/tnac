@@ -627,6 +627,53 @@ namespace tnac::ast
 
 
   //
+  // Bind expression
+  // Represents an explicit init of a closure
+  //
+  class bind_expr final : public list<expr>, public expr
+  {
+  public:
+    using arg_list = elem_list;
+
+  private:
+    friend class builder;
+
+  public:
+    CLASS_SPECIALS_NONE(bind_expr);
+
+    virtual ~bind_expr() noexcept;
+
+  protected:
+    bind_expr(expr& obj, arg_list args) noexcept;
+
+  public:
+    //
+    // Returns the inited expr
+    //
+    const expr& closure() const noexcept;
+
+    //
+    // Returns the inited expr
+    //
+    expr& closure() noexcept;
+
+    //
+    // Returns the argument list
+    //
+    const arg_list& args() const noexcept;
+
+    //
+    // Returns the argument list
+    //
+    arg_list& args() noexcept;
+
+  private:
+    arg_list m_args;
+    expr* m_inited{};
+  };
+
+
+  //
   // Matcher for conditional expression's pattern
   //
   class matcher final : public expr

@@ -592,6 +592,27 @@ namespace tnac::ast
     }
 
     //
+    // Visits a bind expression
+    //
+    void visit_impl(dest<bind_expr> bind) noexcept
+    {
+      if constexpr (is_top_down())
+        visit(bind);
+
+      if (preview(bind))
+      {
+        visit_root(&bind->closure());
+        for (auto arg : bind->args())
+        {
+          visit_root(arg);
+        }
+      }
+
+      if constexpr (is_bottom_up())
+        visit(bind);
+    }
+
+    //
     // Visits a shorthand conditional
     //
     void visit_impl(dest<cond_short> cond) noexcept
@@ -803,6 +824,7 @@ namespace tnac::ast
       case Abs:        return dispatch(&cast<abs_expr>(cur));
       case Typed:      return dispatch(&cast<typed_expr>(cur));
       case Call:       return dispatch(&cast<call_expr>(cur));
+      case Bind:       return dispatch(&cast<bind_expr>(cur));
       case Matcher:    return dispatch(&cast<matcher>(cur));
       case Pattern:    return dispatch(&cast<pattern>(cur));
       case CondShort:  return dispatch(&cast<cond_short>(cur));

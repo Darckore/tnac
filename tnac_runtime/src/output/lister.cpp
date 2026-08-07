@@ -58,6 +58,7 @@ namespace tnac::rt::out
     case Paren:      print(cast<ast::paren_expr>(*root));        break;
     case Typed:      print(cast<ast::typed_expr>(*root));        break;
     case Call:       print(cast<ast::call_expr>(*root));         break;
+    case Bind:       print(cast<ast::bind_expr>(*root));         break;
     case Result:     print(cast<ast::result_expr>(*root));       break;
     case Ret:        print(cast<ast::ret_expr>(*root));          break;
     case CondShort:  print(cast<ast::cond_short>(*root));        break;
@@ -231,6 +232,12 @@ namespace tnac::rt::out
   {
     print(&expr.callable());
     print_args(expr.args(), '(', ')');
+  }
+
+  void lister::print(const ast::bind_expr& expr) noexcept
+  {
+    print(&expr.closure());
+    print_args(expr.args(), '[', ']');
   }
 
   void lister::print(const ast::lit_expr& expr) noexcept

@@ -106,6 +106,11 @@ namespace tnac::ast
     call_expr* make_call(expr& callable, call_expr::arg_list args) noexcept;
 
     //
+    // Creates a bind expression
+    //
+    bind_expr* make_bind(expr& obj, bind_expr::arg_list args) noexcept;
+
+    //
     // Creates an array expr
     //
     array_expr* make_array(const token& ob, array_expr::elem_list elements) noexcept;

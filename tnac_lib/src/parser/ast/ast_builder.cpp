@@ -82,6 +82,11 @@ namespace tnac::ast
     return make<call_expr>(callable, std::move(args));
   }
 
+  bind_expr* builder::make_bind(expr& obj, bind_expr::arg_list args) noexcept
+  {
+    return make<bind_expr>(obj, std::move(args));
+  }
+
   array_expr* builder::make_array(const token& ob, array_expr::elem_list elements) noexcept
   {
     return make<array_expr>(ob, std::move(elements));

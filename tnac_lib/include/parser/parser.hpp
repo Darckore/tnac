@@ -374,6 +374,11 @@ namespace tnac
     ast::expr* call_expr(ast::expr& callee) noexcept;
 
     //
+    // Parses the bind expression
+    //
+    ast::expr* bind_expr(ast::expr& closure) noexcept;
+
+    //
     // Parses a dot expression
     //
     ast::expr* dot_expr(ast::expr& accd) noexcept;

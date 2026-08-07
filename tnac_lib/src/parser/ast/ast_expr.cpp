@@ -500,6 +500,47 @@ namespace tnac::ast // Call expr
 }
 
 
+namespace tnac::ast // Bind expr
+{
+  // Special members
+
+  bind_expr::~bind_expr() noexcept = default;
+
+  bind_expr::bind_expr(expr& obj, arg_list args) noexcept :
+    expr{ kind::Bind, obj.pos() },
+    m_args{ std::move(args) },
+    m_inited{ &obj }
+  {
+    assume_ancestry(&obj);
+    for (auto arg : m_args)
+    {
+      assume_ancestry(arg);
+    }
+  }
+
+
+  // Public members
+
+  const expr& bind_expr::closure() const noexcept
+  {
+    return *m_inited;
+  }
+  expr& bind_expr::closure() noexcept
+  {
+    return FROM_CONST(closure);
+  }
+
+  const bind_expr::arg_list& bind_expr::args() const noexcept
+  {
+    return m_args;
+  }
+  bind_expr::arg_list& bind_expr::args() noexcept
+  {
+    return FROM_CONST(args);
+  }
+}
+
+
 namespace tnac::ast // Matcher
 {
   // Special members

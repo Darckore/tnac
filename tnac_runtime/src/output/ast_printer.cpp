@@ -265,6 +265,15 @@ namespace tnac::rt::out
     push_parent(expr.args().size() + 1);
   }
 
+  void ast_printer::visit(const ast::bind_expr& expr) noexcept
+  {
+    indent();
+    node_designator("Bind expr"sv);
+    additional_info(expr);
+    endl();
+    push_parent(expr.args().size() + 1);
+  }
+
   void ast_printer::visit(const ast::cond_short& expr) noexcept
   {
     indent();
