@@ -54,7 +54,7 @@ namespace tnac::detail
     using known_var_names = std::unordered_set<string_t>;
 
     struct closure;
-    using closure_store   = std::unordered_map<const ir::function*, closure>;
+    using closure_store   = std::unordered_map<ir::function*, closure>;
 
     struct func_data;
     using data_stack = std::vector<func_data>;
@@ -234,13 +234,13 @@ namespace tnac::detail
     //
     // Creates an uninited closure
     //
-    void add_closure(const ir::function& fn, ast::func_decl& fd) noexcept;
+    void add_closure(ir::function& fn, ast::func_decl& fd) noexcept;
 
     //
     // Marks the specified closure as inited and returns a pointer to its declarator
     // nullptr if already inited
     //
-    ast::func_decl* init_closure(const ir::function& fn) noexcept;
+    ast::func_decl* init_closure(ir::function& fn) noexcept;
 
   private:
     //

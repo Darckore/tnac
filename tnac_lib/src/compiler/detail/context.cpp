@@ -252,13 +252,13 @@ namespace tnac::detail
     return fd.m_funcScope == fd.m_curScope;
   }
 
-  void context::add_closure(const ir::function& fn, ast::func_decl& fd) noexcept
+  void context::add_closure(ir::function& fn, ast::func_decl& fd) noexcept
   {
     auto&& data = cur_data();
     data.m_closures.try_emplace(&fn, closure{ .m_decl = &fd });
   }
 
-  ast::func_decl* context::init_closure(const ir::function& fn) noexcept
+  ast::func_decl* context::init_closure(ir::function& fn) noexcept
   {
     auto&& data = cur_data().m_closures;
     auto it = data.find(&fn);
