@@ -434,17 +434,27 @@ namespace tnac
     auto&& to = instr[0];
     auto&& from = instr[1];
 
-    if (!from.is_param())
+    if (from.is_param())
     {
-      const auto regId = alloc_new(to);
-      store_value(regId, from);
+      UTILS_ASSERT(to.is_register());
+      auto&& target = to.get_reg();
+      auto par = from.get_param();
+      m_env.map(m_curFrame, &target, *par);
       return;
     }
 
-    UTILS_ASSERT(to.is_register());
-    auto&& target = to.get_reg();
-    auto par = from.get_param();
-    m_env.map(m_curFrame, &target, *par);
+    const auto regId = alloc_new(to);
+    if (from.is_record())
+    {
+      auto&& rec = from.get_record();
+      auto curFn = m_curFrame->function();
+      UTILS_ASSERT(curFn.is_closure());
+      UTILS_ASSERT(curFn.closure_data().size() == rec.size());
+      store_value(regId, eval::value{ std::move(curFn) }); // the closest to 'this' ptr we can get
+      return;
+    }
+
+    store_value(regId, from);
   }
 
   void ir_eval::jump() noexcept
