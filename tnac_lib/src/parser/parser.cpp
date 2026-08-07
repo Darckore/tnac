@@ -1244,7 +1244,8 @@ namespace tnac
     if (dotRhs && utils::eq_any(sym->what(), sym_kind::Variable, sym_kind::Parameter))
     {
       if (auto var = utils::try_cast<sym_kind::Variable>(sym);
-               !var || !var->is_capture())
+               !var ||
+               !var->is_capture())
       {
         return error_expr(next_tok(), diag::var_not_allowed(), err_pos::Current);
       }
@@ -1415,6 +1416,16 @@ namespace tnac
       return error_expr(next, diag::expected_id(), err_pos::Current);
 
     auto accr = id_expr(true);
+    if (auto id = utils::try_cast<ast::id_expr>(accr))
+    {
+      auto&& sym = id->symbol();
+      auto prevScope = sg.prev();
+      if (prevScope && sym.is(semantics::sym_kind::Variable) &&
+          &sym.owner_scope() != sg.prev()->encl_skip_internal())
+      {
+        accr = error_expr(id->pos(), diag::var_not_allowed(), err_pos::Current);
+      }
+    }
     return m_builder.make_dot(accd, *accr);
   }
 
