@@ -963,6 +963,61 @@ namespace tnac
     return false;
   }
 
+  bool compiler::preview(ast::bind_expr& bind) noexcept
+  {
+    auto&& args = bind.args();
+    const auto argSz = args.size();
+    compile(bind.closure());
+    auto closure = extract();
+
+    if (!closure.is_value())
+    {
+      for (auto arg : args)
+        compile(*arg);
+
+      return false;
+    }
+
+    auto clVal = closure.get_value();
+    auto ft = clVal.try_get<eval::function_type>();
+    if (!ft)
+    {
+      error(bind.pos().at(), diag::expected("function"sv));
+      m_stack.push_undef();
+      return false;
+    }
+
+    auto funcT = *ft;
+    auto&& sym = *funcT;
+    if (!sym.is_closure())
+    {
+      error(bind.pos().at(), diag::expected("closure"sv));
+      m_stack.push_undef();
+      return false;
+    }
+
+    const auto expSz = sym.rec().size();
+    if (argSz != expSz)
+    {
+      error(bind.pos().at(), diag::wrong_arg_num(expSz, argSz));
+      m_stack.push_undef();
+      return false;
+    }
+
+    auto&& rec = emit_salloc(sym.rec(), eval::value::function(sym));
+    m_context.append_closure_reg(sym, rec);
+    for (ir::record::size_type idx{}; auto arg : bind.args())
+    {
+      compile(*arg);
+      auto res = extract();
+      emit_elem_store(rec, std::move(res), idx);
+      ++idx;
+    }
+    m_stack.push(&rec);
+
+    return false;
+  }
+
   bool compiler::preview(ast::dot_expr& dot) noexcept
   {
     UTILS_ASSERT(dot.accessor().is(ast::node_kind::Identifier));

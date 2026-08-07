@@ -166,10 +166,14 @@ namespace tnac
     bool preview(ast::cond_expr& cond) noexcept;
 
     //
-    // Used to report an error if a known function is provided with a wrong
-    // number of arguments
+    // Handles call expressions
     //
     bool preview(ast::call_expr& call) noexcept;
+
+    //
+    // Handles bind expressions
+    //
+    bool preview(ast::bind_expr& bind) noexcept;
 
     //
     // Handles dot expressions with potentially unknown entities
