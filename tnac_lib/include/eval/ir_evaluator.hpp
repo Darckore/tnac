@@ -279,6 +279,11 @@ namespace tnac
     void call() noexcept;
 
     //
+    // Handles bind instructions
+    //
+    void bind() noexcept;
+
+    //
     // Handles stream reads
     //
     void stream_read() noexcept;

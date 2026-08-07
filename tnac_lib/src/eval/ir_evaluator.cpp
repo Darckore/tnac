@@ -331,6 +331,8 @@ namespace tnac
       store_elem();
     else if (opcode == DynBind)
       dyn_bind();
+    else if (opcode == Bind)
+      bind();
     else if (opcode == StreamRead)
       stream_read();
     else if (opcode == StreamWrite)
@@ -783,6 +785,41 @@ namespace tnac
       m_instrPtr = m_instrPtr->next();
       return;
     }
+  }
+
+  void ir_eval::bind() noexcept
+  {
+    auto&& instr = cur();
+    auto&& to = instr[0];
+    auto&& f = instr[1];
+    const auto regId = alloc_new(to);
+    auto closure = eval::extract_function(get_value(f).value_or(eval::value{}));
+    UTILS_ASSERT(closure);
+
+    auto func = *closure;
+    if (!func->is_closure())
+    {
+      store_value(regId, eval::value{});
+      return;
+    }
+
+    auto&& rec = func->rec();
+    const auto argCount = instr.operand_count() - 2;
+    if (rec.size() != argCount)
+    {
+      store_value(regId, eval::value{});
+      return;
+    }
+
+    alloc_record(func, func->rec());
+    auto elemIdx = ir::record::size_type{};
+    for (auto idx = op_count{ 2 }; idx < instr.operand_count(); ++idx)
+    {
+      auto arg = get_value(instr[idx]).value_or(eval::value{});
+      func.closure_data().write_at(std::move(arg), elemIdx++);
+    }
+
+    store_value(regId, eval::value{ std::move(func) });
   }
 
   void ir_eval::stream_read() noexcept
