@@ -11,9 +11,9 @@ namespace tnac::eval
 
   // Public members
 
-  stack_frame& call_stack::make_frame(name_type name, param_count argSz, entity_id jmp) noexcept
+  stack_frame& call_stack::make_frame(eval::function_type func, param_count argSz, entity_id jmp) noexcept
   {
-    return m_frames.emplace_back(name, argSz, jmp);
+    return m_frames.emplace_back(std::move(func), argSz, jmp);
   }
 
   stack_frame* call_stack::pop_frame() noexcept

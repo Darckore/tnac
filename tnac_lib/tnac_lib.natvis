@@ -677,8 +677,9 @@
   </Type>
 
   <Type Name="tnac::eval::stack_frame">
-    <DisplayString>frame: {m_name,sb}</DisplayString>
+    <DisplayString>frame: {m_func.m_func->m_name,sb}</DisplayString>
     <Expand>
+      <Item Name="[function]">m_func</Item>
       <Item Name="[memory]">m_mem</Item>
       <Item Name="[return addr]">m_jmp</Item>
       <Item Name="[return value id]">m_retId</Item>

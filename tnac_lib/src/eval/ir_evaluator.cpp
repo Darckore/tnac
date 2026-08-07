@@ -126,11 +126,12 @@ namespace tnac
     m_env.clear();
   }
 
-  void ir_eval::enter(const ir::function& func) noexcept
+  void ir_eval::enter(eval::function_type func) noexcept
   {
     auto jmpBack = m_instrPtr ? m_instrPtr->next() : nullptr;
-    m_curFrame = &m_stack.make_frame(func.name(), func.param_count(), jmpBack);
-    auto&& entry = func.entry();
+    const auto paramCnt = func->param_count();
+    m_curFrame = &m_stack.make_frame(std::move(func), paramCnt, jmpBack);
+    auto&& entry = func->entry();
     m_branching.push({ nullptr, &entry });
     init_instr_ptr(*entry.begin());
   }
@@ -612,20 +613,20 @@ namespace tnac
   bool ir_eval::call(entity_id regId, eval::value f, const ir::instruction& instr) noexcept
   {
     const auto argCount = instr.operand_count() - 2;
-    auto callable = f.try_get<eval::function_type>();
+    auto callable = eval::extract_function(f);
     if (!callable)
     {
       return false;
     }
 
-    auto&& func = *callable;
+    auto func = std::move(*callable);
     if (func->param_count() != argCount)
     {
       return false;
     }
 
     auto prevFrame = m_curFrame;
-    enter(*func);
+    enter(std::move(func));
     m_curFrame->attach_ret_val(regId);
     for (auto idx = op_count{ 2 }; idx < instr.operand_count(); ++idx)
     {

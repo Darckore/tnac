@@ -23,13 +23,18 @@ namespace tnac::eval
 
     ~stack_frame() noexcept;
 
-    stack_frame(name_type fname, param_count argSz, entity_id jmpBack) noexcept;
+    stack_frame(eval::function_type func, param_count argSz, entity_id jmpBack) noexcept;
 
   public:
     //
     // Returns the name
     //
     name_type name() const noexcept;
+
+    //
+    // Returns the associated function
+    //
+    eval::function_type function() const noexcept;
 
     //
     // Appends a function argument and returns its id
@@ -73,7 +78,7 @@ namespace tnac::eval
 
   private:
     memory m_mem;
-    name_type m_name;
+    eval::function_type m_func;
     entity_id m_jmp{};
     entity_id m_retId{};
   };

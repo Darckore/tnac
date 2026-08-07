@@ -69,7 +69,7 @@ namespace tnac
     //
     // Creates a stack frame for the given function and enters it
     //
-    void enter(const ir::function& func) noexcept;
+    void enter(eval::function_type func) noexcept;
 
     //
     // Inits the instruction pointer with the provided instruction

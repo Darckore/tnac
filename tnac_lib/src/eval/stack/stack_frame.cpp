@@ -1,4 +1,5 @@
 #include "eval/stack/stack_frame.hpp"
+#include "cfg/ir/ir_function.hpp"
 
 namespace tnac::eval
 {
@@ -6,8 +7,8 @@ namespace tnac::eval
 
   stack_frame::~stack_frame() noexcept = default;
 
-  stack_frame::stack_frame(name_type fname, param_count argSz, entity_id jmpBack) noexcept :
-    m_name{ fname },
+  stack_frame::stack_frame(eval::function_type func, param_count argSz, entity_id jmpBack) noexcept :
+    m_func{ std::move(func) },
     m_jmp{ jmpBack }
   {
     m_mem.reserve(argSz);
@@ -18,7 +19,12 @@ namespace tnac::eval
 
   stack_frame::name_type stack_frame::name() const noexcept
   {
-    return m_name;
+    return m_func->name();
+  }
+
+  eval::function_type stack_frame::function() const noexcept
+  {
+    return m_func;
   }
 
   stack_frame& stack_frame::add_arg(value argVal) noexcept

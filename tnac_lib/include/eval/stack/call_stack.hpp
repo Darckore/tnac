@@ -15,7 +15,6 @@ namespace tnac::eval
   public:
     using data_type   = stack_frame::list_type;
     using param_count = stack_frame::param_count;
-    using name_type   = stack_frame::name_type;
 
   public:
     CLASS_SPECIALS_NONE_CUSTOM(call_stack);
@@ -28,7 +27,7 @@ namespace tnac::eval
     //
     // Creates a new stack frame and returns a reference to it
     //
-    stack_frame& make_frame(name_type name, param_count argSz, entity_id jmp) noexcept;
+    stack_frame& make_frame(eval::function_type func, param_count argSz, entity_id jmp) noexcept;
 
     //
     // Removes the most recent stack frame and returns a pointer to a previous one
