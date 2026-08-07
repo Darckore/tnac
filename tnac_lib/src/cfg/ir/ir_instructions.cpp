@@ -275,6 +275,7 @@ namespace tnac::ir // instruction
 
     case Select:  return "sel"sv;
     case Call:    return "call"sv;
+    case Bind:    return "bind"sv;
     case Jump:    return "jmp"sv;
     case Ret:     return "ret"sv;
 
@@ -373,6 +374,7 @@ namespace tnac::ir // instruction
 
     case Select:  count = 4; break;
     case Call:    count = 2; break;
+    case Bind:    count = 2; break;
     case Jump:    count = 1; break;
 
     case Ret:     count = 1; break;

@@ -326,6 +326,7 @@ namespace tnac::ir
 
     Select,
     Call,
+    Bind,
     Jump,
     Ret,
 

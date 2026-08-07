@@ -322,6 +322,11 @@ namespace tnac
     void emit_call(ir::operand callable, size_type argCount) noexcept;
 
     //
+    // Creates a bind instruction
+    //
+    void emit_bind(ir::operand closure, size_type argCount) noexcept;
+
+    //
     // Creates a dynamic bind instruction
     //
     void emit_dyn(ir::operand scope, string_t name) noexcept;

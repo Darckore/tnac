@@ -103,7 +103,10 @@ namespace tnac::rt::out
     case StoreElem:   print_elem_store(instr); break;
     case Append:      print_append(instr);     break;
     case Load:        print_load(instr);       break;
-    case Call:        print_call(instr);       break;
+    case Call:        
+    case Bind:
+      print_call(instr);
+      break;
     case Jump:        print_jump(instr);       break;
     case Ret:         print_ret(instr);        break;
     case Phi:         print_phi(instr);        break;

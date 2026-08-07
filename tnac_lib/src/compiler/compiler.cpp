@@ -975,6 +975,7 @@ namespace tnac
       for (auto arg : args)
         compile(*arg);
 
+      emit_bind(std::move(closure), argSz);
       return false;
     }
 
@@ -1362,6 +1363,19 @@ namespace tnac
     auto&& instr = make(ir::op_code::Call, size + 2); // result + callable + args
     auto res = extract();
     instr.add(std::move(callable));
+    m_stack.fill(instr, size);
+    intern_array(instr);
+    m_stack.push(std::move(res));
+  }
+
+  void compiler::emit_bind(ir::operand closure, size_type argCount) noexcept
+  {
+    const auto size = argCount;
+    UTILS_ASSERT(m_stack.has_at_least(size));
+
+    auto&& instr = make(ir::op_code::Bind, size + 2); // result + closure + args
+    auto res = extract();
+    instr.add(std::move(closure));
     m_stack.fill(instr, size);
     intern_array(instr);
     m_stack.push(std::move(res));
