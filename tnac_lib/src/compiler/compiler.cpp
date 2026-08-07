@@ -1561,12 +1561,7 @@ namespace tnac
 
     compile(body);
 
-    // force init any closure that might be there
-    if (!m_stack.empty() && m_stack.top().is_value())
-    {
-      auto lastVal = extract();
-      m_stack.push(std::move(lastVal));
-    }
+    init_all_closures();
 
     auto block = &m_context.terminal_or_entry();
     if (auto last = m_context.last_store())
@@ -1721,13 +1716,28 @@ namespace tnac
     if (!decl)
       return;
 
+    init_closure(op, func, *decl);
+  }
+
+  void compiler::init_closure(const ir::operand& op, ir::function& func, ast::func_decl& decl) noexcept
+  {
     auto&& rec = emit_salloc(func.rec(), op);
-    for (ir::record::size_type idx{}; auto cap : decl->captures())
+    for (ir::record::size_type idx{}; auto cap : decl.captures())
     {
       compile(cap->initialiser());
       auto res = extract();
       emit_elem_store(rec, std::move(res), idx);
       ++idx;
+    }
+  }
+
+  void compiler::init_all_closures() noexcept
+  {
+    // Init any closure that happens to be on the stack
+    if (!m_stack.empty() && m_stack.top().is_value())
+    {
+      auto lastVal = extract();
+      m_stack.push(std::move(lastVal));
     }
   }
 
