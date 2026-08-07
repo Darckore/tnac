@@ -58,6 +58,18 @@ namespace tnac::eval
     //
     void remove() noexcept;
 
+    //
+    // Writes value at the specified index
+    // DOES NOT check the boundaries
+    //
+    void write_at(value val, size_type idx) noexcept;
+
+    //
+    // Reads value at the specified index
+    // DOES NOT check the boundaries
+    //
+    value read_at(size_type idx) const noexcept;
+
   public:
     auto begin() const noexcept
     {

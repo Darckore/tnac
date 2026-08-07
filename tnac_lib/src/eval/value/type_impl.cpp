@@ -41,6 +41,18 @@ namespace tnac::eval
   {
     SELF_DELETE();
   }
+
+  void array_data::write_at(value val, size_type idx) noexcept
+  {
+    UTILS_ASSERT(idx < size());
+    m_data[idx] = std::move(val);
+  }
+
+  value array_data::read_at(size_type idx) const noexcept
+  {
+    UTILS_ASSERT(idx < size());
+    return m_data[idx];
+  }
 }
 
 

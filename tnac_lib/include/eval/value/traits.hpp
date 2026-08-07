@@ -623,9 +623,13 @@ namespace tnac::eval
 
   using val_opt = std::optional<value>;
 
+  using fn_opt = typed_value<function_type>;
+
   using arg_filler = std::move_only_function<void(value&) noexcept>;
 
   val_opt instantiate(type_id ti, std::size_t argSz, arg_filler filler) noexcept;
 
   array_wrapper* extract_array(const value& val) noexcept;
+
+  fn_opt extract_function(const value& val) noexcept;
 }

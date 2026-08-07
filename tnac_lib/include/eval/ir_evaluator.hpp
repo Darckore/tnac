@@ -197,6 +197,11 @@ namespace tnac
     void append() noexcept;
 
     //
+    // Stores a record element
+    //
+    void store_elem() noexcept;
+
+    //
     // Stores a value from a store instruction
     //
     void store() noexcept;

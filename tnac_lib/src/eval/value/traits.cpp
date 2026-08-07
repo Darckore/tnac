@@ -87,4 +87,9 @@ namespace tnac::eval
     auto arrOpt = cast_value<array_type>(val);
     return arrOpt ? &(arrOpt->wrapper()) : nullptr;
   }
+
+  fn_opt extract_function(const value& val) noexcept
+  {
+    return cast_value<function_type>(val);
+  }
 }

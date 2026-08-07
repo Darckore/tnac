@@ -324,6 +324,8 @@ namespace tnac
       alloc_record();
     else if (opcode == Append)
       append();
+    else if (opcode == StoreElem)
+      store_elem();
     else if (opcode == DynBind)
       dyn_bind();
     else if (opcode == StreamRead)
@@ -366,18 +368,17 @@ namespace tnac
 
     UTILS_ASSERT(recOp.is_record());
     auto&& rec = recOp.get_record();
-    auto&& funcVal = get_value(fnOp).value_or(eval::value{});
-    UTILS_ASSERT(funcVal.id() == eval::value::Function);
+    auto&& func = eval::extract_function(get_value(fnOp).value_or(eval::value{}));
+    UTILS_ASSERT(func);
 
-    auto func = funcVal.get<eval::value::Function>();
     auto&& arrData = m_valStore->allocate_array(rec.size());
     for (ir::record::size_type idx{}; idx < rec.size(); ++idx)
     {
       arrData.add({});
     }
-    func.attach_closure(arrData);
+    func->attach_closure(arrData);
     const auto regId = alloc_new(res);
-    store_value(regId, eval::value{ std::move(func) });
+    store_value(regId, eval::value{ std::move(*func) });
   }
 
   void ir_eval::append() noexcept
@@ -394,6 +395,25 @@ namespace tnac
 
     auto&& arrData = arrWrp->data();
     arrData.add(std::move(*storedVal));
+  }
+
+  void ir_eval::store_elem() noexcept
+  {
+    auto&& instr = cur();
+    auto&& from = instr[0];
+    auto&& to = instr[1];
+    auto&& at = instr[2];
+
+    auto storedVal = get_value(from);
+    UTILS_ASSERT(storedVal);
+
+    UTILS_ASSERT(at.is_index());
+    const auto idx = at.get_index();
+
+    auto func = eval::extract_function(get_value(to).value_or(eval::value{}));
+    UTILS_ASSERT(func && func->is_closure());
+    auto&& rec = func->closure_data();
+    rec.write_at(std::move(*storedVal), idx);
   }
 
   void ir_eval::store() noexcept
