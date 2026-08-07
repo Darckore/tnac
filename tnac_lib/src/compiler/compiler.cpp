@@ -1731,8 +1731,7 @@ namespace tnac
     // Init any closure that happens to be on the stack
     if (!m_stack.empty() && m_stack.top().is_value())
     {
-      auto lastVal = extract();
-      m_stack.push(std::move(lastVal));
+      init_closure(m_stack.top());
     }
 
     while (auto next = m_context.next_closure())
