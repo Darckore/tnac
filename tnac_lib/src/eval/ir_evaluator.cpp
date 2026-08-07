@@ -362,6 +362,16 @@ namespace tnac
     store_value(regId, eval::value::array(wrapper));
   }
 
+  void ir_eval::alloc_record(eval::function_type& func, ir::record& rec) noexcept
+  {
+    auto&& arrData = m_valStore->allocate_array(rec.size());
+    for (ir::record::size_type idx{}; idx < rec.size(); ++idx)
+    {
+      arrData.add({});
+    }
+    func.attach_closure(arrData);
+  }
+
   void ir_eval::alloc_record() noexcept
   {
     auto&& instr = cur();
@@ -374,12 +384,7 @@ namespace tnac
     auto&& func = eval::extract_function(get_value(fnOp).value_or(eval::value{}));
     UTILS_ASSERT(func);
 
-    auto&& arrData = m_valStore->allocate_array(rec.size());
-    for (ir::record::size_type idx{}; idx < rec.size(); ++idx)
-    {
-      arrData.add({});
-    }
-    func->attach_closure(arrData);
+    alloc_record(*func, rec);
     const auto regId = alloc_new(res);
     store_value(regId, eval::value{ std::move(*func) });
   }
@@ -450,7 +455,11 @@ namespace tnac
     {
       auto&& rec = from.get_record();
       auto curFn = m_curFrame->function();
-      UTILS_ASSERT(curFn.is_closure());
+      // blank init in case called improperly
+      if (!curFn.is_closure())
+      {
+        alloc_record(curFn, rec);
+      }
       UTILS_ASSERT(curFn.closure_data().size() == rec.size());
       store_value(regId, eval::value{ std::move(curFn) }); // the closest to 'this' ptr we can get
       return;

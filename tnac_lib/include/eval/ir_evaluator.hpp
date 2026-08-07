@@ -187,6 +187,11 @@ namespace tnac
     void alloc_array() noexcept;
 
     //
+    // Allocates a record with the given parameters
+    //
+    void alloc_record(eval::function_type& func, ir::record& rec) noexcept;
+
+    //
     // Allocates a record
     //
     void alloc_record() noexcept;
