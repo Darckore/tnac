@@ -770,7 +770,8 @@ namespace tnac
 
     if (!call(regId, *callable, instr))
     {
-      // todo: error & abort
+      store_value(regId, eval::value{});
+      m_instrPtr = m_instrPtr->next();
       return;
     }
   }
