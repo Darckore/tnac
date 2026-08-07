@@ -311,6 +311,8 @@ namespace tnac
       alloc();
     else if (opcode == Store)
       store();
+    else if (opcode == GetElem)
+      load_elem();
     else if (opcode == Load)
       load();
     else if (opcode == Test)
@@ -455,6 +457,25 @@ namespace tnac
     }
 
     store_value(regId, from);
+  }
+
+  void ir_eval::load_elem() noexcept
+  {
+    auto&& instr = cur();
+    auto&& to = instr[0];
+    auto&& from = instr[1];
+    auto&& at = instr[2];
+
+    UTILS_ASSERT(at.is_index());
+    const auto idx = at.get_index();
+
+    auto func = eval::extract_function(get_value(from).value_or(eval::value{}));
+    UTILS_ASSERT(func && func->is_closure());
+    auto&& rec = func->closure_data();
+    auto resVal = rec.read_at(idx);
+
+    auto regId = alloc_new(to);
+    store_value(regId, std::move(resVal));
   }
 
   void ir_eval::jump() noexcept

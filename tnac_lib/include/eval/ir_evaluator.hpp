@@ -212,6 +212,11 @@ namespace tnac
     void load() noexcept;
 
     //
+    // Loads a value of a record element
+    //
+    void load_elem() noexcept;
+
+    //
     // Handles jumps
     //
     void jump() noexcept;
