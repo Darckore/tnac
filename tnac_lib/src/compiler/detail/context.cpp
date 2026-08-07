@@ -41,7 +41,6 @@ namespace tnac::detail // func data
     symbol* m_lastStore{};
     var_store m_vars;
     closure_store m_closures;
-    closure_queue m_toInitCl;
     known_var_names m_varNames;
   };
 }
@@ -258,9 +257,7 @@ namespace tnac::detail
   void context::add_closure(ir::function& fn, ast::func_decl& fd) noexcept
   {
     auto&& data = cur_data();
-    auto[func, ok] = data.m_closures.try_emplace(&fn, closure{ .m_decl = &fd });
-    if (ok)
-      data.m_toInitCl.push(func->first);
+    data.m_closures.try_emplace(&fn, closure{ .m_decl = &fd });
   }
 
   void context::append_closure_reg(ir::function& fn, ir::vreg& reg) noexcept
@@ -295,16 +292,6 @@ namespace tnac::detail
     return item->m_decl;
   }
 
-  ir::function* context::next_closure() noexcept
-  {
-    auto&& clQueue = cur_data().m_toInitCl;
-    if (clQueue.empty())
-      return {};
-
-    auto res = clQueue.front();
-    clQueue.pop();
-    return res;
-  }
 
   // Private members
 

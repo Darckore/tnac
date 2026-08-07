@@ -459,9 +459,9 @@ namespace tnac
     ir::vreg* init_closure(const ir::operand& op) noexcept;
 
     //
-    // Inits all remaining closures on function exit
+    // Inits any remaining closures on function exit
     //
-    void init_all_closures() noexcept;
+    void init_last_closure() noexcept;
 
     //
     // Attempts to retrieve the module symbol from the given import directive

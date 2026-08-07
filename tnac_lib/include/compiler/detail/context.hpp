@@ -55,7 +55,6 @@ namespace tnac::detail
 
     struct closure;
     using closure_store   = std::unordered_map<ir::function*, closure>;
-    using closure_queue   = std::queue<ir::function*>;
 
     struct func_data;
     using data_stack = std::vector<func_data>;
@@ -253,11 +252,6 @@ namespace tnac::detail
     // nullptr if already inited
     //
     ast::func_decl* init_closure(ir::function& fn) noexcept;
-
-    //
-    // Retrieves the closure stored at the queue top
-    //
-    ir::function* next_closure() noexcept;
 
   private:
     //

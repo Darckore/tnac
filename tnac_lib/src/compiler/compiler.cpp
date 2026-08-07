@@ -1572,8 +1572,7 @@ namespace tnac
     }
 
     compile(body);
-
-    init_all_closures();
+    init_last_closure();
 
     auto block = &m_context.terminal_or_entry();
     if (auto last = m_context.last_store())
@@ -1741,7 +1740,7 @@ namespace tnac
     return &rec;
   }
 
-  void compiler::init_all_closures() noexcept
+  void compiler::init_last_closure() noexcept
   {
     // Init any closure that happens to be on the stack
     if (!m_stack.empty() && m_stack.top().is_value())
@@ -1752,12 +1751,6 @@ namespace tnac
         m_stack.push(reg);
       else
         m_stack.push(std::move(op));
-    }
-
-    while (auto next = m_context.next_closure())
-    {
-      auto op = ir::operand{ eval::value::function(*next) };
-      init_closure(op);
     }
   }
 
