@@ -95,8 +95,6 @@ namespace tnac::rt::out
 
     const ast::node& nearest_to_scope(const ast::node& src) noexcept;
 
-    void print_invocation(const ast::invocation& expr) noexcept;
-
     void print_args(const args_t& args, char_t open, char_t close) noexcept;
 
     void print_params(const params_t& params) noexcept;

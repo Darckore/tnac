@@ -223,7 +223,8 @@ namespace tnac::rt::out
 
   void lister::print(const ast::typed_expr& expr) noexcept
   {
-    print_invocation(expr);
+    print_token(expr.type_name(), false);
+    print_args(expr.args(), '(', ')');
   }
 
   void lister::print(const ast::call_expr& expr) noexcept
@@ -445,12 +446,6 @@ namespace tnac::rt::out
       res = next;
     }
     return *res;
-  }
-
-  void lister::print_invocation(const ast::invocation& expr) noexcept
-  {
-    print_token(expr.name(), false);
-    print_args(expr.args(), '(', ')');
   }
 
   void lister::print_args(const args_t& args, char_t open, char_t close) noexcept

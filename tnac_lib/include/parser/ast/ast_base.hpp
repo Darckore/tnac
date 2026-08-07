@@ -31,6 +31,7 @@ namespace tnac::ast
     Abs,
     Typed,
     Call,
+    Bind,
     Decl,
     Result,
     Ret,

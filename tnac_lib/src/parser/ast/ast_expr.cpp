@@ -425,14 +425,14 @@ namespace tnac::ast // Abs expr
 }
 
 
-namespace tnac::ast // Invocation
+namespace tnac::ast // Typed expr
 {
   // Special members
 
-  invocation::~invocation() noexcept = default;
+  typed_expr::~typed_expr() noexcept = default;
 
-  invocation::invocation(node_kind kind, const token& name, arg_list args) noexcept :
-    expr{ kind, name },
+  typed_expr::typed_expr(const token& typeName, arg_list args) noexcept :
+    expr{ kind::Typed, typeName },
     m_args{ std::move(args) }
   {
     for (auto arg : m_args)
@@ -441,42 +441,20 @@ namespace tnac::ast // Invocation
     }
   }
 
-
-  // Public members
-
-  const token& invocation::name() const noexcept
-  {
-    return pos();
-  }
-
-  const invocation::arg_list& invocation::args() const noexcept
-  {
-    return m_args;
-  }
-  invocation::arg_list& invocation::args() noexcept
-  {
-    return FROM_CONST(args);
-  }
-}
-
-
-namespace tnac::ast // Typed expr
-{
-  // Special members
-
-  typed_expr::~typed_expr() noexcept = default;
-
-  typed_expr::typed_expr(const token& typeName, arg_list args) noexcept :
-    invocation{ kind::Typed, typeName, std::move(args) }
-  {
-  }
-
-
   // Public members
 
   const token& typed_expr::type_name() const noexcept
   {
-    return name();
+    return pos();
+  }
+
+  const typed_expr::arg_list& typed_expr::args() const noexcept
+  {
+    return m_args;
+  }
+  typed_expr::arg_list& typed_expr::args() noexcept
+  {
+    return FROM_CONST(args);
   }
 }
 
