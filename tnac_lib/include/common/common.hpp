@@ -183,6 +183,8 @@ namespace tnac
     using reference       = object_type&;
     using const_reference = const object_type&;
 
+    struct empty_tag {};
+
   private:
     static void ref(pointer obj) noexcept
     {
@@ -213,6 +215,9 @@ namespace tnac
       obj.addref();
     }
 
+    explicit rc_wrapper(empty_tag) noexcept
+    {}
+
     ~rc_wrapper() noexcept
     {
       unref(m_obj);
@@ -220,9 +225,7 @@ namespace tnac
 
     rc_wrapper(const rc_wrapper& other) noexcept
     {
-      unref(m_obj);
-      m_obj = other.m_obj;
-      ref(m_obj);
+      reinit(other.m_obj);
     }
 
     rc_wrapper& operator=(const rc_wrapper& other) noexcept
@@ -230,9 +233,7 @@ namespace tnac
       if (this == &other)
         return *this;
 
-      unref(m_obj);
-      m_obj = other.m_obj;
-      ref(m_obj);
+      reinit(other.m_obj);
       return *this;
     }
 
@@ -279,6 +280,24 @@ namespace tnac
     pointer operator->() noexcept
     {
       return FROM_CONST(operator->);
+    }
+
+  protected:
+    const_pointer get() const noexcept
+    {
+      return m_obj;
+    }
+
+    pointer get() noexcept
+    {
+      return FROM_CONST(get);
+    }
+
+    void reinit(pointer ptr) noexcept
+    {
+      unref(m_obj);
+      m_obj = ptr;
+      ref(m_obj);
     }
 
   private:

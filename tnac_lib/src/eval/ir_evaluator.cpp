@@ -363,13 +363,17 @@ namespace tnac
     auto&& res = instr[0];
     auto&& recOp = instr[1];
     auto&& fnOp = instr[2];
+
     UTILS_ASSERT(recOp.is_record());
-
     auto&& rec = recOp.get_record();
-    auto&& func = get_value(fnOp);
-    UTILS_ASSERT(func);
+    auto&& funcVal = get_value(fnOp).value_or(eval::value{});
+    UTILS_ASSERT(funcVal.id() == eval::value::Function);
 
-    utils::unused(res, rec, func);
+    auto func = funcVal.get<eval::value::Function>();
+    auto&& arrData = m_valStore->allocate_array(rec.size());
+    func.attach_closure(arrData);
+    const auto regId = alloc_new(res);
+    store_value(regId, eval::value{ std::move(func) });
   }
 
   void ir_eval::append() noexcept

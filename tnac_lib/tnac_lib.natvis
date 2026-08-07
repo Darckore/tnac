@@ -122,6 +122,9 @@
     <DisplayString Condition="!m_func">empty function</DisplayString>
     <Expand>
       <Item Name="[function]" Condition="m_func">*m_func</Item>
+      <Item Name="[closure]" Condition="m_obj">"yes",sb</Item>
+      <Item Name="[closure]" Condition="!m_obj">"no",sb</Item>
+      <Item Name="[closure data]" Condition="m_obj">*m_obj</Item>
     </Expand>
   </Type>
 

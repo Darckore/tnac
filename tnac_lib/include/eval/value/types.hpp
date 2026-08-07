@@ -61,11 +61,14 @@ namespace tnac::eval
 
 namespace tnac::eval
 {
+  class array_data;
+
   //
   // Function wrapper
   // Represents the function value type
   //
-  class function_type final
+  class function_type final :
+    public rc_wrapper<array_data>
   {
   public:
     using value_type      = ir::function;
@@ -73,15 +76,21 @@ namespace tnac::eval
     using const_pointer   = const value_type*;
     using reference       = value_type&;
     using const_reference = const value_type&;
+    using rc_base         = rc_wrapper<array_data>;
 
   public:
-    CLASS_SPECIALS_NODEFAULT(function_type);
+    function_type() noexcept = delete;
 
     ~function_type() noexcept;
 
+    function_type(const function_type&) noexcept;
+    function_type& operator=(const function_type&) noexcept;
+    function_type(function_type&&) noexcept;
+    function_type& operator=(function_type&&) noexcept;
+
     function_type(reference func) noexcept;
 
-    bool operator==(const function_type& other) const noexcept = default;
+    bool operator==(const function_type& other) const noexcept;
 
   public:
     const_pointer operator->() const noexcept;
@@ -89,6 +98,13 @@ namespace tnac::eval
 
     const_reference operator*() const noexcept;
     reference operator*() noexcept;
+
+    void attach_closure(array_data& data) noexcept;
+
+    bool is_closure() const noexcept;
+
+    const array_data& closure_data() const noexcept;
+    array_data& closure_data() noexcept;
 
   private:
     pointer m_func{};
