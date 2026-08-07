@@ -15,6 +15,8 @@ namespace tnac::detail // closure data
   struct context::closure
   {
     ast::func_decl* m_decl{};
+    ir::vreg* m_reg{};
+    bool m_inited{};
   };
 }
 
@@ -261,18 +263,36 @@ namespace tnac::detail
       data.m_toInitCl.push(func->first);
   }
 
+  void context::append_closure_reg(ir::function& fn, ir::vreg& reg) noexcept
+  {
+    auto item = find_closure(fn);
+    if (!item)
+      return;
+
+    UTILS_ASSERT(!item->m_reg);
+    item->m_reg = &reg;
+  }
+
+  ir::vreg* context::get_closure_reg(ir::function& fn) noexcept
+  {
+    auto item = find_closure(fn);
+    if (!item)
+      return{};
+
+    return item->m_reg;
+  }
+
   ast::func_decl* context::init_closure(ir::function& fn) noexcept
   {
-    auto&& data = cur_data().m_closures;
-    auto it = data.find(&fn);
-    if (it != data.end())
-    {
-      auto decl = it->second.m_decl;
-      data.erase(it);
-      return decl;
-    }
+    auto item = find_closure(fn);
+    if (!item)
+      return {};
 
-    return {};
+    if (item->m_inited)
+      return {};
+
+    item->m_inited = true;
+    return item->m_decl;
   }
 
   ir::function* context::next_closure() noexcept
@@ -304,5 +324,15 @@ namespace tnac::detail
     auto&& fd = cur_data();
     auto found = fd.m_vars.find(&sym);
     return found != fd.m_vars.end() ? &found->second : nullptr;
+  }
+
+  context::closure* context::find_closure(ir::function& fn) noexcept
+  {
+    auto&& data = cur_data().m_closures;
+    auto it = data.find(&fn);
+    if (it == data.end())
+      return {};
+
+    return &it->second;
   }
 }

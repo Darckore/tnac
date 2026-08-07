@@ -454,8 +454,9 @@ namespace tnac
 
     //
     // Attempts to init a closure
+    // Returns a pointer to the register related to the closure on success
     //
-    void init_closure(const ir::operand& op) noexcept;
+    ir::vreg* init_closure(const ir::operand& op) noexcept;
 
     //
     // Inits all remaining closures on function exit

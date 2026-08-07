@@ -415,8 +415,14 @@ namespace tnac
 
     if (auto func = m_cfg->find_entity(sym))
     {
-      m_stack.push(eval::value::function(*func));
-      init_closure(m_stack.top());
+      auto op = ir::operand{ eval::value::function(*func) };
+      auto reg = init_closure(op);
+
+      if (reg)
+        m_stack.push(reg);
+      else
+        m_stack.push(std::move(op));
+
       return;
     }
 
@@ -560,7 +566,12 @@ namespace tnac
     auto func = m_cfg->find_entity(&sym);
     UTILS_ASSERT(func);
     clear_store();
-    m_stack.push(eval::value::function(*func));
+
+    auto op = ir::operand{ eval::value::function(*func) };
+    if (auto reg = m_context.get_closure_reg(*func))
+      m_stack.push(reg);
+    else
+      m_stack.push(std::move(op));
   }
 
   // Previews
@@ -1379,8 +1390,9 @@ namespace tnac
   {
     if (!m_stack.empty())
     {
-      init_closure(m_stack.top());
-      return m_stack.extract();
+      auto op = m_stack.extract();
+      auto reg = init_closure(op);
+      return reg ? reg : op;
     }
 
     if (auto last = m_context.last_store())
@@ -1701,22 +1713,23 @@ namespace tnac
     }
   }
 
-  void compiler::init_closure(const ir::operand& op) noexcept
+  ir::vreg* compiler::init_closure(const ir::operand& op) noexcept
   {
     if (!op.is_value())
-      return;
+      return {};
 
     auto&& val = op.get_value();
     if (val.id() != eval::value::Function)
-      return;
+      return {};
 
     auto ft = val.get<eval::function_type>();
     auto&& func = *ft;
     auto decl = m_context.init_closure(func);
     if (!decl)
-      return;
+      return {};
 
     auto&& rec = emit_salloc(func.rec(), op);
+    m_context.append_closure_reg(func, rec);
     for (ir::record::size_type idx{}; auto cap : decl->captures())
     {
       compile(cap->initialiser());
@@ -1724,6 +1737,8 @@ namespace tnac
       emit_elem_store(rec, std::move(res), idx);
       ++idx;
     }
+
+    return &rec;
   }
 
   void compiler::init_all_closures() noexcept
@@ -1731,7 +1746,12 @@ namespace tnac
     // Init any closure that happens to be on the stack
     if (!m_stack.empty() && m_stack.top().is_value())
     {
-      init_closure(m_stack.top());
+      auto op = m_stack.extract();
+      auto reg = init_closure(op);
+      if (reg)
+        m_stack.push(reg);
+      else
+        m_stack.push(std::move(op));
     }
 
     while (auto next = m_context.next_closure())

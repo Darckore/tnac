@@ -238,6 +238,17 @@ namespace tnac::detail
     void add_closure(ir::function& fn, ast::func_decl& fd) noexcept;
 
     //
+    // Appends a register to the specified closure
+    // This register will be used instead of the function type to address it
+    //
+    void append_closure_reg(ir::function& fn, ir::vreg& reg) noexcept;
+
+    //
+    // Returns the register associated with the given closure
+    //
+    ir::vreg* get_closure_reg(ir::function& fn) noexcept;
+
+    //
     // Marks the specified closure as inited and returns a pointer to its declarator
     // nullptr if already inited
     //
@@ -263,6 +274,11 @@ namespace tnac::detail
     // Locates a variable and returns its descriptor
     //
     var_data* locate_var(symbol& sym) noexcept;
+
+    //
+    // Located a closure information
+    //
+    closure* find_closure(ir::function& fn) noexcept;
 
   private:
     data_store m_data;
