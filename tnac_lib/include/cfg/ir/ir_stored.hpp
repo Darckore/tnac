@@ -67,6 +67,7 @@ namespace tnac::ir
   public:
     using elem_list = std::vector<vreg*>;
     using size_type = elem_list::size_type;
+    using size_opt  = std::optional<size_type>;
 
   public:
     CLASS_SPECIALS_NONE(record);
@@ -107,6 +108,11 @@ namespace tnac::ir
     // Returns the record's global register
     //
     vreg& target_reg() noexcept;
+
+    //
+    // Returns the index of the given element
+    //
+    size_opt get_idx(const vreg& reg) const noexcept;
 
   private:
     vreg* m_reg;

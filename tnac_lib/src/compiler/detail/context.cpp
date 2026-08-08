@@ -79,7 +79,18 @@ namespace tnac::detail
 
   ir::vreg* context::locate(symbol& sym) noexcept
   {
-    auto vd = locate_var(sym);
+    auto vd = locate_var(sym, cur_data());
+    return vd ? vd->m_reg : nullptr;
+  }
+
+  ir::vreg* context::locate_prev(symbol& sym) noexcept
+  {
+    UTILS_ASSERT(!m_funcs.empty());
+    auto fIt = std::next(m_funcs.rbegin());
+    if (fIt == m_funcs.rend())
+      return {};
+
+    auto vd = locate_var(sym, *fIt);
     return vd ? vd->m_reg : nullptr;
   }
 
@@ -306,11 +317,10 @@ namespace tnac::detail
     return FROM_CONST(cur_data);
   }
 
-  context::var_data* context::locate_var(symbol& sym) noexcept
+  context::var_data* context::locate_var(symbol& sym, func_data& data) noexcept
   {
-    auto&& fd = cur_data();
-    auto found = fd.m_vars.find(&sym);
-    return found != fd.m_vars.end() ? &found->second : nullptr;
+    auto found = data.m_vars.find(&sym);
+    return found != data.m_vars.end() ? &found->second : nullptr;
   }
 
   context::closure* context::find_closure(ir::function& fn) noexcept

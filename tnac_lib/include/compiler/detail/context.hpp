@@ -88,6 +88,11 @@ namespace tnac::detail
     ir::vreg* locate(symbol& sym) noexcept;
 
     //
+    // Returns the register referring to a variable storage from an enclosing function
+    //
+    ir::vreg* locate_prev(symbol& sym) noexcept;
+
+    //
     // Discards the collected data
     //
     void wipe() noexcept;
@@ -267,7 +272,7 @@ namespace tnac::detail
     //
     // Locates a variable and returns its descriptor
     //
-    var_data* locate_var(symbol& sym) noexcept;
+    var_data* locate_var(symbol& sym, func_data& data) noexcept;
 
     //
     // Located a closure information

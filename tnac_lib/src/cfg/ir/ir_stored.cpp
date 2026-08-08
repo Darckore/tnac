@@ -75,4 +75,20 @@ namespace tnac::ir // record
   {
     return FROM_CONST(target_reg);
   }
+
+  record::size_opt record::get_idx(const vreg& reg) const noexcept
+  {
+    size_opt res{};
+    for (auto idx = size_type{}; auto r : m_elems)
+    {
+      if (r == &reg)
+      {
+        res.emplace(idx);
+        break;
+      }
+
+      ++idx;
+    }
+    return res;
+  }
 }
