@@ -91,4 +91,9 @@ namespace tnac::ir // record
     }
     return res;
   }
+
+  record::size_opt record::get_idx(const vreg* reg) const noexcept
+  {
+    return reg ? get_idx(*reg) : size_opt{};
+  }
 }

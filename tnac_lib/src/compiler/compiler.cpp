@@ -273,7 +273,7 @@ namespace tnac::detail
   auto to_var(semantics::symbol* sym) noexcept
   {
     return utils::try_cast<semantics::variable>(sym);
-}
+  }
 
   auto to_var(ast::node& n) noexcept
   {
@@ -1045,7 +1045,10 @@ namespace tnac
   {
     UTILS_ASSERT(dot.accessor().is(ast::node_kind::Identifier));
     auto&& accr = utils::cast<ast::id_expr>(dot.accessor());
-    if (auto&& sym = accr.symbol(); !sym.is(semantics::sym_kind::Deferred))
+    auto&& sym = accr.symbol();
+    const auto isCapture = detail::is_capture(&sym);
+    if ((!isCapture && !sym.is(semantics::sym_kind::Deferred)) ||
+        ( isCapture && m_context.locate(sym)))
     {
       compile(accr);
       return false;
@@ -1053,7 +1056,35 @@ namespace tnac
 
     compile(dot.accessed());
     auto scope = extract();
-    emit_dyn(std::move(scope), accr.name());
+    if (!scope.is_value())
+    {
+      emit_dyn(std::move(scope), accr.name());
+      return false;
+    }
+
+    auto&& val = scope.get_value();
+    if (val.id() != eval::value::Function)
+    {
+      m_stack.push_undef();
+      return false;
+    }
+
+    auto ft = val.get<eval::function_type>();
+    auto&& func = *ft;
+    UTILS_ASSERT(func.is_closure());
+    auto&& rec = func.rec();
+    auto&& varReg = m_context.locate_prev(sym);
+    auto idx = rec.get_idx(varReg);
+    if(!idx)
+    {
+      m_stack.push_undef();
+      return false;
+    }
+
+    auto&& res = m_cfg->get_builder().make_register(varReg->name());
+    emit_ge(res, &rec, *idx);
+    m_context.store(sym, res);
+    compile(accr);
     return false;
   }
 

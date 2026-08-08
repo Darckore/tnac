@@ -114,6 +114,11 @@ namespace tnac::ir
     //
     size_opt get_idx(const vreg& reg) const noexcept;
 
+    //
+    // Returns the index of the given element
+    //
+    size_opt get_idx(const vreg* reg) const noexcept;
+
   private:
     vreg* m_reg;
     elem_list m_elems;
