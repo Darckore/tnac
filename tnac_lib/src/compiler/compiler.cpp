@@ -269,6 +269,26 @@ namespace tnac::detail
   private:
     Func m_callback;
   };
+
+  auto to_var(semantics::symbol* sym) noexcept
+  {
+    return utils::try_cast<semantics::variable>(sym);
+}
+
+  auto to_var(ast::node& n) noexcept
+  {
+    semantics::symbol* sym{};
+    if (auto id = utils::try_cast<ast::id_expr>(&n))
+      sym = &id->symbol();
+
+    return to_var(sym);
+  }
+
+  bool is_capture(semantics::symbol* sym) noexcept
+  {
+    auto var = to_var(sym);
+    return var && var->is_capture();
+  }
 }
 
 namespace tnac
@@ -1174,8 +1194,7 @@ namespace tnac
 
     emit_store(*target, std::move(val));
 
-    if (auto varSym = utils::try_cast<semantics::variable>(&var);
-            !varSym || !varSym->is_capture())
+    if (detail::is_capture(&var))
       return;
 
     auto&& curFn = m_context.current_function();
