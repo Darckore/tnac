@@ -417,6 +417,8 @@ namespace tnac
     {
       auto op = ir::operand{ eval::value::function(*func) };
       auto reg = init_closure(op);
+      if (!reg)
+        reg = m_context.get_closure_reg(*func);
 
       if (reg)
         m_stack.push(reg);
