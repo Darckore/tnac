@@ -1170,7 +1170,29 @@ namespace tnac
     if(!val.is_param())
       m_context.save_store(var);
 
-    emit_store(*target, val);
+    emit_store(*target, std::move(val));
+
+    if (auto varSym = utils::try_cast<semantics::variable>(&var);
+            !varSym || !varSym->is_capture())
+      return;
+
+    auto&& curFn = m_context.current_function();
+    if (!curFn.is_closure())
+      return;
+
+    auto&& rec = curFn.rec();
+    auto idx = rec.get_idx(*target);
+    if (!idx)
+      return;
+
+    auto&& regSrc = target->source();
+    if (regSrc.opcode() != ir::op_code::GetElem)
+      return;
+
+    auto&& storeTo = regSrc[1];
+    UTILS_ASSERT(storeTo.is_register());
+    auto&& loadRes = emit_load(*target);
+    emit_elem_store(storeTo.get_reg(), &loadRes, *idx);
   }
 
   void compiler::emit_store(ir::vreg& target, ir::operand val) noexcept
