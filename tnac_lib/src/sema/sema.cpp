@@ -90,6 +90,15 @@ namespace tnac
 
   sema::sym_ptr sema::find(const token& tok, lookup_type type) noexcept
   {
+    if (tok.is(token::KwThis))
+    {
+      auto enclosing = m_curScope->encl_skip_internal();
+      if (!enclosing)
+        return {};
+
+      return enclosing->to_func();
+    }
+
     auto name = tok.value();
     if(!m_curScope || !m_curScope->is_deferred())
       return find(name, type);

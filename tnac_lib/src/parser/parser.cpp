@@ -776,7 +776,7 @@ namespace tnac
     if (!next.is_identifier())
       return {};
 
-    if (m_sema.find(next.value(), sema::Unscoped))
+    if (m_sema.find(next, sema::Unscoped))
       return {};
 
     return var_decl(next_tok());
