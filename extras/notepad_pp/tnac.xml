@@ -13,7 +13,7 @@
             <Keywords name="Numbers, suffix1"></Keywords>
             <Keywords name="Numbers, suffix2"></Keywords>
             <Keywords name="Numbers, range"></Keywords>
-            <Keywords name="Operators1">+ - ~ * / % | ^ &amp; ! ? = ** // &lt; &gt; &lt;= &gt;= == != &amp;&amp; || ( ) [ ] { } ; : , @</Keywords>
+            <Keywords name="Operators1">+ - ~ * / % | ^ &amp; ! ? = ** // &lt; &gt; &lt;= &gt;= == != &amp;&amp; || ( ) [ ] { } ; : , @ .</Keywords>
             <Keywords name="Operators2"></Keywords>
             <Keywords name="Folders in code1, open"></Keywords>
             <Keywords name="Folders in code1, middle"></Keywords>
@@ -26,7 +26,7 @@
             <Keywords name="Folders in comment, close"></Keywords>
             <Keywords name="Keywords1">_fn _entry _import _ret _as _io</Keywords>
             <Keywords name="Keywords2">_cplx _frac _int _flt _bool _array _undef</Keywords>
-            <Keywords name="Keywords3">_true _false _i _pi _e _result</Keywords>
+            <Keywords name="Keywords3">_true _false _i _pi _e _result _this</Keywords>
             <Keywords name="Keywords4">#</Keywords>
             <Keywords name="Keywords5"></Keywords>
             <Keywords name="Keywords6"></Keywords>
