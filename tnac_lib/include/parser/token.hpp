@@ -93,7 +93,8 @@ namespace tnac
     KwEntry,
     KwImport,
     KwAs,
-    KwIO
+    KwIO,
+    KwThis
   };
 
   //
@@ -184,7 +185,8 @@ namespace tnac
                     KwEntry,
                     KwImport,
                     KwAs,
-                    KwIO);
+                    KwIO,
+                    KwThis);
     }
 
     auto is_literal() const noexcept
@@ -195,7 +197,7 @@ namespace tnac
 
     auto is_identifier() const noexcept
     {
-      return is(Identifier);
+      return is_any(Identifier, KwThis);
     }
 
   private:

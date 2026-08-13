@@ -211,7 +211,8 @@ namespace tnac
           { "entry",  tok_kind::KwEntry },
           { "import", tok_kind::KwImport },
           { "as",     tok_kind::KwAs },
-          { "io",     tok_kind::KwIO }
+          { "io",     tok_kind::KwIO },
+          { "this",   tok_kind::KwThis }
         };
 
         constexpr auto err = tok_kind::Error;
