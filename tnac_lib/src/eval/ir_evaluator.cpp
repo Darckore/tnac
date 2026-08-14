@@ -472,21 +472,32 @@ namespace tnac
     }
 
     const auto regId = alloc_new(to);
-    if (from.is_record())
+    if (!from.is_record())
     {
-      auto&& rec = from.get_record();
-      auto curFn = m_curFrame->function();
+      store_value(regId, from);
+      return;
+    }
+
+    auto&& rec = from.get_record();
+    auto curFn = m_curFrame->function();
+    if (curFn->is_closure() && &curFn->rec() == &rec)
+    {
       // blank init in case called improperly
       if (!curFn.is_closure())
       {
         alloc_record(curFn, rec);
       }
-      UTILS_ASSERT(curFn.closure_data().size() == rec.size());
-      store_value(regId, eval::value{ std::move(curFn) }); // the closest to 'this' ptr we can get
+
+      store_value(regId, eval::value{ std::move(curFn) });
       return;
     }
 
-    store_value(regId, from);
+    auto thisVal = eval::extract_function(m_curFrame->value_for_this());
+    if (!thisVal)
+      return;
+
+    UTILS_ASSERT(thisVal->is_closure());
+    store_value(regId, eval::value{ std::move(*thisVal) });
   }
 
   void ir_eval::load_elem() noexcept
