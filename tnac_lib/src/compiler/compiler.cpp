@@ -1049,10 +1049,7 @@ namespace tnac
     UTILS_ASSERT(dot.accessor().is(ast::node_kind::Identifier));
     auto&& accr = utils::cast<ast::id_expr>(dot.accessor());
     auto&& sym = accr.symbol();
-    if (compile_capture_access(loadedRec, sym))
-      return false;
-
-    if (!sym.is(semantics::sym_kind::Deferred))
+    if (compile_capture_access(loadedRec, sym) || !sym.is(semantics::sym_kind::Deferred))
     {
       compile(accr);
       return false;
