@@ -258,6 +258,18 @@ namespace tnac::detail
     //
     ast::func_decl* init_closure(ir::function& fn) noexcept;
 
+    //
+    // Imports the record from the surrounding closure
+    // and saves the register produced by the corresponding load instruction
+    //
+    void import_record(ir::vreg& reg) noexcept;
+
+    //
+    // Returns a pointer to the imported record's register
+    // nullptr if none is imported
+    //
+    ir::vreg* imported_record() noexcept;
+
   private:
     //
     // Returns function data from the top of the data stack

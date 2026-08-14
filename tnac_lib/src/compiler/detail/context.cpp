@@ -37,6 +37,7 @@ namespace tnac::detail // func data
     ir::basic_block* m_return{};
     ir::vreg* m_retVal{};
     ir::basic_block* m_terminal{};
+    ir::vreg* m_importedRec{};
     reg_idx m_regIdx{};
     symbol* m_lastStore{};
     var_store m_vars;
@@ -301,6 +302,18 @@ namespace tnac::detail
 
     item->m_inited = true;
     return item->m_decl;
+  }
+
+  void context::import_record(ir::vreg& reg) noexcept
+  {
+    auto&& data = cur_data();
+    UTILS_ASSERT(!data.m_importedRec);
+    data.m_importedRec = &reg;
+  }
+
+  ir::vreg* context::imported_record() noexcept
+  {
+    return cur_data().m_importedRec;
   }
 
 
