@@ -212,6 +212,25 @@ namespace tnac
     return res;
   }
 
+  ir_eval::val_opt ir_eval::get_callee_owner(const eval::stack_frame& frame, const ir::operand& op) const noexcept
+  {
+    val_opt res{};
+    if (!op.is_register())
+      return res;
+
+    auto&& reg = op.get_reg();
+    if (!reg.has_src())
+      return res;
+
+    auto&& src = reg.source();
+    if (const auto oc = src.opcode(); oc == ir::op_code::DynBind)
+    {
+      res = get_value(frame, src[1]);
+    }
+
+    return res;
+  }
+
   entity_id ir_eval::get_reg(const ir::vreg& reg) const noexcept
   {
     return get_reg(m_curFrame, reg);
@@ -675,6 +694,12 @@ namespace tnac
       auto arg = get_value(*prevFrame, instr[idx]);
       UTILS_ASSERT(arg);
       m_curFrame->add_arg(std::move(*arg));
+    }
+
+    auto thisVal = get_callee_owner(*prevFrame, instr[1]);
+    if (thisVal)
+    {
+      m_curFrame->init_this_reg(std::move(*thisVal));
     }
 
     return true;

@@ -27,17 +27,17 @@ namespace tnac::eval
     return m_func;
   }
 
-  stack_frame& stack_frame::add_arg(value argVal) noexcept
+  entity_id stack_frame::add_arg(value argVal) noexcept
   {
+    auto res = entity_id{ m_mem.size() };
     m_mem.emplace_back(std::move(argVal));
-    return *this;
+    return res;
   }
 
-  stack_frame& stack_frame::store(entity_id id, value val) noexcept
+  void stack_frame::store(entity_id id, value val) noexcept
   {
     UTILS_ASSERT(*id < m_mem.size());
     m_mem[*id] = std::move(val);
-    return *this;
   }
 
   entity_id stack_frame::allocate() noexcept
@@ -51,6 +51,11 @@ namespace tnac::eval
   {
     const auto idx = *id;
     return (idx < m_mem.size()) ? m_mem[idx] : value{};
+  }
+
+  value stack_frame::value_for_this() const noexcept
+  {
+    return m_this != entity_id{} ? m_mem[*m_this] : value{};
   }
 
   void stack_frame::redirrect(entity_id jmp) noexcept
@@ -71,5 +76,10 @@ namespace tnac::eval
   entity_id stack_frame::ret_val() const noexcept
   {
     return m_retId;
+  }
+
+  void stack_frame::init_this_reg(value val) noexcept
+  {
+    m_this = add_arg(std::move(val));
   }
 }

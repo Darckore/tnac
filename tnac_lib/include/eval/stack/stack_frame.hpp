@@ -39,12 +39,12 @@ namespace tnac::eval
     //
     // Appends a function argument and returns its id
     //
-    stack_frame& add_arg(value argVal) noexcept;
+    entity_id add_arg(value argVal) noexcept;
 
     //
     // Stores a value into the specified register
     //
-    stack_frame& store(entity_id id, value val) noexcept;
+    void store(entity_id id, value val) noexcept;
 
     //
     // Allocates a variable and returns its id
@@ -55,6 +55,12 @@ namespace tnac::eval
     // Returns the value assigned to a specific id
     //
     value value_for(entity_id id) const noexcept;
+
+    //
+    // Returns the 'this' register value
+    // If not set, an invalid value is returned
+    //
+    value value_for_this() const noexcept;
 
     //
     // Directs return address to a specific instruction
@@ -76,10 +82,17 @@ namespace tnac::eval
     //
     entity_id ret_val() const noexcept;
 
+    //
+    // Sets the 'this' register and stores its id
+    // The value stored in the nearest enclosing owner function instance
+    //
+    void init_this_reg(value val) noexcept;
+
   private:
     memory m_mem;
     eval::function_type m_func;
     entity_id m_jmp{};
     entity_id m_retId{};
+    entity_id m_this{};
   };
 }

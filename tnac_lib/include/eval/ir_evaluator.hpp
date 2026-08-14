@@ -119,6 +119,11 @@ namespace tnac
     val_opt get_value(const eval::stack_frame& frame, const ir::operand& op) const noexcept;
 
     //
+    // Attempts to extract the callee's owner to be used as a 'this' register in calls
+    //
+    val_opt get_callee_owner(const eval::stack_frame& frame, const ir::operand& op) const noexcept;
+
+    //
     // Locates a register id
     //
     entity_id get_reg(const ir::vreg& reg) const noexcept;
