@@ -1043,15 +1043,22 @@ namespace tnac
 
   bool compiler::preview(ast::dot_expr& dot) noexcept
   {
+    auto&& accd = dot.accessed();
+    auto loadedRec = compile_this(accd);
+
     UTILS_ASSERT(dot.accessor().is(ast::node_kind::Identifier));
     auto&& accr = utils::cast<ast::id_expr>(dot.accessor());
-    if (auto&& sym = accr.symbol(); !sym.is(semantics::sym_kind::Deferred))
+    auto&& sym = accr.symbol();
+    if (compile_capture_access(loadedRec, sym))
+      return false;
+
+    if (!sym.is(semantics::sym_kind::Deferred))
     {
       compile(accr);
       return false;
     }
 
-    compile(dot.accessed());
+    compile(accd);
     auto scope = extract();
     emit_dyn(std::move(scope), accr.name());
     return false;
@@ -1534,6 +1541,54 @@ namespace tnac
     }
 
     m_stack.push(op);
+  }
+
+  bool compiler::compile_capture_access(ir::vreg* reg, semantics::symbol& sym) noexcept
+  {
+    if (auto var = utils::try_cast<semantics::variable>(&sym);
+             !reg || !reg->has_src() || !var || !var->is_capture())
+      return false;
+
+    auto&& srcInstr = reg->source();
+    if (srcInstr.opcode() != ir::op_code::Load)
+      return false;
+
+    auto&& srcOp = srcInstr[1];
+    if (!srcOp.is_record())
+      return false;
+
+    auto&& rec = srcOp.get_record();
+    auto varReg = m_context.locate_prev(sym);
+    auto idx = rec.get_idx(varReg);
+    if (!idx)
+      return false;
+
+    auto&& res = m_cfg->get_builder().make_register(varReg->name());
+    emit_ge(res, reg, *idx);
+    m_context.store(sym, res);
+    return true;
+  }
+
+  ir::vreg* compiler::compile_this(ast::expr& accd) noexcept
+  {
+    if (auto accdId = utils::try_cast<ast::id_expr>(&accd);
+            !accdId || !accdId->pos().is(token::KwThis))
+      return {};
+
+    auto res = m_context.imported_record();
+    if (res)
+      return res;
+
+    compile(accd);
+    auto fn = eval::extract_function(peek_value().value_or(eval::value{}));
+    extract();
+    if (!fn || !(*fn)->is_closure())
+      return {};
+
+    auto&& rec = (*fn)->rec();
+    res = &emit_load(rec);
+    m_context.import_record(*res);
+    return res;
   }
 
   void compiler::compile_init(semantics::symbol& sym, ast::expr& init) noexcept

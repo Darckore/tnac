@@ -394,6 +394,18 @@ namespace tnac
     void enforce_bool(const ir::operand& op) noexcept;
 
     //
+    // Attempts to compile access to a closure capture
+    // Returns true on success
+    //
+    bool compile_capture_access(ir::vreg* reg, semantics::symbol& sym) noexcept;
+
+    //
+    // Compiles the accessed part of a dot expression if _this is used
+    // Returns a pointer to the register into which the closure's record is loaded
+    //
+    ir::vreg* compile_this(ast::expr& accd) noexcept;
+
+    //
     // Compiles an initialiser (rhs of var decls and assigns)
     //
     void compile_init(semantics::symbol& var, ast::expr& init) noexcept;
