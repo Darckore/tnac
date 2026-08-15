@@ -62,8 +62,9 @@ namespace tnac::eval
 
     //
     // Prints a function
+    // The printClosure param specifies whether or not to print closure capture values
     //
-    static void write_function(rt::out_stream& stream, function_type val) noexcept;
+    static void write_function(rt::out_stream& stream, function_type val, bool printClosure) noexcept;
 
     //
     // Dispatches the printing to the given stream
