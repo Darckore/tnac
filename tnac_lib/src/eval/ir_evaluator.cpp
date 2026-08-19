@@ -223,7 +223,7 @@ namespace tnac
       return res;
 
     auto&& src = reg.source();
-    if (const auto oc = src.opcode(); oc == ir::op_code::DynBind)
+    if (const auto oc = src.opcode(); utils::eq_any(oc, ir::op_code::DynBind, ir::op_code::StBind))
     {
       res = get_value(frame, src[1]);
     }

@@ -107,11 +107,14 @@ namespace tnac::rt::out
     case Bind:
       print_call(instr);
       break;
+
     case Jump:        print_jump(instr);       break;
     case Ret:         print_ret(instr);        break;
     case Phi:         print_phi(instr);        break;
-    
-    case DynBind: print_dyn_bind(instr); break;
+
+    case DynBind:
+    case StBind:
+      print_sd_bind(instr); break;
 
     case StreamRead:  print_stream_read(instr); break;
     case StreamWrite: print_stream_write(instr); break;
@@ -364,7 +367,7 @@ namespace tnac::rt::out
     }
   }
 
-  void ir_printer::print_dyn_bind(const ir::instruction& dyn) noexcept
+  void ir_printer::print_sd_bind(const ir::instruction& dyn) noexcept
   {
     print_assign(dyn[0]);
     keyword(dyn.opcode_str());

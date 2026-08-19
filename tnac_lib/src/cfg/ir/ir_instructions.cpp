@@ -282,6 +282,7 @@ namespace tnac::ir // instruction
     case Phi:     return "phi"sv;
 
     case DynBind: return "dyn_bind"sv;
+    case StBind:  return "static_bind"sv;
 
     case Bool:    return "bool"sv;
     case Int:     return "int"sv;
@@ -382,6 +383,7 @@ namespace tnac::ir // instruction
     case Phi:     count = 3; break; // 2 branches is the most common case (probably)
 
     case DynBind: count = 3; break;
+    case StBind:  count = 3; break;
 
     case Test:    count = 3; break;
 

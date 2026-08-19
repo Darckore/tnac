@@ -333,6 +333,7 @@ namespace tnac::ir
     Phi,
 
     DynBind,
+    StBind,
 
     Bool,
     Int,

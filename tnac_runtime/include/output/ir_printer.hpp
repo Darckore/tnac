@@ -78,7 +78,7 @@ namespace tnac::rt::out
 
     void print_inst(const ir::instruction& inst) noexcept;
 
-    void print_dyn_bind(const ir::instruction& dyn) noexcept;
+    void print_sd_bind(const ir::instruction& dyn) noexcept;
 
     void print_stream_read(const ir::instruction& r) noexcept;
 
