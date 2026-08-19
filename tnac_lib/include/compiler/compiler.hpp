@@ -332,6 +332,11 @@ namespace tnac
     void emit_dyn(ir::operand scope, string_t name) noexcept;
 
     //
+    // Creates a static bind instruction
+    //
+    void emit_st(ir::operand scope, eval::value func) noexcept;
+
+    //
     // Creates a stream write instruction
     //
     void emit_write(ir::operand op) noexcept;
@@ -404,6 +409,12 @@ namespace tnac
     // Returns a pointer to the register into which the closure's record is loaded
     //
     ir::vreg* compile_this(ast::expr& accd) noexcept;
+
+    //
+    // Compiles the accessed part of a dot expression if closure is accessed
+    // Returns true on success
+    //
+    bool compile_closure_access(ast::expr& accd, ast::expr& accr) noexcept;
 
     //
     // Compiles an initialiser (rhs of var decls and assigns)

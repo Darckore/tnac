@@ -242,6 +242,11 @@ namespace tnac
     void dyn_bind() noexcept;
 
     //
+    // Handles static binds
+    //
+    void st_bind() noexcept;
+
+    //
     // Calculates a select op
     //
     void select() noexcept;

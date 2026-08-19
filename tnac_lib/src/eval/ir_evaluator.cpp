@@ -350,6 +350,8 @@ namespace tnac
       store_elem();
     else if (opcode == DynBind)
       dyn_bind();
+    else if (opcode == StBind)
+      st_bind();
     else if (opcode == Bind)
       bind();
     else if (opcode == StreamRead)
@@ -594,6 +596,27 @@ namespace tnac
     }
 
     store_value(regId, eval::value{ eval::function_type{ *result } });
+  }
+
+  void ir_eval::st_bind() noexcept
+  {
+    auto&& instr = cur();
+    auto&& res = instr[0];
+    auto&& src = instr[1];
+    auto&& callee = instr[2];
+
+    const auto regId = alloc_new(res);
+    auto srcVal = get_value(src);
+    UTILS_ASSERT(srcVal);
+    auto func = eval::cast_value<eval::function_type>(*srcVal);
+    if (!func)
+    {
+      // todo: error & abort
+      return;
+    }
+
+    UTILS_ASSERT(callee.is_value());
+    store_value(regId, callee);
   }
 
   void ir_eval::select() noexcept

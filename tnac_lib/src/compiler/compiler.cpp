@@ -1044,20 +1044,24 @@ namespace tnac
   bool compiler::preview(ast::dot_expr& dot) noexcept
   {
     auto&& accd = dot.accessed();
+    auto&& accr = dot.accessor();
+    if (compile_closure_access(accd, accr))
+      return false;
+
     auto loadedRec = compile_this(accd);
 
-    UTILS_ASSERT(dot.accessor().is(ast::node_kind::Identifier));
-    auto&& accr = utils::cast<ast::id_expr>(dot.accessor());
-    auto&& sym = accr.symbol();
+    UTILS_ASSERT(accr.is(ast::node_kind::Identifier));
+    auto&& accrId = utils::cast<ast::id_expr>(accr);
+    auto&& sym = accrId.symbol();
     if (compile_capture_access(loadedRec, sym) || !sym.is(semantics::sym_kind::Deferred))
     {
-      compile(accr);
+      compile(accrId);
       return false;
     }
 
     compile(accd);
     auto scope = extract();
-    emit_dyn(std::move(scope), accr.name());
+    emit_dyn(std::move(scope), accrId.name());
     return false;
   }
 
@@ -1433,6 +1437,11 @@ namespace tnac
     make(ir::op_code::DynBind).add(std::move(scope)).add(name);
   }
 
+  void compiler::emit_st(ir::operand scope, eval::value func) noexcept
+  {
+    make(ir::op_code::StBind).add(std::move(scope)).add(std::move(func));
+  }
+
   void compiler::emit_write(ir::operand op) noexcept
   {
     make(ir::op_code::StreamWrite).add(std::move(op));
@@ -1586,6 +1595,34 @@ namespace tnac
     res = &emit_load(rec);
     m_context.import_record(*res);
     return res;
+  }
+
+  bool compiler::compile_closure_access(ast::expr& accd, ast::expr& accr) noexcept
+  {
+    if (auto accrId = utils::try_cast<ast::id_expr>(&accr);
+            !accrId || !accrId->symbol().is(semantics::sym_kind::Function))
+      return false;
+
+    if (auto accdId = utils::try_cast<ast::id_expr>(&accd);
+            !accdId || accdId->pos().is(token::KwThis))
+      return false;
+
+    compile(accd);
+    auto scope = extract();
+    if (!scope.is_register())
+      return false;
+
+    auto&& scopeReg = scope.get_reg();
+    if (!scopeReg.has_src() || scopeReg.source().opcode() != ir::op_code::StructAlloc)
+      return false;
+
+    compile(accr);
+    auto accrVal = peek_value().value_or(eval::value{});
+    extract();
+
+    UTILS_ASSERT(accrVal);
+    emit_st(std::move(scope), std::move(accrVal));
+    return true;
   }
 
   void compiler::compile_init(semantics::symbol& sym, ast::expr& init) noexcept
