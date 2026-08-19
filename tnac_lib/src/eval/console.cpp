@@ -152,9 +152,25 @@ namespace tnac::eval
     stream << ']';
   }
 
-  void console::write_function(rt::out_stream& stream, function_type val) noexcept
+  void console::write_function(rt::out_stream& stream, function_type val, bool printClosure) noexcept
   {
     stream << val->name() << '(' << val->param_count() << ')';
+    if (!printClosure || !val.is_closure())
+      return;
+
+    stream << '[';
+    auto&& rec  = val->rec();
+    auto&& data = val.closure_data();
+    UTILS_ASSERT(rec.size() == data.size());
+    const auto recSz = rec.size();
+    for (auto idx = 0ul; idx < recSz; ++idx)
+    {
+      stream << rec.get_element(idx)->name() << '=';
+      write(stream, data.read_at(idx));
+      if (idx + 1 != recSz)
+        stream << ", ";
+    }
+    stream << ']';
   }
 
   void console::write(rt::out_stream& stream, const value& val) noexcept
@@ -187,7 +203,7 @@ namespace tnac::eval
       },
       [&](function_type val) noexcept
       {
-        write_function(stream, val);
+        write_function(stream, val, false);
       },
       [&](auto) noexcept
       {

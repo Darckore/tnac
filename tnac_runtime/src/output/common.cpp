@@ -63,7 +63,7 @@ namespace tnac::rt::out
       },
       [&](function_type val) noexcept
       {
-        console::write_function(out(), val);
+        console::write_function(out(), val, true);
       },
       [&](auto) noexcept
       {
