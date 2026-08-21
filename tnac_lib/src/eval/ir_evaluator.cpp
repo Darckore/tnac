@@ -512,12 +512,16 @@ namespace tnac
     UTILS_ASSERT(at.is_index());
     const auto idx = at.get_index();
 
+    auto regId = alloc_new(to);
     auto func = eval::extract_function(get_value(from).value_or(eval::value{}));
-    UTILS_ASSERT(func && func->is_closure());
+    if (!func || !func->is_closure())
+    {
+      store_value(regId, eval::value{});
+      return;
+    }
+
     auto&& rec = func->closure_data();
     auto resVal = rec.read_at(idx);
-
-    auto regId = alloc_new(to);
     store_value(regId, std::move(resVal));
   }
 
